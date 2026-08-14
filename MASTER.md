@@ -4270,3 +4270,35 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
     supersedes only W-094's final hash string; its rollback-state matrix and
     unchanged generated-output claims remain valid.
     RECEIPT: commit d72221f post-commit sha256sum output, 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.39 WRONG VERSION RE-RUN — V2 DID NOT EXECUTE; OLD V1 ALSO OVERWROTE THE
+      ROLLBACK STATE WITH ITSELF. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-053] The operator ran the earlier c489b9b V1 block again, not the issued
+    low-contrast V2. Proof is exact: downloaded script SHA is V1 `61cf4376...`,
+    output aggregate is V1 `3b8877b5...`, override CSS is V1 `4a0e36a5...`,
+    and the pasted URL names c489b9b. Therefore the attached screenshot and
+    “doesnt work well” verdict are a second rejection of V1; they contain NO
+    evidence about W-092/W-093 V2. The run did preserve the previous V1 build
+    at `.pre-rebuild.1786734242` and kept Compiz/Emerald healthy.
+    RECEIPT: target command text, build hashes, screenshot and operator verdict,
+    2026-08-14.
+
+  [X-054] Because the re-run downloaded pre-hardening V1, its apply command
+    wrote `Previous GTK theme recorded: Quake-Gunmetal-3D` and status now says
+    `recorded rollback: Quake-Gunmetal-3D`. The rollback points to itself and
+    no longer returns to Quake-Aqua-AMOLED. This is the exact hazard W-094 fixed
+    in V2. Before applying V2, explicitly repair
+    `~/.local/state/gunmetal-gtk3/previous-theme` to Quake-Aqua-AMOLED and verify
+    it, then use only the post-fix script hash X-052 (`d422c627...`). The actual
+    Quake-Aqua-AMOLED theme directory remains intact; this is state-file damage,
+    not theme loss.
+    RECEIPT: target V1 apply/status lines, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2-TARGET-1] NO-OP with respect to V2;
+  V1 REJECTED again. Receipt: X-053/X-054. Next block must be uniquely labelled
+  V2, repair rollback state first, verify script d422c627..., produce CSS
+  8bed1729... (not 4a0e36a5...), then apply and verify rollback remains
+  Quake-Aqua-AMOLED.
