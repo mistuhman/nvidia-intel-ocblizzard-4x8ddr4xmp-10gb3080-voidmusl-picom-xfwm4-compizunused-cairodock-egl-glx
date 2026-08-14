@@ -4005,3 +4005,40 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   IDENTIFIED. Receipt: W-082/W-083. Supersedes 12.28.3 step 1 only as the
   IMMEDIATE action: first A/B the existing Quake-Aqua-AMOLED graphical fork.
   The full composer remains the fallback if the operator rejects that visual.
+
+--------------------------------------------------------------------------------
+12.30 GUNMETAL DECORATION FROZEN; GTK IS NOW THE ONLY M16 VISUAL TARGET.
+      Target output, screenshot and operator verdict 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-084] A second corrected immutable gunmetal run reproduced the build
+    exactly: tool verification passed, target output remained 28 files,
+    aggregate `ee3a4f10f9ae5ebf030e56cb34828e3e8c3999d166ba7bf1d26dd3fa0fdc65d9`
+    and theme.ini `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`.
+    The prior library build and active slot were preserved at timestamped
+    paths ending 1786733609. Emerald restarted as PID 14379; Compiz remained
+    PID 1210; picom remained absent; active and library aggregates match.
+    This independently confirms target reproducibility and rollback behavior.
+    RECEIPT: corrected target build/apply/status output, 2026-08-14.
+
+  [W-085] Human acceptance is now unambiguous: “window deco is fine”. Freeze
+    Quake-Gunmetal-Aqua at the W-084 hashes and stop tuning its geometry,
+    reflection, transparency or traffic lights while GTK integration proceeds.
+    The attached screenshot visually confirms the black reflective frame and
+    traffic-light controls remain present around Terminal and Thunar.
+    RECEIPT: direct operator verdict and attached screenshot, 2026-08-14.
+
+  [X-048] GTK remains the rejected layer: “fix the gtk part of the theme,
+    doesnt fit the window deco.” The corrected gunmetal block intentionally
+    changed only Emerald, so XSettings remains on the malformed/flat Cheetah
+    route from X-045 unless the unrun GTK graphical A/B proves otherwise. The
+    screenshot still shows featureless black menubar/toolbar/content surfaces
+    beneath the accepted dimensional frame. Do not touch Emerald in response;
+    all next visual changes are confined to a new/reversible GTK user theme.
+    RECEIPT: direct operator verdict, screenshot, and scope of the executed
+    decoration-only block, 2026-08-14.
+
+[2026-08-14][M16/DECO-FINAL] Quake-Gunmetal-Aqua decoration ACCEPTED/FROZEN.
+  Receipt: W-084/W-085. M16 remains BLOCKED only on X-048 GTK integration.
+  Execute the W-083 graphical GTK A/B before authoring new assets; if accepted,
+  fork/tune it, and if rejected, use 12.28.3's dedicated composer path.
