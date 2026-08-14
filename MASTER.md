@@ -3378,3 +3378,53 @@ controls to rotate between windows."
   about the active titlebar was false. M16 remains IN PROGRESS. Preserve the
   custom Dark Aqua active slot; proceed to identify and fork the GTK widget
   theme before deciding whether any Emerald artwork needs composition.
+
+--------------------------------------------------------------------------------
+12.16 M16 GTK GATE 1 — ACTIVE FAMILY AND VIABLE WIDGET BASE NARROWED.
+      Partial target output pasted 2026-08-14; omitted beginning is not treated
+      as observed.
+--------------------------------------------------------------------------------
+
+  [W-063] The GTK-1 receipt identifies `Slickness-Reborn` as the active GTK
+    candidate by construction: the executed block inspected only the active
+    `/Net/ThemeName` followed by three fixed candidates, and
+    `/home/sd/.themes/Slickness-Reborn` appears as the first inspected path.
+    The pasted excerpt is truncated before the explicit XSettings line, so
+    that line itself remains to be reprinted by the next focused gate. The
+    observed Slickness content uses `#242424` as GTK3 theme background and
+    `#474747` as base, with many GTK2 pixmap-engine rules and no broken
+    symlinks. It is dark and glossy but not AMOLED black.
+    RECEIPT: target GTK-1 output excerpt and the exact executed loop, pasted
+    2026-08-14. Scope caveat: the beginning of the output was not supplied.
+
+  [W-064] `Skeuo-Dark-Leopard` is NOT a GTK widget-theme base: it is only
+    156K, 37 files/36 visual assets, and its sole top-level component is
+    `xfwm4`; it has no index.theme, gtk-2.0 or gtk-3.0. In contrast,
+    `mac-os-x-cheetah-dark` is a complete 5.0M theme with 500 files, 463 visual
+    assets, GTK2, GTK3, metacity, openbox and three xfwm4 variants. Its single
+    3200-line GTK3 CSS hashes
+    `2ecdb911e36af6ecf87a200e2cab909402e6abf26eedba25df12dae61eeb452d`;
+    its literal-colour census includes `#000000` 101 times, but main surfaces
+    still include rgba(61,61,62,.999), `#181818`, `#3a3a3a`, `#303030` and
+    other greys. Its GTK2 side already uses the pixmap engine extensively and
+    has explicit Thunar tweaks. No broken symlinks were found. This is the
+    viable M16 GTK fork base; W-056's name-based assumption that
+    Skeuo-Dark-Leopard could provide GTK widgets is superseded.
+    RECEIPT: target GTK-1 component/file/hash/colour/engine/symlink output,
+    2026-08-14.
+
+  [W-065] `Win2-7(Pixmap)` is confirmed as a GTK2-only artwork donor: 1.3M,
+    248 files, 224 visual assets, gtk-2.0 + metacity-1, no gtk-3.0, no broken
+    symlinks. Its index.theme explicitly identifies the pixmap implementation,
+    while its base palette is light (`#e8ecf6`, `#fcfcfc`) and therefore must
+    not replace the dark palette wholesale. Its role is limited to selected
+    glossy pixmap assets after the Cheetah fork works on its own.
+    RECEIPT: target GTK-1 index, engine, colour and file inventory output,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-1] GTK inventory PARTIAL but base-selection question
+  RESOLVED. Receipt: W-063..W-065. Use `mac-os-x-cheetah-dark` as the complete
+  fork base, preserve active Slickness-Reborn as rollback, and treat
+  Win2-7(Pixmap) only as an optional GTK2 artwork donor. Next gate must reprint
+  the explicit active XSettings value and inspect the narrow top-level colour
+  definitions before any fork or recolour is written.
