@@ -6414,3 +6414,66 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   single foreground xwinwrap+mpv trial on one monitor rectangle, run in the
   foreground so Ctrl-C is itself the escape, with the kill switch stated before
   it runs. It must not be autostarted until idle cost is measured (U-049).
+
+--------------------------------------------------------------------------------
+12.93 FIRST LIVE WALLPAPER ATTEMPT FAILED: XWINWRAP EXITED IMMEDIATELY, NOTHING
+      RENDERED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-092] The first xwinwrap+mpv trial FAILED. xwinwrap printed
+    `xwinwrap: window type - override` and then RETURNED TO THE SHELL PROMPT
+    immediately instead of blocking for the lifetime of the child. The operator
+    saw nothing on DP-2. This is a process failure, not merely an invisible
+    window: a foreground xwinwrap that has returned is no longer holding a
+    window open at all.
+    RECEIPT: target terminal showing prompt returned directly after the
+    `window type - override` line, plus "saw nothing", 2026-08-14.
+
+  [W-181] Corroborating instrumentation proves no decode ever occurred, and also
+    invalidates the cost measurement taken alongside it.
+    `nvidia-smi` reported `utilization.decoder = 0 %` with GPU 37% and 1403 MiB
+    used, and `top` showed 85.2% idle with no mpv row. A running 4480x1440 HEVC
+    wallpaper cannot show 0% decoder utilisation. Therefore those numbers are
+    BASELINE DESKTOP IDLE, not wallpaper cost, and must NOT be compared against
+    W-005's 6-11% band or recorded as the IX.8 measurement. U-049 remains fully
+    open; no cost datum was obtained.
+    RECEIPT: target nvidia-smi/top output captured during the failed attempt,
+    2026-08-14.
+
+  [W-182] Flag syntax is EXONERATED as the cause. Every option used —
+    `-g -ov -ni -b -nf -un -fdt -argb` — is documented in the mmhobi7 fork's
+    own README, which is the fork W-003 identified as the packaged upstream and
+    which W-123 confirmed is the installed binary's help surface. The failure is
+    therefore behavioural, not a rejected-argument error. Two structural
+    differences from upstream's own working mpv example are candidate causes and
+    are NOT yet distinguished: upstream drives mpv with `-fs` (full screen)
+    rather than `-g` geometry, and its example omits `-argb`, `-un` and `-ni`
+    while adding `-s -st -sp`. A third candidate is Compiz itself refusing or
+    immediately unmapping an override-redirect desktop-type window.
+    RECEIPT: mmhobi7/xwinwrap README usage block fetched 2026-08-14 against the
+    exact command run.
+  Upstream reference example, recorded verbatim for future runs:
+    nice xwinwrap -b -s -fs -st -sp -nf -ov -fdt -- mpv -wid WID --really-quiet
+      --framedrop=vo --no-audio --panscan="1.0" /path/to/your/video
+
+  [U-050] The decisive next test must separate THREE hypotheses that X-092
+    cannot distinguish, and must do so without `--really-quiet`, which suppressed
+    every diagnostic mpv would have printed:
+      (a) xwinwrap creates and immediately destroys/exits — visible by checking
+          whether any xwinwrap/mpv process survives one second after launch;
+      (b) the window exists but Compiz never composites it — visible in
+          `wmctrl -l -G` / `xwininfo -root -children` even when nothing is drawn;
+      (c) mpv fails to attach to WID or to initialise gpu-next/Vulkan on that
+          window — visible only once `--really-quiet` is removed and stderr is
+          captured.
+    Run the trial in the BACKGROUND with output redirected to a log, then probe
+    processes and the X window tree, then read the log. Never diagnose this with
+    a foreground `--really-quiet` invocation again.
+    RECEIPT: X-092's information-free output versus the three candidate causes,
+    2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-1] FAILED, cause unknown, nothing changed on disk or
+  in the WM. The artifacts are unaffected; this is purely a delivery-mechanism
+  problem. Next action is one instrumented, logged, background trial that
+  distinguishes U-050 (a)/(b)/(c). Kill switch remains
+  `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'`.
