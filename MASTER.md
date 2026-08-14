@@ -4302,3 +4302,32 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   V2, repair rollback state first, verify script d422c627..., produce CSS
   8bed1729... (not 4a0e36a5...), then apply and verify rollback remains
   Quake-Aqua-AMOLED.
+
+--------------------------------------------------------------------------------
+12.40 LOW-CONTRAST GTK3 V2 BUILT/APPLIED; ROLLBACK STILL SELF-REFERENTIAL AND
+      LIVE APPS NEED AN EXPLICIT THEME TOGGLE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-095] Actual V2 executed successfully. Tool SHA matched d422c627..., prior
+    V1 build was preserved at `.pre-rebuild.1786734500`, and target V2 produced
+    453 files, aggregate
+    `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`,
+    with the decisive V2 override CSS `8bed1729...`. Differential probe again
+    shows identical four pre-existing warnings and zero candidate additions;
+    both realizations pass. XSettings names Quake-Gunmetal-3D; Compiz PID 1210,
+    Emerald PID 14379 and picom absence remain correct. V2 machine gate passes.
+    RECEIPT: target LOW-CONTRAST GTK3 V2 output, 2026-08-14.
+
+  [X-055] The operator ran the earlier V2 block, not 12.39's combined rollback
+    repair/reload block. Since X-054 had already corrupted the state file to
+    Quake-Gunmetal-3D, hardened V2 correctly PRESERVED that existing value;
+    status still says `recorded rollback: Quake-Gunmetal-3D`. V2 did not make
+    this worse, but rollback remains ineffective. Also, apply set XSettings to
+    the same already-active name, so existing GTK processes may retain cached
+    V1 assets. Before visual judgement, write Quake-Aqua-AMOLED into the state
+    file, toggle XSettings to Quake-Aqua-AMOLED and back to
+    Quake-Gunmetal-3D, then verify CSS 8bed1729... and rollback text.
+    RECEIPT: target apply/status lines and scope of executed block, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2-TARGET-2] Machine PASS; visual gate
+  BLOCKED on X-055 repair/reload. No rebuild or download is needed next.
