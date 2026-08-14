@@ -31,6 +31,40 @@ const captureSeconds = loopSeconds + blendSeconds;
 const frameCount = Math.round(captureSeconds * fps);
 const seed = 0x584d4233;
 
+/**
+ * X-082: h264_nvenc is present in `ffmpeg -encoders` on this target but its
+ * Ampere hardware limit is 4096x4096, so a 4480-wide frame is rejected at
+ * encoder-open time. Encoder PRESENCE IS NOT ENCODER CAPABILITY. hevc_nvenc
+ * carries the 8192x8192 limit and is what the prior W-122 deliverables used.
+ * Candidates are probed at the real frame size before any browser is launched.
+ */
+const encoderCandidates = {
+  h264_nvenc: {
+    codec: 'h264_nvenc', hardware: true,
+    common: ['-preset', 'p5', '-tune', 'hq', '-rc', 'vbr', '-b:v', '0'],
+    extra: [],
+    maxWidth: 4096, maxHeight: 4096,
+  },
+  hevc_nvenc: {
+    codec: 'hevc_nvenc', hardware: true,
+    common: ['-preset', 'p5', '-tune', 'hq', '-rc', 'vbr', '-b:v', '0'],
+    extra: ['-profile:v', 'main', '-tag:v', 'hvc1'],
+    maxWidth: 8192, maxHeight: 8192,
+  },
+  libx265: {
+    codec: 'libx265', hardware: false,
+    common: ['-preset', 'medium'],
+    extra: ['-tag:v', 'hvc1'],
+    maxWidth: Infinity, maxHeight: Infinity,
+  },
+  libx264: {
+    codec: 'libx264', hardware: false,
+    common: ['-preset', 'medium'],
+    extra: [],
+    maxWidth: Infinity, maxHeight: Infinity,
+  },
+};
+
 function fail(message) {
   throw new Error(message);
 }
@@ -69,6 +103,59 @@ async function runProcess(command, args, label) {
   const [code, signal] = await once(child, 'exit');
   if (code !== 0) fail(`${label} failed: code=${code} signal=${signal}`);
 }
+function encoderArgs(profile, quality) {
+  const quantizer = profile.hardware ? ['-cq', String(quality)] : ['-crf', String(quality)];
+  return [
+    '-c:v', profile.codec, ...profile.common, ...quantizer,
+    '-g', String(fps * 2), '-pix_fmt', 'yuv420p',
+    '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
+    ...profile.extra, '-movflags', '+faststart',
+  ];
+}
+/** Encode two synthetic frames at the exact target geometry. Seconds, not hours. */
+function probeEncoder(name, encoderList) {
+  const profile = encoderCandidates[name];
+  if (!profile) fail(`unknown encoder request: ${name}`);
+  if (!encoderList.includes(profile.codec)) {
+    return {name, ok: false, reason: `${profile.codec} absent from ffmpeg -encoders`};
+  }
+  if (width > profile.maxWidth || height > profile.maxHeight) {
+    return {
+      name, ok: false,
+      reason: `${width}x${height} exceeds ${profile.codec} limit ${profile.maxWidth}x${profile.maxHeight}`,
+    };
+  }
+  const target = path.join(os.tmpdir(), `xmb-encoder-probe-${process.pid}-${name}.mp4`);
+  const result = spawnSync(ffmpeg, [
+    '-y', '-hide_banner', '-loglevel', 'error',
+    '-f', 'lavfi', '-i', `color=c=black:s=${width}x${height}:r=${fps}:d=0.05`,
+    '-frames:v', '2', '-an', ...encoderArgs(profile, profile.hardware ? 28 : 30), target,
+  ], {encoding: 'utf8'});
+  const wrote = fs.existsSync(target) && fs.statSync(target).size > 0;
+  fs.rmSync(target, {force: true});
+  if (result.status !== 0 || !wrote) {
+    const detail = (result.stderr || '').trim().split('\n').filter(Boolean).slice(-4).join(' | ');
+    return {name, ok: false, reason: `probe status=${result.status}: ${detail || 'no output written'}`};
+  }
+  return {name, ok: true, profile};
+}
+function selectEncoder(encoderList) {
+  const requested = process.env.XMB_ENCODER;
+  const order = requested ? [requested] : ['hevc_nvenc'];
+  const attempts = [];
+  for (const name of order) {
+    const outcome = probeEncoder(name, encoderList);
+    attempts.push(outcome);
+    console.log(`encoder-probe ${name}: ${outcome.ok ? 'PASS' : `FAIL (${outcome.reason})`}`);
+    if (outcome.ok) return outcome.profile;
+  }
+  const tried = attempts.map((item) => `${item.name}: ${item.reason}`).join('; ');
+  fail(
+    `no capable ${width}x${height} encoder (${tried}). ` +
+    'No silent fallback by design. Re-run with an explicit operator choice, e.g. ' +
+    'XMB_ENCODER=libx265 (software HEVC, slow but unlimited geometry) or XMB_ENCODER=libx264.',
+  );
+}
 async function installDeterminism(page) {
   await page.evaluateOnNewDocument((initialSeed) => {
     let clockMs = 0;
@@ -102,33 +189,69 @@ async function installDeterminism(page) {
     };
   }, seed);
 }
-async function startEncoder(masterTemporary) {
+async function startEncoder(profile, masterTemporary) {
   const args = [
     '-y', '-hide_banner', '-loglevel', 'warning',
     '-f', 'image2pipe', '-framerate', String(fps), '-vcodec', 'png', '-i', 'pipe:0',
-    '-an', '-c:v', 'h264_nvenc', '-preset', 'p5', '-tune', 'hq',
-    '-rc', 'vbr', '-cq', '16', '-b:v', '0', '-g', String(fps * 2),
-    '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709',
-    '-colorspace', 'bt709', '-movflags', '+faststart', masterTemporary,
+    '-an', ...encoderArgs(profile, 16), masterTemporary,
   ];
   const child = spawn(ffmpeg, args, {stdio: ['pipe', 'inherit', 'inherit']});
   let spawnError = null;
+  let exited = null;
   child.on('error', (error) => { spawnError = error; });
+  child.on('exit', (code, signal) => { exited = {code, signal}; });
+  /* X-083: an unhandled EPIPE previously masked the real ffmpeg error and
+     crashed the run with a useless stack. Absorb pipe errors and report the
+     encoder's own exit status instead. */
+  let pipeBroken = false;
+  child.stdin.on('error', (error) => {
+    if (error && (error.code === 'EPIPE' || error.code === 'ERR_STREAM_DESTROYED')) pipeBroken = true;
+    else if (!spawnError) spawnError = error;
+  });
+  async function assertEncoderAlive() {
+    if (spawnError) throw spawnError;
+    if (!pipeBroken && !exited) return;
+    /* The pipe broke because ffmpeg died. Give it a moment to be reaped so the
+       operator gets the real exit status instead of a bare EPIPE. */
+    if (!exited) await Promise.race([once(child, 'exit'), new Promise((r) => setTimeout(r, 2000))]);
+    if (exited) {
+      fail(
+        `frame encoder exited early: code=${exited.code} signal=${exited.signal}. ` +
+        'The ffmpeg diagnostics printed above are the real cause.',
+      );
+    }
+    fail('frame encoder closed its input pipe before all frames were written (see ffmpeg output above)');
+  }
+  /** Wait for drain without letting a stream 'error' reject as an unhandled EPIPE. */
+  function waitForDrain() {
+    return new Promise((resolve) => {
+      const done = () => {
+        child.stdin.off('drain', done);
+        child.off('exit', done);
+        child.stdin.off('error', done);
+        resolve();
+      };
+      child.stdin.once('drain', done);
+      child.once('exit', done);
+      child.stdin.once('error', done);
+    });
+  }
   return {
     child,
     async write(buffer) {
-      if (spawnError) throw spawnError;
-      if (!child.stdin.write(buffer)) await once(child.stdin, 'drain');
+      await assertEncoderAlive();
+      if (!child.stdin.write(buffer)) await waitForDrain();
+      await assertEncoderAlive();
     },
     async finish() {
-      child.stdin.end();
-      const [code, signal] = await once(child, 'exit');
+      if (!pipeBroken && !exited) child.stdin.end();
+      const [code, signal] = exited ? [exited.code, exited.signal] : await once(child, 'exit');
       if (spawnError) throw spawnError;
       if (code !== 0) fail(`frame encoder failed: code=${code} signal=${signal}`);
     },
   };
 }
-async function renderMaster(preset, masterTemporary) {
+async function renderMaster(profile, preset, masterTemporary) {
   const browser = await puppeteer.launch({
     executablePath: chromium,
     headless: true,
@@ -169,8 +292,8 @@ async function renderMaster(preset, masterTemporary) {
       fail(`canvas is ${setup.canvas.join('x')}, expected ${width}x${height}`);
     }
     console.log(`setup: ${JSON.stringify(setup)}`);
-    console.log(`rendering ${frameCount} frames (${captureSeconds}s @ ${fps})`);
-    encoder = await startEncoder(masterTemporary);
+    console.log(`rendering ${frameCount} frames (${captureSeconds}s @ ${fps}) via ${profile.codec}`);
+    encoder = await startEncoder(profile, masterTemporary);
     const started = Date.now();
     for (let frame = 0; frame < frameCount; frame += 1) {
       await page.evaluate((timeMs) => {
@@ -184,7 +307,12 @@ async function renderMaster(preset, masterTemporary) {
       if (frame % fps === 0 || frame + 1 === frameCount) {
         const elapsed = (Date.now() - started) / 1000;
         const renderedSeconds = frame / fps;
-        console.log(`progress frame=${frame + 1}/${frameCount} t=${renderedSeconds.toFixed(1)}s elapsed=${elapsed.toFixed(1)}s`);
+        const rate = frame > 0 ? frame / elapsed : 0;
+        const eta = rate > 0 ? (frameCount - frame) / rate : 0;
+        console.log(
+          `progress frame=${frame + 1}/${frameCount} t=${renderedSeconds.toFixed(1)}s ` +
+          `elapsed=${elapsed.toFixed(1)}s fps=${rate.toFixed(2)} eta=${eta.toFixed(0)}s`,
+        );
       }
     }
     await encoder.finish();
@@ -210,8 +338,9 @@ async function main() {
   checkExecutable(ffmpeg);
   checkExecutable(ffprobe);
   const preset = loadPreset();
-  const encoderList = runChecked(ffmpeg, ['-hide_banner', '-encoders'], 'ffmpeg encoder inventory');
-  if (!encoderList.includes('h264_nvenc')) fail('h264_nvenc unavailable');
+  const encoderList = spawnSync(ffmpeg, ['-hide_banner', '-encoders'], {encoding: 'utf8'});
+  if (encoderList.status !== 0) fail(`ffmpeg encoder inventory failed with status ${encoderList.status}`);
+  const profile = selectEncoder(encoderList.stdout || '');
   const health = await fetch('http://127.0.0.1:8765/api/status');
   if (!health.ok) fail(`editor service health HTTP ${health.status}`);
 
@@ -222,12 +351,20 @@ async function main() {
   const loop = path.join(roleDir, `${role}.loop-60s.mp4`);
   const loopTemporary = loop.replace(/\.mp4$/, '.partial.mp4');
   const receiptPath = path.join(roleDir, 'BAKE-RECEIPT.json');
-  for (const item of [master, masterTemporary, loop, loopTemporary, receiptPath]) {
+  for (const item of [master, loop, receiptPath]) {
     if (fs.existsSync(item)) fail(`output already exists; refusing overwrite: ${item}`);
   }
+  /* Partials are by definition incomplete and are never a deliverable, so a
+     failed prior attempt must not permanently block a retry. */
+  for (const item of [masterTemporary, loopTemporary]) {
+    if (fs.existsSync(item)) {
+      console.log(`removing stale partial: ${item} (${fs.statSync(item).size} bytes)`);
+      fs.rmSync(item);
+    }
+  }
 
-  console.log(`role=${role} preset=${preset.sha256} seed=${seed}`);
-  const setup = await renderMaster(preset.value, masterTemporary);
+  console.log(`role=${role} preset=${preset.sha256} seed=${seed} encoder=${profile.codec}`);
+  const setup = await renderMaster(profile, preset.value, masterTemporary);
   fs.renameSync(masterTemporary, master);
   console.log(`master: ${master} ${sha256(fs.readFileSync(master))}`);
 
@@ -244,10 +381,7 @@ async function main() {
   await runProcess(ffmpeg, [
     '-y', '-hide_banner', '-loglevel', 'warning', '-i', master,
     '-filter_complex', filter, '-map', '[out]', '-an', '-r', String(fps),
-    '-fps_mode', 'cfr', '-c:v', 'h264_nvenc', '-preset', 'p5', '-tune', 'hq',
-    '-rc', 'vbr', '-cq', '19', '-b:v', '0', '-g', String(fps * 2),
-    '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709',
-    '-colorspace', 'bt709', '-movflags', '+faststart', loopTemporary,
+    '-fps_mode', 'cfr', ...encoderArgs(profile, 19), loopTemporary,
   ], 'seamless-loop encode');
   fs.renameSync(loopTemporary, loop);
 
@@ -261,7 +395,9 @@ async function main() {
     fail(`loop duration mismatch: ${duration}`);
   }
   const receipt = {
-    schema: 1, role, seed, fps, width, height,
+    schema: 2, role, seed, fps, width, height,
+    encoder: profile.codec,
+    encoder_hardware: profile.hardware,
     loop_seconds: loopSeconds,
     blend_seconds: blendSeconds,
     capture_seconds: captureSeconds,

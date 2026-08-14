@@ -5721,3 +5721,98 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M11-VIDEO-BAKER] AUTHORED/SYNTAX PASS, target unexecuted. Next
   target action is immutable tool install and MAIN RED only. This is expected to
   be a long foreground render; no reboot, WM change or source modification.
+
+--------------------------------------------------------------------------------
+12.82 MAIN-RED BAKE FAILED AT ENCODER OPEN: NVENC H.264 IS WIDTH-CAPPED AT 4096.
+      Target receipt 2026-08-14. Superseding baker authored and simulated.
+--------------------------------------------------------------------------------
+
+  [X-082] The first real bake of main-red failed after one frame. The tool
+    installed and hash-gated correctly (`ed065c83...`), the preset matched
+    `af0d75e4...`, seed 1481458227, the canvas came up at exactly 4480x1440 and
+    the renderer began `rendering 3738 frames (62.3s @ 60)`. Encoding then died
+    immediately: `[h264_nvenc] Width 4480 exceeds 4096`, `No capable devices
+    found`, `Error while opening encoder`, `Nothing was written into output
+    file`. ROOT CAUSE: NVENC's H.264 hardware block on Ampere (RTX 3080, 7th-gen
+    NVENC) is limited to 4096x4096; the 4480-wide X screen exceeds it by 384px.
+    This is a silicon limit, not a driver, permission, option or preset fault.
+    Re-running the identical command can never succeed.
+    RECEIPT: target bake log `main-red-video-bake.log`, terminal output ending
+    `MAIN_RED_BAKE_COMMAND_STATUS=1`, 2026-08-14.
+
+  [X-083] W-152's preflight `if (!encoderList.includes('h264_nvenc'))` is a
+    proven-insufficient gate and must not be reused in this form. `ffmpeg
+    -encoders` listed `h264_nvenc` (it is compiled in), so the check PASSED and
+    the run proceeded to waste a browser launch and a full frame render before
+    failing. ENCODER PRESENCE IS NOT ENCODER CAPABILITY AT A GIVEN GEOMETRY.
+    Any future encoder gate must attempt a real encode at the real frame size.
+    RECEIPT: W-152 source line 214 versus the X-082 target failure, 2026-08-14.
+
+  [X-084] The failure was reported to the operator as `Error: write EPIPE ... at
+    WriteWrap.onWriteComplete`, which names the Node symptom and hides the
+    ffmpeg cause. When the encoder died its stdin closed, and the unguarded
+    `child.stdin.write`/`once(stdin,'drain')` path raised a stream error that
+    replaced the real diagnostic. A frame-pipe encoder must absorb EPIPE and
+    report the encoder's own exit status instead.
+    RECEIPT: target stack trace immediately following the NVENC error,
+    2026-08-14.
+
+  [W-153] Superseding `scripts/xmb-bake-video.mjs` (SHA-256
+    `f4c2d95e8fb6d2eca4ee52ecb9c48dad9264f8604bb5f582dbdd2392e8f8534a`) fixes
+    X-082/083/084 and changes nothing else. The determinism contract of W-148/
+    W-152 is byte-for-byte intact: same seed 1481458227, same explicit
+    performance.now/rAF clock, same 4480x1440 viewport, same preset hash gate,
+    same 3,738-frame capture, same 2.3-second W-124-aligned blend, same final
+    dimension/frame-rate/duration assertions. Changes are confined to encoder
+    selection and error reporting: (a) default encoder is now `hevc_nvenc`,
+    whose NVENC limit is 8192x8192 and which is the codec the prior W-122
+    deliverables already used at this exact geometry; (b) before Chromium
+    launches, the chosen encoder must survive a real two-frame 4480x1440 encode
+    probe, so an incapable encoder now costs ~1 second instead of a full render;
+    (c) `h264_nvenc` is retained as a named candidate carrying its 4096x4096
+    limit purely so an operator who requests it gets the true explanation; (d)
+    no automatic software fallback — if hardware is incapable the tool refuses
+    and names `XMB_ENCODER=libx265`/`libx264` as an explicit operator choice,
+    because a silent switch to a 4480x1440 software HEVC encode would change
+    bake duration by orders of magnitude without consent; (e) EPIPE is absorbed
+    and the encoder's exit code is reported; (f) stale `.partial` files from a
+    crashed run are removed rather than permanently blocking retry, while
+    completed outputs are still never overwritten; (g) progress lines now carry
+    fps and ETA.
+    RECEIPT: sandbox `node --check` PASS; encoder-selection executed against a
+    mock ffmpeg reproducing the exact X-082 stderr — h264_nvenc correctly
+    REFUSED with its limit, hevc_nvenc PASS, libx265 PASS on explicit request,
+    and a simulated driver-level `No capable devices found` on hevc_nvenc also
+    correctly refused rather than silently downgraded; EPIPE regression test now
+    yields `frame encoder exited early: code=234` instead of `write EPIPE`;
+    full end-to-end run under mock puppeteer/ffmpeg/ffprobe reached
+    `MAIN_RED_VIDEO_BAKE=PASS` and wrote master, loop and receipt; overwrite
+    guard, stale-partial retry and preset-tamper rejection each verified.
+    2026-08-14.
+
+  [U-038] Real target NVENC HEVC acceptance at 4480x1440 is still unproven by
+    execution. It is strongly indicated — W-122 records prior completed
+    4480x1440 HEVC files on this same GPU — but indication is not a receipt.
+    The encoder probe added in W-153 resolves this in about one second at the
+    start of the next run, before any long render is committed. If the probe
+    prints `encoder-probe hevc_nvenc: FAIL`, capture its exact ffmpeg stderr and
+    decide software encoding explicitly; do not retry blindly.
+    RECEIPT: W-122 prior HEVC artifact provenance versus absence of a direct
+    hevc_nvenc encode receipt on this target, 2026-08-14.
+
+  [U-039] Bake wall-clock time is unmeasured. X-082 died too early to sample the
+    frame rate, so the only datum is that frame 1 completed 0.1s after render
+    start, which excludes encode steady state. 3,738 screenshot round-trips at
+    4480x1440 may be slow. W-153's progress line now prints observed fps and
+    ETA, so the first minute of the next run answers this. Note that the master
+    file is retained and the run is resumable only by full restart.
+    RECEIPT: target progress line `frame=1/3738 elapsed=0.1s`, 2026-08-14.
+
+[2026-08-14][M11-VIDEO-BAKER-V2] AUTHORED/SIMULATED, target unexecuted.
+  Supersedes M11's install instruction: the tool at `ed065c83...` is defective on
+  this hardware and must not be re-run. Next target action is one immutable
+  download/hash/install of `f4c2d95e...` followed by main-red only. Watch the
+  `encoder-probe` line first — it is the new fast gate — then the fps/ETA on the
+  progress lines. Storage note: X-061's root filesystem was 100% full, which is
+  why the bake root lives on `/mnt/games`; confirm free space there before a
+  multi-gigabyte master is written.
