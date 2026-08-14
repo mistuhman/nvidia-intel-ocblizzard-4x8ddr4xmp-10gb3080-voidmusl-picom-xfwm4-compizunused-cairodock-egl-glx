@@ -444,6 +444,14 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target IX.3C-2 process/WM/profile/log output plus four direct visual
   checks, 2026-08-14.
 
+[2026-08-14][W-021] IX.4A's 30-second interval itself retained Compiz PID
+  18768 and WM ownership. xfce4-panel PID 1252, cairo-dock PID 1301 and emerald
+  PID 16060 remained live; picom and xfwm4 remained absent. The snapshot was
+  7.5% Compiz CPU, 219788 KiB RSS, 18% GPU, 947 MiB GPU memory and 42.51 W.
+  XFCE's persistent Client0 command is still `xfwm4`, so no reboot/session
+  persistence change has been made.
+  RECEIPT: target IX.4A process/resource/session output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -568,6 +576,19 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   timed rollback before keeping Compiz live.
   RECEIPT: active profile in U-008 plus direct user observation, 2026-08-14.
 
+[2026-08-14][X-014] IX.4A rejects persistence despite the 30-second PID dwell.
+  The accepted launch PID 16048 was replaced before the dwell by PID 18768,
+  invoked as `compiz --sm-client-id ...`; the original log now contains a D-Bus
+  boolean assertion failure. The user still perceives choppy refresh. A CCSM
+  screenshot simultaneously shows Detect Refresh Rate and Detect Outputs
+  checked and Sync to VBlank unchecked, contradicting the on-disk candidate
+  (`detect_refresh=false`, manual outputs, `sync_to_vblank=true`). Do not
+  persist or reboot into Compiz until the restart parentage, D-Bus plugin and
+  live-vs-disk option mismatch are resolved. Keep screenshot binaries outside
+  Git; this ledger records their factual content.
+  RECEIPT: W-020/W-021, IX.4A log scan, user observation and attached CCSM
+  screenshot, 2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -640,6 +661,18 @@ as its receipt. Do not guess any of them.
   viewport size, active plugins and decorator command. Back up the discovered
   profile before correcting any value; do not infer a geometry fix from the
   emerald warnings.
+
+[U-009] Why did accepted Compiz PID 16048 become session-managed PID 18768,
+  and why does CCSM show refresh/output/vblank booleans opposite to the active
+  INI file?
+    inspect PID/PPID/session ancestry and Compiz-related process environment
+    read the current INI values again after CCSM has opened
+    query libcompizconfig's effective values without writing them
+    inspect the complete launch log around the D-Bus assertion
+  Resolve before persistence. If the D-Bus plugin caused the restart, remove
+  it from the stable baseline. If CCSM or another backend rewrote effective
+  values, establish exactly one profile/backend and verify 120 Hz plus vblank
+  in both the file and the live settings before another performance gate.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -739,6 +772,11 @@ Status vocabulary, used strictly:
   xfce4-panel and cairo-dock. Identify the exact requested "Monochrome"
   download, source, license and checksum before installing it; back up every
   selected theme/config value and retain a one-command visual rollback.
+
+[2026-08-14][M8/IX.4A] Initial stability/performance gate REJECTED.
+  receipt: W-021 and X-014; dwell/resource output, assertion, screenshot and
+  user-observed choppiness. Overall M8 is BLOCKED on U-009; persistence and
+  reboot testing remain prohibited.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
