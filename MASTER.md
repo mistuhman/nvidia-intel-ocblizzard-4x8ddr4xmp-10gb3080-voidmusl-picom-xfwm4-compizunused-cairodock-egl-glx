@@ -395,6 +395,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   safe post-abort state is xfwm4 without either compositor.
   RECEIPT: target emergency-abort output pasted 2026-08-14.
 
+[2026-08-14][W-016] U-005 and the factual half of U-008 are resolved. X screen
+  0 is 4480x1440. DP-2 is primary at 2560x1440+0+0 and 120 Hz; DP-0 is
+  1920x1080+2560+197, inverted, at about 120 Hz. NVIDIA MetaMode applies
+  ForceCompositionPipeline and ForceFullCompositionPipeline to both. The
+  Compiz 0.8.18 launch demonstrably selected ~/.config/compiz, not the stale
+  ~/.config/compiz-1 tree: the former names `emerald --replace`, matching the
+  decorator observed in the IX.3 log, while the latter names
+  /usr/bin/compiz-decorator.
+  RECEIPT: target U-008 xrandr, NVIDIA MetaMode and config output, 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -497,6 +507,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   repeat the same launch until output geometry and the existing Compiz profile
   have been inspected and corrected.
   RECEIPT: target IX.3 output and direct user observation, 2026-08-14.
+
+[2026-08-14][X-012] The active Compiz profile is unsafe for the verified
+  dual-monitor geometry: ~/.config/compiz/compizconfig/Default.ini explicitly
+  sets `s0_detect_outputs = false` but contains no `s0_outputs` list. This is
+  the leading causal fault for X-011 and must be corrected to the observed
+  DP-2/DP-0 rectangles before IX.3 is retried. The separate compiz-1 profile's
+  stale, reversed offsets are not the settings that launched IX.3 and must not
+  be copied into the active profile. Causality remains unproven until a
+  corrected volatile launch renders both monitors normally.
+  RECEIPT: W-016 plus complete active-profile output, 2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -634,6 +654,11 @@ Status vocabulary, used strictly:
   rollback proven DONE.
   receipt: X-011 and W-015; WM identity/process output plus user observation.
   Overall M8 is BLOCKED on U-008. Do not persist or repeat the same launch.
+
+[2026-08-14][M8/U-008] Native geometry and active Compiz profile identified
+  DONE; receipt W-016 and X-012.
+  This supersedes IX.3-A's broad U-008 block. Overall M8 remains BLOCKED on a
+  backed-up output-list correction and successful IX.3-B volatile retest.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
