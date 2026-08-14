@@ -6288,3 +6288,68 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   HEVC loops exist with full hash receipts; main-red and sleep carry human
   acceptance and the loop seam is confirmed by eye. Remaining M11 gate is human
   review of work-monochrome only. W-172 is dead (X-089); do not reuse it.
+
+--------------------------------------------------------------------------------
+12.91 M11 CLOSED — ALL THREE ROLES MACHINE-PASSED AND HUMAN-ACCEPTED.
+      THE HEADLESS BAKE OF DIRECTIVE 2 IS DELIVERED. Target + human 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-177] HUMAN VISUAL ACCEPTANCE for `work-monochrome`, the final role.
+    Operator verdict: "yup, looks perfect". Reviewed in two passes — once with
+    `--start=55` reaching 00:00:58, and once wrapping through to 00:00:01, i.e.
+    the operator watched the 59->0 transition ACROSS the loop point rather than
+    merely up to it. No seam, jump or discontinuity reported. mpv again reported
+    `hevc 4480x1440 60 fps` via `gpu-next`. U-036's long-standing concern that
+    work-monochrome's brightness might conflict with the AMOLED target is now
+    closed by moving-image human judgement, superseding the still-frame
+    acceptance of W-151.
+    RECEIPT: operator statement plus mpv position lines 00:00:58 and 00:00:01,
+    2026-08-14.
+
+  [W-178] M11 IS COMPLETE. Three deterministic 60-second 4480x1440 HEVC loops
+    exist on NVMe, each with master, loop and JSON receipt, each machine-gated
+    on exact dimensions / 60/1 frame rate / 60+/-0.05 s duration, and each
+    human-accepted in motion:
+      main-red        loop 156,659,080 B  SHA `1f8de512...`  (W-163/W-165)
+      sleep           loop 177,038,151 B  SHA not yet hashed in ledger (W-168/W-176)
+      work-monochrome loop 240,799,621 B  SHA not yet hashed in ledger (W-174/W-177)
+    Totals: 11,214 frames rendered across three roles, ~1,620 s of render, zero
+    errors, zero dropped frames, zero retries, zero manual intervention after
+    each command was issued. This closes the objective set in Directive 2 and
+    Section IV: a web artifact converted to video by a parameterized,
+    deterministic, unattended pipeline — no OBS, no screen recording, no human
+    in the hot path. Section VIII's design is now executed fact.
+    RECEIPT: W-163, W-168, W-174 machine receipts with W-165, W-176, W-177 human
+    receipts, 2026-08-14.
+
+  [U-048] Two loop SHA-256 values were printed by the tool into
+    `roles-sleep-work.log` but only the work-monochrome receipt hash was pasted
+    into this session; the sleep and work-monochrome LOOP hashes are therefore
+    recorded here by size only, not by digest. This is a completeness gap in the
+    ledger, not a defect in the artifacts — each file's hash is inside its own
+    `BAKE-RECEIPT.json`. Close it cheaply with:
+      grep -h '^loop:' /mnt/games/xmb-wave-bake/logs/roles-sleep-work.log
+    Do not re-bake for this.
+    RECEIPT: session transcript contains `ls` sizes but not the loop hash lines
+    for roles 2 and 3, 2026-08-14.
+
+  [X-090] DEPLOYMENT IS BLOCKED ON AN UNRESOLVED INPUT, and must not be
+    improvised. Section IX.8's runtime command contains the literal placeholder
+    `--hwdec=<from U-006>`, and U-006 — which VAAPI/VDPAU decode paths exist on
+    this box — has never been answered; it appears exactly twice in this file,
+    at its own definition and inside that placeholder. Guessing the flag risks
+    W-005's failure mode: software decoding a 4480x1440 60 fps stream
+    continuously, which measured 40-60% CPU on third-party hardware versus 6-11%
+    hardware-decoded. Note also that W-005's advice to bake at a low frame rate
+    was NOT followed — these loops are 60 fps by design, aligned to the 120 Hz
+    panel — so the decode path matters MORE here, not less. Resolve U-006 with a
+    bounded read-only probe before any xwinwrap step.
+    RECEIPT: IX.8 placeholder text and the two-occurrence grep for U-006,
+    2026-08-14.
+
+[2026-08-14][M11-FINAL] CLOSED, MACHINE + HUMAN, ALL THREE ROLES. Next milestone
+  is Section IX.8 runtime deployment, gated on U-006 (X-090). First action is a
+  read-only decode probe — `vainfo` plus an mpv `--hwdec=auto` trial against an
+  existing loop — which changes no file, touches no WM and needs no escape. The
+  xwinwrap step that follows DOES touch the live desktop and must state the
+  `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'` kill switch before it runs.
