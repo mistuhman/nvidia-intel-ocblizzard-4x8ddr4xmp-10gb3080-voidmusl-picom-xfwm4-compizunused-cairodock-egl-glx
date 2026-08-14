@@ -2525,3 +2525,145 @@ untouched by this session. New knowledge lands here and in the ledgers.
   functionally complete pending only the IX.7 human checks (decorations,
   animations, cairo-dock GL) and the golden re-bless. Section VIII (wallpaper)
   remains GATED per Directive 10 until the user declares the desktop ready.
+
+================================================================================
+SECTION XII — THE CUBE / 3D WINDOW-SWITCHER DESIGN (Agent G, research stream)
+Opened 2026-08-14 after M8 completed. Goal stated by the user: "use the desktop
+cube effect to replace alt-tab and act like mission control but 3D with mouse
+controls to rotate between windows."
+================================================================================
+
+12.0 IX.7 GATE STATUS AT THE MOMENT THIS SECTION OPENED.
+  Labelled process check, target-run 2026-08-14 post-reboot, resolves X-034:
+    compiz 1210 | emerald 1270 | ccsm 4167 | picom (absent) | cairo-dock 1306
+    | xfce4-panel 1251
+  X-034 is CLOSED: the earlier bare "1270" was indeed emerald, picom is
+  genuinely absent, and cairo-dock/panel both survive under a login-started
+  Compiz. Section IX's process-level gate is therefore fully PASSED. The three
+  human judgements (smoothness, titlebars, panel-on-workspace-switch) remain
+  UNCOLLECTED — the user moved to the cube question first. Do not record IX.7
+  as complete until they are answered.
+
+[2026-08-14][X-035] *** THE GOLDEN RE-BLESS WAS TAKEN WHILE CCSM WAS RUNNING
+  (PID 4167). *** The user ran
+    cp -a ~/.config/compiz/compizconfig/Default.ini \
+          ~/.local/share/compiz-guard/Default.ini.golden
+  in the same terminal session in which CCSM was live. Per W-046, CCSM
+  rewrites Default.ini asynchronously from its own backend state, so the
+  snapshot may capture a mid-edit or CCSM-authored file rather than the
+  verified a9c157ad... login state. The new golden hash is UNVERIFIED.
+  This is NOT dangerous — option (C) guarantees the seven [core] display keys
+  are repaired at every login regardless of what the golden file contains, so
+  the worst case is that `compiz-revert` restores a slightly different plugin
+  set. But the revert target must be re-verified before it is trusted:
+    sha256sum ~/.local/share/compiz-guard/Default.ini.golden
+    awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' \
+      ~/.local/share/compiz-guard/Default.ini.golden | grep -cE \
+      '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) '
+  Expect 7. If it is not 7, re-bless from a clean state with CCSM closed.
+  GENERAL RULE: never snapshot the profile while CCSM is running.
+  RECEIPT: user command sequence and labelled pgrep output, 2026-08-14.
+
+12.1 RESEARCH FINDINGS (Agent G). Sources fetched 2026-08-14; every claim
+     below carries its source. NONE of this is target-verified yet.
+
+  [R-1] THE CUBE IS USELESS WITHOUT ROTATE, AND ROTATE OWNS THE MOUSE.
+    "The Rotate Cube plugin provides the ability to rotate the cube created by
+    Desktop Cube. Without it, the Desktop Cube plugin is mostly useless. Most
+    cube-related mouse and key bindings are provided by this plugin." The
+    free-rotation binding the user wants is Rotate Cube > Bindings >
+    "Initiate", default Ctrl+Alt+Button1 — "Rotate the cube on all axes with
+    the mouse (freecube)".
+    SOURCE: wiki.compiz.org/Plugins/Cube and
+    wiki.compiz.org/CommonKeyboardShortcuts.
+
+  [R-2] *** THE CUBE REQUIRES HORIZONTAL VIRTUAL SIZE = 4. *** "If your cube
+    shows up as a flat sheet instead of a cube, check to ensure that
+    Horizontal Virtual Size is set to 4 under General Options." Set in CCSM >
+    General Options > Desktop Size. The shape is a prism with up to 32 sides;
+    hsize 4 + vsize 1 is the actual cube. A commenter on the ghacks article
+    correctly notes hsize=8 gives an octagonal prism, not a cube.
+    SOURCE: wiki.compiz.org/FAQ; compiz-fusion wiki Plugins/Cube.
+
+  [R-3] DESKTOP WALL MUST BE DISABLED. Cube, Wall and Plane are the three
+    mutually-exclusive viewport plugins; the Unity-era instructions
+    consistently say enable cube+rotate and disable wall.
+    SOURCE: askubuntu 86977; wiki.compiz.org/Plugins/Cube.
+
+  [R-4] *** 3D WINDOWS IS THE "MISSION CONTROL BUT 3D" PIECE, AND IT IS IN
+    plugins-extra. *** The 3D Windows plugin lifts windows off the cube face
+    along the Z axis so they float in front of it as the cube turns. Its
+    options are Window Space, Window Depth, Window Match, Minimum Cube Size,
+    Animation Speed, and critically "3D Only on mouse rotate" — which makes
+    windows lift ONLY while the user is mouse-rotating, which is exactly the
+    requested interaction. It ships in the extras module (Debian/Ubuntu name
+    compiz-plugins-extra); on compiz-reloaded the equivalent repos are
+    compiz-plugins-extra and compiz-plugins-experimental.
+    SOURCE: compiz-fusion wiki Plugins/Cube "3D Windows" section;
+    askubuntu 82746; github.com/compiz-reloaded/compiz-plugins-experimental.
+
+  [R-5] THE ALT-TAB REPLACEMENT IS A SWITCHER PLUGIN, NOT THE CUBE. Compiz
+    0.8 ships four mutually-substitutable switchers: Application Switcher,
+    Static Application Switcher, Ring Switcher, Shift Switcher. Shift Switcher
+    has two modes, "flip" (3D coverflow) and "cover", and is the closest thing
+    to a 3D Mission Control; Ring Switcher arranges windows in a ring. Both
+    require the Text plugin enabled to draw window titles. ONLY ONE switcher
+    should own Alt+Tab at a time — enabling several and leaving them all bound
+    is the documented cause of "my alt-tab changed and I don't know why".
+    SOURCE: wiki.compiz.org/Plugins/Switcher; superuser 207486; Wikipedia
+    Compiz ("a feature similar to macOS's Mission Control").
+
+  [R-6] SCROLL-WHEEL AND MIDDLE-CLICK CUBE CONTROL COMES FROM VIEWPORT
+    SWITCHER. Enabling it allows rotating by scrolling over empty desktop and
+    grabbing the cube by middle-click; bindings live under Viewport Switcher >
+    Desktop-based Viewport Switching (Move Next = Button5, Move Prev =
+    Button4, Initiate = Button2).
+    SOURCE: wiki.compiz.org/FAQ; ubuntuforums 1614525; linuxmint 22606.
+
+  [R-7] *** DUAL-MONITOR CAVEAT — THIS IS THE ONE MOST LIKELY TO BITE. ***
+    Desktop Cube > General > "Multi Output Mode" decides the behaviour on a
+    multi-head setup: one cube spanning everything, or a separate cube per
+    output. This interacts directly with our hand-pinned
+    s0_outputs = 2560x1440+0+0;1920x1080+2560+197; — Compiz is explicitly in
+    manual multi-output mode (s0_detect_outputs=false), so it sees TWO
+    outputs, and the cube will follow Multi Output Mode accordingly. Forum
+    reports of "two cubes" / "one big cube" confusion all trace to this
+    setting plus Xinerama state. Additionally the target's DP-0 is INVERTED
+    and vertically offset (+2560+197) with a different resolution from DP-2,
+    which is precisely the asymmetric case the "maximise across two monitors"
+    thread warns about. EXPECT the cube to need tuning here, and change ONLY
+    Multi Output Mode — never Detect Outputs (X-031/X-011).
+    SOURCE: ubuntuforums 784314; askubuntu 73573; askubuntu 895868.
+
+  [U-021] Which of cube, rotate, 3d, cubeaddon, shift, ring, expo, viewport
+    switcher and text actually EXIST in this compiz-reloaded 0.8.18 install?
+    B1-c and W-046 prove cube, water, wobbly and 3d are at least loadable
+    (the fat profiles list them and the cube plugin emitted a runtime warning,
+    W-046), but the full inventory is unread. Resolving command, read-only:
+      ls /usr/lib*/compiz/ | sort
+      xbps-query -l | grep -i compiz
+    Run before designing the final plugin set; do not assume Ubuntu package
+    layout applies to Void.
+
+12.2 PROPOSED DESIGN (not yet applied, pending U-021 and the IX.7 human
+     checks). Mapped directly onto the user's three requirements:
+       "replace alt-tab"            -> Shift Switcher in Cover/Flip mode bound
+                                       to Alt+Tab, with Application Switcher's
+                                       Alt+Tab binding CLEARED (R-5).
+       "mission control"            -> Expo (Super+E) for the flat overview,
+                                       plus Scale for same-workspace windows.
+       "3D with mouse rotation"     -> Desktop Cube + Rotate Cube with
+                                       Initiate on Button1, 3D Windows with
+                                       "3D Only on mouse rotate" = ON (R-1,
+                                       R-4), Viewport Switcher for wheel (R-6).
+     Prerequisites: hsize=4 (R-2), Desktop Wall off (R-3), Text on for titles,
+     Multi Output Mode chosen deliberately (R-7).
+     RISK REGISTER for this design, from the existing ledger:
+       - cube/3d/wobbly/water were the X-013 "shiny + choppy" suspects. The
+         cube itself was NOT individually convicted; the convicted set was
+         reflex/blur/mblur/bench/showmouse/mousepoll (W-019). Cube may well be
+         fine, but it is unproven at 120 Hz on this hardware and must be
+         judged by the user after a bounded trial.
+       - every plugin added is GPU work on top of a compositor whose
+         smoothness was hard-won via __GL_YIELD=USLEEP (W-040). Add plugins
+         ONE AT A TIME and re-judge smoothness after each.
