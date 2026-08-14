@@ -423,6 +423,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target timed-trial state, automatic-recovery output and user
   observation pasted 2026-08-14.
 
+[2026-08-14][W-019] IX.3C-1 installed a backed-up clean performance candidate.
+  The exact diff removed reflex, both blur engines, bench, showmouse,
+  mousepoll, cube, expo and scale while retaining window management,
+  decoration, animation, animationaddon, fade and switcher; it added
+  workarounds and winrules. Composite refresh autodetection changed from true
+  to false with the verified common rate fixed at 120 Hz. Rollback file is
+  Default.ini.pre-refresh.1786689070. Runtime stayed on safe xfwm4 PID 8831;
+  Compiz and picom remained stopped. Visual performance is not yet proven.
+  RECEIPT: target IX.3C-1 diff and process output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -698,6 +708,12 @@ Status vocabulary, used strictly:
   DONE; receipt W-018.
   This supersedes IX.3B-1's geometry-test block. Overall M8 remains BLOCKED on
   X-013 appearance/performance refinement; Compiz is not yet persistent.
+
+[2026-08-14][M8/IX.3C-1] Backed-up clean plugin and 120 Hz candidate DONE.
+  receipt: W-019 and exact target diff.
+  Overall M8 remains BLOCKED on a visually accepted IX.3C-2 live trial. If
+  accepted, keep that Compiz process live for interactive refinement but do
+  not yet change the XFCE session command.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
