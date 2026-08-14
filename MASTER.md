@@ -5218,3 +5218,20 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-CAPTURE-STAGE] TARGET PASS. No role captured yet. Gate is
   U-034: determine whether exact in-memory originals still exist before any
   retuning or deterministic renderer work.
+
+--------------------------------------------------------------------------------
+12.62 ALL THREE ORIGINAL PRESET TABS REMAIN LIVE; EXACT MEMORY RECOVERY PATH
+      SELECTED. Operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-133] The operator confirms all three original configured pages remain open
+    in unrefreshed browser tabs. Their `window.SPLINE_SETTINGS` and
+    `window.PARTICLE_SETTINGS` objects therefore remain the highest-fidelity
+    preset source, superseding screenshot transcription for numeric values.
+    Capture roles one at a time, starting with sleep, by posting cloned objects
+    and the canvas PNG directly to the already healthy local API. Do not reload,
+    close, reset or retune any original tab before its receipt passes.
+    RECEIPT: direct operator answer `all_open`, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MEMORY-RECOVERY] AUTHORIZED. Next gate is SLEEP only;
+  verify its JSON/PNG hashes and primary tuple before touching MAIN RED.
