@@ -405,6 +405,14 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   /usr/bin/compiz-decorator.
   RECEIPT: target U-008 xrandr, NVIDIA MetaMode and config output, 2026-08-14.
 
+[2026-08-14][W-017] IX.3B-1 backed up the active profile to
+  Default.ini.pre-ix3b.1786688802 and added the exact verified output list
+  `2560x1440+0+0;1920x1080+2560+197;` while retaining manual output mode
+  (`s0_detect_outputs = false`). The printed diff contains no other change.
+  Post-change runtime remained safe: xfwm4 PID 3242, no Compiz, no picom.
+  This is a correction candidate, not yet a proven fix.
+  RECEIPT: target IX.3B-1 diff and process output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -659,6 +667,11 @@ Status vocabulary, used strictly:
   DONE; receipt W-016 and X-012.
   This supersedes IX.3-A's broad U-008 block. Overall M8 remains BLOCKED on a
   backed-up output-list correction and successful IX.3-B volatile retest.
+
+[2026-08-14][M8/IX.3B-1] Backed-up explicit output correction DONE.
+  receipt: W-017 and the exact target diff.
+  This supersedes U-008's pending-correction clause. Overall M8 remains
+  BLOCKED on a successful, visually observed IX.3B-2 timed retest.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
