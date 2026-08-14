@@ -1,0 +1,342 @@
+#!/usr/bin/env python3
+"""Stage the audited XMB editor on the bake filesystem and capture presets.
+
+Commands:
+  xmb-stage stage   # verify/copy the custom editor; never edits its source
+  xmb-stage serve   # serve editor + exact JSON/PNG preset capture API
+  xmb-stage status  # print staged-source and captured-preset receipts
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+from datetime import datetime, timezone
+import hashlib
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+import tempfile
+from urllib.parse import urlparse
+
+SOURCE = Path.home() / ".local/share/ps3-wave-custom"
+ROOT = Path(os.environ.get("XMB_BAKE_ROOT", "/mnt/games/xmb-wave-bake"))
+EDITOR = ROOT / "editor"
+PRESETS = ROOT / "presets"
+PREVIEWS = ROOT / "previews"
+LOGS = ROOT / "logs"
+OUT = ROOT / "out"
+HOST = "127.0.0.1"
+PORT = 8765
+ROLES = ("sleep", "main-red", "work-monochrome")
+
+# Target receipts W-125. Refuse unknown source bytes rather than silently stage
+# a page different from the operator-approved visual editor.
+REQUIRED = {
+    "background-gradients-day.js": "94ffb86cd93e403abacaab4acecb0790d59266f3d1f011e966ffb018a63b822f",
+    "background-gradients-night.js": "ddd29fde9dea0b9685720b992f0d05218dc2d3732e4ad75b563fd52b1c99b3c4",
+    "index.html": "842c362b1a27fac44423c2f4acb35087e4f682462ccd921c67d9a3a8350ebdb4",
+    "particles-settings.js": "cec2671d72a20ebddeac665e84184c1c86f33e8ed2be3eec4eeda461d4895bb8",
+    "particles.js": "60a1761f07874d3d166659f70f1e12f858e96a35bde09ba0d28cca98da338498",
+    "settings-panels.js": "eb36b9eb5e423b3ea9cce1060427e37ed15b86050d4684465ba91da824159f90",
+    "spline-reverse.js": "c50736a441a1ad20c88610efcc650bacb725e637c3be3b61bf696520fbb3df07",
+    "spline-settings.js": "9d7d90888c4ac60523617c103bd1656b1b3d6012fe59135c8b071cbd665c8567",
+    "spline.js": "91ce844c80e4eb9a4594c4ca3e83055938b04a353f496b13b735655fb7505ee4",
+    "styles.css": "50004713bb36e1a3ddecfa34462f2cd274d3fac1b4cbc2afbe066eadc4bf465a",
+}
+
+CAPTURE_JS = r'''(() => {
+  'use strict';
+  function cloneSettings(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+  function make(tag, text) {
+    const el = document.createElement(tag);
+    if (text != null) el.textContent = text;
+    return el;
+  }
+  async function save(role, status) {
+    if (!window.SPLINE_SETTINGS || !window.PARTICLE_SETTINGS) {
+      throw new Error('settings objects are unavailable');
+    }
+    const canvas = document.getElementById('wave-canvas');
+    const payload = {
+      schema: 1,
+      role,
+      spline: cloneSettings(window.SPLINE_SETTINGS),
+      particles: cloneSettings(window.PARTICLE_SETTINGS),
+      preview: canvas ? canvas.toDataURL('image/png') : null
+    };
+    status.textContent = `Saving ${role}...`;
+    const response = await fetch(`/api/preset/${role}`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    status.textContent = `${role} saved — ${result.preset_sha256.slice(0, 16)}...`;
+  }
+  function init() {
+    const box = make('div');
+    box.id = 'xmb-preset-capture';
+    Object.assign(box.style, {
+      position: 'fixed', left: '50%', bottom: '14px', transform: 'translateX(-50%)',
+      zIndex: '2147483647', padding: '10px 12px', border: '1px solid #777',
+      borderRadius: '8px', background: 'rgba(0,0,0,.88)', color: '#fff',
+      font: '13px sans-serif', display: 'flex', gap: '8px', alignItems: 'center'
+    });
+    box.appendChild(make('strong', 'Capture exact preset:'));
+    const status = make('span', 'Tune sliders, then save the matching role.');
+    for (const role of ['sleep', 'main-red', 'work-monochrome']) {
+      const button = make('button', `Save ${role}`);
+      button.type = 'button';
+      button.style.padding = '5px 8px';
+      button.addEventListener('click', () => save(role, status).catch((error) => {
+        status.textContent = `ERROR: ${error.message}`;
+        console.error(error);
+      }));
+      box.appendChild(button);
+    }
+    box.appendChild(status);
+    document.body.appendChild(box);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+'''
+
+
+def fail(message: str) -> "NoReturn":
+    raise SystemExit(f"ERROR: {message}")
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def aggregate(directory: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(p for p in directory.rglob("*") if p.is_file()):
+        rel = path.relative_to(directory).as_posix().encode()
+        digest.update(len(rel).to_bytes(4, "big"))
+        digest.update(rel)
+        digest.update(bytes.fromhex(sha256(path)))
+    return digest.hexdigest()
+
+
+def verify_source() -> dict[str, str]:
+    if not SOURCE.is_dir():
+        fail(f"source editor missing: {SOURCE}")
+    found: dict[str, str] = {}
+    for name, expected in REQUIRED.items():
+        path = SOURCE / name
+        if not path.is_file():
+            fail(f"required source missing: {path}")
+        actual = sha256(path)
+        if actual != expected:
+            fail(f"source hash mismatch for {name}: expected {expected}, got {actual}")
+        found[name] = actual
+    return found
+
+
+def ensure_filesystem() -> None:
+    mount = Path("/mnt/games")
+    if not mount.is_dir() or not os.path.ismount(mount):
+        fail("/mnt/games is not a mounted filesystem")
+    available = shutil.disk_usage(mount).free
+    if available < 20 * 1024**3:
+        fail(f"/mnt/games has less than 20 GiB free: {available} bytes")
+
+
+def stage() -> None:
+    ensure_filesystem()
+    hashes = verify_source()
+    if ROOT.exists():
+        fail(f"staging root already exists; refusing overwrite: {ROOT}")
+    temporary = ROOT.parent / f".{ROOT.name}.stage.{os.getpid()}"
+    if temporary.exists():
+        fail(f"temporary path already exists: {temporary}")
+    try:
+        editor = temporary / "editor"
+        editor.mkdir(parents=True)
+        for name in REQUIRED:
+            shutil.copy2(SOURCE / name, editor / name)
+        (editor / "preset-capture.js").write_text(CAPTURE_JS)
+        index = editor / "index.html"
+        text = index.read_text()
+        marker = "</body>"
+        if text.count(marker) != 1:
+            fail("index.html does not have exactly one </body> marker")
+        text = text.replace(marker, '  <script src="preset-capture.js"></script>\n</body>')
+        index.write_text(text)
+        for name in ("presets", "previews", "logs", "out"):
+            (temporary / name).mkdir()
+        receipt = {
+            "schema": 1,
+            "source": str(SOURCE),
+            "source_hashes": hashes,
+            "capture_js_sha256": sha256(editor / "preset-capture.js"),
+            "staged_editor_aggregate": aggregate(editor),
+        }
+        (temporary / "SOURCE-RECEIPT.json").write_text(
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+        )
+        temporary.rename(ROOT)
+    except BaseException:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
+    print(f"Staged: {ROOT}")
+    print(f"Editor aggregate: {aggregate(EDITOR)}")
+    print(f"Source receipt: {sha256(ROOT / 'SOURCE-RECEIPT.json')}")
+    print("Original custom editor was not modified.")
+
+
+def validate_values(name: str, values: object, minimum: int) -> dict:
+    if not isinstance(values, dict) or len(values) < minimum:
+        fail(f"{name} is not a complete settings object")
+    clean = {}
+    for key, value in values.items():
+        if not isinstance(key, str):
+            fail(f"{name} contains a non-string key")
+        if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+            fail(f"{name}.{key} has unsupported value type")
+        if isinstance(value, float) and (value != value or value in (float("inf"), float("-inf"))):
+            fail(f"{name}.{key} is not finite")
+        clean[key] = value
+    return clean
+
+
+class Handler(SimpleHTTPRequestHandler):
+    server_version = "XMBPresetCapture/1"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=str(EDITOR), **kwargs)
+
+    def log_message(self, fmt: str, *args) -> None:
+        line = f"{datetime.now(timezone.utc).isoformat()} {self.address_string()} {fmt % args}\n"
+        with (LOGS / "preset-server.log").open("a") as handle:
+            handle.write(line)
+        sys.stderr.write(line)
+
+    def send_json(self, status: int, payload: dict) -> None:
+        data = json.dumps(payload, sort_keys=True).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def do_GET(self) -> None:
+        if urlparse(self.path).path == "/api/status":
+            roles = {}
+            for role in ROLES:
+                preset = PRESETS / f"{role}.json"
+                roles[role] = sha256(preset) if preset.is_file() else None
+            self.send_json(200, {"ok": True, "roles": roles})
+            return
+        super().do_GET()
+
+    def do_POST(self) -> None:
+        path = urlparse(self.path).path
+        prefix = "/api/preset/"
+        if not path.startswith(prefix):
+            self.send_json(404, {"error": "unknown endpoint"})
+            return
+        role = path[len(prefix):]
+        if role not in ROLES:
+            self.send_json(400, {"error": "invalid role"})
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            if length <= 0 or length > 64 * 1024 * 1024:
+                raise ValueError("invalid request size")
+            payload = json.loads(self.rfile.read(length))
+            if payload.get("schema") != 1 or payload.get("role") != role:
+                raise ValueError("schema/role mismatch")
+            spline = validate_values("spline", payload.get("spline"), 40)
+            particles = validate_values("particles", payload.get("particles"), 5)
+            if set(particles) != {"count", "opacity", "sizeBase", "sizeVar", "flowSpeed"}:
+                raise ValueError("unexpected particle keys")
+            preset_data = {
+                "schema": 1,
+                "role": role,
+                "spline": spline,
+                "particles": particles,
+                "source_editor_aggregate": aggregate(EDITOR),
+            }
+            encoded = (json.dumps(preset_data, indent=2, sort_keys=True) + "\n").encode()
+            preview = payload.get("preview")
+            if not isinstance(preview, str) or not preview.startswith("data:image/png;base64,"):
+                raise ValueError("PNG preview missing")
+            png = base64.b64decode(preview.split(",", 1)[1], validate=True)
+            if not png.startswith(b"\x89PNG\r\n\x1a\n"):
+                raise ValueError("invalid PNG preview")
+            PRESETS.mkdir(exist_ok=True)
+            PREVIEWS.mkdir(exist_ok=True)
+            with tempfile.NamedTemporaryFile(dir=PRESETS, delete=False) as handle:
+                handle.write(encoded)
+                preset_tmp = Path(handle.name)
+            with tempfile.NamedTemporaryFile(dir=PREVIEWS, delete=False) as handle:
+                handle.write(png)
+                preview_tmp = Path(handle.name)
+            preset_path = PRESETS / f"{role}.json"
+            preview_path = PREVIEWS / f"{role}.png"
+            os.replace(preset_tmp, preset_path)
+            os.replace(preview_tmp, preview_path)
+            receipt = {
+                "captured_at": datetime.now(timezone.utc).isoformat(),
+                "preset_sha256": sha256(preset_path),
+                "preview_sha256": sha256(preview_path),
+                "preview_bytes": preview_path.stat().st_size,
+            }
+            (PRESETS / f"{role}.receipt.json").write_text(
+                json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+            )
+            self.send_json(200, {"ok": True, **receipt})
+        except (ValueError, json.JSONDecodeError, base64.binascii.Error) as error:
+            self.send_json(400, {"error": str(error)})
+        except Exception as error:
+            self.send_json(500, {"error": f"{type(error).__name__}: {error}"})
+
+
+def serve() -> None:
+    if not EDITOR.is_dir() or not (ROOT / "SOURCE-RECEIPT.json").is_file():
+        fail("staged editor is missing; run `xmb-stage stage` first")
+    print(f"XMB preset editor: http://{HOST}:{PORT}/")
+    print(f"Preset output: {PRESETS}")
+    server = ThreadingHTTPServer((HOST, PORT), Handler)
+    server.serve_forever()
+
+
+def status() -> None:
+    if not ROOT.is_dir():
+        fail(f"staging root missing: {ROOT}")
+    print(f"root: {ROOT}")
+    print(f"editor aggregate: {aggregate(EDITOR)}")
+    receipt = ROOT / "SOURCE-RECEIPT.json"
+    print(f"source receipt: {sha256(receipt) if receipt.is_file() else 'MISSING'}")
+    for role in ROLES:
+        preset = PRESETS / f"{role}.json"
+        preview = PREVIEWS / f"{role}.png"
+        print(f"{role} preset: {sha256(preset) if preset.is_file() else 'MISSING'}")
+        print(f"{role} preview: {sha256(preview) if preview.is_file() else 'MISSING'}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("stage", "serve", "status"))
+    args = parser.parse_args()
+    {"stage": stage, "serve": serve, "status": status}[args.command]()
+
+
+if __name__ == "__main__":
+    main()

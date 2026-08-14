@@ -5143,3 +5143,39 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   install a self-checking staging/preset-export tool that copies—never edits—the
   authoritative custom editor into the NVMe bake root, records source hashes,
   and adds durable three-role JSON capture before deterministic renderer work.
+
+--------------------------------------------------------------------------------
+12.60 AUDITED NVME STAGER AND THREE-ROLE PRESET CAPTURE SERVICE AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-130] New repository tool `scripts/xmb-stage` implements the next bounded
+    gate without touching the operator's custom editor. `stage` requires
+    `/mnt/games` to be a mount with at least 20 GiB free, verifies all ten
+    authoritative custom code/style files against W-125 hashes, copies only
+    those bytes into a fresh atomic `/mnt/games/xmb-wave-bake/editor`, records a
+    source receipt/aggregate, and creates presets/previews/logs/out directories.
+    It refuses an existing destination or any source mismatch. `serve` binds
+    only 127.0.0.1:8765 and adds three explicit save buttons. Each captures the
+    complete in-memory `window.SPLINE_SETTINGS` and `window.PARTICLE_SETTINGS`
+    plus a canvas-only PNG preview through a constrained API; roles are limited
+    to sleep, main-red and work-monochrome, settings are type/completeness
+    checked, and JSON/PNG are atomically written with hash receipts. `status`
+    reports all hashes. Tool SHA-256 is
+    `0679ebd8d77f560f1212a16b858b8d4fd2a9f68d72d15bcb07013722df9c6dde`.
+    RECEIPT: sandbox source review, Python compile, Node syntax check of embedded
+    capture JavaScript, CLI help and sha256sum, 2026-08-14.
+
+  [W-131] The staging tool deliberately does not yet add deterministic rendering
+    or bake output. This separation prevents two failure classes from being
+    conflated: first preserve exact operator-selected settings with matching
+    previews; only after three JSON receipts visually match W-109/W-111/W-114
+    may a seed/seek renderer consume them. The existing editor remains the
+    visual tuning surface, and captured manifests—not screenshots or defaults—
+    become the bake inputs.
+    RECEIPT: bounded tool scope and X-067/X-068 dependency order, 2026-08-14.
+
+[2026-08-14][M9-PRESET-CAPTURE-TOOL] AUTHORED and syntax-verified in sandbox,
+  unexecuted on target. Next gate: immutable download/hash, atomic NVMe stage,
+  local service health check and source-preservation assertions. Then the
+  operator recreates and saves one role at a time for visual/hash acceptance.
