@@ -5533,3 +5533,33 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-WORK-DOWNLOAD] BROWSER PASS. Next gate is terminal-safe
   import/validation/canonicalization from Downloads; deterministic preview still
   pending per X-074.
+
+--------------------------------------------------------------------------------
+12.76 LONG HEREDOC IMPORT CORRUPTED BY BRACKETED-PASTE PREFIX; SHORT IMPORT
+      SUBCOMMAND AUTHORED. Target failure + sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-081] The long work import block arrived with a literal bracketed-paste
+    prefix `^[[200~` before `if`, so Bash treated the heredoc as input to an
+    unknown command. The later `then`/`else` fragments ran independently and
+    printed misleading PASS/FAIL text, but the Python importer never executed.
+    No work preset filesystem success may be claimed. Long inline programs are
+    now a demonstrated transport hazard on this terminal; stop issuing them.
+    RECEIPT: target prompt/transcript including `command not found` and orphaned
+    shell syntax errors, 2026-08-14.
+
+  [W-145] `scripts/xmb-stage` now owns Zen-download import as the short command
+    `xmb-stage import-download ROLE`. It locates the newest role-named download,
+    validates schema/role/staged-editor aggregate, exact role-specific particle
+    tuple, exactly 50 finite spline values and required RGB, canonicalizes JSON
+    atomically, refuses a conflicting destination, writes a hash receipt and
+    prints every exact spline value. Updated tool SHA-256 is
+    `81d4ae1353b4da22d3adb540b000d501941c1d0bce5f2a4ab6b9692dd7ed6612`.
+    Python compilation, CLI help and a synthetic 50-key work-monochrome import
+    pass in the sandbox. Target execution is not claimed.
+    RECEIPT: sandbox compile/help/hash and isolated synthetic import output,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-IMPORT-TOOL] AUTHORED. Next target block must be
+  short: immutable updated-tool download/hash/install followed by one import
+  subcommand. No interactive `set -e`, heredoc or inline Python.

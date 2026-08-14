@@ -5,6 +5,7 @@ Commands:
   xmb-stage stage   # verify/copy the custom editor; never edits its source
   xmb-stage serve   # serve editor + exact JSON/PNG preset capture API
   xmb-stage status  # print staged-source and captured-preset receipts
+  xmb-stage import-download ROLE  # validate/canonicalize a Zen JSON download
 """
 
 from __future__ import annotations
@@ -12,9 +13,11 @@ from __future__ import annotations
 import argparse
 import base64
 from datetime import datetime, timezone
+import glob
 import hashlib
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -32,6 +35,15 @@ OUT = ROOT / "out"
 HOST = "127.0.0.1"
 PORT = 8765
 ROLES = ("sleep", "main-red", "work-monochrome")
+EXPECTED_PARTICLES = {
+    "sleep": {"count": 257, "opacity": 0.19, "sizeBase": 2.6, "sizeVar": 50, "flowSpeed": 0.18},
+    "main-red": {"count": 172, "opacity": 0.41, "sizeBase": 4.8, "sizeVar": 16.3, "flowSpeed": 0.18},
+    "work-monochrome": {"count": 4000, "opacity": 0.37, "sizeBase": 3.1, "sizeVar": 0, "flowSpeed": 0.04},
+}
+EXPECTED_RGB = {
+    "main-red": (255, 0, 0),
+    "work-monochrome": (255, 255, 255),
+}
 
 # Target receipts W-125. Refuse unknown source bytes rather than silently stage
 # a page different from the operator-approved visual editor.
@@ -317,6 +329,96 @@ def serve() -> None:
     server.serve_forever()
 
 
+def atomic_write(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", dir=path.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def import_download(role: str | None) -> None:
+    if role not in ROLES:
+        fail(f"import-download requires one role: {', '.join(ROLES)}")
+    downloads = Path.home() / "Downloads"
+    patterns = (
+        f"xmb-{role}-live.json",
+        f"xmb-{role}-live (?).json",
+        f"xmb-{role}-live (??).json",
+        f"xmb-{role}-live*.json",
+    )
+    candidates = sorted(
+        {Path(item) for pattern in patterns for item in glob.glob(str(downloads / pattern))},
+        key=lambda path: path.stat().st_mtime_ns,
+        reverse=True,
+    )
+    if not candidates:
+        fail(f"no xmb-{role}-live JSON found in {downloads}")
+    source = candidates[0]
+    raw = source.read_bytes()
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as error:
+        fail(f"download is not JSON: {error}")
+    if data.get("schema") != 1 or data.get("role") != role:
+        fail(f"schema/role mismatch in {source}")
+    expected_aggregate = aggregate(EDITOR)
+    if data.get("source_editor_aggregate") != expected_aggregate:
+        fail("source editor aggregate mismatch")
+    particles = validate_values("particles", data.get("particles"), 5)
+    if particles != EXPECTED_PARTICLES[role]:
+        fail(f"particle mismatch: got {particles}, expected {EXPECTED_PARTICLES[role]}")
+    spline = validate_values("spline", data.get("spline"), 40)
+    if len(spline) != 50:
+        fail(f"spline key count is {len(spline)}, expected 50")
+    rgb = EXPECTED_RGB.get(role)
+    if rgb and tuple(spline.get(key) for key in ("colorR", "colorG", "colorB")) != rgb:
+        fail(f"RGB mismatch for {role}")
+    for key, value in spline.items():
+        if isinstance(value, float) and not math.isfinite(value):
+            fail(f"non-finite spline value: {key}")
+    canonical = (json.dumps(data, indent=2, sort_keys=True) + "\n").encode()
+    destination = PRESETS / f"{role}.json"
+    if destination.exists() and destination.read_bytes() != canonical:
+        fail(f"destination exists with different bytes: {destination}")
+    if not destination.exists():
+        atomic_write(destination, canonical)
+    receipt = {
+        "imported_at": datetime.now(timezone.utc).isoformat(),
+        "source_download": str(source),
+        "source_download_sha256": hashlib.sha256(raw).hexdigest(),
+        "preset_sha256": hashlib.sha256(canonical).hexdigest(),
+        "preview_status": "pending deterministic renderer",
+    }
+    receipt_path = PRESETS / f"{role}.receipt.json"
+    atomic_write(
+        receipt_path,
+        (json.dumps(receipt, indent=2, sort_keys=True) + "\n").encode(),
+    )
+    print(f"selected download: {source}")
+    print(f"download bytes: {len(raw)}")
+    print(f"download sha256: {hashlib.sha256(raw).hexdigest()}")
+    print(f"role: {role}")
+    print("particle tuple: " + " ".join(str(particles[key]) for key in
+          ("count", "opacity", "sizeBase", "sizeVar", "flowSpeed")))
+    print(f"spline keys: {len(spline)}")
+    print(f"preset sha256: {sha256(destination)}")
+    print(f"receipt sha256: {sha256(receipt_path)}")
+    print("--- exact spline settings ---")
+    for key in sorted(spline):
+        print(f"{key}={spline[key]}")
+    print(f"{role.upper().replace('-', '_')}_PRESET_IMPORT=PASS")
+
+
 def status() -> None:
     if not ROOT.is_dir():
         fail(f"staging root missing: {ROOT}")
@@ -333,9 +435,17 @@ def status() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("stage", "serve", "status"))
+    parser.add_argument(
+        "command", choices=("stage", "serve", "status", "import-download")
+    )
+    parser.add_argument("role", nargs="?", choices=ROLES)
     args = parser.parse_args()
-    {"stage": stage, "serve": serve, "status": status}[args.command]()
+    if args.command == "import-download":
+        import_download(args.role)
+    else:
+        if args.role is not None:
+            parser.error(f"{args.command} does not accept a role")
+        {"stage": stage, "serve": serve, "status": status}[args.command]()
 
 
 if __name__ == "__main__":
