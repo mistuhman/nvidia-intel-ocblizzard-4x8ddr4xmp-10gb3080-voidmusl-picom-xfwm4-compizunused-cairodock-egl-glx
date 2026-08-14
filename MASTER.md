@@ -3339,3 +3339,42 @@ controls to rotate between windows."
   M16 remains IN PROGRESS: next identify the active Emerald selection and
   inspect the most relevant packaged candidates read-only before making one
   reversible visual selection. M18 and the sound-chain writes remain pending.
+
+--------------------------------------------------------------------------------
+12.15 M16 EMERALD GATE 2 — ACTIVE THEME AND DONORS IDENTIFIED READ-ONLY.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-061] The active Emerald slot is NOT an unknown built-in default. It is a
+    pre-existing custom theme at `/home/sd/.emerald/theme/theme.ini`, SHA-256
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`,
+    declaring creator `sd-rice`, description `Dark Aqua Hybrid Legacy - Snow
+    Leopard Graphite`, version 0.8.18, engine `legacy`, active text `#ececec`
+    and inactive text `#666666`. It has no byte-identical match among the 76
+    packaged themes. Its active slot includes a complete Mac-style pixmap and
+    button asset set, `theme.screenshot.png`, README/LICENSE, a source archive
+    named `macOS Sierra.emerald`, and a dated `theme.ini.bak.1782451687`.
+    This positively supersedes X-041's earlier inference that the current
+    titlebars belonged to no inventoried theme. The custom active theme is
+    both inventoried and already named for the requested dark Aqua/Graphite
+    surface; it must be preserved rather than overwritten casually.
+    RECEIPT: target EMERALD-2 process/file/hash/metadata output, 2026-08-14.
+
+  [W-062] The packaged donor comparison is resolved without selecting a new
+    theme. `Mac4Lin_Aqua` and `Mac4Lin_Graphite` are 27-file pixmap themes;
+    `Overglossed` is a 35-file pixmap theme with explicit focused titlebar and
+    frame artwork; `PlatinUm` and `Yosemite_Graphite` are pixmap themes;
+    `Fogo_Monochrome` uses oxygen; `Scaled_Black_Mod` and `Wombat_Black` use
+    vrunner. This makes Mac4Lin_Graphite and Overglossed the closest artwork
+    donors for M16, while the custom W-061 active theme remains the safer
+    baseline. Emerald stayed PID 1270 and Emerald Theme Manager PID 23838
+    during the read-only inspection. No theme was selected or modified.
+    RECEIPT: target hashes, engine metadata and bounded asset listings for all
+    eight shortlisted themes in EMERALD-2 output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-2] Active titlebar source and packaged donors
+  IDENTIFIED read-only. Receipt: W-061/W-062. X-041 is CLOSED and superseded:
+  the missing user library directory was real, but its claimed implication
+  about the active titlebar was false. M16 remains IN PROGRESS. Preserve the
+  custom Dark Aqua active slot; proceed to identify and fork the GTK widget
+  theme before deciding whether any Emerald artwork needs composition.
