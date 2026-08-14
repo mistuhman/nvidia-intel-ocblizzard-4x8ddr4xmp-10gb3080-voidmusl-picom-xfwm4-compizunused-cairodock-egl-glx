@@ -3428,3 +3428,32 @@ controls to rotate between windows."
   Win2-7(Pixmap) only as an optional GTK2 artwork donor. Next gate must reprint
   the explicit active XSettings value and inspect the narrow top-level colour
   definitions before any fork or recolour is written.
+
+--------------------------------------------------------------------------------
+12.17 M16 GTK GATE 1A — COMPLETE RECEIPT CLOSES GTK-1 TRUNCATION.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-066] The explicit XSettings receipt confirms `/Net/ThemeName =
+    Slickness-Reborn`, closing W-063's scope caveat. The active theme is 2.5M,
+    433 files/418 visual assets, with GTK2, GTK3 and GTK4 components and no
+    broken symlinks. Its index.theme palette sets bg `#242424`, base `#474747`
+    and foreground `#d7d7d7`; its four GTK3 CSS hashes are now recorded by the
+    target receipt (`gtk.css` starts `303ebe33...`, `gtk-widgets.css`
+    `bace908c...`, `applications.css` `2fe62f0f...`, LightDM CSS
+    `fa697689...`). Slickness-Reborn is therefore a complete, named rollback
+    target, not merely inferred from a path.
+    RECEIPT: target GTK-1A XSettings/index/hash/file output, 2026-08-14.
+
+  [W-067] The active icon theme is explicitly `/Net/IconThemeName =
+    Mac-OS-X-Lion`. This is the first target receipt naming the active M18
+    surface and materially narrows the missing-icon diagnosis: M18 must inspect
+    that theme's index.theme and inheritance chain before changing individual
+    application icons. No icon setting was changed.
+    RECEIPT: target GTK-1A XSettings output, 2026-08-14.
+
+[2026-08-14][M16/GTK-1A] GTK inventory COMPLETE. Receipt: W-064..W-067.
+  Active rollback is Slickness-Reborn; full fork base is
+  mac-os-x-cheetah-dark; Win2-7(Pixmap) remains a GTK2-only donor. The next
+  gate remains GTK-2's focused source-palette/parser preflight; no fork or
+  visual setting has yet been written.
