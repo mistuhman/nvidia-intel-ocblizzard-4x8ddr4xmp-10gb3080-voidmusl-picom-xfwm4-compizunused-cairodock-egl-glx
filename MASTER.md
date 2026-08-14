@@ -674,6 +674,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target Python restoration and per-second dwell output pasted
   2026-08-14.
 
+[2026-08-14][W-039] The extended U-016 trace safely no-op stopped because
+  exact CCSM was already absent before it began. At that receipt, xfwm4 PID
+  16448 remained, Compiz/picom were absent, and Default.ini still matched the
+  exact W-032 SHA-256 dcefbadd... with unchanged mtime
+  1786692255360694340. No signal or file write occurred. Combined with W-038,
+  this shows PID 12047 subsequently exited without another observed writer;
+  the current guarded profile/runtime are suitable for the pending bounded
+  NVIDIA A/B test, although the historical delayed launcher remains unknown.
+  RECEIPT: target U-016 precondition and STOP output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1287,6 +1297,12 @@ Status vocabulary, used strictly:
   second 12 due to delayed CCSM return. Receipt: W-038/X-026. Overall M8 is
   BLOCKED on U-016's extended compact creator trace; W-032 content is currently
   intact but must be considered writable while CCSM PID 12047 exists.
+
+[2026-08-14][M8/U-016] Extended creator trace NO-OP but current writer gate
+  CLEARED by precondition. Receipt: W-039. To conserve the remaining operator
+  iteration budget, do not repeat writer tracing unless CCSM reappears; resume
+  the already approved one-variable DP-2 sync-display trial with automatic
+  recovery and byte-for-byte profile guard.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
