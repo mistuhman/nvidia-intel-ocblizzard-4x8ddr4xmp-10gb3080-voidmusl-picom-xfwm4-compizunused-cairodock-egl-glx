@@ -5179,3 +5179,42 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   unexecuted on target. Next gate: immutable download/hash, atomic NVMe stage,
   local service health check and source-preservation assertions. Then the
   operator recreates and saves one role at a time for visual/hash acceptance.
+
+--------------------------------------------------------------------------------
+12.61 NVME PRESET CAPTURE STAGE PASSES; BLUE PAGE IS VERIFIED SOURCE DEFAULT,
+      NOT A RECOVERED ROLE. Target/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-132] Target installation and staging pass every machine gate. Installed
+    `~/.local/bin/xmb-stage` matches tool SHA `0679ebd8...`; the fresh atomic
+    root is `/mnt/games/xmb-wave-bake`; staged editor aggregate is
+    `b363b0b16b36590972e899bd7bf14ded4dad888e52c8afa98a295638889efe03`;
+    source receipt SHA is `6a8a8e2d...`; all three preset/preview slots begin
+    MISSING as required; and the original editor's index/spline/particle hashes
+    remain unchanged. Local capture server PID 6483 answers healthy on
+    127.0.0.1:8765 with all roles null. `XMB_PRESET_STAGE=PASS`.
+    RECEIPT: target install/stage/status/hash/health output, 2026-08-14.
+
+  [X-071] The operator correctly reports the opened blue XMB as “random” and
+    unfamiliar. It is not one of the three approved visuals: it is the audited
+    custom editor's page-load default (W-126: RGB 57/133/221 and particle tuple
+    2000/0.75/2.6/1.5/0.18), and its particle positions are newly randomized by
+    Math.random (X-068). The stage intentionally copied source defaults because
+    X-067 proved that prior slider changes were never persisted. Do not ask the
+    operator to accept or bake this blue scene and do not mislabel it as a
+    failed source copy.
+    RECEIPT: attached staged-editor screenshot, operator report and exact W-126
+    defaults, 2026-08-14.
+
+  [U-034] Exact role recovery now depends on whether the original configured
+    sleep/main-red/work-monochrome tabs remain open and unrefreshed. If they do,
+    their in-memory settings objects can be posted directly to the healthy
+    capture API, preserving every value and PNG without manual transcription.
+    If they do not, the presets must be recreated from screenshots/intent and
+    saved with the new controls; source defaults cannot recover them.
+    RECEIPT: X-067 ephemeral state model and current operator report,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-CAPTURE-STAGE] TARGET PASS. No role captured yet. Gate is
+  U-034: determine whether exact in-memory originals still exist before any
+  retuning or deterministic renderer work.
