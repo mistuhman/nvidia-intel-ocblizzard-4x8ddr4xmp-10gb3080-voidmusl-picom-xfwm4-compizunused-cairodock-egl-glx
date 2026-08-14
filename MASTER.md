@@ -649,6 +649,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   Compiz-Reloaded CCSM README https://github.com/compiz-reloaded/ccsm fetched
   2026-08-14.
 
+[2026-08-14][W-037] The bounded Python creator trace terminated exact CCSM
+  PID 3132 and polled new `/proc` PIDs every 5 ms for 12 seconds. No replacement
+  CCSM or creator event appeared; final exact CCSM set was empty, xfwm4 PID
+  16448 remained, and Compiz/picom remained absent. The 347-byte profile stayed
+  byte-identical at SHA-256 110c892a... throughout. Trace receipt is
+  /tmp/ccsm-spawn-trace.1786692167.json, 39434 bytes, SHA-256
+  7d11bcbf0ee3164859eea5c852e48310d4775b84d95930df02d3fdb4b2c8479f.
+  Therefore X-025's restart was not continuously reproducible: the first CCSM
+  instance produced one replacement, but terminating that replacement cleared
+  the active writer. The historical launcher remains unidentified and must not
+  be invented, but it no longer blocks a guarded restoration/dwell.
+  RECEIPT: target Python precondition, 12-second process-event trace, final
+  process/profile receipt and trace checksum pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1235,6 +1249,13 @@ Status vocabulary, used strictly:
   on bounded creator observation. Research lanes must exchange claims as
   source URL + exact version + quoted behavior + target predicate + rejection
   reason, preventing stale guidance from entering the action lane.
+
+[2026-08-14][M8/U-015-T] Bounded CCSM creator observation DONE with no
+  second respawn. Receipt: W-037. This supersedes X-025 as a current blocker,
+  while preserving the historical unknown. Overall M8 is now BLOCKED only on
+  restoring W-032 and proving a no-CCSM hash dwell, then resuming the ordered
+  NVIDIA A/B tests. Python is accepted for target orchestration; shell remains
+  only the one-block transport/escape surface.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
