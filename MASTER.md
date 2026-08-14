@@ -4042,3 +4042,26 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   Receipt: W-084/W-085. M16 remains BLOCKED only on X-048 GTK integration.
   Execute the W-083 graphical GTK A/B before authoring new assets; if accepted,
   fork/tune it, and if rejected, use 12.28.3's dedicated composer path.
+
+--------------------------------------------------------------------------------
+12.31 GRAPHICAL GTK3 A/B MACHINE GATE PASSED; HUMAN DEPTH VERDICT PENDING.
+      Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-086] The target switched cleanly from `mac-os-x-cheetah-dark` to
+    `Quake-Aqua-AMOLED`. All seven required graphical assets exist and match
+    the W-082 source hashes exactly: menubar a5fbab09..., toolbar 02797b23...,
+    button-normal c2c77570..., button-hover 95a0bf9a..., entry 3dd08ad4...,
+    selected-bar 902caab2..., vertical scrollbar trough 1c39d3ef.... The live
+    CSS references those assets at the observed menu/button/entry/selection/
+    toolbar/scrollbar selectors. XSettings now reports Quake-Aqua-AMOLED;
+    icon theme remains Mac-OS-X-Lion; Compiz PID 1210 and accepted Emerald PID
+    14379 remain live; picom remains absent. Machine gate passes.
+    RECEIPT: target GRAPHICAL GTK3 A-B output, 2026-08-14.
+
+[2026-08-14][M16/GTK-GRAPHICS-A-B] Machine activation DONE. Receipt: W-086.
+  Human acceptance remains UNCOLLECTED: obtain a screenshot of Thunar and
+  xfce4-terminal after the live update and judge menubar, toolbar, entries,
+  sidebar/content depth, selection plate and scrollbar against 12.28. If depth
+  is insufficient, author the dedicated composer; do not return to malformed
+  Cheetah CSS.
