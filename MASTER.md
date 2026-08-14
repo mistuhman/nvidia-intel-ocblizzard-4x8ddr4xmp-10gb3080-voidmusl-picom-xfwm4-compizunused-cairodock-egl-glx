@@ -2825,3 +2825,153 @@ controls to rotate between windows."
   compiz-profile-repair's ENFORCE table (not by hand-editing Default.ini,
   which the login hook would revert). Expect the X-039 dead band on DP-0.
   Revert = restore the two-rectangle value in the same table.
+
+--------------------------------------------------------------------------------
+12.6 THE KBM MISSION-CONTROL ANSWER: SCALE + SCALE WINDOW TITLE FILTER, NOT A
+     SWITCHER. Research pass 3, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [R-12] *** SCALE WINDOW TITLE FILTER IS THE KEYBOARD-ORIENTED MISSION
+    CONTROL. *** The scalefilter plugin (libscalefilter.so, confirmed present
+    by W-051) turns Scale into a type-to-filter window finder: "allows you to
+    type the name of a window in Scale to filter out for windows that match
+    that name ... A text box will appear on screen repeating what you have
+    typed and windows will disappear as you type". Backspace widens the set,
+    Esc clears the filter, click or Enter selects. This is functionally
+    macOS Mission Control + Spotlight-style filtering, and it is the single
+    best match for the user's "kbm oriented" requirement — far better than
+    any Alt+Tab switcher, because selection is by NAME rather than by
+    position in a cycle.
+    HARD REQUIREMENT: it needs the `text` plugin enabled to draw the filter
+    string. CCSM will prompt to enable it; accept.
+    Options: Filter type timeout, Filter case insensitive (recommend ON),
+    Show filter text (recommend ON), plus font size/colour/bold.
+    SOURCE: wiki.compiz.org/Plugins/Scale (Scale Addons / Scale Window Title
+    Filter section); wiki.compiz.org/PluginsExtra; askubuntu 143589.
+
+  [R-13] KNOWN FAILURE MODE, AND ITS CAUSE — READ BEFORE REPORTING IT BROKEN.
+    Multiple users report "I enter Scale and typing does nothing". Two
+    distinct documented causes:
+      (a) the `text` plugin is not enabled (askubuntu 39790 accepted answer);
+      (b) *** THE KEYBINDING ITSELF EATS THE KEYSTROKES *** — a user on
+          ubuntuforums 1159045 notes filtering failed when Scale was invoked
+          by holding a key combo, "because then I was already holding down
+          Ctrl-Alt-up, which presumably interfered with anything else I tried
+          to type", but worked when Scale was triggered by a screen CORNER or
+          a TOGGLE binding.
+    THEREFORE: bind Scale to a TOGGLE (press once, release, Scale stays open)
+    or to a hot corner — NOT to a hold-style chord. CCSM exposes "Key bindings
+    toggle Scale mode" for exactly this.
+    SOURCE: ubuntuforums 1159045; askubuntu 39790; askubuntu 143589 (which
+    also notes launching ccsm from a shell vs. menu affected whether the
+    plugin took effect — unverified folklore, do not rely on it).
+
+  [R-14] SCALE AND EXPO CANNOT BE COMBINED INTO ONE GNOME-SHELL-STYLE VIEW.
+    Asked repeatedly; the answer for Compiz 0.8 is no — "according to all the
+    forum discussion it is not possible with compiz currently", with a
+    launchpad feature request filed and never landed. Use them as two separate
+    bindings: Scale = windows on this viewport, Expo = all viewports at once.
+    Do not promise a unified overview.
+    SOURCE: askubuntu 24449.
+
+  [R-15] REVISED SWITCHER RECOMMENDATION. 12.2 proposed Shift Switcher for
+    Alt+Tab. That still stands for a pretty 3D flip, but for a KBM-oriented
+    workflow the better allocation is:
+      Alt+Tab        -> Static Application Switcher (libstaticswitcher.so) —
+                        no animation, no zoom-out, instant; the documented
+                        "un-fancy" choice.
+      Super or corner-> Scale + scalefilter (R-12) as the real window finder.
+      Super+E        -> Expo for viewport overview.
+      Ctrl+Alt+Btn1  -> cube free-rotate (R-11) for the 3D flourish.
+    Rationale: one switcher owns Alt+Tab (R-5's mutual-exclusion rule still
+    applies), and the 3D eyecandy is moved OFF the hot path so it never delays
+    a window switch.
+    SOURCE: superuser 207486; wiki.compiz.org/Plugins/Switcher.
+
+--------------------------------------------------------------------------------
+12.7 UI SOUND EFFECTS: COMPIZ CANNOT DO THIS. THE CORRECT LAYER IS
+     libcanberra + AN XDG SOUND THEME, DRIVEN BY XFCE.
+--------------------------------------------------------------------------------
+
+  [R-16] *** COMPIZ 0.8 HAS NO AUDIO SUBSYSTEM AND NO PER-EVENT SOUND HOOK. ***
+    No plugin in the installed set (W-051 inventory) plays audio. The only
+    audio-adjacent Compiz feature found is `fade`'s `visual_bell` — a VISUAL
+    fade on the system beep, not a sound. There is therefore NO supported way
+    to attach a sound to "window opened", "window closed" or "cube rotated"
+    from inside Compiz.
+    THE ONE PARTIAL EXCEPTION: the `commands` plugin (libcommands.so, present)
+    binds arbitrary shell commands to keys/edges/buttons. So a KEY-triggered
+    sound is possible — e.g. bind a key to both a sound and an action — but
+    this fires on the KEYPRESS, not on the window event, and Compiz cannot
+    chain a command and a plugin action to one binding without a wrapper
+    script. Treat as a hack, not a solution.
+    SOURCE: help.ubuntu.com CompositeManager/ConfiguringCompiz (fade
+    visual_bell; commands plugin command0..command11 + run_commandX_key);
+    wiki.archlinux.org/title/Compiz (Commands plugin usage).
+
+  [R-17] THE REAL MECHANISM IS libcanberra, WHICH XFCE ALREADY SPEAKS.
+    libcanberra "implements the XDG Sound Theme and Naming Specifications for
+    generating event sounds". XFCE drives it through four things, ALL of which
+    must line up or there is silence:
+      1. xfconf: /Net/EnableEventSounds = true
+                 /Net/EnableInputFeedbackSounds = true
+                 /Net/SoundThemeName = <theme dir name under /usr/share/sounds>
+         (GUI: Settings > Appearance > Settings tab > Enable event sounds)
+      2. GTK_MODULES must contain `canberra-gtk-module` in the SESSION
+         environment — this is the step that most often silently fails on
+         non-GNOME desktops.
+      3. a sound theme installed at /usr/share/sounds/<name>/ with an
+         index.theme and a stereo/ directory of .oga files.
+      4. the PulseAudio/PipeWire "System Sounds" stream must not be muted or
+         at zero (pavucontrol).
+    Verification one-liners used by XFCE forum staff:
+      xfconf-query -c xsettings -lv | grep -i sound
+      env | grep GTK_MODULE
+      ls /usr/share/sounds/$(xfconf-query -c xsettings -p /Net/SoundThemeName)/stereo
+      canberra-gtk-play -i bell        # direct test, bypasses the whole chain
+    SOURCE: wiki.archlinux.org/title/Libcanberra; forum.xfce.org 8618, 11952,
+    7199; bbs.archlinux.org 241479.
+
+  [R-18] *** THE freedesktop THEME IS THE WRONG CHOICE FOR "QUAKE UI SOUNDS"
+    AND WILL DISAPPOINT. *** Its stereo/ directory is essentially
+    notification-oriented — bell, dialog-error/info/warning, message,
+    device-added/removed, trash-empty, screen-capture, power-plug,
+    audio-volume-change, service-login/logout, window-attention. An XFCE forum
+    moderator states it directly: "The freedesktop theme doesn't have many
+    sound effect sounds that work with the libcanberra implementation", and
+    resorted to modifying a fuller theme. Arch users likewise recommend
+    replacing it because it "lacks many required events".
+    CONSEQUENCE FOR THE USER'S ACTUAL REQUEST: a crisp Quake-style click on
+    window open/close/minimise is NOT delivered by the stock theme. The
+    achievable path is a CUSTOM sound theme — a directory of short .oga/.wav
+    files named per the XDG naming spec (window-new, window-close,
+    window-minimized, window-unminimized, window-maximized, window-
+    unmaximized, notebook-tab-changed, dialog-*, bell, desktop-login/logout).
+    That is a content authoring job, not a configuration job, and it is
+    bounded and doable.
+    IMPORTANT LIMITATION, stated so it is not oversold: canberra-gtk-module
+    hooks GTK widget events, so sounds fire for GTK applications and dialogs.
+    Window-manager events raised by Compiz (its own animations, cube rotation,
+    Scale/Expo entry) are NOT GTK events and will NOT trigger theme sounds.
+    Whether window-new/window-close fire reliably under Compiz+XFCE on this
+    box is UNVERIFIED — see U-022.
+    SOURCE: forum.xfce.org 11952 (moderator, with the full freedesktop stereo
+    listing quoted); bbs.archlinux.org 241479; xfce.narkive.com event-sounds
+    thread listing the XDG window-* event names.
+
+  [U-022] Which sound-theme events actually fire on THIS desktop under Compiz?
+    Read-only probe first:
+      xbps-query -l | grep -Ei 'canberra|sound-theme'
+      xfconf-query -c xsettings -lv | grep -i sound
+      env | grep GTK_MODULE
+      ls /usr/share/sounds/
+      canberra-gtk-play -i bell; echo "exit=$?"
+    Then, only if the chain is live, empirically test window-new/window-close
+    by opening and closing a GTK app. Do not assume the XDG name list is
+    honoured; the moderator evidence in R-18 says many are not.
+
+  [U-023] Does `scalefilter` work on this Compiz Reloaded 0.8.18 build when
+    Scale is bound as a TOGGLE? R-13 says the hold-chord form eats keystrokes.
+    Resolve by enabling scale + scalefilter + text, binding Scale toggle to a
+    single key or hot corner, entering Scale and typing. One-line predicate:
+    does a filter text box appear and do windows disappear as you type?
