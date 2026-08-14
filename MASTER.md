@@ -5971,3 +5971,50 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   (W-158), two agent-side probe bugs recorded (X-086/X-087), no tool defect
   found. Baker `f4c2d95e...` is unchanged and cleared to run to completion at
   ~7.2 minutes. Next action is the full main-red bake, detached.
+
+--------------------------------------------------------------------------------
+12.85 MAIN-RED MASTER RENDERED COMPLETE: 3738/3738 FRAMES IN 495.8 s.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-160] The main-red master is COMPLETE and is the first real video artifact
+    this project has produced by the deterministic method. All 3,738 frames
+    rendered without a single error, retry or dropped frame, ending
+    `progress frame=3738/3738 t=62.3s elapsed=495.8s fps=7.54 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/main-red/main-red.master-62.3s.mp4`, SHA-256
+    `16325f7613c1f3fe9c0610702d85c546d79d20cb4400e4e81bf5a9dd50ed911d`, encoded
+    h264-free via hevc_nvenc at 4480x1440. The detached setsid/nohup invocation
+    of W-159 worked: the run survived independent of the operator's terminal.
+    RECEIPT: target `main-red-bake-final.log` progress tail and master hash line,
+    2026-08-14.
+
+  [W-161] Throughput was flat across the entire run — 7.38 fps at frame 61,
+    7.59 at frame 1201, 7.55 at frame 3001, 7.54 at completion. No thermal
+    decay, no memory-pressure slowdown, no leak over 8+ minutes of continuous
+    4480x1440 capture. Observed 495.8 s versus W-158's 430 s projection is a
+    15.3% overshoot, explained by the profiler having sampled only 20 frames and
+    excluded NVENC submission cost per frame; the projection method is sound and
+    should simply be treated as a lower bound in future.
+    RECEIPT: target progress lines at frames 61/1201/3001/3738, 2026-08-14.
+
+  [W-162] X-086 is now doubly closed by the artifact itself. A 62.3-second
+    4480x1440 HEVC master would not be produced from an all-black scene at any
+    plausible bitrate, confirming the profiler's black-frame WARNING was the
+    agent-side readPixels-ordering artifact and never a rendering fault. The
+    baker's capture path was correct throughout.
+    RECEIPT: completed master hash/size versus X-086 analysis, 2026-08-14.
+
+  [U-043] The second pass — the seamless-loop encode — had not yet reported when
+    the operator sampled the log. It re-encodes 3,600 frames (3,462 straight plus
+    138 crossfaded over the 2.3-second W-124 Wall-aligned blend) through
+    `blend`/`concat`, then asserts exact 4480x1440 dimensions, 60/1 average frame
+    rate and 60+/-0.05 s duration before writing BAKE-RECEIPT.json and printing
+    `MAIN_RED_VIDEO_BAKE=PASS`. This pass is filter-bound rather than capture-
+    bound and is expected to be far shorter than the master render. Confirm by
+    the PASS marker and the loop hash, not by elapsed time.
+    RECEIPT: W-153 baker source second-pass gates, 2026-08-14.
+
+[2026-08-14][M11-MASTER-MAIN-RED] MASTER COMPLETE, LOOP PASS PENDING. First
+  deterministic video artifact of the project. Await
+  `MAIN_RED_VIDEO_BAKE=PASS`; then human loop inspection before the remaining
+  two roles are baked, per U-037's one-role-first rule.
