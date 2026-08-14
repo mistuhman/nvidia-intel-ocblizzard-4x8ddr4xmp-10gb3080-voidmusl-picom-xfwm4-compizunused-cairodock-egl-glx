@@ -4935,3 +4935,81 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   on X-061 storage and U-032 provenance, plus portable Wall-setting collection
   after X-062. Next action is one bounded read-only reconciliation; no package,
   source, process or file change is allowed yet.
+
+--------------------------------------------------------------------------------
+12.56 XMB RECONCILIATION 1 — OLD OUTPUTS HASHED; PRIOR CAPTURE METHOD REJECTED;
+      RECEIPT PREFIX/TRACKED SOURCE STATE STILL MISSING. Target 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-122] Existing output provenance is now preserved exactly. The prior
+    deliverables are 60-second videos: full 4480x1440 HEVC/yuv420p/120
+    `loop.mp4` SHA `5db69033...` (482,431,993 bytes); DP-2 HEVC/120
+    `feec4831...` (249,783,360); DP-0 HEVC/120 `f4f56786...` (211,773,039);
+    DP-2 H.264/60 `cc48ae92...` (82,995,749); DP-0 H.264/60 `c6ab4180...`
+    (66,275,517). Two fade files are also hashed, but DP-2.fade is only 0.675
+    seconds while DP-0.fade is 47.99 seconds, so they are not a valid matched
+    pair. Raw `74515e17...` is a 920,914,636-byte 4480x1440 HEVC/yuv444p file
+    whose nominal/average rates are 1000/30000 fps and duration 63.008 seconds.
+    RECEIPT: target sha256sum/stat/ffprobe output, 2026-08-14.
+
+  [X-063] The old bake methodology is rejected for the new three-state system.
+    It captures the live X display with x11grab, then normalizes and trims,
+    rather than seeking the WebGL scene deterministically frame by frame. Logs
+    record GL initialization errors, dropped frames, invalid DTS replacement,
+    more than 1000 duplicated frames, a broken literal `142-2` trim expression,
+    interrupted runs and yuv444/NVDEC incompatibility. The one completed raw
+    capture ran around real-time and still has pathological timestamps. Preserve
+    scripts/logs as evidence, but do not reuse this capture path for new bakes.
+    RECEIPT: target script hashes/grep and nine prior bake-log outcomes,
+    2026-08-14.
+
+  [W-123] The unmanaged xwinwrap binary is now reproducibly identified:
+    `/usr/local/bin/xwinwrap`, root-owned mode 0755, 49,984 bytes, SHA-256
+    `98558e00c2ea51648456ca5e248fe56ce6a119e6f769e8415ea181937d6dc3ea`.
+    Its help exposes the required `-fdt`, `-ni`, `-b`, `-nf`, `-ov`, `-s` and
+    geometry controls and its dynamic dependencies resolve. This is sufficient
+    to gate a later bounded playback prototype, while package ownership remains
+    absent and must be documented in reproducibility output.
+    RECEIPT: target stat/hash/ldd/help output, 2026-08-14.
+
+  [W-124] Portable profile output closes X-062. Active Compiz plugins include
+    vpswitch, wall and Compiz's own screensaver plugin. Wall uses multi-monitor
+    mode 1, wraparound true, preview timeout 0.25 seconds and a very long
+    2.3-second slide duration. These timings are direct inputs to a hybrid
+    spatial/crossfade controller; a 2.3-second blend is the first faithful
+    prototype target, not an arbitrary quick dissolve.
+    RECEIPT: numbered target Default.ini lines 1-71, 2026-08-14.
+
+  [X-064] CORRECTION TO W-119: the persisted Button2 binding at profile line 59
+    belongs to `[screensaver]`, not `[wall]`. It initiates the Compiz screensaver
+    at the listed bottom-left edges; it is not evidence of the user's middle-
+    mouse Wall switch. The operator's direct report remains valid human evidence
+    that middle mouse switches Wall, but its actual binding/default must be
+    observed separately and must not be inferred from line 59. Both Compiz
+    screensaver and xfce4-screensaver are active surfaces, so sleep integration
+    must choose ownership deliberately rather than stacking a third idle path.
+    RECEIPT: numbered Default.ini section boundaries plus prior operator report,
+    2026-08-14.
+
+  [X-065] The reconciliation receipt arrived without its opening storage map,
+    source Git identity/status, source hashes and custom-source inventory. The
+    visible output begins inside a grep result. Consequently source cleanliness,
+    custom page provenance and exact preset persistence remain unverified. The
+    panel implementation shown does mutate in-memory `settings[key]` from slider
+    values; no visible receipt proves durable preset export. Collect those
+    missing facts with a much smaller read-only block before cleanup.
+    RECEIPT: boundaries of the operator-pasted reconciliation output,
+    2026-08-14.
+
+  [X-066] Free durable space fluctuated from 95 MiB to 192 MiB without a project
+    write, but remains effectively zero and still hard-blocks baking. The hashed
+    prior raw/full/panel/fade outputs total roughly 2.0 GiB and are likely cleanup
+    candidates because X-063 rejects their methodology and no wallpaper process
+    uses them. Deletion is irreversible; do not issue it until missing source
+    receipts are collected and the cleanup block lists exact hash-guarded paths.
+    RECEIPT: target final df plus W-122 sizes/process absence, 2026-08-14.
+
+[2026-08-14][M9-RECONCILE-1] PARTIAL PASS. Prior output evidence and xwinwrap
+  provenance are captured; old x11grab pipeline is rejected. Write gate stays
+  CLOSED on X-065 and X-066. Next block is compact/read-only: source Git state,
+  custom source/settings files, exact settings object names and size map only.
