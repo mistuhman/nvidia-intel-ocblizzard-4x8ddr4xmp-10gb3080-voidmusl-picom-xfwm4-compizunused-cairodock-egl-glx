@@ -5013,3 +5013,80 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   provenance are captured; old x11grab pipeline is rejected. Write gate stays
   CLOSED on X-065 and X-066. Next block is compact/read-only: source Git state,
   custom source/settings files, exact settings object names and size map only.
+
+--------------------------------------------------------------------------------
+12.57 XMB RECONCILIATION 2 — CUSTOM EDITOR IDENTIFIED; LIVE PRESETS ARE
+      EPHEMERAL; DETERMINISTIC SEEK/SEED HOOKS ABSENT. Target 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-125] The screenshots originate from a compact 3.4 MiB custom editor at
+    `~/.local/share/ps3-wave-custom/`. Its audited source hashes include index
+    `842c362b...`, spline settings `9d7d9088...`, particle settings
+    `cec2671d...`, spline `91ce844c...`, reverse spline `c50736a4...`, particles
+    `60a1761f...`, controls `eb36b9eb...` and CSS `50004713...`. Relative to the
+    xmb-wave checkout, renderer/control/CSS files are byte-identical; index,
+    spline-settings and particle-settings differ. This makes the custom copy
+    the correct visual-input source, while the tracked checkout remains useful
+    provenance and donor code rather than the authoritative preset state.
+    RECEIPT: target custom inventory/hashes and same-name cmp matrix,
+    2026-08-14.
+
+  [W-126] The custom editor's declarative defaults are now captured. Spline RGB
+    defaults are 57/133/221 with gradient 0.09/0.62 and the complete source
+    object shown in the receipt. Particle defaults are exactly
+    2000/0.75/2.6/1.5/0.18, proving W-107 was the untouched editor baseline,
+    not any of the three final role presets. The editor exposes runtime objects
+    as `window.SPLINE_SETTINGS` and `window.PARTICLE_SETTINGS`; this gives a
+    direct machine-readable export surface when each desired visual is open.
+    RECEIPT: numbered custom spline-settings.js/particles-settings.js and index
+    script order, 2026-08-14.
+
+  [X-067] The control panel has no save/export persistence. Slider/select events
+    mutate only the in-memory settings objects; reset restores a page-load copy.
+    Searches found no localStorage/sessionStorage/IndexedDB/JSON persistence.
+    Therefore screenshots are visual receipts but the full exact runtime values
+    disappear when the page/tab closes. Before baking, each final appearance
+    must be recreated or reopened and exported as JSON directly from the two
+    window settings objects. Do not substitute custom-file defaults.
+    RECEIPT: complete settings-panels.js state flow and persistence grep,
+    2026-08-14.
+
+  [X-068] Deterministic bake hooks do not yet exist. Both custom and canonical
+    entry points initialize `particlesTimeSec = Math.random() * 1000` and advance
+    spline/particle time from requestAnimationFrame deltas. Particle generation
+    may also require seeded-random review. This cannot guarantee byte-identical
+    frame sequences. The new source fork must provide a fixed seed and explicit
+    `window.__xmb.seek(t)` single-frame render API before capture begins, in
+    accordance with Section VIII; x11grab/requestAnimationFrame is forbidden by
+    X-063.
+    RECEIPT: target entry-point script flow, 2026-08-14.
+
+  [X-069] CORRECTION TO W-115: the SLEEP screenshot's tiny Size Var numeral was
+    transcribed as 50.8, but source metadata proves the slider maximum is 50
+    with step 0.1. A range input cannot emit 50.8 through this panel. The visual
+    should be treated as maxed or near-maxed, most likely 50.0, but exact value
+    remains pending JSON export. This supersedes only W-115/W-116's numeric
+    `50.8`; the sleep art direction and other legible values remain valid.
+    RECEIPT: custom PARTICLE_SETTINGS_META lines 13-18 versus screenshot,
+    2026-08-14.
+
+  [X-070] Durable free space remains 185 MiB. The old videos/raw are fully
+    hash-receipted and unused, and deleting only those outputs would recover
+    about 2.0 GiB while preserving all source, scripts, logs and configuration.
+    Because deletion is irreversible, obtain an explicit operator cleanup choice
+    before issuing a hash-guarded removal block. No source modification is safe
+    before that space gate opens.
+    RECEIPT: target final df, W-122 and X-066, 2026-08-14.
+
+  [U-033] The compact receipt again omitted its beginning, so tracked source Git
+    HEAD/status is still not visible. This no longer blocks identifying the
+    visual source because W-125 hashes the authoritative custom copy, but capture
+    provenance must eventually record the donor checkout HEAD before the custom
+    fork is staged.
+    RECEIPT: boundaries of the second pasted reconciliation output,
+    2026-08-14.
+
+[2026-08-14][M9-SOURCE-IDENTITY] PASS for visual-source attribution; FAIL for
+  deterministic readiness. Write gate remains CLOSED on X-070 operator cleanup
+  choice. After space is recovered: preserve custom source, export three exact
+  live presets, then author seek/seed hooks and a direct frame-to-encoder bake.
