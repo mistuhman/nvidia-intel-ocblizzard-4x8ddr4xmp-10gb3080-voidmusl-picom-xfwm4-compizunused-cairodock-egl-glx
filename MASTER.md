@@ -805,6 +805,52 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target B2-2 output lines "WM now _NET_WM_NAME: not found." and
   "rm: cannot remove '/home/sd/.cache/sessions/thumbs-66:0': Is a directory".
 
+[2026-08-14][W-045] B3 persistence installation DONE, all predicates observed.
+  WM ownership is now PROVEN properly for the first time using the corrected
+  W-044 probe: dereferencing `_NET_SUPPORTING_WM_CHECK` yields
+  `_NET_WM_NAME = "compiz"`. Compiz PID 5065 survived from B2-2 through B3
+  unchanged, ccsm and picom absent throughout, emerald 5078 still decorating,
+  and Default.ini still SHA-256 dcefbadd... at block end.
+  Artifacts installed on target:
+    /home/sd/.local/share/compiz-guard/Default.ini.golden
+      SHA-256 dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c
+      (byte-identical to the W-032 guard; this is the revert target)
+    /home/sd/.local/bin/compiz-revert    969 bytes, mode 0755, `sh -n` passed.
+      `compiz-revert` restores golden + restarts Compiz with __GL_YIELD=USLEEP;
+      `compiz-revert --xfwm4` execs xfce-wm-recover instead.
+    /home/sd/.local/bin/compiz-session   mode 0755, `sh -n` passed, content:
+      `exec env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp`
+  Session config changed: /sessions/Failsafe/Client0_Command moved from the
+  single-item array `xfwm4` to `/home/sd/.local/bin/compiz-session`. This is
+  the FIRST persistence change ever made in this project; IX.5's prohibition
+  is satisfied because B2-2's keep-live dwell passed first.
+  Inverses recorded: xfce4-session.xml backed up to
+  /home/sd/xfce4-session.xml.bak.1786722899. xfwm4 /general/use_compositing
+  re-verified false.
+  RECEIPT: target B3 block output pasted 2026-08-14, blocks a-g verbatim.
+
+[2026-08-14][X-029] *** X-028's CAUSAL STORY IS PARTLY WRONG AND MUST NOT BE
+  RELIED ON. *** B3-b answered U-018: `SaveOnExit` was ALREADY `false` before
+  B3 touched it ("SaveOnExit before false"). Therefore the
+  `[WM_COMMAND] (1) "ccsm"` record found in the session cache by W-041 CANNOT
+  have been written by routine save-on-exit, and disabling SaveOnExit is NOT
+  the thing that broke the loop — it was already off while CCSM was returning
+  at every boot. What actually stopped CCSM returning is the B2-2 cache
+  deletion (W-043), which removed the record itself.
+  The record's true origin is now UNKNOWN and is logged as U-019. The two
+  live hypotheses, neither verified: (a) an explicit "Save Session" via the
+  logout dialog checkbox or the Session and Startup GUI, which writes the
+  cache regardless of the SaveOnExit default; (b) a stale state file written
+  months ago and never cleared, since nothing prunes ~/.cache/sessions.
+  OPERATIONAL CONSEQUENCE, and this is what matters: the relaunch loop is
+  currently disarmed but NOT structurally impossible. If the user ever ticks
+  "Save session for future logins" in the logout dialog while a CCSM window
+  is open, the record returns and CCSM comes back at every boot. That is
+  survivable now (the golden snapshot + compiz-revert exist), but it must be
+  stated rather than assumed away. DO NOT tick that checkbox.
+  RECEIPT: B3-b output "SaveOnExit before  false" contradicting 11.6's
+  premise 2.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1247,6 +1293,17 @@ as its receipt. Do not guess any of them.
     xfconf-query -c xfce4-session -p /general/SaveOnExit
     xfconf-query -c xfce4-session -lv | sed -n '1,40p'
   Read-only. Do not change it until B3-B5 have passed.
+
+[U-019] ANSWERED-NEGATIVE FOLLOW-UP TO U-018. SaveOnExit was already false
+  (B3-b), so what wrote `[WM_COMMAND] (1) "ccsm"` into the xfwm4 session-cache
+  state file? Until this is known the relaunch loop is disarmed but not
+  structurally prevented (X-029). Resolving evidence, gathered AFTER the next
+  reboot so it reflects a real login cycle:
+    ls -la /home/sd/.cache/sessions/
+    grep -rIl -i 'ccsm' /home/sd/.cache/sessions/ 2>/dev/null || echo CLEAN
+    xfconf-query -c xfce4-session -lv | grep -i -E 'save|logout|prompt'
+  Promote to 6.A/6.B once a full logout/login is observed to either recreate
+  or not recreate a state file.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1972,3 +2029,59 @@ untouched by this session. New knowledge lands here and in the ledgers.
   "Detect Refresh Rate" must stay OFF. Turning either on discards
   s0_outputs / s0_refresh_rate and reproduces X-011 (tiny cropped display) or
   X-013 (choppy refresh). Everything else in CCSM is fair game.
+
+--------------------------------------------------------------------------------
+11.7 B3 RECEIPT — PERSISTENCE INSTALLED. Pasted 2026-08-14T15:54Z.
+     Ledger rows: W-045 (installation), X-029 (11.6 premise 2 CORRECTED).
+--------------------------------------------------------------------------------
+
+  WM ownership proven properly at last, via the W-044-corrected probe:
+  `_NET_SUPPORTING_WM_CHECK` -> `_NET_WM_NAME = "compiz"`. PID 5065 has now
+  been continuously live across two blocks with the profile hash unmoved.
+
+  CORRECTION, and it is the reason this section exists rather than a simple
+  "done": SaveOnExit was ALREADY false before B3 set it. 11.6's premise 2 —
+  that turning SaveOnExit off is what structurally kills the X-028 loop — is
+  FALSE, because it was off the whole time CCSM was returning every boot. The
+  loop was broken by B2-2 deleting the cache record, full stop. The record's
+  origin is unknown and is now U-019 / X-029. Practical upshot for the user:
+  never tick "Save session for future logins" in the logout dialog while CCSM
+  is open, or the record can come back.
+
+11.8 REBOOT GATE — what to expect, and the exact escapes.
+  On the next boot xfce4-session runs /home/sd/.local/bin/compiz-session,
+  which execs `env __GL_YIELD=USLEEP compiz --replace ccp`. Note it launches
+  WITHOUT `--sm-disable` (deliberate: the session manager must own it for a
+  login-started WM) and WITH `ccp`, so Compiz reads Default.ini and CCSM
+  changes take effect.
+  EXPECTED per X-009, none of these mean a broken install:
+    - xfce4-panel may vanish on workspace switch (compiz viewports vs XFCE
+      pager disagreement)
+    - decorations depend on emerald/gtk-window-decorator actually starting
+    - desktop icon labels may shift; fix is
+      xfconf-query -c xfce4-desktop -p /desktop-icons/center-text -n -t bool -s false
+  ESCAPES, in increasing severity:
+    compiz-revert                 restore golden profile + restart Compiz
+    compiz-revert --xfwm4         bail out to xfwm4, keep the desktop usable
+    /home/sd/.local/bin/xfce-wm-recover                        same, direct
+    Ctrl+Alt+F2 -> login -> `xfwm4 --replace &`                no-GUI case
+    full undo of persistence:
+      cp -a /home/sd/xfce4-session.xml.bak.1786722899 \
+        /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+  CCSM RULES for the configuration phase (X-013, X-011, X-029):
+    KEEP OFF: "Detect Outputs", "Detect Refresh Rate".
+    AVOID:    reflex, blur, mblur, bench, showmouse, mousepoll (X-013 caused
+              the shiny-edge artifact and choppy refresh).
+    AFTER a good set of changes, re-bless the snapshot:
+      cp -a /home/sd/.config/compiz/compizconfig/Default.ini \
+            /home/sd/.local/share/compiz-guard/Default.ini.golden
+    CLOSE CCSM before logging out, and never tick "Save session".
+
+[2026-08-14][M8/B3] Persistence INSTALLED and Compiz keep-live PROVEN.
+  Receipt: W-043, W-045, 11.5-11.8. Client0_Command now names
+  /home/sd/.local/bin/compiz-session; golden snapshot and compiz-revert are on
+  disk and syntax-checked. X-027 is RETIRED (profile survived a live session,
+  W-043). X-028 is SUPERSEDED by X-029 (SaveOnExit was already false; the
+  cache deletion is what worked). M8 is now BLOCKED only on the reboot gate:
+  a login-started Compiz must be observed owning the WM, with decorations,
+  animations and cairo-dock GL, before Section VIII wallpaper work may start.
