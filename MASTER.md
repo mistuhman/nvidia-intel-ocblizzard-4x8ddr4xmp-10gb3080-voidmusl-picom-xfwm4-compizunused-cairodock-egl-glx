@@ -3304,3 +3304,38 @@ controls to rotate between windows."
   U-022, U-023, U-024(closed), U-025(closed), U-026(closed), and the three
   uncollected human checks (smoothness re-confirm, titlebars, panel on
   workspace switch).
+
+--------------------------------------------------------------------------------
+12.14 M16 EMERALD GATE 1 — X-041 DIRECTORY BLOCKER CLEARED. Target output and
+      attached visual receipt, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-059] `~/.emerald/themes` was confirmed absent immediately before the
+    target block created it as `/home/sd/.emerald/themes`, mode 0755, owned by
+    sd:sd. It contained no files before any import. The installed manager is
+    `/usr/bin/emerald-theme-manager`; it remained live as PID 23838 after a
+    three-second launch check. The operator's attached screenshot visibly
+    shows the `Emerald Themer 0.8.18` window open with its Themes and Emerald
+    Settings tabs. This clears X-041's literal missing-directory blocker.
+    ROLLBACK while empty: `rmdir /home/sd/.emerald/themes`.
+    RECEIPT: target M16/X-041 block output plus attached manager screenshot,
+    pasted 2026-08-14.
+
+  [W-060] X-041's stronger inference that an absent per-user theme directory
+    meant there were no inventoried Emerald themes is superseded. The same
+    target receipt enumerated exactly 76 packaged theme directories under
+    `/usr/share/emerald/themes`, including directly relevant candidates
+    `Mac4Lin_Aqua`, `Mac4Lin_Graphite`, `Fogo_Monochrome`, `Scaled_Black_Mod`,
+    `Wombat_Black`, `Overglossed`, `PlatinUm`, `Yosemite`, and
+    `Yosemite_Graphite`. Those system themes are available without an import;
+    the currently active theme is still UNVERIFIED and must be identified
+    before selecting or forking anything. No theme was imported or selected by
+    this gate; it created the user directory and opened the manager only.
+    RECEIPT: the 76-line `/usr/share/emerald/themes` target listing in the
+    M16/X-041 output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-1] Missing user Emerald directory fixed and manager
+  launch visually VERIFIED. Receipt: W-059/W-060 and attached screenshot.
+  M16 remains IN PROGRESS: next identify the active Emerald selection and
+  inspect the most relevant packaged candidates read-only before making one
+  reversible visual selection. M18 and the sound-chain writes remain pending.
