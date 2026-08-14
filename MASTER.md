@@ -684,6 +684,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   NVIDIA A/B test, although the historical delayed launcher remains unknown.
   RECEIPT: target U-016 precondition and STOP output pasted 2026-08-14.
 
+[2026-08-14][W-040] The first NVIDIA scheduler A/B launched sole Compiz PID
+  15040 with verified `__GL_YIELD=USLEEP` and `--sm-disable`; it owned the WM
+  while emerald, panel and cairo-dock survived. The user explicitly reports
+  the result "IT WORKS, SMOOTH!", promoting USLEEP as the accepted smoothness
+  fix. Initial/end snapshots were 7.5/5.4% CPU, 162212/164036 KiB RSS,
+  23/38% GPU, 890/901 MiB and 55.07/29.92 W. Log had only known XI2/Emerald
+  warnings. Automatic recovery restored xfwm4 PID 15573 and removed Compiz/
+  Emerald. During the trial CCSM reappeared as PID 15146 and rewrote the
+  profile to SHA-256 61eff706..., preventing automatic guard restoration;
+  the exact good guard remains Default.ini.pre-gl-yield-usleep.1786692457 at
+  SHA-256 dcefbadd....
+  RECEIPT: target A/B environment/process/resource/log/recovery output and
+  direct user smoothness acceptance pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -946,6 +960,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   launch Compiz again until that longer trace captures the creator or a
   reversible exact-command suppression is installed.
   RECEIPT: W-038.
+
+[2026-08-14][X-027] Smoothness is solved but the current on-disk profile is
+  not accepted: delayed CCSM PID 15146 appeared during the successful trial,
+  rewrote Default.ini, and caused PROFILE GUARD FAIL. Before keeping Compiz
+  live, suspend the exact CCSM writer reversibly, preserve the mutated file,
+  restore the dcefbadd... guard, then launch with only the accepted
+  `__GL_YIELD=USLEEP`. Do not open CCSM while the machine-authored baseline is
+  being stabilized.
+  RECEIPT: W-040.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -1303,6 +1326,18 @@ Status vocabulary, used strictly:
   iteration budget, do not repeat writer tracing unless CCSM reappears; resume
   the already approved one-variable DP-2 sync-display trial with automatic
   recovery and byte-for-byte profile guard.
+
+[2026-08-14][M8/GL-A2] NVIDIA `__GL_YIELD=USLEEP` smoothness trial ACCEPTED;
+  automatic xfwm4 rollback DONE. Receipt: W-040. Overall M8 remains BLOCKED
+  only on X-027 writer suspension/profile restoration and a keep-live Compiz
+  dwell before persistence.
+
+[2026-08-14][M17] Operator iteration/PR weight stages TRACKED.
+  User reports current stage 362 with maximum/PR target about 405, describes
+  later lightweight cutting from 175 toward 115, and directs: do not open a
+  pull request and do not edit CONTINUE_PROMPT.md until the user explicitly
+  declares the PR target reached and requests pull/merge. Local receipt commits
+  and pushes to the fixed Arena branch continue at each verified gate.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
