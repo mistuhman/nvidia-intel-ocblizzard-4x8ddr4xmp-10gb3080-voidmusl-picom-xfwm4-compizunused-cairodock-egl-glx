@@ -5343,3 +5343,21 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-SLEEP] JSON PASS / deterministic preview PENDING. Proceed
   to MAIN RED live-memory JSON capture; preserve its original tab and apply the
   same strict distinction between settings receipt and blank placeholder PNG.
+
+--------------------------------------------------------------------------------
+12.67 MAIN-RED CAPTURE TRANSPORT FAILURE — JAVASCRIPT WAS PASTED INTO BASH,
+      NOT THE BROWSER CONSOLE. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-075] No main-red submission occurred. The operator pasted the browser-only
+    JavaScript at a `[sd@66 ~]$` Bash prompt, producing syntax/command errors.
+    This did not alter preset files or the live original tab. The instruction
+    was insufficiently transport-safe after several terminal blocks. Reissue
+    with explicit physical navigation before the block: leave Terminal, select
+    the original MAIN RED browser tab, press F12, select Console, confirm the
+    prompt begins `>>` rather than `[sd@66 ~]$`, then paste JavaScript. Never
+    label browser code as a generic copy block without that distinction.
+    RECEIPT: target Bash error stream and visible shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-1] INVALID/NO-OP. Main-red original tab
+  remains the input; repeat only in browser Developer Tools Console.
