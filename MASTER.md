@@ -552,6 +552,19 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target artifact listing, checksum, syntax check, `--check` output
   and printed rollback pasted 2026-08-14.
 
+[2026-08-14][W-030] X-019's bounded fresh-process requirement was executed:
+  sole Compiz PID 15827 ran as `compiz --replace --sm-disable`, owned the WM,
+  and retained emerald, xfce4-panel and cairo-dock with picom absent. The log
+  reported only the known no-XI2 warning. Initial/end snapshots were 9.1/10.6%
+  CPU, 149428/150408 KiB RSS, 48/38% GPU, 868 MiB GPU memory and 29.33/29.01 W.
+  Automatic invocation of /home/sd/.local/bin/xfce-wm-recover then restored
+  xfwm4 PID 16448 as WM with Compiz/Emerald absent and panel/dock surviving.
+  The user reports refresh is poor under the fresh Compiz process but perfect
+  on both displays immediately after xfwm4 recovery. Thus renderer hot-reload
+  was not the cause, while the recovery artifact is now destructively proven.
+  RECEIPT: target fresh-process identity/resources/log, automatic recovery
+  output and direct before/after visual observation pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -745,6 +758,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   result is visually accepted and resource cost is remeasured.
   RECEIPT: W-026 and direct user report "unchanged", 2026-08-14.
 
+[2026-08-14][X-020] The clean fresh `--sm-disable` Compiz process is visually
+  rejected, disproving stale renderer initialization as the sufficient cause
+  of X-019. Additionally, Default.ini changed unexpectedly during the bounded
+  launch/exit: SHA-256 was
+  3ac4f0329b18b0d5cbbe3331a36eadbb25507efc0b178535b715398aa8ccab7a before
+  and a572585c451b757282b77bb77e32a997e25374d45011692a9f6110a94ba033df
+  afterward, despite the test issuing no explicit profile write. Do not assume
+  the desired display/plugin values survived and do not relaunch Compiz until
+  the exact mutation is diffed against the timestamped backups. Current safe
+  runtime is xfwm4 without picom; the user's wallpaper-behaviour concern is
+  deferred behind M8 per Directive 10 rather than tuned under the wrong WM.
+  RECEIPT: W-030, before/after target SHA-256 output and user observation,
+  2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -846,6 +873,13 @@ as its receipt. Do not guess any of them.
   Resolve read-only from the unique `pgrep -xo compiz` PID; print its full
   ancestry, selected environment, fd 1/2 destinations and tails of any regular
   log files. Do not infer that the old PID remains valid before re-querying it.
+
+[U-012] What exactly did the bounded fresh Compiz process rewrite in
+  Default.ini? While safely on xfwm4, list checksums/timestamps for the active
+  profile and all `Default.ini.pre-*` backups, print the complete current
+  plugin/display truth, and diff the active file against the recent explicit-
+  display, vblank and clean backups. Resolve this before any NVIDIA A/B test;
+  a 640x480/default-list regression must not be carried into another launch.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -995,6 +1029,12 @@ Status vocabulary, used strictly:
   non-destructively verified. Receipt: W-029. This clears the recovery-artifact
   prerequisite for X-019's bounded fresh-process test. Overall M8 remains
   BLOCKED on that visual/resource test and later persistence reproduction.
+
+[2026-08-14][M8/IX.4B-4] Fresh non-XSMP Compiz test REJECTED; automatic
+  recovery PROVEN. Receipt: W-030 and X-020. Overall M8 remains BLOCKED on
+  U-012 profile-mutation forensics, then one-variable NVIDIA/GLX A/B tests.
+  Theming and wallpaper refinement remain gated until Compiz is smooth and
+  stable; current runtime is safe xfwm4 without picom.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
