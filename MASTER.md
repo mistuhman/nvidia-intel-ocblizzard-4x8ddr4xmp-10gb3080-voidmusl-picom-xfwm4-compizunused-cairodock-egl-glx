@@ -5259,3 +5259,23 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-SLEEP-SUBMIT] HTTP PASS. Before touching MAIN RED, next
   gate must verify the atomically written sleep JSON/PNG, exact tuple, 50 spline
   keys, source aggregate and receipt hashes from the filesystem.
+
+--------------------------------------------------------------------------------
+12.64 SLEEP FILE VERIFIER TRANSPORT FAILURE — INTERACTIVE `set -e` CLOSED THE
+      OPERATOR'S TERMINAL. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-072] The issued sleep filesystem verifier began with `set -euo pipefail`
+    directly in the operator's interactive shell. A failing precondition or
+    assertion therefore exited that login shell, and the terminal emulator
+    closed with it, hiding the decisive error. This is a transport/safety bug in
+    the verifier, not evidence that the sleep capture failed. Never enable
+    errexit directly in an operator's interactive shell again. Run strict
+    verification inside a child `bash` used as an `if` condition so any failure
+    is printed and the parent terminal remains open.
+    RECEIPT: direct operator report “that just closes the terminal i paste it
+    into,” 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-VERIFY-1] INVALID/NO RECEIPT. Reissue a bounded
+  child-shell verifier with labelled preconditions and guaranteed parent-shell
+  survival; do not touch MAIN RED.
