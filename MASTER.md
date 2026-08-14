@@ -5457,3 +5457,21 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-MAIN-RED] JSON PASS / deterministic preview PENDING.
   Proceed to WORK MONOCHROME using the proven same-page Blob download path; do
   not retry Zen loopback fetch.
+
+--------------------------------------------------------------------------------
+12.72 WORK-MONOCHROME DOWNLOAD TRANSPORT FAILURE — BROWSER JAVASCRIPT AGAIN
+      PASTED INTO BASH. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-078] No work-monochrome download occurred. Immediately after the terminal
+    import workflow, the operator pasted the next browser-only JavaScript at the
+    `[sd@66 ~]$` prompt, producing only Bash errors. This is again a no-op with
+    respect to browser state and preset files. Repeating code immediately is not
+    transport-safe. Require an explicit navigation handshake with no code:
+    operator selects the original WORK MONOCHROME Zen tab, opens F12 Console,
+    confirms the visible prompt, and replies `WORK CONSOLE READY`; only then
+    issue the Blob-download JavaScript.
+    RECEIPT: target Bash error stream and shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-1] INVALID/NO-OP. Await browser-console
+  readiness handshake; do not send another code block in this response.
