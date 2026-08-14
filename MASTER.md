@@ -433,6 +433,17 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   Compiz and picom remained stopped. Visual performance is not yet proven.
   RECEIPT: target IX.3C-1 diff and process output pasted 2026-08-14.
 
+[2026-08-14][W-020] IX.3C-2 is the first visually accepted live Compiz state.
+  Compiz PID 16048 owns `_NET_SUPPORTING_WM_CHECK`; xfwm4 is replaced, picom
+  is stopped, and one emerald PID 16060 remains as decorator. Both exact
+  monitor rectangles and the refined plugin/120 Hz profile were printed.
+  The user confirmed smooth movement, removal of the shiny effect, correct
+  complete monitor placement, and working plugins. The log contains only the
+  already observed no-XI2 and emerald GTK CSS/Wnck warnings, with no reported
+  fatal startup error. X-013's observed symptoms are superseded by this state.
+  RECEIPT: target IX.3C-2 process/WM/profile/log output plus four direct visual
+  checks, 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -714,6 +725,20 @@ Status vocabulary, used strictly:
   Overall M8 remains BLOCKED on a visually accepted IX.3C-2 live trial. If
   accepted, keep that Compiz process live for interactive refinement but do
   not yet change the XFCE session command.
+
+[2026-08-14][M8/IX.3C-2] Refined Compiz live trial visually accepted DONE.
+  receipt: W-020; target identity/profile output and user checks.
+  This supersedes X-013's performance block. Overall M8 remains BLOCKED on a
+  stability dwell, installed TTY recovery command, persistence, and a complete
+  logout/login reproduction. Keep the accepted Compiz process live meanwhile.
+
+[2026-08-14][M16] Reversible monochrome/skeuomorphic desktop theme PLANNED
+  after M8 stability and persistence are proven.
+  requested direction: early-2000s Windows plus OS X 10.4/10.6 and the user's
+  "sorbet visualizer" reference, coordinated across emerald, XFCE/GTK,
+  xfce4-panel and cairo-dock. Identify the exact requested "Monochrome"
+  download, source, license and checksum before installing it; back up every
+  selected theme/config value and retain a one-command visual rollback.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
