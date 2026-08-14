@@ -5307,3 +5307,39 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-SLEEP-VERIFY-2] JSON provisional PASS / preview FAIL.
   MAIN RED remains untouched. Next gate is a stdlib-only read-only PNG structural
   and pixel-distribution probe; terminal-safe child-shell pattern mandatory.
+
+--------------------------------------------------------------------------------
+12.66 SLEEP PREVIEW PROVEN BLANK; EXACT JSON PROMOTED; VISUAL PREVIEW DEFERRED
+      TO DETERMINISTIC RENDERER. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-137] The sleep PNG probe decoded the entire image without external tools:
+    valid non-interlaced RGBA8, 1565x505, 790,325 fully opaque pixels, but zero
+    pixels above RGB 3, average RGB 0 and maximum channel 0. It is exactly black,
+    not merely highly compressible sleep art. The content gate correctly printed
+    `PREVIEW_CONTENT=BLANK`; the parent terminal again survived.
+    RECEIPT: target stdlib PNG chunk/decompression/unfilter/pixel probe,
+    2026-08-14.
+
+  [X-074] `canvas.toDataURL()` cannot serve as visual evidence for this live
+    WebGL page because the context does not preserve its drawing buffer between
+    compositor presentation and asynchronous console capture. This affects the
+    preview channel only, not the cloned in-memory JSON posted in the same
+    request. Treat capture-service PNGs from original tabs as placeholders and
+    replace them after explicit deterministic rendering. Do not relax pixel
+    validation or claim a blank PNG matches a role.
+    RECEIPT: X-073 plus W-137 exact blank-pixel evidence and source context
+    creation options, 2026-08-14.
+
+  [W-138] Sleep preset JSON is promoted to exact manifest PASS despite preview
+    deferral: SHA `57bdad0e...`, schema 1, role sleep, source aggregate
+    `b363b0b1...`, 50 spline values and live particle tuple
+    `257/0.19/2.6/50/0.18`. Its human visual target remains W-114's labelled
+    screenshot. A generated preview becomes mandatory at the later seek/seed
+    renderer gate before any full sleep video is encoded.
+    RECEIPT: W-134/W-136 exact live object and filesystem validation separated
+    from X-074 preview mechanism failure, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP] JSON PASS / deterministic preview PENDING. Proceed
+  to MAIN RED live-memory JSON capture; preserve its original tab and apply the
+  same strict distinction between settings receipt and blank placeholder PNG.
