@@ -5593,3 +5593,40 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   Screenshot-derived numeric ambiguities are superseded. Next gate is a seeded,
   explicit-clock deterministic renderer producing one real nonblank preview per
   manifest; no full-duration encode before preview A/B acceptance.
+
+--------------------------------------------------------------------------------
+12.78 SEEDED EXPLICIT-CLOCK THREE-ROLE PREVIEW RENDERER AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-148] New `scripts/xmb-render-previews.mjs` is the first deterministic
+    renderer gate. It refuses any of the three manifests unless their exact
+    W-138/W-141/W-146 hashes match, launches the installed Chromium through the
+    existing Puppeteer dependency, fixes viewport 4480x1440 and device scale 1,
+    replaces Math.random with fixed-seed mulberry32 before source execution,
+    replaces performance.now/requestAnimationFrame with an explicit clock,
+    applies one manifest before the first frame, resets the particle seed, and
+    advances every 60 Hz simulation step from t=0 through t=5 in one renderer
+    call so temporal smoothing remains deterministic. It hides all control UI,
+    calls gl.finish/readPixels, rejects wrong dimensions or blank/nearly-black
+    framebuffers, captures a compositor PNG, repeats every role in a fresh page
+    and requires byte-identical PNG hashes across both passes. Only then does it
+    publish canonical previews and a receipt. It does not encode video.
+    Script SHA-256 is
+    `7314b3ee7fadc307929adea74f167b3be384b986e0e63e74b205e2e5b3f7522e`.
+    RECEIPT: source review, Node syntax check, invariant grep and sha256sum in
+    sandbox, 2026-08-14.
+
+  [U-035] Target GPU/WebGL behavior remains a live gate. The driver requests
+    Chromium's previously allowed ANGLE/default path, records actual WebGL
+    vendor/renderer/version and reads pixels directly. Sandbox has no target X/
+    GPU and cannot claim rendering. If target ANGLE fails, adjust only from its
+    exact Chromium error; do not fall back silently to the rejected x11grab
+    method. Preview visual acceptance remains separate from deterministic/hash
+    acceptance.
+    RECEIPT: environment boundary plus prior Chromium GL logs, 2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEW-TOOL] AUTHORED/SYNTAX PASS, target
+  unexecuted. Next target block is one short immutable download/hash/install and
+  execution. It may take time but writes only under the NVMe bake root; no WM,
+  source manifest or original editor change.
