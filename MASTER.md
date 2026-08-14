@@ -878,6 +878,62 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   dcefbadd... baseline rather than a profile captured mid-fault.
   RECEIPT: direct user report 2026-08-14, post-B3, pre-reboot.
 
+[2026-08-14][W-046] *** X-030 IS DIAGNOSED AND IT IS CONFIG-SIDE, NOT A CRASH.
+  IT ALSO MEANS REBOOTING RIGHT NOW WOULD HAVE BOOTED A BAD PROFILE. ***
+  B4-pre proves Compiz never restarted: PID is still 5065, start time still
+  Fri Aug 14 15:49:21 2026, cmdline still `compiz --replace --sm-disable`,
+  `__GL_YIELD=USLEEP` still in its environ, emerald still 5078, ccsm absent.
+  Candidate (a) from X-030 (crash/restart) is therefore ELIMINATED.
+  What actually changed is Default.ini. It moved off the guard to SHA-256
+  e4369dd56f9fed954f44a63cecdbfda042c7f35b689abbd1fe5836b7bdd71b18, mtime
+  2026-08-14 16:18:45, and shrank to 282 bytes. Its entire surviving content
+  of interest is one line:
+    as_active_plugins = core;ccp;move;resize;place;decoration;water;wobbly;
+                        regex;cube;animation;3d;animationaddon;
+  *** EVERY s0_ DISPLAY VALUE IS GONE. *** The grep for
+  `s0_detect|s0_refresh|s0_outputs|s0_sync` returned NOTHING: no
+  s0_detect_outputs=false, no s0_outputs rectangles, no s0_refresh_rate=120,
+  no s0_detect_refresh_rate=false, no s0_sync_to_vblank. Every hard-won
+  W-017/W-018/W-026 geometry and refresh value has been discarded, and the
+  heavy eyecandy plugins water/wobbly/cube/3d — explicitly removed by W-019
+  as the X-013 suspects — are back.
+  This is the SAME failure family as B1-c's fat 09f0c6c7 profile, and the
+  plugin list is nearly the same shape (water;wobbly;cube;3d present,
+  display values absent). It is now proven to happen from a live CCSM session
+  without any crash, which strongly suggests CCSM is writing a profile out of
+  its own in-memory/backend state rather than merging into the file on disk.
+  The live process is unaffected because Compiz already has its settings in
+  memory — which is exactly why the desktop still looks fine while the file
+  that would be read AT NEXT LOGIN is bad.
+  CORROBORATION IN THE LOG: `compiz (cube) - Warn: Failed to load slide:
+  freedesktop` appears twice, proving the cube plugin actually loaded live.
+  RECEIPT: target B4-pre output pasted 2026-08-14, all sections verbatim.
+
+[2026-08-14][X-031] *** DO NOT REBOOT WITH THE ACTIVE PROFILE OFF THE GUARD.
+  *** Direct consequence of W-046 and the reason B4-pre existed. Since B3,
+  Client0_Command is /home/sd/.local/bin/compiz-session, which runs
+  `compiz --replace ccp` — and `ccp` makes Default.ini AUTHORITATIVE at login.
+  Booting with e4369dd... would start Compiz with no output rectangles
+  (reproducing X-011's tiny/cropped display on this dual-monitor setup, since
+  s0_detect_outputs is not even present to fall back on), no fixed 120 Hz
+  (X-013 choppiness), and the water/wobbly/cube/3d stack loaded. The live
+  session's good behaviour is NOT evidence about the next boot: they are
+  different sources of truth. MANDATORY pre-reboot check, every time:
+    sha256sum ~/.config/compiz/compizconfig/Default.ini
+  It must equal the golden snapshot hash before a reboot or logout.
+  RECEIPT: W-046 profile content plus W-045 Client0_Command receipt.
+
+[2026-08-14][W-047] Emerald's decorator log changed character during the CCSM
+  session: at 16:00:18 emerald PID 5078 emitted a long run of
+  `Theme parsing error: gtk.css:31xx:0: Expected semicolon` ending in
+  `gtk.css:3201:0: expected '}' after declarations`, at much higher line
+  numbers than the four `gtk.css:2/6/10/15` colour errors logged at launch
+  (W-043). The decorator did not die — PID 5078 is unchanged. This indicates
+  a theme reparse of a larger/different stylesheet during the session, not a
+  new fault class. Recorded as context for the known X-009/emerald-theme
+  fragility; it is NOT currently a blocker and no action is taken on it.
+  RECEIPT: B4-pre log tail pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -2192,3 +2248,63 @@ untouched by this session. New knowledge lands here and in the ledgers.
     - `ccp` is present, so Default.ini is authoritative
   PRE-REBOOT CHECKLIST (gate B4-pre): close CCSM, confirm the profile hash,
   confirm the escapes exist, do NOT tick "Save session for future logins".
+
+--------------------------------------------------------------------------------
+11.12 X-030 CLOSED, X-031 OPENED. B4-pre receipt, 2026-08-14T16:19Z.
+      Ledger: W-046 (diagnosis), X-031 (reboot blocker), W-047 (emerald log).
+--------------------------------------------------------------------------------
+
+  THE GOOD NEWS. Compiz did not crash. PID 5065, start time 15:49:21,
+  `--sm-disable`, `__GL_YIELD=USLEEP` — all unchanged since B2-2. Emerald 5078
+  unchanged. The runtime has been stable for ~30 minutes including a full CCSM
+  editing session. Stability of the RUNNING compositor is not in question.
+
+  THE BAD NEWS, AND IT IS THE ENTIRE POINT OF THIS GATE. Default.ini is now
+  e4369dd..., 282 bytes, and every `s0_` display value has been deleted —
+  outputs, refresh rate, detect flags, vblank, all gone — while water, wobbly,
+  cube and 3d are back in the plugin list. The user's "it kinda just reset
+  itself" was literal and it was the FILE, not the UI and not the compositor.
+
+  WHY THIS MATTERS MORE THAN IT LOOKS. The live session is fine because Compiz
+  holds its settings in memory. The file is what gets read AT NEXT LOGIN, and
+  since B3 the login command is `compiz --replace ccp`, where `ccp` makes that
+  file authoritative. Rebooting in this state would have booted the exact
+  configuration that produced X-011 (cropped display) and X-013 (choppy) —
+  with no output rectangles at all on a dual-monitor machine. This is
+  precisely the failure the pre-reboot gate was built to catch, and it caught
+  it on the first use.
+
+  THE RULE THAT FALLS OUT OF THIS, now mandatory before every reboot/logout:
+      sha256sum ~/.config/compiz/compizconfig/Default.ini
+  must equal the golden hash dcefbadd... . A live desktop that looks correct
+  is NOT evidence that the file is correct. They are different sources of
+  truth and they have now demonstrably diverged.
+
+  MECHANISM, still unproven: CCSM appears to write a whole profile from its
+  own backend state rather than merging into the on-disk file, so values it
+  does not know about are dropped. This matches W-033/W-034 (CCSM rewriting
+  and reordering the plugin list) and B1-c (the fat 09f0c6c7 profile with no
+  display values). Same family, now observed without any crash or respawn.
+  It follows that CCSM and hand-maintained `s0_` values are FUNDAMENTALLY IN
+  CONFLICT, and the project must choose one authority. See 11.13.
+
+11.13 THE AUTHORITY PROBLEM — decide this before personalization resumes.
+  The user wants to configure through CCSM. CCSM demonstrably destroys the
+  hand-written display block. Three options, none yet chosen:
+    (A) CCSM IS AUTHORITY. Set the geometry/refresh values THROUGH CCSM's own
+        UI (General > Display Settings: uncheck Detect Outputs, enter the two
+        rectangles; General > Composite: uncheck Detect Refresh Rate, set
+        120; Sync To VBlank on). Then CCSM's writes preserve them because it
+        knows about them. This is the option most compatible with the stated
+        goal and should be tried first.
+    (B) FILE IS AUTHORITY. Never open CCSM; edit Default.ini with Compiz
+        stopped. Proven to work (W-032/W-043) but it forfeits the user's goal.
+    (C) REPAIR-ON-LOGIN. compiz-session re-injects the s0_ block into
+        Default.ini before exec'ing compiz, making CCSM's deletions
+        self-healing at every boot. Most robust, and it does not constrain
+        what the user does in CCSM, but it silently overrides CCSM for those
+        specific keys — which is acceptable ONLY because those exact keys are
+        the ones that must never change on this hardware.
+  RECOMMENDATION: (C) as the safety net, with (A) attempted first so the two
+  agree. (C) alone means the user can use CCSM freely and a bad write can
+  never reach a boot.
