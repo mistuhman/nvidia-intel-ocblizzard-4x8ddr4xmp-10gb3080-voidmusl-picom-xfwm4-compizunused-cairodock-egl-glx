@@ -4667,3 +4667,31 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9/PRESET-CAPTURE-1] MONOCHROME preset PARTIAL PASS: visible values
   and composition captured, lower clipped settings remain open. Red/main and
   sleep references remain unreceived as distinct evidence because of X-059.
+
+--------------------------------------------------------------------------------
+12.50 ATTACHMENT ORDER MAPPED TO RUNTIME ROLES; VISIBLE GEOMETRY IS SHARED OR
+      TRANSPORT-INDISTINGUISHABLE. Operator clarification 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-108] The four-image order is now identified: image 1 is the sleep reference,
+    images 2 and 3 are duplicate references for red/main, and image 4 is the
+    work reference (the previously described black-and-white night-ocean-city
+    state). Preserve that semantic order when later preset records are named:
+    `sleep`, `main-red`, `work-monochrome`; do not mistake the four attachments
+    for four runtime states.
+    RECEIPT: direct operator clarification, 2026-08-14.
+
+  [U-031] The rendered frames and all visible slider values remain visually
+    indistinguishable across those role-labelled images. Therefore W-107 can be
+    treated as a shared visible geometry/particle baseline, but the pixels do
+    not yet evidence the role-specific palette/effect differences. The likely
+    differentiators may be controls below the clipped panel, configuration not
+    represented by these screenshots, or desired changes not yet applied.
+    Collect explicit palette/effect intent for sleep, main-red and
+    work-monochrome before freezing three deterministic preset manifests.
+    RECEIPT: operator role mapping reconciled with X-059 visual comparison,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-ROLE-MAP] PASS. Three roles are named and one shared
+  visible baseline is captured. Distinct preset manifests remain blocked on
+  U-031, not on attachment ordering.
