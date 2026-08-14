@@ -614,6 +614,19 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target exact-process termination, restored hash/mtime, dwell
   hash/mtime, respawned PID and runtime output pasted 2026-08-14.
 
+[2026-08-14][W-035] U-014 found respawned CCSM PID 3132 is orphaned under
+  runit PID 1, has the desktop's XFCE/X11 D-Bus and SESSION_MANAGER environment,
+  but neither of its two X windows exposes SM_CLIENT_ID. It is not a direct
+  child of xfce4-session PID 1142. No `ccsm` reference was found in the saved
+  session files or autostart directories; the sole grep hit is
+  `ccsm.desktop` in xfce4-panel.xml, which proves a panel item exists but does
+  not by itself prove a restart mechanism. After respawn, Default.ini SHA-256
+  eae6553c... retains all explicit core display values but omits `ccp` and adds
+  `wobbly` to the reordered plugin list. Runtime remains safe xfwm4 without
+  Compiz/picom. U-014 therefore narrows but does not identify the launcher.
+  RECEIPT: target U-014 ancestry/environment, window properties, session
+  children/cache grep, full profile and WM output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -991,6 +1004,14 @@ as its receipt. Do not guess any of them.
   read-only. The next action must disable only the proven restart source with
   a written inverse before restoring the profile again.
 
+[U-015] Which documented mechanism can relaunch orphaned CCSM without an
+  SM_CLIENT_ID, and how should Compiz Reloaded 0.8.18 settings be controlled
+  without racing CCSM? Resolve through filtered upstream/XFCE/Compiz sources
+  plus one bounded target observation of the actual process creator. Source
+  priority: upstream code/manuals and distro package files first; issue/forum
+  reports only when version-matched and corroborated. Reject generic Compiz
+  0.9/Ubuntu guidance and claims that do not distinguish ccp from CCSM.
+
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
 ================================================================================
@@ -1176,6 +1197,14 @@ Status vocabulary, used strictly:
   FAILED due to respawn. Receipt: W-034/X-025. Overall M8 remains BLOCKED on
   U-014 exact restart-source identification and reversible suppression before
   restoring or launching Compiz.
+
+[2026-08-14][M8/U-014] CCSM respawn-source inspection PARTIAL.
+  Receipt: W-035. XSMP saved-session restart is not supported by the observed
+  parent/window/cache evidence, while the panel item is not causal proof.
+  Overall M8 remains BLOCKED on U-015 filtered documentation research and one
+  bounded creator observation. Future orchestration may use Python artifacts
+  rather than long shell blocks, but target execution claims still require
+  pasted receipts and the one-block gate protocol.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
