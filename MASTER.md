@@ -5475,3 +5475,16 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-14][M9-PRESET-WORK-DOWNLOAD-1] INVALID/NO-OP. Await browser-console
   readiness handshake; do not send another code block in this response.
+
+--------------------------------------------------------------------------------
+12.73 WORK-MONOCHROME ZEN CONSOLE READINESS HANDSHAKE PASSES.
+      Operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-143] The operator confirms `WORK CONSOLE READY` after the explicit
+    navigation handshake. The next copy block is therefore browser JavaScript
+    for the original work-monochrome tab, not a shell command.
+    RECEIPT: direct operator readiness confirmation, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-2] TRANSPORT READY. Issue the same-page
+  Blob download now; no loopback fetch.
