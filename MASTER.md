@@ -816,6 +816,17 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   repeat the same safe restoration; do not weaken the no-Compiz/no-picom gate.
   RECEIPT: target restoration precondition and STOP output pasted 2026-08-14.
 
+[2026-08-14][X-023] The first `__GL_SYNC_DISPLAY_DEVICE=DP-2` A/B test did
+  not launch and therefore produced no visual result. Its safety gate found
+  xfwm4 still owning the screen with no reported Compiz/picom, but Default.ini
+  had drifted from W-032 SHA-256 dcefbadd... to
+  110c892aeeb99adee2d31b04ff2eb4d460a9fbb5dee9d433fb3f11cac9becba7 while
+  Compiz was absent. The block stopped before creating its profile guard,
+  arming recovery, or changing the WM. A non-Compiz writer or unobserved
+  configuration process is therefore now evidence-backed; identify the exact
+  diff and likely live writer before restoring again.
+  RECEIPT: target A/B precondition and STOP output pasted 2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -924,6 +935,14 @@ as its receipt. Do not guess any of them.
   plugin/display truth, and diff the active file against the recent explicit-
   display, vblank and clean backups. Resolve this before any NVIDIA A/B test;
   a 640x480/default-list regression must not be carried into another launch.
+
+[U-013] What changed W-032 while Compiz was absent, and which process can
+  still write the profile? While remaining on xfwm4, print the complete active
+  file and diff it against the W-032 guard candidate, query ccsm and other
+  Compiz/config processes, and inspect open-file ownership with available
+  `fuser`/`lsof` tools. Do not kill or write yet; one read-only receipt must
+  identify whether CCSM or another process survived before the next guarded
+  restoration.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1095,6 +1114,11 @@ Status vocabulary, used strictly:
   launch-unsafe file state. Overall M8 remains BLOCKED on one-variable bounded
   NVIDIA/GLX A/B trials, beginning with the missing OpenGL sync-display
   selector while preserving/restoring this exact profile around every run.
+
+[2026-08-14][M8/GL-A1] DP-2 OpenGL sync-display A/B NO-OP/REJECTED.
+  Receipt: X-023. The guard correctly prevented launch after profile drift.
+  Overall M8 remains BLOCKED on U-013 writer identification; no conclusion
+  about `__GL_SYNC_DISPLAY_DEVICE` is permitted from this no-op.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
