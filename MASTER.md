@@ -698,6 +698,23 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target A/B environment/process/resource/log/recovery output and
   direct user smoothness acceptance pasted 2026-08-14.
 
+[2026-08-14][W-041] A new read-only handoff receipt establishes live Compiz
+  PID 18687 (`compiz --replace --sm-disable`) as the supporting WM, with
+  Emerald PID 19061, xfce4-panel PID 1252 and cairo-dock PID 1301 surviving;
+  xfwm4 and picom are absent. The user again reports that Compiz is smooth.
+  Exact CCSM PID 19392 is live in state S. Its visible Animations/Close page
+  and the complete active profile show close rows Zoom 200 ms, Fade 150 ms,
+  Fade 150 ms and Burn 50 ms, with Burn selected in the random-effects pool.
+  The active profile is SHA-256 09f0c6c7... and enables a coupled set including
+  water, wobbly, cube, gears, animation, 3d, animationaddon and animationplus.
+  This receipt did not inspect PID 18687's environment, so it does not prove
+  that this particular process inherited `__GL_YIELD=USLEEP`. The accepted
+  dcefbadd... guard remains intact. Recovery remains mode 0755/SHA-256
+  3f9402d... with syntax and `--check` exit 0; persistent Client0 still names
+  xfwm4, preserving logout safety.
+  RECEIPT: target process/WM/profile/guard/recovery output, user smoothness
+  report and CCSM Animations screenshot pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -969,6 +986,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   `__GL_YIELD=USLEEP`. Do not open CCSM while the machine-authored baseline is
   being stabilized.
   RECEIPT: W-040.
+
+[2026-08-14][X-028] The prior agent response failed the receipt-first
+  interaction protocol: after W-041 arrived it did not append/commit/push the
+  receipt or deliver one bounded next target before interruption. More
+  importantly, current visual smoothness must not be mistaken for an accepted
+  animation baseline: PID 18687's USLEEP environment is unverified, live CCSM
+  remains a writer, the 09f0c6c7... file has lost the accepted explicit core
+  display values, and it couples the requested animation plugins to water,
+  wobbly, cube, gears and 3d elements previously rejected as an all-at-once
+  stack in X-015. Do not add more effects on top of this state. Preserve it as
+  a candidate, verify the scheduler environment, then isolate one requested
+  animation group with an exact before/after receipt and immediate rollback.
+  RECEIPT: W-041 and the missing receipt commit observed by the user on
+  2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -1331,6 +1362,13 @@ Status vocabulary, used strictly:
   automatic xfwm4 rollback DONE. Receipt: W-040. Overall M8 remains BLOCKED
   only on X-027 writer suspension/profile restoration and a keep-live Compiz
   dwell before persistence.
+
+[2026-08-14][M8/ANIM-0] Smooth live animation candidate OBSERVED, not yet an
+  accepted baseline. Receipt: W-041/X-028. The requested Burn close effect is
+  visibly configured but only for 50 ms and is coupled to several unrelated
+  plugins. Overall M8 remains BLOCKED on verifying this Compiz PID's scheduler
+  environment, preserving the candidate, and testing one reversible animation
+  group before any persistence work.
 
 [2026-08-14][M17] Operator iteration/PR weight stages TRACKED.
   User reports current stage 362 with maximum/PR target about 405, describes
