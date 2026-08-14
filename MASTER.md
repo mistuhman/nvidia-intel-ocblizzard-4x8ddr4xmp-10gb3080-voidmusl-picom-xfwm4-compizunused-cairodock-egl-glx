@@ -4162,3 +4162,21 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
     is superseded before any target download.
     RECEIPT: sandbox normalization unit assertion, compile, two-build diff and
     unchanged generated hashes, 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.35 GTK3 COMPOSER SCREENSHOT ARRIVED BEFORE TARGET EXECUTION — NO NEW STATE.
+      Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-050] The attached screenshot still shows the prior `GTK GRAPHICS FIX`
+    terminal output with `active GTK: Quake-Aqua-AMOLED`; it does not show a
+    GUNMETAL GTK3 LIVE TRIAL block, Quake-Gunmetal-3D XSettings value, build
+    hashes, differential probe, or status receipt. Visually it is the same
+    W-087/X-049 base: graphical but too flat. Therefore W-088/W-090's composer
+    remains UNEXECUTED on target and no judgement about its generated depth is
+    permitted from this image. Reissue the immutable c489b9b target block and
+    wait for its output plus post-activation screenshot.
+    RECEIPT: attached screenshot, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-TARGET-1] NO-OP/UNEXECUTED. Receipt: X-050.
+  Next action unchanged: run the c489b9b live-trial block.
