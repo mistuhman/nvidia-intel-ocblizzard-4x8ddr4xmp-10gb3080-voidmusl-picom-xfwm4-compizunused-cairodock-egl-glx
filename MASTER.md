@@ -6018,3 +6018,63 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   deterministic video artifact of the project. Await
   `MAIN_RED_VIDEO_BAKE=PASS`; then human loop inspection before the remaining
   two roles are baked, per U-037's one-role-first rule.
+
+--------------------------------------------------------------------------------
+12.86 MAIN-RED SEAMLESS LOOP COMPLETE AND VISUALLY ACCEPTED. M11 CLOSED.
+      Target + human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-163] `MAIN_RED_VIDEO_BAKE=PASS`. The full two-pass bake completed and every
+    machine gate held. Deliverables in
+    `/mnt/games/xmb-wave-bake/out/main-red/`:
+      loop    `main-red.loop-60s.mp4`     156,659,080 bytes, SHA-256
+              `1f8de512f9f30a331a00d0ef73e2f306e566ec9aa9efbcde71019bd915755573`
+      master  `main-red.master-62.3s.mp4` 209,122,085 bytes, SHA-256
+              `16325f7613c1f3fe9c0610702d85c546d79d20cb4400e4e81bf5a9dd50ed911d`
+      receipt `BAKE-RECEIPT.json`         1,727 bytes, SHA-256
+              `3ff9afd6104a3dc64a28b817a3d2713f305303327b08abbfdc4f8e49f82cfe87`
+    The loop only exists because the tool's own assertions passed first: exact
+    4480x1440 dimensions, `60/1` average frame rate and 60+/-0.05 s duration.
+    U-043 is CLOSED. Loop bitrate is ~20.9 Mbit/s.
+    RECEIPT: target log tail, `ls -la` sizes and printed hashes, 2026-08-14.
+
+  [W-164] Independent playback verification on the target: mpv reports
+    `Video --vid=1 (hevc 4480x1440 60 fps)` and `VO: [gpu-next] 4480x1440
+    yuv420p`, playing to 00:00:17 of 00:01:00 before a clean operator quit. This
+    confirms the container/codec/geometry/pixel-format are all readable by the
+    intended runtime player, not merely by ffprobe. The 60-second duration is
+    confirmed by a third independent tool.
+    RECEIPT: target mpv stream banner and position line, 2026-08-14.
+
+  [W-165] HUMAN VISUAL ACCEPTANCE — distinct from the machine receipts above and
+    labelled as such per the interaction protocol. Operator verdict: "looks
+    good". The submitted screenshot shows the main-red XMB wave filling the
+    4480x1440 X screen: multi-strand specular crest across the horizontal
+    midline, deep red vertical gradient below, AMOLED-black falloff above,
+    scattered particle sparkle, and no visible seam, tear or banding. The frame
+    is consistent with the W-151 contact sheet the operator previously accepted.
+    This closes the M11 aesthetic gate for main-red.
+    RECEIPT: operator statement plus attached mpv screenshot, 2026-08-14.
+
+  [W-166] The deterministic method is quantitatively better than the rejected
+    x11grab pipeline it replaced (X-063). The new 60-second 4480x1440 loop is
+    156,659,080 bytes against the old `loop.mp4` at 482,431,993 bytes (W-122) —
+    67.5% smaller for the same duration and geometry, with none of the old
+    path's dropped frames, duplicated frames, invalid DTS or pathological
+    timestamps. Deterministic seeking beat real-time capture on both size and
+    correctness.
+    RECEIPT: W-163 size versus W-122 recorded size, 2026-08-14.
+
+  [U-044] Loop seam quality is accepted on a 17-second partial viewing, which
+    did NOT reach the 60-second wrap point. The 2.3-second crossfade is
+    mathematically constructed and the duration gate passed, but no human has
+    yet observed the actual 59->0 transition. Confirm during normal desktop use,
+    or deliberately with `mpv --loop-file=inf --start=55`. This is a low-risk
+    open item, not a blocker.
+    RECEIPT: mpv position `00:00:17 / 00:01:00` at quit, 2026-08-14.
+
+[2026-08-14][M11-MAIN-RED] COMPLETE — MACHINE PASS + HUMAN PASS. First role
+  fully baked by the deterministic headless method, closing the loop opened by
+  Directive 2. U-037's one-role-first rule is satisfied; `sleep` and
+  `work-monochrome` are now authorized to bake back to back at ~9 minutes each.
+  Runtime deployment (xwinwrap/mpv, Section IX) remains a separate later stage.
