@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""compiz-profile-repair: enforce the hardware-fixed [core] display keys in
+the active Compiz profile. Idempotent. Exit 0 = file is correct (possibly
+after repair), 1 = could not repair."""
+import sys, os, re, shutil, time
+
+CFG = os.path.expanduser("~/.config/compiz/compizconfig/Default.ini")
+# The ONLY keys this tool owns. Hardware facts, verified W-016/W-018/W-026.
+ENFORCE = [
+    ("s0_detect_refresh_rate", "false"),
+    ("s0_refresh_rate",        "120"),
+    ("s0_detect_outputs",      "false"),
+    ("s0_outputs",             "2560x1440+0+0;1920x1080+2560+197;"),
+    ("s0_sync_to_vblank",      "true"),
+    ("s0_lighting",            "true"),
+    ("as_texture_filter",      "0"),
+]
+
+def parse(path):
+    with open(path) as f:
+        return f.read().splitlines()
+
+def repair(lines):
+    """Return (newlines, changed_keys). Only touches the [core] section."""
+    out, changed = [], []
+    # locate [core]
+    try:
+        ci = lines.index("[core]")
+    except ValueError:
+        ci = None
+    if ci is None:
+        return ["[core]"] + ["%s = %s" % kv for kv in ENFORCE] + lines, \
+               [k for k, _ in ENFORCE]
+    # find end of the core section
+    end = len(lines)
+    for i in range(ci + 1, len(lines)):
+        if lines[i].startswith("[") and lines[i].endswith("]"):
+            end = i
+            break
+    core = lines[ci + 1:end]
+    seen = {}
+    for i, ln in enumerate(core):
+        m = re.match(r"^\s*([A-Za-z0-9_]+)\s*=\s*(.*)$", ln)
+        if m:
+            seen[m.group(1)] = i
+    for key, val in ENFORCE:
+        want = "%s = %s" % (key, val)
+        if key in seen:
+            if core[seen[key]].strip() != want:
+                core[seen[key]] = want
+                changed.append(key)
+        else:
+            core.append(want)
+            changed.append(key)
+    out = lines[:ci + 1] + core + lines[end:]
+    return out, changed
+
+def main():
+    check = "--check" in sys.argv
+    if not os.path.exists(CFG):
+        print("repair: no profile at %s" % CFG); return 1
+    lines = parse(CFG)
+    new, changed = repair(lines)
+    if not changed:
+        print("repair: OK, all %d enforced keys already correct" % len(ENFORCE))
+        return 0
+    print("repair: %d key(s) wrong or missing: %s" % (len(changed), ", ".join(changed)))
+    if check:
+        print("repair: --check, no write performed")
+        return 0
+    bak = "%s.pre-repair.%d" % (CFG, int(time.time()))
+    shutil.copy2(CFG, bak)
+    tmp = CFG + ".tmp"
+    with open(tmp, "w") as f:
+        f.write("\n".join(new) + "\n")
+    os.replace(tmp, CFG)
+    print("repair: wrote %s (backup %s)" % (CFG, os.path.basename(bak)))
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

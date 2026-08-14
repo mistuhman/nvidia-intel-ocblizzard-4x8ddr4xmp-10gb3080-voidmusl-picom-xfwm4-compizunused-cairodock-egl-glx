@@ -698,6 +698,242 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target A/B environment/process/resource/log/recovery output and
   direct user smoothness acceptance pasted 2026-08-14.
 
+[2026-08-14][W-041] B2-1 read-only enumeration is complete and it PARTIALLY
+  OVERTURNS B1-b. There is NO autostart or session entry that launches CCSM.
+  Proven by exhaustion, not inference: `/home/sd/.config/autostart/` holds
+  exactly ten .desktop files plus a `backup/` dir and `nvidia-oc.desktop.bak`
+  — Dl, cairo-dock-glx, easyeffects, fleasion, gnome-keyring-pkcs11, lama,
+  picom, picom-mac, pipewire-pulse, ulauncher — and NONE is ccsm. Content
+  grep across BOTH `~/.config/autostart` and `/etc/xdg/autostart` for `ccsm`
+  returned "(no autostart .desktop references ccsm)". `xfce4-session.xml`
+  contains no `ccsm`. `/etc/xdg/autostart` contains no ccsm/compiz/emerald
+  entry; its ONLY match in that class is a root-owned `picom.desktop`
+  (334 bytes, Jun 3 15:10).
+  The only two ccsm references in the whole session surface are:
+    (i) `~/.cache/sessions/xfwm4-267e9b988-b54b-4508-92e5-2cbde9365bdb.state`
+        lines 40/41/43: `[RES_NAME] ccsm`, `[RES_CLASS] Ccsm`,
+        `[WM_COMMAND] (1) "ccsm"`  <-- THIS IS THE LAUNCHER. It is the xfwm4
+        SESSION-CACHE state file, and `[WM_COMMAND] (1) "ccsm"` is exactly
+        the legacy X11 session-management restart record: the session manager
+        re-executes the bare command `ccsm` at login for a window that was
+        open when the session was last saved. This is a WM_COMMAND/X-SMP
+        legacy restart, NOT an XDG autostart entry, which is precisely why
+        every prior autostart hunt (W-035) found nothing, why the respawned
+        instance had NO SM_CLIENT_ID on its windows (W-035), why it was
+        orphaned under PID 1 (W-033/W-035), and why it appeared at a session-
+        band PID (B1-b) yet was not a child of xfce4-session.
+    (ii) `xfce4-panel.xml:95  <value type="string" value="ccsm.desktop"/>` —
+        a manual launcher item only, already ruled out as a restart mechanism
+        by W-036 (Xfce launcher docs).
+  All other `~/.config` hits are cairo-dock theme icons/help files
+  (`.../icons/ccsm.svg`, `plug-ins/help/help.conf`) and one Firefox IndexedDB
+  blob. None is executable session state.
+  CONSEQUENCE: the correct reversible suppression is to delete the STALE
+  SESSION CACHE, not to edit an autostart file. This is the same
+  `~/.cache/sessions` clearing already mandated for a different reason by
+  X-010, so one action satisfies both. Nothing may be signalled or killed to
+  achieve it.
+  RECEIPT: target B2-1 block output pasted 2026-08-14 (blocks a-f verbatim).
+
+[2026-08-14][W-042] B1-d is CLOSED: both picom autostart files are INERT and
+  now proven by content, not inference. `~/.config/autostart/picom.desktop`
+  and `~/.config/autostart/picom-mac.desktop` are byte-for-byte the same
+  108-byte five-line file, both mtime Aug 14 06:16:
+    [Desktop Entry] / Type=Application / Name=Picom disabled for Compiz /
+    Hidden=true / X-GNOME-Autostart-enabled=false
+  `Hidden=true` alone is sufficient under the XDG autostart spec — a Hidden
+  entry is treated as though it does not exist — and it also masks the
+  root-owned `/etc/xdg/autostart/picom.desktop` by name, which is why picom
+  was ABSENT at runtime on the fresh boot (B1-a). The B2-1f status sweep
+  confirms these are the only two entries in the directory carrying
+  `Hidden=true`; every other enabled entry (Dl, cairo-dock-glx, easyeffects,
+  fleasion, lama, pipewire-pulse, and the two bare entries
+  gnome-keyring-pkcs11 and ulauncher) is unrelated to compositing.
+  X-008 (never run picom and compiz together) is therefore SATISFIED at login
+  and no longer blocks persisting a Compiz launch. NOTE for later: the
+  `picom-mac.desktop` name suggests a second, differently-named picom unit
+  once existed; masking by that exact basename only works if the system entry
+  shares the basename, so if a `picom-mac` system entry is ever added
+  elsewhere this guarantee must be re-checked.
+  RECEIPT: target B2-1e verbatim cat of both files and B2-1f status sweep,
+  pasted 2026-08-14.
+
+[2026-08-14][W-043] *** B2-2 IS THE FIRST KEEP-LIVE COMPIZ WITH A FROZEN
+  PROFILE. THE X-027 WRITER LOOP IS BROKEN. *** All preconditions passed:
+  guard dcefbadd... verified on disk, recovery artifact still SHA-256
+  3f9402d2..., no compiz, no picom. CCSM WAS NOT RUNNING at block start —
+  it had already exited on its own after the B2-1 read, so nothing was
+  signalled. Session cache tarballed to
+  /home/sd/.cache/sessions-backup.1786722561.tar.gz (48831 bytes) and cleared;
+  the `ccsm` WM_COMMAND record is GONE (`grep -rIl ccsm` empty). The fat
+  09f0c6c7 profile was preserved as Default.ini.pre-b2-2.1786722561 and the
+  dcefbadd guard installed and hash-verified as active.
+  Compiz launched as sole PID 5065 via `compiz --replace --sm-disable` with
+  `__GL_YIELD=USLEEP` confirmed present in /proc/5065/environ (count 1).
+  Over a 60-second dwell sampled at 15s intervals: PID 5065 unchanged at all
+  four samples, ccsm ABSENT at all four, picom ABSENT at all four, and
+  Default.ini SHA-256 still dcefbadd6fe3... at all four. This is the first
+  time in the project that the profile hash has survived a live Compiz
+  session — every prior attempt (W-034, W-040) saw CCSM return and rewrite it.
+  Survivors: xfce4-panel 1259, xfdesktop 1272, cairo-dock 1305 all retained
+  their pre-swap PIDs, and emerald respawned as decorator PID 5078. Log
+  contains ONLY the four already-known benign warnings: `No XI2 extension`,
+  four emerald `gtk.css` colour-parse errors, and `wnck_set_client_type`
+  CRITICAL. No fatal error. Log: /tmp/compiz-b2-2.1786722561.log.
+  The active guard profile's exact plugin list is now recorded verbatim:
+    core;ccp;move;resize;place;decoration;text;winrules;workarounds;grid;
+    svg;regex;imgjpeg;png;animation;animationaddon;fade;switcher;
+  with s0_detect_refresh_rate=false, s0_refresh_rate=120,
+  s0_detect_outputs=false, s0_outputs=2560x1440+0+0;1920x1080+2560+197;,
+  s0_sync_to_vblank=true, s0_lighting=true, as_texture_filter=0.
+  RECEIPT: target B2-2 block output pasted 2026-08-14, blocks a-g verbatim.
+
+[2026-08-14][W-044] Two harmless script defects in B2-2, corrected here so the
+  next block does not repeat them:
+  (a) `xprop -root _NET_WM_NAME` prints "not found" — the root window does not
+      carry that property. The WM identity probe must dereference
+      `_NET_SUPPORTING_WM_CHECK` first. Correct one-liner:
+        xprop -id "$(xprop -root -notype _NET_SUPPORTING_WM_CHECK \
+          | awk '{print $NF}')" -notype _NET_WM_NAME
+      The B2-2 dwell's WM column is therefore VOID as evidence; WM ownership
+      is nevertheless established by the live compiz PID plus emerald
+      respawning as its decorator and xfwm4 not reappearing.
+  (b) `rm -f ~/.cache/sessions/*` cannot remove the subdirectory
+      `thumbs-66:0`, leaving 1 entry. Harmless — it is an xfdesktop thumbnail
+      cache, not session state, and the ccsm grep confirms no restart record
+      survived. Use `rm -rf` only if a full clear is ever actually required.
+  RECEIPT: target B2-2 output lines "WM now _NET_WM_NAME: not found." and
+  "rm: cannot remove '/home/sd/.cache/sessions/thumbs-66:0': Is a directory".
+
+[2026-08-14][W-045] B3 persistence installation DONE, all predicates observed.
+  WM ownership is now PROVEN properly for the first time using the corrected
+  W-044 probe: dereferencing `_NET_SUPPORTING_WM_CHECK` yields
+  `_NET_WM_NAME = "compiz"`. Compiz PID 5065 survived from B2-2 through B3
+  unchanged, ccsm and picom absent throughout, emerald 5078 still decorating,
+  and Default.ini still SHA-256 dcefbadd... at block end.
+  Artifacts installed on target:
+    /home/sd/.local/share/compiz-guard/Default.ini.golden
+      SHA-256 dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c
+      (byte-identical to the W-032 guard; this is the revert target)
+    /home/sd/.local/bin/compiz-revert    969 bytes, mode 0755, `sh -n` passed.
+      `compiz-revert` restores golden + restarts Compiz with __GL_YIELD=USLEEP;
+      `compiz-revert --xfwm4` execs xfce-wm-recover instead.
+    /home/sd/.local/bin/compiz-session   mode 0755, `sh -n` passed, content:
+      `exec env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp`
+  Session config changed: /sessions/Failsafe/Client0_Command moved from the
+  single-item array `xfwm4` to `/home/sd/.local/bin/compiz-session`. This is
+  the FIRST persistence change ever made in this project; IX.5's prohibition
+  is satisfied because B2-2's keep-live dwell passed first.
+  Inverses recorded: xfce4-session.xml backed up to
+  /home/sd/xfce4-session.xml.bak.1786722899. xfwm4 /general/use_compositing
+  re-verified false.
+  RECEIPT: target B3 block output pasted 2026-08-14, blocks a-g verbatim.
+
+[2026-08-14][X-029] *** X-028's CAUSAL STORY IS PARTLY WRONG AND MUST NOT BE
+  RELIED ON. *** B3-b answered U-018: `SaveOnExit` was ALREADY `false` before
+  B3 touched it ("SaveOnExit before false"). Therefore the
+  `[WM_COMMAND] (1) "ccsm"` record found in the session cache by W-041 CANNOT
+  have been written by routine save-on-exit, and disabling SaveOnExit is NOT
+  the thing that broke the loop — it was already off while CCSM was returning
+  at every boot. What actually stopped CCSM returning is the B2-2 cache
+  deletion (W-043), which removed the record itself.
+  The record's true origin is now UNKNOWN and is logged as U-019. The two
+  live hypotheses, neither verified: (a) an explicit "Save Session" via the
+  logout dialog checkbox or the Session and Startup GUI, which writes the
+  cache regardless of the SaveOnExit default; (b) a stale state file written
+  months ago and never cleared, since nothing prunes ~/.cache/sessions.
+  OPERATIONAL CONSEQUENCE, and this is what matters: the relaunch loop is
+  currently disarmed but NOT structurally impossible. If the user ever ticks
+  "Save session for future logins" in the logout dialog while a CCSM window
+  is open, the record returns and CCSM comes back at every boot. That is
+  survivable now (the golden snapshot + compiz-revert exist), but it must be
+  stated rather than assumed away. DO NOT tick that checkbox.
+  RECEIPT: B3-b output "SaveOnExit before  false" contradicting 11.6's
+  premise 2.
+
+[2026-08-14][X-030] *** UNEXPLAINED MID-SESSION RESET WHILE CONFIGURING IN
+  CCSM. OPEN, UNDIAGNOSED, AND IT GATES PERSONALIZATION. *** While Compiz PID
+  5065 was live and the user was editing the Animations plugin through CCSM,
+  the user reports it "kinda just reset itself halfway through". The exact
+  referent of "it" is NOT established — it could be (a) Compiz itself
+  restarting, losing the live plugin state, (b) the CCSM UI reverting the
+  rows the user had just edited, or (c) Default.ini being rewritten back
+  toward an earlier content. These have different causes and different fixes,
+  and no receipt yet distinguishes them.
+  CANDIDATE CAUSES, none verified, recorded so the next session does not
+  start from zero:
+    - Compiz 0.8 crash-and-restart. If Compiz dies, whatever started it may
+      bring it back with a fresh read of Default.ini, discarding unsaved
+      in-memory state. B2-2 launched it with `--sm-disable`, so a session
+      manager restart is NOT expected; a bare crash would leave Compiz absent
+      instead. Distinguishing evidence: is the live compiz PID still 5065?
+    - CCSM writing a full profile dump that overwrites concurrent edits, the
+      same class of behaviour already proven in W-033/W-034 where CCSM
+      rewrote the file and reordered/removed plugins.
+    - An animation effect selected from a plugin that is not actually loaded
+      (U-020), causing the plugin subsystem to reinitialise.
+  RESOLVING EVIDENCE, to be captured BEFORE any further CCSM editing: gate
+  B4 below. Until then the user's decision stands and is correct — do NOT
+  re-bless Default.ini.golden, so the revert target remains the known-good
+  dcefbadd... baseline rather than a profile captured mid-fault.
+  RECEIPT: direct user report 2026-08-14, post-B3, pre-reboot.
+
+[2026-08-14][W-046] *** X-030 IS DIAGNOSED AND IT IS CONFIG-SIDE, NOT A CRASH.
+  IT ALSO MEANS REBOOTING RIGHT NOW WOULD HAVE BOOTED A BAD PROFILE. ***
+  B4-pre proves Compiz never restarted: PID is still 5065, start time still
+  Fri Aug 14 15:49:21 2026, cmdline still `compiz --replace --sm-disable`,
+  `__GL_YIELD=USLEEP` still in its environ, emerald still 5078, ccsm absent.
+  Candidate (a) from X-030 (crash/restart) is therefore ELIMINATED.
+  What actually changed is Default.ini. It moved off the guard to SHA-256
+  e4369dd56f9fed954f44a63cecdbfda042c7f35b689abbd1fe5836b7bdd71b18, mtime
+  2026-08-14 16:18:45, and shrank to 282 bytes. Its entire surviving content
+  of interest is one line:
+    as_active_plugins = core;ccp;move;resize;place;decoration;water;wobbly;
+                        regex;cube;animation;3d;animationaddon;
+  *** EVERY s0_ DISPLAY VALUE IS GONE. *** The grep for
+  `s0_detect|s0_refresh|s0_outputs|s0_sync` returned NOTHING: no
+  s0_detect_outputs=false, no s0_outputs rectangles, no s0_refresh_rate=120,
+  no s0_detect_refresh_rate=false, no s0_sync_to_vblank. Every hard-won
+  W-017/W-018/W-026 geometry and refresh value has been discarded, and the
+  heavy eyecandy plugins water/wobbly/cube/3d — explicitly removed by W-019
+  as the X-013 suspects — are back.
+  This is the SAME failure family as B1-c's fat 09f0c6c7 profile, and the
+  plugin list is nearly the same shape (water;wobbly;cube;3d present,
+  display values absent). It is now proven to happen from a live CCSM session
+  without any crash, which strongly suggests CCSM is writing a profile out of
+  its own in-memory/backend state rather than merging into the file on disk.
+  The live process is unaffected because Compiz already has its settings in
+  memory — which is exactly why the desktop still looks fine while the file
+  that would be read AT NEXT LOGIN is bad.
+  CORROBORATION IN THE LOG: `compiz (cube) - Warn: Failed to load slide:
+  freedesktop` appears twice, proving the cube plugin actually loaded live.
+  RECEIPT: target B4-pre output pasted 2026-08-14, all sections verbatim.
+
+[2026-08-14][X-031] *** DO NOT REBOOT WITH THE ACTIVE PROFILE OFF THE GUARD.
+  *** Direct consequence of W-046 and the reason B4-pre existed. Since B3,
+  Client0_Command is /home/sd/.local/bin/compiz-session, which runs
+  `compiz --replace ccp` — and `ccp` makes Default.ini AUTHORITATIVE at login.
+  Booting with e4369dd... would start Compiz with no output rectangles
+  (reproducing X-011's tiny/cropped display on this dual-monitor setup, since
+  s0_detect_outputs is not even present to fall back on), no fixed 120 Hz
+  (X-013 choppiness), and the water/wobbly/cube/3d stack loaded. The live
+  session's good behaviour is NOT evidence about the next boot: they are
+  different sources of truth. MANDATORY pre-reboot check, every time:
+    sha256sum ~/.config/compiz/compizconfig/Default.ini
+  It must equal the golden snapshot hash before a reboot or logout.
+  RECEIPT: W-046 profile content plus W-045 Client0_Command receipt.
+
+[2026-08-14][W-047] Emerald's decorator log changed character during the CCSM
+  session: at 16:00:18 emerald PID 5078 emitted a long run of
+  `Theme parsing error: gtk.css:31xx:0: Expected semicolon` ending in
+  `gtk.css:3201:0: expected '}' after declarations`, at much higher line
+  numbers than the four `gtk.css:2/6/10/15` colour errors logged at launch
+  (W-043). The decorator did not die — PID 5078 is unchanged. This indicates
+  a theme reparse of a larger/different stylesheet during the session, not a
+  new fault class. Recorded as context for the known X-009/emerald-theme
+  fragility; it is NOT currently a blocker and no action is taken on it.
+  RECEIPT: B4-pre log tail pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -970,6 +1206,24 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   being stabilized.
   RECEIPT: W-040.
 
+[2026-08-14][X-028] DO NOT OPEN CCSM, AND DO NOT LEAVE IT OPEN AT LOGOUT.
+  This is the mechanism behind X-027 and it is now understood end-to-end
+  (W-041). CCSM's return is self-perpetuating through the session cache: if a
+  CCSM window is open when the session is saved, xfwm4 writes
+  `[WM_COMMAND] (1) "ccsm"` into `~/.cache/sessions/xfwm4-<uuid>.state`, and
+  the next login re-executes bare `ccsm`, which reopens the window, which is
+  saved again. Clearing the cache once fixes THIS boot; opening CCSM and then
+  logging out re-arms it. Therefore: while the machine-authored baseline is
+  being stabilized, configure Compiz by editing Default.ini directly with
+  Compiz stopped (the W-032 atomic-replacement method), never through the GUI.
+  When CCSM is eventually needed for personalization, the safe procedure is:
+  make the change, CLOSE CCSM, verify no `ccsm` process remains, and only then
+  log out. Corollary: any session-save that happens while Compiz is live will
+  likewise be recorded, which is a hazard for the persistence gate B6 and must
+  be handled by disabling session save-on-exit rather than by racing it.
+  RECEIPT: W-041 (the WM_COMMAND record), W-033/W-034/W-035 (orphaned, no
+  SM_CLIENT_ID), B1-b (session-band PID, not a child of xfce4-session).
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -1106,6 +1360,33 @@ as its receipt. Do not guess any of them.
   a bounded ring of non-noise exec events, and snapshot the new CCSM ancestry
   immediately. Explicitly suppress the known PID-1297 `pgrep` flood from the
   report without killing it. Preserve the profile unchanged during tracing.
+
+[U-017] SUPERSEDES U-014/U-015/U-016, which are now CLOSED by W-041 (the
+  launcher is the xfwm4 session-cache WM_COMMAND record, not a respawner and
+  not an autostart entry). The remaining open question is narrow: does
+  clearing `~/.cache/sessions` actually stop CCSM from returning across a
+  full logout/login, and does xfce4-session write the record back at logout?
+  Resolving command is gate B2-2 below, then the B6 logout/login cycle.
+  Predicates: `pgrep -fx ccsm` empty after login; no `ccsm` string anywhere
+  under `~/.cache/sessions` after login.
+
+[U-018] Is xfce4-session's save-on-exit currently enabled? If it is, the B6
+  persistence gate will re-save whatever is on screen at logout, including a
+  live Compiz and any open CCSM (X-028).
+    xfconf-query -c xfce4-session -p /general/SaveOnExit
+    xfconf-query -c xfce4-session -lv | sed -n '1,40p'
+  Read-only. Do not change it until B3-B5 have passed.
+
+[U-019] ANSWERED-NEGATIVE FOLLOW-UP TO U-018. SaveOnExit was already false
+  (B3-b), so what wrote `[WM_COMMAND] (1) "ccsm"` into the xfwm4 session-cache
+  state file? Until this is known the relaunch loop is disarmed but not
+  structurally prevented (X-029). Resolving evidence, gathered AFTER the next
+  reboot so it reflects a real login cycle:
+    ls -la /home/sd/.cache/sessions/
+    grep -rIl -i 'ccsm' /home/sd/.cache/sessions/ 2>/dev/null || echo CLEAN
+    xfconf-query -c xfce4-session -lv | grep -i -E 'save|logout|prompt'
+  Promote to 6.A/6.B once a full logout/login is observed to either recreate
+  or not recreate a state file.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1744,3 +2025,1282 @@ untouched by this session. New knowledge lands here and in the ledgers.
   session-autostart explanation in B1-b, and supersedes 11.1's assumption that
   the active profile was still near the guard (B1-c: it is the fat 09f0c6c7
   file with no display values). Overall M8 remains BLOCKED on B2.
+
+--------------------------------------------------------------------------------
+11.4 B2-1 RECEIPT AND THE CORRECTED WRITER MODEL — target output pasted
+     2026-08-14, same boot as 11.3. Read this before running any write block.
+--------------------------------------------------------------------------------
+
+  THE LAUNCHER IS NAMED. It is not an autostart entry. B1-b's phrase "started
+  BY THE SESSION at login" was directionally right and mechanically wrong, and
+  the distinction decides what we are allowed to touch:
+
+      /home/sd/.cache/sessions/xfwm4-267e9b988-b54b-4508-92e5-2cbde9365bdb.state
+        line 40   [RES_NAME]   ccsm
+        line 41   [RES_CLASS]  Ccsm
+        line 43   [WM_COMMAND] (1) "ccsm"
+
+  That is a legacy X11 session-management restart record written by xfwm4 when
+  the session was last saved with a CCSM window open. At login the session
+  manager re-executes the bare string `ccsm`. Full derivation, the exhaustive
+  negative evidence, and the picom closure are in ledger rows W-041, W-042 and
+  X-028. Every previously baffling observation is explained by this one fact:
+  orphaned under PID 1, no SM_CLIENT_ID, not a child of xfce4-session, absent
+  from every autostart directory, yet reliably present at a session-band PID.
+
+  WHAT THIS CHANGES ABOUT B2. The plan in 11.3 said "reversibly disable the
+  CCSM autostart entry". There is no such entry to disable. The correct and
+  strictly gentler action is to delete the stale session cache — which X-010
+  already requires for an unrelated reason, so one action clears two blockers.
+  Nothing is killed, nothing is signalled, and the inverse is a tarball.
+
+  REVISED GATE LIST (supersedes 11.2's B2-B6 wording, same ordering intent):
+    B2-2  clear the session cache (with a tarball inverse) + back up the fat
+          09f0c6c7 profile + restore the dcefbadd guard.        <- NEXT
+    B3    launch Compiz with __GL_YIELD=USLEEP --sm-disable and KEEP IT LIVE;
+          dwell and confirm the profile hash does not move.
+    B4    decorations + animations verified while live.
+    B5    cairo-dock GL check while Compiz owns the screen.
+    B6    persistence, only after B3-B5 pass, with the logout/login gate and
+          the U-018 save-on-exit question answered first.
+  Escape at every step is unchanged: /home/sd/.local/bin/xfce-wm-recover
+  (fallback: Ctrl+Alt+F2, then `xfwm4 --replace &`).
+
+[2026-08-14][M8/B2-1] Writer identification DONE and picom inertness PROVEN.
+  Receipt: W-041, W-042, 11.4. This supersedes B1-b's "session-autostart
+  entry" reading with the WM_COMMAND session-cache mechanism, and CLOSES
+  U-014, U-015 and U-016. New blocker recorded as X-028 (do not open CCSM /
+  do not leave it open at logout). Overall M8 now BLOCKED only on B2-2's
+  cache clear + guard restoration, then the B3 keep-live dwell.
+
+--------------------------------------------------------------------------------
+11.5 B2-2 RECEIPT — COMPIZ LIVE, PROFILE FROZEN. Pasted 2026-08-14T15:49Z.
+     Ledger rows: W-043 (result), W-044 (two script defects, corrected).
+--------------------------------------------------------------------------------
+
+  Compiz PID 5065, `__GL_YIELD=USLEEP` verified in its own /proc environ,
+  sole WM, decorator emerald 5078, panel/xfdesktop/cairo-dock all retained
+  their pre-swap PIDs. Four dwell samples over 60s: PID stable, ccsm absent,
+  picom absent, Default.ini SHA-256 dcefbadd... UNCHANGED. No fatal log line.
+
+  WHY THE HASH HELD, AND WHY THAT RETIRES X-027. CCSM was not running when
+  B2-2 started — it had exited on its own after B2-1 — so nothing was killed.
+  The session cache that would have re-launched it at next login is now a
+  tarball, and the live cache no longer contains the string `ccsm`. The writer
+  is not suppressed by force; it is simply not being started. That is the
+  difference between this attempt and W-034/W-040.
+
+11.6 THE PIVOT: CCSM IS NO LONGER THE ENEMY.
+  Every prior session treated a CCSM write as a fault, because the baseline
+  was unproven and CCSM kept destroying it mid-experiment. The user's goal is
+  now explicitly to REBOOT INTO COMPIZ AND CONFIGURE IT THROUGH CCSM. So the
+  objective inverts: CCSM writes become intentional, and the engineering
+  problem becomes making those writes SURVIVABLE rather than preventing them.
+  Three things make that true, and they are what gate B3 installs:
+    1. A REVERT PATH. A named known-good snapshot plus a one-word restore
+       command, so any CCSM change that breaks the desktop is undone from a
+       TTY without archaeology.
+    2. SaveOnExit OFF. This structurally kills X-028: if the session is never
+       saved, xfwm4 can never write another `[WM_COMMAND] (1) "ccsm"` record,
+       so the self-perpetuating relaunch loop cannot re-arm no matter how
+       often CCSM is opened. It also stops a live Compiz from being recorded
+       into the cache, which is the other half of the same hazard.
+    3. A LAUNCH WRAPPER that owns the environment. `__GL_YIELD=USLEEP` is the
+       single accepted smoothness fix (W-040, W-043) and it must be applied
+       by whatever starts Compiz at login, not typed by hand.
+  THE TWO SETTINGS THE USER MUST NOT TOUCH IN CCSM: "Detect Outputs" and
+  "Detect Refresh Rate" must stay OFF. Turning either on discards
+  s0_outputs / s0_refresh_rate and reproduces X-011 (tiny cropped display) or
+  X-013 (choppy refresh). Everything else in CCSM is fair game.
+
+--------------------------------------------------------------------------------
+11.7 B3 RECEIPT — PERSISTENCE INSTALLED. Pasted 2026-08-14T15:54Z.
+     Ledger rows: W-045 (installation), X-029 (11.6 premise 2 CORRECTED).
+--------------------------------------------------------------------------------
+
+  WM ownership proven properly at last, via the W-044-corrected probe:
+  `_NET_SUPPORTING_WM_CHECK` -> `_NET_WM_NAME = "compiz"`. PID 5065 has now
+  been continuously live across two blocks with the profile hash unmoved.
+
+  CORRECTION, and it is the reason this section exists rather than a simple
+  "done": SaveOnExit was ALREADY false before B3 set it. 11.6's premise 2 —
+  that turning SaveOnExit off is what structurally kills the X-028 loop — is
+  FALSE, because it was off the whole time CCSM was returning every boot. The
+  loop was broken by B2-2 deleting the cache record, full stop. The record's
+  origin is unknown and is now U-019 / X-029. Practical upshot for the user:
+  never tick "Save session for future logins" in the logout dialog while CCSM
+  is open, or the record can come back.
+
+11.8 REBOOT GATE — what to expect, and the exact escapes.
+  On the next boot xfce4-session runs /home/sd/.local/bin/compiz-session,
+  which execs `env __GL_YIELD=USLEEP compiz --replace ccp`. Note it launches
+  WITHOUT `--sm-disable` (deliberate: the session manager must own it for a
+  login-started WM) and WITH `ccp`, so Compiz reads Default.ini and CCSM
+  changes take effect.
+  EXPECTED per X-009, none of these mean a broken install:
+    - xfce4-panel may vanish on workspace switch (compiz viewports vs XFCE
+      pager disagreement)
+    - decorations depend on emerald/gtk-window-decorator actually starting
+    - desktop icon labels may shift; fix is
+      xfconf-query -c xfce4-desktop -p /desktop-icons/center-text -n -t bool -s false
+  ESCAPES, in increasing severity:
+    compiz-revert                 restore golden profile + restart Compiz
+    compiz-revert --xfwm4         bail out to xfwm4, keep the desktop usable
+    /home/sd/.local/bin/xfce-wm-recover                        same, direct
+    Ctrl+Alt+F2 -> login -> `xfwm4 --replace &`                no-GUI case
+    full undo of persistence:
+      cp -a /home/sd/xfce4-session.xml.bak.1786722899 \
+        /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+  CCSM RULES for the configuration phase (X-013, X-011, X-029):
+    KEEP OFF: "Detect Outputs", "Detect Refresh Rate".
+    AVOID:    reflex, blur, mblur, bench, showmouse, mousepoll (X-013 caused
+              the shiny-edge artifact and choppy refresh).
+    AFTER a good set of changes, re-bless the snapshot:
+      cp -a /home/sd/.config/compiz/compizconfig/Default.ini \
+            /home/sd/.local/share/compiz-guard/Default.ini.golden
+    CLOSE CCSM before logging out, and never tick "Save session".
+
+[2026-08-14][M8/B3] Persistence INSTALLED and Compiz keep-live PROVEN.
+  Receipt: W-043, W-045, 11.5-11.8. Client0_Command now names
+  /home/sd/.local/bin/compiz-session; golden snapshot and compiz-revert are on
+  disk and syntax-checked. X-027 is RETIRED (profile survived a live session,
+  W-043). X-028 is SUPERSEDED by X-029 (SaveOnExit was already false; the
+  cache deletion is what worked). M8 is now BLOCKED only on the reboot gate:
+  a login-started Compiz must be observed owning the WM, with decorations,
+  animations and cairo-dock GL, before Section VIII wallpaper work may start.
+
+--------------------------------------------------------------------------------
+11.9 CCSM ANIMATIONS — OPERATING NOTES (user opened CCSM 2026-08-14, pre-reboot,
+     Compiz PID 5065 still live). Reference, not a receipt.
+--------------------------------------------------------------------------------
+
+  STRUCTURE. Animations has five independent ordered rule lists, one per tab:
+  Open / Close / Minimize / Shade / Focus. Each row is
+  (Effect, Duration ms, Window Match, per-row Options).
+  *** ROWS ARE EVALUATED TOP-TO-BOTTOM; FIRST MATCH WINS. *** `Up`/`Down` are
+  therefore semantic, not cosmetic. The observed default row 1 matches
+  `(type=Normal | Dialog | ModalDialog | Unknown) & !(name=mate-screensaver)`,
+  which swallows nearly everything, so any new per-application rule MUST be
+  moved above it or it can never fire.
+
+  EDITING. Select row -> Edit -> set Open Effect / Duration / Window Match.
+  The per-row `Options` column is effect-specific and is distinct from the
+  global `Effect Settings` tab.
+  Match syntax: class= (WM_CLASS 2nd value, read via `xprop WM_CLASS`),
+  name=, title=, type=, combined with & | and negated with !.
+  Duration: 150-250 ms is the usable band; >400 reads as sluggish.
+
+  RANDOM EFFECTS POOL. The checkbox grid is inert unless a row's effect is set
+  to `Random`; it is the candidate set for that keyword only.
+
+  [U-020] UNVERIFIED, and it will bite during personalization: the active
+  plugin list contains `animation;animationaddon;` but NOT `animationplus`,
+  yet the CCSM pool displays effects commonly attributed to animationplus
+  (Blinds, Bonanza, Dream, Helix, Shatter, Vacuum). Either CCSM enumerates
+  effects from installed-but-unloaded plugins, or this build ships them in
+  animationaddon. Resolving test: set one row to Shatter, apply, and observe
+  whether the animation plays. If it does not, enable Animations Plus under
+  CCSM > Effects. Do not assume which; observe.
+
+  PROFILE HYGIENE DURING THIS PHASE (X-013, X-011, X-029):
+    - Detect Outputs and Detect Refresh Rate stay OFF, always.
+    - Avoid reflex, blur, mblur, bench, showmouse, mousepoll.
+    - After a good change set, re-bless the revert target:
+        cp -a /home/sd/.config/compiz/compizconfig/Default.ini \
+              /home/sd/.local/share/compiz-guard/Default.ini.golden
+      Until that is run, `compiz-revert` restores dcefbadd... and DISCARDS the
+      CCSM work, which is correct behaviour but surprising if unexpected.
+    - Close CCSM before logout; never tick "Save session for future logins"
+      (X-029: that is the suspected origin of the WM_COMMAND relaunch record).
+
+--------------------------------------------------------------------------------
+11.10 DECISION: DO NOT RE-BLESS THE GOLDEN SNAPSHOT. User instruction,
+      2026-08-14, pre-reboot. Recorded because it is the correct call and the
+      reasoning should survive the next context reset.
+--------------------------------------------------------------------------------
+
+  The user declined to run the 11.9 re-bless step until stability work is
+  finished. This is right, and the reason is worth stating: re-blessing copies
+  the CURRENT Default.ini over Default.ini.golden, which is the target
+  `compiz-revert` restores. Doing that immediately after the X-030 mid-session
+  reset would capture a profile of unknown integrity as the recovery baseline
+  and destroy the only proven-good state in the project. The golden snapshot
+  therefore REMAINS SHA-256 dcefbadd..., and it stays there until a Compiz
+  session has been observed stable across a real login.
+  Standing rule for the personalization phase: re-bless only from a state that
+  has been (1) reached by a normal login, (2) dwelt without a reset, and
+  (3) visually accepted by the user. Never re-bless to preserve work in
+  progress; use a dated side-copy for that instead:
+    cp -a ~/.config/compiz/compizconfig/Default.ini \
+          ~/.config/compiz/compizconfig/Default.ini.wip.$(date +%s)
+
+11.11 THE REBOOT GATE, RESTATED WITH X-030 OUTSTANDING.
+  Rebooting now is the correct next move even with X-030 open, because the
+  reboot is itself the cleanest possible test: it proves whether
+  compiz-session starts Compiz at login, and it resets all in-memory state so
+  any post-reboot reset is reproducible from a known origin rather than from
+  a hand-edited live session.
+  What changes at login vs. the B2-2 test launch:
+    - launcher becomes /home/sd/.local/bin/compiz-session (W-045)
+    - `--sm-disable` is GONE, so xfce4-session owns Compiz and MAY restart it
+      (this is the W-022 XSMP behaviour, and it is a candidate explanation for
+      X-030 recurring post-reboot)
+    - `ccp` is present, so Default.ini is authoritative
+  PRE-REBOOT CHECKLIST (gate B4-pre): close CCSM, confirm the profile hash,
+  confirm the escapes exist, do NOT tick "Save session for future logins".
+
+--------------------------------------------------------------------------------
+11.12 X-030 CLOSED, X-031 OPENED. B4-pre receipt, 2026-08-14T16:19Z.
+      Ledger: W-046 (diagnosis), X-031 (reboot blocker), W-047 (emerald log).
+--------------------------------------------------------------------------------
+
+  THE GOOD NEWS. Compiz did not crash. PID 5065, start time 15:49:21,
+  `--sm-disable`, `__GL_YIELD=USLEEP` — all unchanged since B2-2. Emerald 5078
+  unchanged. The runtime has been stable for ~30 minutes including a full CCSM
+  editing session. Stability of the RUNNING compositor is not in question.
+
+  THE BAD NEWS, AND IT IS THE ENTIRE POINT OF THIS GATE. Default.ini is now
+  e4369dd..., 282 bytes, and every `s0_` display value has been deleted —
+  outputs, refresh rate, detect flags, vblank, all gone — while water, wobbly,
+  cube and 3d are back in the plugin list. The user's "it kinda just reset
+  itself" was literal and it was the FILE, not the UI and not the compositor.
+
+  WHY THIS MATTERS MORE THAN IT LOOKS. The live session is fine because Compiz
+  holds its settings in memory. The file is what gets read AT NEXT LOGIN, and
+  since B3 the login command is `compiz --replace ccp`, where `ccp` makes that
+  file authoritative. Rebooting in this state would have booted the exact
+  configuration that produced X-011 (cropped display) and X-013 (choppy) —
+  with no output rectangles at all on a dual-monitor machine. This is
+  precisely the failure the pre-reboot gate was built to catch, and it caught
+  it on the first use.
+
+  THE RULE THAT FALLS OUT OF THIS, now mandatory before every reboot/logout:
+      sha256sum ~/.config/compiz/compizconfig/Default.ini
+  must equal the golden hash dcefbadd... . A live desktop that looks correct
+  is NOT evidence that the file is correct. They are different sources of
+  truth and they have now demonstrably diverged.
+
+  MECHANISM, still unproven: CCSM appears to write a whole profile from its
+  own backend state rather than merging into the on-disk file, so values it
+  does not know about are dropped. This matches W-033/W-034 (CCSM rewriting
+  and reordering the plugin list) and B1-c (the fat 09f0c6c7 profile with no
+  display values). Same family, now observed without any crash or respawn.
+  It follows that CCSM and hand-maintained `s0_` values are FUNDAMENTALLY IN
+  CONFLICT, and the project must choose one authority. See 11.13.
+
+11.13 THE AUTHORITY PROBLEM — decide this before personalization resumes.
+  The user wants to configure through CCSM. CCSM demonstrably destroys the
+  hand-written display block. Three options, none yet chosen:
+    (A) CCSM IS AUTHORITY. Set the geometry/refresh values THROUGH CCSM's own
+        UI (General > Display Settings: uncheck Detect Outputs, enter the two
+        rectangles; General > Composite: uncheck Detect Refresh Rate, set
+        120; Sync To VBlank on). Then CCSM's writes preserve them because it
+        knows about them. This is the option most compatible with the stated
+        goal and should be tried first.
+    (B) FILE IS AUTHORITY. Never open CCSM; edit Default.ini with Compiz
+        stopped. Proven to work (W-032/W-043) but it forfeits the user's goal.
+    (C) REPAIR-ON-LOGIN. compiz-session re-injects the s0_ block into
+        Default.ini before exec'ing compiz, making CCSM's deletions
+        self-healing at every boot. Most robust, and it does not constrain
+        what the user does in CCSM, but it silently overrides CCSM for those
+        specific keys — which is acceptable ONLY because those exact keys are
+        the ones that must never change on this hardware.
+  RECOMMENDATION: (C) as the safety net, with (A) attempted first so the two
+  agree. (C) alone means the user can use CCSM freely and a bad write can
+  never reach a boot.
+
+--------------------------------------------------------------------------------
+11.14 OPTION (C) CHOSEN AND BUILT: REPAIR-ON-LOGIN. User selected (C) from
+      11.13 on 2026-08-14. Artifact authored and TESTED IN SANDBOX; unexecuted
+      on target at time of writing (Directive 9).
+--------------------------------------------------------------------------------
+
+  THE ARTIFACT. repo path `scripts/compiz-profile-repair`, 2715 bytes,
+  mode 0755, SHA-256
+  4bac9046e18bcd9e238dbb5fc71fa7c07f76235696c593461ec24ce1f0659221.
+  Python 3, no third-party imports. Target install path
+  /home/sd/.local/bin/compiz-profile-repair.
+
+  WHAT IT OWNS, AND NOTHING ELSE. Exactly seven keys in the `[core]` section,
+  every one a hardware fact verified by W-016/W-018/W-026:
+      s0_detect_refresh_rate = false
+      s0_refresh_rate        = 120
+      s0_detect_outputs      = false
+      s0_outputs             = 2560x1440+0+0;1920x1080+2560+197;
+      s0_sync_to_vblank      = true
+      s0_lighting            = true
+      as_texture_filter      = 0
+  It does NOT touch as_active_plugins, so every plugin the user enables in
+  CCSM survives. It does NOT touch any other section, so all CCSM plugin
+  settings (animation rules, effects, keybindings) survive. This is the
+  minimum possible override consistent with X-031.
+
+  SANDBOX TEST MATRIX — 7/7 pass, run 2026-08-14 against fixtures built from
+  the real observed profiles:
+    T1 damaged e4369dd-shape profile -> all 7 keys restored, plugin list
+       (water;wobbly;cube;3d) left intact as written by CCSM.        PASS
+    T2 idempotency: second run reports "all 7 enforced keys already correct",
+       writes nothing, creates no backup.                            PASS
+    T3 the good dcefbadd guard content -> byte-identical output, `cmp` YES.
+       The tool is a no-op on a correct file.                        PASS
+    T4 *** the important one *** multi-section file containing a DECOY
+       `s0_refresh_rate = 999` inside `[animation]`: [core] corrected to 120
+       while [animation]'s 999 left untouched. Section boundaries hold.  PASS
+    T5 file with no [core] section -> [core] synthesised and prepended,
+       existing [animation] section preserved.                       PASS
+    T6 empty file -> valid [core] written, exit 0. Missing file -> refuses,
+       prints "no profile", exit 1 (does not create from nothing).   PASS
+    T7 `--check` reports the 7 wrong keys and writes NOTHING (md5 unchanged).
+                                                                     PASS
+  Every write is atomic (write .tmp then os.replace) and takes a timestamped
+  backup Default.ini.pre-repair.<epoch> first.
+
+  HOW IT IS WIRED IN. compiz-session becomes:
+      #!/bin/sh
+      /home/sd/.local/bin/compiz-profile-repair || true
+      exec env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp
+  `|| true` is deliberate: a repair failure must never prevent the WM from
+  starting. Worst case is a bad profile, which is recoverable; no WM at all
+  is much worse.
+
+  CONSEQUENCE FOR THE AUTHORITY PROBLEM (11.13). With (C) installed, CCSM can
+  no longer produce an unbootable machine: whatever it deletes is restored
+  before Compiz reads the file. Option (A) is still worth doing so the two
+  agree rather than fight, but it is no longer load-bearing. The user may now
+  use CCSM freely, which was the stated goal.
+
+--------------------------------------------------------------------------------
+11.15 B5 RECEIPT — OPTION (C) INSTALLED ON TARGET AND PROVEN ON THE REAL
+      DAMAGED PROFILE. Pasted 2026-08-14T16:25Z. Includes TWO agent errors,
+      recorded per Directive 5 because both were caught by the user asking
+      "how can I know?" rather than by the agent.
+--------------------------------------------------------------------------------
+
+  [W-048] THE REPAIR RAN CORRECTLY ON THE REAL FAULT. Against the live
+    damaged profile e4369dd..., `--check` reported exactly the 7 missing keys
+    and wrote nothing (md5 unchanged). The real run backed up to
+    Default.ini.pre-repair.1786724725, restored all 7, and produced active
+    SHA-256 a9c157ad7e31f86c18ae544463780802e0a23d50a14a69cff7b11451a4685357.
+    Second run reported "OK, all 7 enforced keys already correct" — idempotent
+    on target, not just in sandbox.
+    *** THE STRONGEST EVIDENCE IN THIS BLOCK: the repaired file retained the
+    user's CCSM plugin work verbatim — [animationaddon] s0_beam_life=0.600000,
+    s0_beam_color=#ffffffff and [wobbly] s0_friction=5.900000,
+    s0_grid_resolution=33, s0_focus_effect=1, s0_map_effect=1 — while the
+    [core] display block was rebuilt. Sandbox test T4 (section isolation) is
+    therefore CONFIRMED ON THE TARGET with real data. The tool does exactly
+    what 11.14 claims: owns 7 core keys, touches nothing else, and does not
+    disturb as_active_plugins.
+    Launcher hardened: compiz-session now runs compiz-profile-repair (output
+    appended to /tmp/compiz-repair.log, `|| true`) then execs
+    `env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp`. `sh -n` passed.
+    Inverse: cp -a /home/sd/.local/bin/compiz-session.bak.1786724725 over it.
+    RECEIPT: target B5 block output pasted 2026-08-14, sections a-e verbatim.
+
+  [X-032] AGENT ERROR 1 — A VERIFICATION COMMAND THAT PRODUCED A FALSE ALARM.
+    B5-e printed "s0_ keys present: 13 (expect 7)" and the user correctly
+    challenged it. The FILE was right; the CHECK was wrong. The grep
+    `grep -cE '^s0_|^as_texture_filter'` scanned the WHOLE file, but the
+    profile now has three sections. Breakdown proven by awk over the exact
+    target content: [core] 7 (the enforced keys), [animationaddon] 2
+    (s0_beam_life, s0_beam_color), [wobbly] 4 (s0_friction,
+    s0_grid_resolution, s0_focus_effect, s0_map_effect). 7+2+4 = 13.
+    THE CORRECT CHECK, section-scoped, and the one to use from now on:
+      awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' \
+        ~/.config/compiz/compizconfig/Default.ini | grep -cE \
+        '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) '
+    User ran it on target: returned 7. GATE PASSED.
+    LESSON, generalisable: once CCSM starts writing plugin sections, ANY
+    whole-file grep for `s0_` is meaningless. All future profile assertions
+    must be section-scoped.
+    RECEIPT: user-run awk|grep -c output "7", pasted 2026-08-14.
+
+  [X-033] AGENT ERROR 2 — UNRESOLVED HASH MISMATCH, HONESTLY UNCLOSED.
+    The installed compiz-profile-repair hashed
+    c7495361c9d51b41887d5f1ccb370ced7a4d61cc8ab58bbec58cd2db8222978b on
+    target, NOT the sandbox-tested
+    4bac9046e18bcd9e238dbb5fc71fa7c07f76235696c593461ec24ce1f0659221.
+    Investigated: removing the one comment line dropped from the paste gives
+    7459384c..., and additionally adding the trailing space the paste
+    introduced on the "already correct" print line gives d3d2c278... —
+    NEITHER equals the target hash. A residual whitespace difference remains
+    UNEXPLAINED. Do not claim byte-identity.
+    WHAT WAS DONE INSTEAD: the target's exact byte sequence was reconstructed
+    and the full 7-case matrix re-run against it — T1 restore, T2 idempotency,
+    T3 no-op on good file, T4 decoy-section preservation, T4b core correction,
+    T5 [core] synthesis, T7 --check-never-writes — 7 passed, 0 failed. Python
+    comment/string whitespace does not alter behaviour, and the target's own
+    live output (7 keys found, backup written, "already correct" on rerun,
+    plugin sections preserved) independently corroborates correct operation.
+    STATUS: BEHAVIOUR VERIFIED, BYTE-IDENTITY UNVERIFIED. The canonical source
+    of truth is the repo file scripts/compiz-profile-repair (4bac9046...); if
+    byte-identity is ever required, install by copying that file rather than
+    by pasting a heredoc through a terminal.
+    RECEIPT: sandbox diff/hash reconstruction and 7/7 re-run, 2026-08-14.
+
+11.16 REBOOT CLEARED. Final pre-reboot state, all values target-observed:
+    active profile   a9c157ad... with 7/7 enforced keys in [core] (X-032 check)
+    s0_outputs       2560x1440+0+0;1920x1080+2560+197;
+    s0_refresh_rate  120
+    Client0_Command  /home/sd/.local/bin/compiz-session
+    SaveOnExit       false
+    ccsm             not running        picom  absent
+    escapes present  compiz-session, compiz-profile-repair, compiz-revert,
+                     xfce-wm-recover  (all 4 executable)
+  POST-REBOOT EVIDENCE TO CAPTURE (this is the B6 gate):
+    cat /tmp/compiz-repair.log
+    pgrep -x compiz; ps -o lstart=,cmd= -p $(pgrep -x compiz|head -1)
+    xprop -id "$(xprop -root -notype _NET_SUPPORTING_WM_CHECK|awk '{print $NF}')" \
+      -notype _NET_WM_NAME
+    sha256sum ~/.config/compiz/compizconfig/Default.ini
+    ls -la ~/.cache/sessions/            # <- ANSWERS U-019
+    pgrep -f /usr/bin/ccsm; pgrep -x picom; pgrep -x emerald
+  Plus three human judgements: smoothness, titlebars present, panel behaviour
+  on workspace switch.
+
+[2026-08-14][M8/B5] Option (C) repair-on-login INSTALLED and PROVEN against
+  the real damaged profile. Receipt: W-048, 11.15. Two agent errors recorded
+  (X-032 false-alarm check, X-033 unexplained hash delta). X-031's reboot
+  blocker is CLEARED by target-verified 7/7 section-scoped key count. M8 now
+  awaits only the reboot gate itself.
+
+================================================================================
+11.17 *** THE REBOOT GATE IS PASSED. COMPIZ NOW STARTS AT LOGIN AND SURVIVES
+      IT. *** Target output pasted 2026-08-14T16:32Z, first boot after B5.
+      This is the completion receipt for M8 / Section IX.
+================================================================================
+
+  [W-049] LOGIN-STARTED COMPIZ, PROVEN ON A COLD BOOT. Every predicate of the
+    11.16 gate returned the wanted value:
+      /tmp/compiz-repair.log  ->  "repair: OK, all 7 enforced keys already
+        correct"  — the login hook RAN, found the profile intact, and
+        correctly wrote nothing. Option (C) is live and idempotent in the real
+        login path, not just under manual invocation.
+      compiz PID 1210, `Fri Aug 14 16:32:19 2026`, cmdline
+        `/usr/bin/compiz --replace ccp`  — a LOW, boot-band PID started by
+        xfce4-session via compiz-session. Contrast every previous Compiz in
+        this file, which was a high PID launched by hand from a terminal.
+        Note it carries `ccp` and NOT `--sm-disable`, exactly as designed.
+      _NET_SUPPORTING_WM_CHECK -> _NET_WM_NAME = "compiz"  — Compiz owns the
+        screen from login, using the W-044-corrected probe.
+      Default.ini SHA-256 a9c157ad7e31f86c18ae544463780802e0a23d50a14a69cff
+        7b11451a4685357 — BYTE-IDENTICAL to the pre-reboot value in 11.16.
+        The profile survived a full shutdown/boot cycle unchanged.
+      emerald present (see X-034 for the PID-attribution caveat); picom and
+        ccsm both absent at login.
+    RECEIPT: target post-reboot block output pasted 2026-08-14, verbatim.
+
+  [W-050] *** U-019 IS ANSWERED, AND THE ANSWER IS THE GOOD ONE. *** After a
+    real logout/shutdown/login cycle, `ls -la ~/.cache/sessions/` shows ONLY
+    `.`, `..` and the unrelated `thumbs-66:0` directory (mtime Jul 26, an
+    xfdesktop thumbnail cache). NO xfwm4-*.state file was recreated, and
+    therefore no `[WM_COMMAND] (1) "ccsm"` record exists. The directory mtime
+    is 15:49 — the moment of the B2-2 clear — meaning nothing has written to
+    it since.
+    CONCLUSION: with SaveOnExit=false, a normal logout does NOT write session
+    state, so the X-028/X-029 CCSM relaunch loop cannot re-arm by itself. The
+    W-041 record was a one-off artifact of some past explicit session save,
+    exactly as X-029 hypothesis (a) supposed. U-019 is CLOSED.
+    RESIDUAL RISK, unchanged and still real: ticking "Save session for future
+    logins" in the logout dialog would write a fresh state file and, if a CCSM
+    window were open, re-create the record. Do not tick it.
+    RECEIPT: target `ls -la ~/.cache/sessions/` after reboot, 2026-08-14.
+
+  [X-034] MINOR — AMBIGUOUS PID ATTRIBUTION IN THE PASTED OUTPUT. The three
+    chained greps `pgrep -f /usr/bin/ccsm; pgrep -x picom; pgrep -x emerald`
+    produced exactly one line, `1270`, with no labels. Two of the three
+    returned nothing. Interpretation: 1270 is emerald (the expected decorator,
+    consistent with W-043's emerald-follows-compiz behaviour) and both ccsm
+    and picom are absent. This is INFERENCE, not a receipt — the output does
+    not itself say which command owns 1270. Next block must use labelled
+    checks. Do not record "ccsm absent" as proven until labelled.
+    RECEIPT: target output line "1270" following the three-command chain.
+
+[2026-08-14][M8/B6] *** MILESTONE M8 COMPLETE: COMPIZ IS THE LOGIN WINDOW
+  MANAGER ON A FRESH BOOT, WITH A SELF-HEALING PROFILE. *** Receipt: W-049,
+  W-050, 11.17. Compiz PID 1210 started by xfce4-session at 16:32:19 owns the
+  screen; the repair hook ran and found the profile already correct; the
+  profile hash survived the reboot byte-identical; the session cache stayed
+  empty. X-031 CLEARED. U-019 CLOSED by W-050. Section IX (THE SWAP) is
+  functionally complete pending only the IX.7 human checks (decorations,
+  animations, cairo-dock GL) and the golden re-bless. Section VIII (wallpaper)
+  remains GATED per Directive 10 until the user declares the desktop ready.
+
+================================================================================
+SECTION XII — THE CUBE / 3D WINDOW-SWITCHER DESIGN (Agent G, research stream)
+Opened 2026-08-14 after M8 completed. Goal stated by the user: "use the desktop
+cube effect to replace alt-tab and act like mission control but 3D with mouse
+controls to rotate between windows."
+================================================================================
+
+12.0 IX.7 GATE STATUS AT THE MOMENT THIS SECTION OPENED.
+  Labelled process check, target-run 2026-08-14 post-reboot, resolves X-034:
+    compiz 1210 | emerald 1270 | ccsm 4167 | picom (absent) | cairo-dock 1306
+    | xfce4-panel 1251
+  X-034 is CLOSED: the earlier bare "1270" was indeed emerald, picom is
+  genuinely absent, and cairo-dock/panel both survive under a login-started
+  Compiz. Section IX's process-level gate is therefore fully PASSED. The three
+  human judgements (smoothness, titlebars, panel-on-workspace-switch) remain
+  UNCOLLECTED — the user moved to the cube question first. Do not record IX.7
+  as complete until they are answered.
+
+[2026-08-14][X-035] *** THE GOLDEN RE-BLESS WAS TAKEN WHILE CCSM WAS RUNNING
+  (PID 4167). *** The user ran
+    cp -a ~/.config/compiz/compizconfig/Default.ini \
+          ~/.local/share/compiz-guard/Default.ini.golden
+  in the same terminal session in which CCSM was live. Per W-046, CCSM
+  rewrites Default.ini asynchronously from its own backend state, so the
+  snapshot may capture a mid-edit or CCSM-authored file rather than the
+  verified a9c157ad... login state. The new golden hash is UNVERIFIED.
+  This is NOT dangerous — option (C) guarantees the seven [core] display keys
+  are repaired at every login regardless of what the golden file contains, so
+  the worst case is that `compiz-revert` restores a slightly different plugin
+  set. But the revert target must be re-verified before it is trusted:
+    sha256sum ~/.local/share/compiz-guard/Default.ini.golden
+    awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' \
+      ~/.local/share/compiz-guard/Default.ini.golden | grep -cE \
+      '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) '
+  Expect 7. If it is not 7, re-bless from a clean state with CCSM closed.
+  GENERAL RULE: never snapshot the profile while CCSM is running.
+  RECEIPT: user command sequence and labelled pgrep output, 2026-08-14.
+
+12.1 RESEARCH FINDINGS (Agent G). Sources fetched 2026-08-14; every claim
+     below carries its source. NONE of this is target-verified yet.
+
+  [R-1] THE CUBE IS USELESS WITHOUT ROTATE, AND ROTATE OWNS THE MOUSE.
+    "The Rotate Cube plugin provides the ability to rotate the cube created by
+    Desktop Cube. Without it, the Desktop Cube plugin is mostly useless. Most
+    cube-related mouse and key bindings are provided by this plugin." The
+    free-rotation binding the user wants is Rotate Cube > Bindings >
+    "Initiate", default Ctrl+Alt+Button1 — "Rotate the cube on all axes with
+    the mouse (freecube)".
+    SOURCE: wiki.compiz.org/Plugins/Cube and
+    wiki.compiz.org/CommonKeyboardShortcuts.
+
+  [R-2] *** THE CUBE REQUIRES HORIZONTAL VIRTUAL SIZE = 4. *** "If your cube
+    shows up as a flat sheet instead of a cube, check to ensure that
+    Horizontal Virtual Size is set to 4 under General Options." Set in CCSM >
+    General Options > Desktop Size. The shape is a prism with up to 32 sides;
+    hsize 4 + vsize 1 is the actual cube. A commenter on the ghacks article
+    correctly notes hsize=8 gives an octagonal prism, not a cube.
+    SOURCE: wiki.compiz.org/FAQ; compiz-fusion wiki Plugins/Cube.
+
+  [R-3] DESKTOP WALL MUST BE DISABLED. Cube, Wall and Plane are the three
+    mutually-exclusive viewport plugins; the Unity-era instructions
+    consistently say enable cube+rotate and disable wall.
+    SOURCE: askubuntu 86977; wiki.compiz.org/Plugins/Cube.
+
+  [R-4] *** 3D WINDOWS IS THE "MISSION CONTROL BUT 3D" PIECE, AND IT IS IN
+    plugins-extra. *** The 3D Windows plugin lifts windows off the cube face
+    along the Z axis so they float in front of it as the cube turns. Its
+    options are Window Space, Window Depth, Window Match, Minimum Cube Size,
+    Animation Speed, and critically "3D Only on mouse rotate" — which makes
+    windows lift ONLY while the user is mouse-rotating, which is exactly the
+    requested interaction. It ships in the extras module (Debian/Ubuntu name
+    compiz-plugins-extra); on compiz-reloaded the equivalent repos are
+    compiz-plugins-extra and compiz-plugins-experimental.
+    SOURCE: compiz-fusion wiki Plugins/Cube "3D Windows" section;
+    askubuntu 82746; github.com/compiz-reloaded/compiz-plugins-experimental.
+
+  [R-5] THE ALT-TAB REPLACEMENT IS A SWITCHER PLUGIN, NOT THE CUBE. Compiz
+    0.8 ships four mutually-substitutable switchers: Application Switcher,
+    Static Application Switcher, Ring Switcher, Shift Switcher. Shift Switcher
+    has two modes, "flip" (3D coverflow) and "cover", and is the closest thing
+    to a 3D Mission Control; Ring Switcher arranges windows in a ring. Both
+    require the Text plugin enabled to draw window titles. ONLY ONE switcher
+    should own Alt+Tab at a time — enabling several and leaving them all bound
+    is the documented cause of "my alt-tab changed and I don't know why".
+    SOURCE: wiki.compiz.org/Plugins/Switcher; superuser 207486; Wikipedia
+    Compiz ("a feature similar to macOS's Mission Control").
+
+  [R-6] SCROLL-WHEEL AND MIDDLE-CLICK CUBE CONTROL COMES FROM VIEWPORT
+    SWITCHER. Enabling it allows rotating by scrolling over empty desktop and
+    grabbing the cube by middle-click; bindings live under Viewport Switcher >
+    Desktop-based Viewport Switching (Move Next = Button5, Move Prev =
+    Button4, Initiate = Button2).
+    SOURCE: wiki.compiz.org/FAQ; ubuntuforums 1614525; linuxmint 22606.
+
+  [R-7] *** DUAL-MONITOR CAVEAT — THIS IS THE ONE MOST LIKELY TO BITE. ***
+    Desktop Cube > General > "Multi Output Mode" decides the behaviour on a
+    multi-head setup: one cube spanning everything, or a separate cube per
+    output. This interacts directly with our hand-pinned
+    s0_outputs = 2560x1440+0+0;1920x1080+2560+197; — Compiz is explicitly in
+    manual multi-output mode (s0_detect_outputs=false), so it sees TWO
+    outputs, and the cube will follow Multi Output Mode accordingly. Forum
+    reports of "two cubes" / "one big cube" confusion all trace to this
+    setting plus Xinerama state. Additionally the target's DP-0 is INVERTED
+    and vertically offset (+2560+197) with a different resolution from DP-2,
+    which is precisely the asymmetric case the "maximise across two monitors"
+    thread warns about. EXPECT the cube to need tuning here, and change ONLY
+    Multi Output Mode — never Detect Outputs (X-031/X-011).
+    SOURCE: ubuntuforums 784314; askubuntu 73573; askubuntu 895868.
+
+  [U-021] Which of cube, rotate, 3d, cubeaddon, shift, ring, expo, viewport
+    switcher and text actually EXIST in this compiz-reloaded 0.8.18 install?
+    B1-c and W-046 prove cube, water, wobbly and 3d are at least loadable
+    (the fat profiles list them and the cube plugin emitted a runtime warning,
+    W-046), but the full inventory is unread. Resolving command, read-only:
+      ls /usr/lib*/compiz/ | sort
+      xbps-query -l | grep -i compiz
+    Run before designing the final plugin set; do not assume Ubuntu package
+    layout applies to Void.
+
+12.2 PROPOSED DESIGN (not yet applied, pending U-021 and the IX.7 human
+     checks). Mapped directly onto the user's three requirements:
+       "replace alt-tab"            -> Shift Switcher in Cover/Flip mode bound
+                                       to Alt+Tab, with Application Switcher's
+                                       Alt+Tab binding CLEARED (R-5).
+       "mission control"            -> Expo (Super+E) for the flat overview,
+                                       plus Scale for same-workspace windows.
+       "3D with mouse rotation"     -> Desktop Cube + Rotate Cube with
+                                       Initiate on Button1, 3D Windows with
+                                       "3D Only on mouse rotate" = ON (R-1,
+                                       R-4), Viewport Switcher for wheel (R-6).
+     Prerequisites: hsize=4 (R-2), Desktop Wall off (R-3), Text on for titles,
+     Multi Output Mode chosen deliberately (R-7).
+     RISK REGISTER for this design, from the existing ledger:
+       - cube/3d/wobbly/water were the X-013 "shiny + choppy" suspects. The
+         cube itself was NOT individually convicted; the convicted set was
+         reflex/blur/mblur/bench/showmouse/mousepoll (W-019). Cube may well be
+         fine, but it is unproven at 120 Hz on this hardware and must be
+         judged by the user after a bounded trial.
+       - every plugin added is GPU work on top of a compositor whose
+         smoothness was hard-won via __GL_YIELD=USLEEP (W-040). Add plugins
+         ONE AT A TIME and re-judge smoothness after each.
+
+--------------------------------------------------------------------------------
+12.3 U-021 ANSWERED — THE FULL PLUGIN INVENTORY IS PRESENT. Target output
+     pasted 2026-08-14. Three ledger rows resolved by this one block.
+--------------------------------------------------------------------------------
+
+  [W-051] EVERY PLUGIN THE 12.2 DESIGN NEEDS EXISTS ON THIS MACHINE. All
+    eleven checked resolved to a real .so: cube, rotate, 3d, cubeaddon, shift,
+    ring, expo, scale, wall, vpswitch, text. Nothing needs installing.
+    The packages behind them, all at 0.8.18, all Compiz Reloaded:
+      compiz-core-0.8.18_3, compiz-plugins-main-0.8.18_1,
+      compiz-plugins-extra-0.8.18_1, compiz-plugins-experimental-0.8.18_1,
+      compiz-bcop, compizconfig-python, libcompizconfig-0.8.18_15,
+      ccsm-0.8.18_8, emerald + emerald-themes 0.8.18, compiz-reloaded meta.
+    R-4's concern (3D Windows lives in plugins-extra and may be absent) is
+    therefore MOOT: compiz-plugins-extra AND -experimental are both installed.
+    RECEIPT: target `ls /usr/lib*/compiz/`, `xbps-query -l | grep -i compiz`
+    and the eleven-plugin existence loop, pasted 2026-08-14.
+
+  [W-052] U-020 IS ANSWERED IN PASSING: `libanimationplus.so` IS present, as
+    are libanimationaddon and libanimationsim. So the CCSM Animations pool
+    showing Blinds/Bonanza/Dream/Helix/Shatter/Vacuum was legitimate — those
+    effects exist on disk. They still require the animationplus PLUGIN to be
+    ENABLED in CCSM > Effects before a row using them will play; the profile's
+    as_active_plugins list did not include it at the time of 11.9. U-020's
+    "does CCSM enumerate uninstalled effects" question is closed: it does not,
+    they were installed all along.
+    RECEIPT: libanimationplus present in both plugin directories, 2026-08-14.
+
+  [W-053] X-035 RESOLVED FAVOURABLY. The golden snapshot taken while CCSM was
+    running is SHA-256
+    af457926dbc76d642708e37fb2fe206aa94e55d56e968bf842aa8517c0b1e971 and the
+    section-scoped check returns 7/7 enforced [core] keys. It differs from the
+    login-verified a9c157ad... (CCSM has since written plugin sections), but
+    it is structurally sound and safe as a revert target. No re-bless needed.
+    NOTE the general rule from X-035 still stands for future snapshots.
+    RECEIPT: target sha256sum + section-scoped grep -c returning 7.
+
+  [X-036] TWO PLUGIN DIRECTORIES EXIST AND IT IS UNRESOLVED WHICH ONE LOADS.
+    `ls /usr/lib*/compiz/` expanded to BOTH `/usr/lib/compiz/` and
+    `/usr/lib64/compiz/`, and every plugin appears in both listings. On Void
+    x86_64, /usr/lib64 is conventionally a symlink to /usr/lib, which would
+    make these the same files listed twice — that is the LIKELY explanation
+    and it is consistent with the column output showing duplicate names. It is
+    NOT verified. Harmless today; would matter if a plugin were ever installed
+    to only one path. Resolving command, read-only:
+      ls -ld /usr/lib64; readlink -f /usr/lib64/compiz/libcube.so
+    Do not act on this; record only.
+    RECEIPT: target `ls /usr/lib*/compiz/` two-header output, 2026-08-14.
+
+  [X-037] *** HSIZE IS NOT SET AND THE CUBE WILL RENDER AS A FLAT SHEET UNTIL
+    IT IS. *** `grep -E '^s0_hsize|^s0_vsize'` returned nothing: the profile
+    carries no desktop-size values, so Compiz defaults apply (hsize 1 on a
+    fresh 0.8 profile once wall/cube arbitration is involved). Per R-2 the
+    cube REQUIRES Horizontal Virtual Size = 4 and Vertical Virtual Size = 1.
+    This is the single most common "my cube is flat" cause and it must be set
+    BEFORE judging whether the cube works. Set it in CCSM > General Options >
+    Desktop Size (CCSM is authoritative while running, W-046).
+    RECEIPT: empty grep for s0_hsize/s0_vsize in the active profile.
+
+--------------------------------------------------------------------------------
+12.4 WHY "ONE BIG CUBE" FAILED — ROOT CAUSE FOUND, AND IT IS A DIRECT
+     CONSEQUENCE OF OUR OWN W-018 GEOMETRY FIX. Research pass 2, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [R-8] *** THE CUBE'S SHAPE IS DECIDED BY COMPIZ'S OUTPUT LIST, NOT BY THE
+    "MULTI OUTPUT MODE" DROPDOWN ALONE. *** Compiz's own multihead design doc
+    distinguishes "bigscreen" (one CompScreen, one output) from "multiscreen"
+    (one CompScreen per head) and states that for full-viewport animations
+    "You want to use fullscreenOutput whenever you are doing animations that
+    affect the entire viewport, like cube rotations, expo and more."
+    The Ubuntu community wiki states the observable consequence plainly:
+      TwinView          -> "one large screen shared between two monitors ...
+                            in Compiz-Fusion, it makes the cube appear as one
+                            large octagon"
+      Separate X screen -> "each monitor has its own cube, controlled
+                            separately"
+    SOURCE: wiki.compiz.org/Development/Multihead;
+    help.ubuntu.com/community/NvidiaMultiMonitors.
+
+  [X-038] *** ROOT CAUSE OF THE USER'S FAILURE: our profile pins TWO output
+    rectangles, so Compiz is in multiscreen-style output mode and CANNOT make
+    one big cube, whatever Multi Output Mode is set to. *** The active guard
+    contains, by our own deliberate W-017/W-018 fix:
+      s0_detect_outputs = false
+      s0_outputs = 2560x1440+0+0;1920x1080+2560+197;
+    The documented method for forcing one big output is the exact inverse of
+    that line: "disable the Detect Outputs checkbox, select the 640x480+0+0
+    entry and click Edit ... change this to 3840x1080+0+0. Compiz should now
+    treat your multi-monitor setup as ONE BIG OUTPUT." i.e. ONE rectangle
+    covering everything, not two.
+    SOURCE: askubuntu 73573 (the accepted, +550-bounty answer).
+    THIS IS THE CONFLICT: X-031/X-011 forbid touching the outputs list because
+    the two-rectangle form is what fixed the cropped-display disaster and is
+    enforced at every login by compiz-profile-repair. The user cannot have
+    both the two-rectangle correctness AND a single spanning cube without
+    changing the enforced line.
+
+  [X-039] AND THE ASYMMETRIC-MONITOR LIMITATION MAKES ONE BIG OUTPUT A BAD
+    TRADE ON THIS SPECIFIC HARDWARE. The same accepted answer warns: "both
+    displays need to have the same (vertical) resolution for this to make
+    sense (else you'd end up with cut off content on the smaller screen or
+    dead space on the bigger one)." The target's heads are
+    DP-2 2560x1440 and DP-0 1920x1080 INVERTED at +2560+197 (W-016) — mismatched
+    in BOTH axes and vertically offset by 197px. A single 4480x1440+0+0 output
+    would therefore put ~360px of dead band on DP-0 and misalign the cube face
+    against the physical panel. A LinuxMint user with the same class of
+    mismatch (1600x900 + 1920x1080 on an NVIDIA card) reports exactly this:
+    "When I enable Compiz, the cube looks very strange, because the content of
+    both monitors stick together on each side of the cube."
+    SOURCE: askubuntu 73573; forums.linuxmint.com 350198.
+    CONCLUSION: on THIS hardware, one-big-cube is achievable but visually
+    compromised. Per-output cubes are the better default. Do not present
+    one-big-cube as a simple settings toggle; it is a geometry trade.
+
+  [R-9] SEPARATE X SCREENS WOULD GIVE TRUE INDEPENDENT CUBES BUT IS REJECTED
+    HERE. Multiple forum threads confirm the "Separate X screen" route yields
+    one cube per monitor, but it also means windows CANNOT be dragged between
+    monitors and some applications only run on one screen. That is a large
+    regression against a working TwinView desktop and is out of proportion to
+    a cosmetic effect. NOT RECOMMENDED; recorded so it is not re-proposed.
+    SOURCE: ubuntuforums 784314 summary; superuser 144867;
+    help.ubuntu.com/community/NvidiaMultiMonitors.
+
+  [R-10] XINERAMA MUST STAY OFF. NVIDIA's driver warns "The Composite and
+    Xinerama extensions are both enabled, which is an unsupported
+    configuration ... may behave strangely", and Arch forum guidance is
+    explicit: with TwinView "You should not be using Xinerama." Compositing —
+    the entire basis of this project — requires Composite, so Xinerama is
+    permanently off the table. Some old cube-on-dualhead advice recommends
+    toggling Xinerama; REJECT that advice for this stack.
+    SOURCE: forums.gentoo.org 1042646 (NVIDIA log warning verbatim);
+    bbs.archlinux.org 140278.
+
+  [R-11] USEFUL CORRECTION TO 12.2's BINDING PLAN: the canonical free-rotate
+    binding is Ctrl+Alt+Button1, and edge-flip behaviours (Edge Flip Move,
+    Edge Flip Pointer, Edge Flip DnD, with Flip Timeout) are separate opt-in
+    Rotate Cube options. Unfold is Ctrl+Alt+Down. Also confirmed: cubeaddon
+    supplies Cylinder/Sphere deformation, reflections and proper cube caps,
+    and Transparent Cube has "Transparency Only on Mouse Rotate" — a good
+    pairing with 3D Windows' "3D Only on mouse rotate".
+    SOURCE: compiz-fusion wiki Plugins/Cube, fetched in full 2026-08-14.
+
+12.5 REVISED RECOMMENDATION (supersedes 12.2's silent assumption that Multi
+     Output Mode alone would deliver a spanning cube).
+  DEFAULT, RECOMMENDED: keep the two pinned rectangles and run the cube in
+  per-output mode. Desktop Cube > General > Multi Output Mode =
+  "One cube per output" (wording varies by build). Each monitor gets its own
+  correctly-proportioned cube; geometry stays X-031-safe; nothing in the
+  enforced key set changes. This is the option that does not fight the
+  hardware.
+  OPTIONAL EXPERIMENT, reversible, only if the user insists on one spanning
+  cube: temporarily collapse the outputs list to a single rectangle
+  4480x1440+0+0 and set Multi Output Mode to the single/"one big cube" choice.
+  This REQUIRES editing an enforced key, so it must be done by changing
+  compiz-profile-repair's ENFORCE table (not by hand-editing Default.ini,
+  which the login hook would revert). Expect the X-039 dead band on DP-0.
+  Revert = restore the two-rectangle value in the same table.
+
+--------------------------------------------------------------------------------
+12.6 THE KBM MISSION-CONTROL ANSWER: SCALE + SCALE WINDOW TITLE FILTER, NOT A
+     SWITCHER. Research pass 3, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [R-12] *** SCALE WINDOW TITLE FILTER IS THE KEYBOARD-ORIENTED MISSION
+    CONTROL. *** The scalefilter plugin (libscalefilter.so, confirmed present
+    by W-051) turns Scale into a type-to-filter window finder: "allows you to
+    type the name of a window in Scale to filter out for windows that match
+    that name ... A text box will appear on screen repeating what you have
+    typed and windows will disappear as you type". Backspace widens the set,
+    Esc clears the filter, click or Enter selects. This is functionally
+    macOS Mission Control + Spotlight-style filtering, and it is the single
+    best match for the user's "kbm oriented" requirement — far better than
+    any Alt+Tab switcher, because selection is by NAME rather than by
+    position in a cycle.
+    HARD REQUIREMENT: it needs the `text` plugin enabled to draw the filter
+    string. CCSM will prompt to enable it; accept.
+    Options: Filter type timeout, Filter case insensitive (recommend ON),
+    Show filter text (recommend ON), plus font size/colour/bold.
+    SOURCE: wiki.compiz.org/Plugins/Scale (Scale Addons / Scale Window Title
+    Filter section); wiki.compiz.org/PluginsExtra; askubuntu 143589.
+
+  [R-13] KNOWN FAILURE MODE, AND ITS CAUSE — READ BEFORE REPORTING IT BROKEN.
+    Multiple users report "I enter Scale and typing does nothing". Two
+    distinct documented causes:
+      (a) the `text` plugin is not enabled (askubuntu 39790 accepted answer);
+      (b) *** THE KEYBINDING ITSELF EATS THE KEYSTROKES *** — a user on
+          ubuntuforums 1159045 notes filtering failed when Scale was invoked
+          by holding a key combo, "because then I was already holding down
+          Ctrl-Alt-up, which presumably interfered with anything else I tried
+          to type", but worked when Scale was triggered by a screen CORNER or
+          a TOGGLE binding.
+    THEREFORE: bind Scale to a TOGGLE (press once, release, Scale stays open)
+    or to a hot corner — NOT to a hold-style chord. CCSM exposes "Key bindings
+    toggle Scale mode" for exactly this.
+    SOURCE: ubuntuforums 1159045; askubuntu 39790; askubuntu 143589 (which
+    also notes launching ccsm from a shell vs. menu affected whether the
+    plugin took effect — unverified folklore, do not rely on it).
+
+  [R-14] SCALE AND EXPO CANNOT BE COMBINED INTO ONE GNOME-SHELL-STYLE VIEW.
+    Asked repeatedly; the answer for Compiz 0.8 is no — "according to all the
+    forum discussion it is not possible with compiz currently", with a
+    launchpad feature request filed and never landed. Use them as two separate
+    bindings: Scale = windows on this viewport, Expo = all viewports at once.
+    Do not promise a unified overview.
+    SOURCE: askubuntu 24449.
+
+  [R-15] REVISED SWITCHER RECOMMENDATION. 12.2 proposed Shift Switcher for
+    Alt+Tab. That still stands for a pretty 3D flip, but for a KBM-oriented
+    workflow the better allocation is:
+      Alt+Tab        -> Static Application Switcher (libstaticswitcher.so) —
+                        no animation, no zoom-out, instant; the documented
+                        "un-fancy" choice.
+      Super or corner-> Scale + scalefilter (R-12) as the real window finder.
+      Super+E        -> Expo for viewport overview.
+      Ctrl+Alt+Btn1  -> cube free-rotate (R-11) for the 3D flourish.
+    Rationale: one switcher owns Alt+Tab (R-5's mutual-exclusion rule still
+    applies), and the 3D eyecandy is moved OFF the hot path so it never delays
+    a window switch.
+    SOURCE: superuser 207486; wiki.compiz.org/Plugins/Switcher.
+
+--------------------------------------------------------------------------------
+12.7 UI SOUND EFFECTS: COMPIZ CANNOT DO THIS. THE CORRECT LAYER IS
+     libcanberra + AN XDG SOUND THEME, DRIVEN BY XFCE.
+--------------------------------------------------------------------------------
+
+  [R-16] *** COMPIZ 0.8 HAS NO AUDIO SUBSYSTEM AND NO PER-EVENT SOUND HOOK. ***
+    No plugin in the installed set (W-051 inventory) plays audio. The only
+    audio-adjacent Compiz feature found is `fade`'s `visual_bell` — a VISUAL
+    fade on the system beep, not a sound. There is therefore NO supported way
+    to attach a sound to "window opened", "window closed" or "cube rotated"
+    from inside Compiz.
+    THE ONE PARTIAL EXCEPTION: the `commands` plugin (libcommands.so, present)
+    binds arbitrary shell commands to keys/edges/buttons. So a KEY-triggered
+    sound is possible — e.g. bind a key to both a sound and an action — but
+    this fires on the KEYPRESS, not on the window event, and Compiz cannot
+    chain a command and a plugin action to one binding without a wrapper
+    script. Treat as a hack, not a solution.
+    SOURCE: help.ubuntu.com CompositeManager/ConfiguringCompiz (fade
+    visual_bell; commands plugin command0..command11 + run_commandX_key);
+    wiki.archlinux.org/title/Compiz (Commands plugin usage).
+
+  [R-17] THE REAL MECHANISM IS libcanberra, WHICH XFCE ALREADY SPEAKS.
+    libcanberra "implements the XDG Sound Theme and Naming Specifications for
+    generating event sounds". XFCE drives it through four things, ALL of which
+    must line up or there is silence:
+      1. xfconf: /Net/EnableEventSounds = true
+                 /Net/EnableInputFeedbackSounds = true
+                 /Net/SoundThemeName = <theme dir name under /usr/share/sounds>
+         (GUI: Settings > Appearance > Settings tab > Enable event sounds)
+      2. GTK_MODULES must contain `canberra-gtk-module` in the SESSION
+         environment — this is the step that most often silently fails on
+         non-GNOME desktops.
+      3. a sound theme installed at /usr/share/sounds/<name>/ with an
+         index.theme and a stereo/ directory of .oga files.
+      4. the PulseAudio/PipeWire "System Sounds" stream must not be muted or
+         at zero (pavucontrol).
+    Verification one-liners used by XFCE forum staff:
+      xfconf-query -c xsettings -lv | grep -i sound
+      env | grep GTK_MODULE
+      ls /usr/share/sounds/$(xfconf-query -c xsettings -p /Net/SoundThemeName)/stereo
+      canberra-gtk-play -i bell        # direct test, bypasses the whole chain
+    SOURCE: wiki.archlinux.org/title/Libcanberra; forum.xfce.org 8618, 11952,
+    7199; bbs.archlinux.org 241479.
+
+  [R-18] *** THE freedesktop THEME IS THE WRONG CHOICE FOR "QUAKE UI SOUNDS"
+    AND WILL DISAPPOINT. *** Its stereo/ directory is essentially
+    notification-oriented — bell, dialog-error/info/warning, message,
+    device-added/removed, trash-empty, screen-capture, power-plug,
+    audio-volume-change, service-login/logout, window-attention. An XFCE forum
+    moderator states it directly: "The freedesktop theme doesn't have many
+    sound effect sounds that work with the libcanberra implementation", and
+    resorted to modifying a fuller theme. Arch users likewise recommend
+    replacing it because it "lacks many required events".
+    CONSEQUENCE FOR THE USER'S ACTUAL REQUEST: a crisp Quake-style click on
+    window open/close/minimise is NOT delivered by the stock theme. The
+    achievable path is a CUSTOM sound theme — a directory of short .oga/.wav
+    files named per the XDG naming spec (window-new, window-close,
+    window-minimized, window-unminimized, window-maximized, window-
+    unmaximized, notebook-tab-changed, dialog-*, bell, desktop-login/logout).
+    That is a content authoring job, not a configuration job, and it is
+    bounded and doable.
+    IMPORTANT LIMITATION, stated so it is not oversold: canberra-gtk-module
+    hooks GTK widget events, so sounds fire for GTK applications and dialogs.
+    Window-manager events raised by Compiz (its own animations, cube rotation,
+    Scale/Expo entry) are NOT GTK events and will NOT trigger theme sounds.
+    Whether window-new/window-close fire reliably under Compiz+XFCE on this
+    box is UNVERIFIED — see U-022.
+    SOURCE: forum.xfce.org 11952 (moderator, with the full freedesktop stereo
+    listing quoted); bbs.archlinux.org 241479; xfce.narkive.com event-sounds
+    thread listing the XDG window-* event names.
+
+  [U-022] Which sound-theme events actually fire on THIS desktop under Compiz?
+    Read-only probe first:
+      xbps-query -l | grep -Ei 'canberra|sound-theme'
+      xfconf-query -c xsettings -lv | grep -i sound
+      env | grep GTK_MODULE
+      ls /usr/share/sounds/
+      canberra-gtk-play -i bell; echo "exit=$?"
+    Then, only if the chain is live, empirically test window-new/window-close
+    by opening and closing a GTK app. Do not assume the XDG name list is
+    honoured; the moderator evidence in R-18 says many are not.
+
+  [U-023] Does `scalefilter` work on this Compiz Reloaded 0.8.18 build when
+    Scale is bound as a TOGGLE? R-13 says the hold-chord form eats keystrokes.
+    Resolve by enabling scale + scalefilter + text, binding Scale toggle to a
+    single key or hot corner, entering Scale and typing. One-line predicate:
+    does a filter text box appear and do windows disappear as you type?
+
+--------------------------------------------------------------------------------
+12.8 SOUND CHAIN: DIAGNOSED FROM TARGET OUTPUT. IT IS NOT BROKEN — IT WAS
+     NEVER SET UP. Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-054] EVERY LINK IN THE R-17 CHAIN IS ABSENT OR OFF. Exact findings:
+      libcanberra-0.30_15          PRESENT
+      libcanberra-gtk3-0.30_15     PRESENT
+      *** NO canberra-gtk-module for GTK2, and NO `canberra-gtk-play`
+          binary: `bash: canberra-gtk-play: command not found`, exit 127.
+          On Void these live in the -tools/-utils split; the executable is
+          what every XFCE troubleshooting guide uses to test, so it must be
+          installed before anything can be verified.
+      /Net/EnableEventSounds          false      <- off
+      /Net/EnableInputFeedbackSounds  false      <- off
+      /Net/SoundThemeName             default    <- names a theme that does
+          not exist on disk
+      /usr/share/sounds/ contains ONLY `alsa` and `speech-dispatcher` —
+          i.e. NO sound theme is installed at all. There is no `freedesktop`
+          directory, so even if the switches were on there would be nothing
+          to play.
+      GTK_MODULES is UNSET (env grep returned nothing), so canberra-gtk-module
+          is not loaded into any GTK app.
+    CONCLUSION: nothing is misconfigured or damaged — the feature has simply
+    never been enabled. Four independent things must all be added. This is a
+    clean greenfield install, which is the easy case.
+    RECEIPT: target sound-probe block output pasted 2026-08-14.
+
+  [X-040] `SoundThemeName = default` IS A DANGLING REFERENCE. /usr/share/sounds
+    has no `default` directory. Any guide that says "set it to default" is
+    assuming sound-theme-freedesktop ships an alias; on this box that alias
+    does not exist. The value must name a real directory under
+    /usr/share/sounds/ (or ~/.local/share/sounds/). Do not leave it as
+    `default` and expect silence to be a bug.
+    RECEIPT: `ls /usr/share/sounds/` -> `alsa  speech-dispatcher`.
+
+  [U-024] Which Void packages supply canberra-gtk-play, the GTK2 module and a
+    base theme? Candidate names to check, read-only:
+      xbps-query -Rs canberra
+      xbps-query -Rs sound-theme
+    Expect something like libcanberra-utils / libcanberra-gtk-module /
+    sound-theme-freedesktop. Do NOT install blind; print the search first.
+    NOTE: a custom theme in ~/.local/share/sounds/<name>/ needs no root and no
+    package at all — that is the preferred route for the user's bespoke
+    Quake-style set (R-18).
+
+--------------------------------------------------------------------------------
+12.9 THE AESTHETIC TARGET AND THE THEME SHORTLIST. User brief, 2026-08-14:
+     "quake live style, sleek, black, like mac os X but amoled black and the
+     10.4-10.6 aesthetic with metal and glossyness".
+--------------------------------------------------------------------------------
+
+  DESIGN READING OF THE BRIEF. Four separable attributes, because they are
+  satisfied by different layers and must not be conflated:
+    (a) AMOLED BLACK  -> true #000000 backgrounds. This is a COLOUR decision,
+        editable in GTK CSS, and it is the attribute most themes get wrong by
+        shipping #2b2b2b "dark grey".
+    (b) BRUSHED METAL + GLOSS -> pixmap/gradient artwork, the OS X 10.4-10.6
+        signature. Requires the GTK2 pixmap engine and, for titlebars, an
+        emerald or xfwm4 theme with gradient/pixmap assets.
+    (c) AQUA GLASS CONTROLS -> the glossy pill buttons and scrollbars of
+        10.4-10.6, explicitly "Aqua elements that were abandoned in later OS X
+        releases".
+    (d) QUAKE LIVE -> flat, high-contrast, cold neutral greys with a single
+        saturated accent, sharp corners, condensed type. This pulls AGAINST
+        (b)/(c) skeuomorphism; the two are reconciled by using Quake for the
+        ACCENT COLOUR and typography, and OS X for the SURFACE TREATMENT.
+
+  [R-19] *** BEST SINGLE STARTING POINT: JoseskVolpe/OS-X-Leopard-Dark. ***
+    A fork of B00merang-Project/OS-X-Leopard that already does the hard part —
+    dark-mode Aqua. Self-described: "OS X Leopard dark mode theme based on
+    Aqua elements that were abandoned in later OS X releases". GPL v3, last
+    commit "Fix GTK-3.0 colors" 2022-01-20, 94 commits. Ships gtk-2.0,
+    gtk-3.0, gtk-3.20, metacity-1, cinnamon, gnome-shell, unity, index.theme.
+    REQUIREMENTS IT STATES: GTK+ 3.20 or above, and *** Murrine AND Pixmap
+    theme engines *** — the pixmap engine is exactly what carries the brushed
+    metal, and it must be installed or GTK2 apps fall back to flat grey.
+    CAVEATS, stated by the author and NOT to be glossed: "This modification
+    was made on and targeted to KDE Plasma, other desktop environments might
+    work aswell"; gnome-shell partially broken; Unity unmodified. It ships NO
+    xfwm4 directory and NO emerald theme — decoration must come from
+    elsewhere (see R-21). It is 38 commits BEHIND its upstream parent, so
+    upstream B00merang OS-X-Leopard may have fixes this fork lacks.
+    SOURCE: github.com/JoseskVolpe/OS-X-Leopard-Dark, fetched 2026-08-14.
+
+  [R-20] OTHER CANDIDATES IN THE SAME FAMILY, ranked by fit to the brief:
+      B00merang-Project/OS-X-Leopard   64 stars, the light-mode parent; the
+        canonical Aqua/10.5 widget set, updated 2023-06-21. Best reference for
+        correct Aqua geometry even if the dark fork is used as the base.
+      B00merang-Project/Mac-OS-X-Cheetah  53 stars, "Mac OS theme with the
+        Aqua design guidelines" — the 10.0 pinstripe/gel look; more extreme
+        skeuomorphism, useful as a parts donor for glossy widgets.
+      B00merang-Project/macOS-Dark     327 stars, tagged `xfce-theme`; modern
+        Sierra-era dark. NOT 10.4-10.6 aesthetic (flat, no gloss) but it is
+        the best-maintained dark macOS GTK base and explicitly XFCE-tagged.
+      JoseskVolpe/X-Vulpus-DarkRed     "A foxy red dark theme with glass and
+        OSX-style effects", tagged `glassyness` — direct evidence the same
+        author has already solved dark + glass, and a candidate parts donor
+        for the accent-colour variant.
+    SOURCE: github topics gtk2-theme / skeuomorphic / apple-theme, and each
+    repo's own description, 2026-08-14.
+
+  [R-21] *** THE GLOSS/AERO LESSON FROM THE WINDOWS SIDE — AND THE ONLY
+    SHORTLISTED REPO THAT SHIPS AN XFWM4 THEME PLUS A PICOM CONFIG. ***
+      xRUS47x/Aero-Glass-XFCE4 — "A GTK/XFCE theme that brings the visual
+        style of Windows 7 Aero to Linux XFCE", 195 commits, tested on Linux
+        Mint 22.2 with XFCE 4.18 AND 4.20. Ships gtk-3.0/ AND xfwm4/ AND a
+        picom.conf AND `xfce-color-switching-tool.sh` for recolouring borders
+        and panel. *** THIS IS THE MOST DIRECTLY REUSABLE ARTEFACT FOUND: its
+        xfwm4 theme is the structural template for a glossy titlebar, and its
+        colour-switching script is the mechanism for pushing everything to
+        #000000 AMOLED. *** Note its picom.conf is for the picom blur path —
+        IRRELEVANT AND UNUSABLE HERE, because X-008/W-042 keep picom off and
+        Compiz does the compositing. Take the theme, discard the picom.conf.
+      x35gaming/ReVista — Vista GTK2/3/4 + xfwm4 + light/dark switch script.
+        The author reports it as "more hours and swearing than I'd like to
+        admit... remaking an existing theme into a coherent GTK2/3/4 light and
+        dark theme", which is an honest signal of the real effort involved in
+        a coherent multi-toolkit dark theme.
+      dubsteptwo/xfseven — ARCHIVED. Author's own verdict: "Xfce isn't the
+        best DE for this kind of look and feel anyway IMO". Useful only for
+        its pointers: X-Aero xfwm4 theme by PaChu, B00merang Windows-7 icons.
+      matthewmx86/Redmond97 — Win9x, wrong era, but notable for shipping a
+        THEME GENERATOR SCRIPT that compiles the theme from custom colours.
+        That generator pattern is the right architecture for an AMOLED
+        recolour and is worth imitating.
+    SOURCE: each repo README, fetched/searched 2026-08-14.
+
+  [R-22] EMERALD DECORATION CANDIDATES (the target already runs emerald as its
+    decorator, W-049, so a .emerald file is directly usable):
+      "Glossy Emerald Theme" gnome-look 1002959 — based on Kimmik's BLACK
+        emerald theme, "modified to fit with glossy themes", uses the PIXMAP
+        engine. Black + glossy + pixmap is a three-for-three match on the
+        brief. File: 75623-glossy.emerald.
+      "mac os X snow leopard" xfce-look 1003287 — 116426-Mac os X snow
+        leopard.emerald, "the closest I could be from mac os x snow leopard".
+      "Leopard look Emerald Theme" xfce-look 1004483 — companion to the
+        "Leopard look" GTK theme.
+      "MacOs Title Bar BLue" gnome-look 1004466.
+    Emerald themes import via `emerald-theme-manager` or by dropping the
+    .emerald file. NOTE X-009/W-047: emerald on this box already emits GTK CSS
+    parse warnings and has a documented history of ignoring themes; if a theme
+    renders wrong, gtk-window-decorator is the fallback per IX.4.
+    SOURCE: gnome-look.org/p/1002959, xfce-look.org/p/1003287, /p/1004483,
+    gnome-look.org/p/1004466.
+
+  [U-025] Are the Murrine and Pixmap GTK2 engines installed on this Void box?
+    R-19 makes them a hard requirement for the Leopard themes; without pixmap
+    there is NO brushed metal and NO gloss, just flat colour. Read-only:
+      xbps-query -l | grep -Ei 'murrine|pixmap|gtk-engine'
+      ls /usr/lib/gtk-2.0/2.10.0/engines/
+    Also confirm GTK2 is present at all, since the Aqua widget work lives in
+    gtk-2.0/ and many modern boxes are GTK3-only.
+
+  [U-026] What themes does the user ALREADY have? They stated "i already have
+    some themes that we can work off too" — inventory them before downloading
+    anything, since an installed theme with correct pixmap assets is worth
+    more than a fresh clone. Read-only:
+      ls -la ~/.themes/ /usr/share/themes/ 2>/dev/null
+      ls -la ~/.emerald/themes/ 2>/dev/null
+      ls -la ~/.icons/ /usr/share/icons/ 2>/dev/null | head -40
+
+--------------------------------------------------------------------------------
+12.10 U-024/U-025/U-026 ANSWERED. THE BOX IS BETTER EQUIPPED THAN ASSUMED AND
+      THE USER'S EXISTING THEMES ARE THE RIGHT BASE. Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-055] *** THE PIXMAP ENGINE IS PRESENT. BRUSHED METAL AND GLOSS ARE
+    ACHIEVABLE. *** `/usr/lib/gtk-2.0/2.10.0/engines/` contains
+    libpixmap.so, libmurrine.so and libadwaita.so. Both engines named as hard
+    requirements by R-19 are therefore satisfied:
+      gtk-engine-murrine-0.98.2_7   installed
+      libpixmap.so                  present (ships with gtk+2 on Void)
+      gtk+-2.24.33_3 AND gtk+3-3.24.52_1 both installed
+    This closes U-025 affirmatively. The 10.4-10.6 skeuomorphic route is
+    viable; no engine work is needed. NOTE libXpm is unrelated to the GTK2
+    pixmap engine and was a red herring in the grep.
+    RECEIPT: target U-025 output, 2026-08-14.
+
+  [W-056] *** THE USER ALREADY OWNS AN ALMOST-IDEAL THEME SET. *** ~/.themes:
+      Skeuo-Dark-Leopard      (Jun 28 2025)  <- name matches the brief exactly
+      mac-os-x-cheetah-dark   (Jun 28 2025)  <- dark Aqua/gel, 10.0 lineage
+      OS-X-Cheetah-grey       (Jan  4 2025)
+      ReVista-dark            (Aug 14 2025)  <- the x35gaming Vista theme,
+                                                 dark variant, R-21 family
+      ReVista-main            (Sep 27 2024)
+      Win2-7(Pixmap)          (Oct 15 2010)  <- *** PIXMAP-based Aero/gloss,
+                                                 a parts donor for glossy
+                                                 widget assets ***
+      Slickness-Reborn        (Jun 25 2024)
+      OmNu-Ice                (Oct 27 2022)
+    Two of these (Skeuo-Dark-Leopard, mac-os-x-cheetah-dark) are already
+    dark + skeuomorphic, and Win2-7(Pixmap) is an explicit pixmap theme. The
+    correct strategy is therefore RECOLOUR + COMPOSE from these, NOT clone
+    B00merang from scratch (R-19/R-20 downgrade to reference material).
+    /usr/share/themes holds the stock xfwm4 decoration set (Agua, Atlanta,
+    Crux, Redmond, Platinum, Keramik, Smoke, Slick, Coldsteel, ...) — these
+    are xfwm4 themes, relevant only if the decorator is switched from emerald
+    to xfwm4-style decoration, which it is not today.
+    RECEIPT: target `ls ~/.themes/` and `ls /usr/share/themes/`, 2026-08-14.
+
+  [X-041] *** ~/.emerald/themes DOES NOT EXIST, YET EMERALD IS THE ACTIVE
+    DECORATOR (PID 1270, W-049). *** The `ls -la ~/.emerald/themes/` produced
+    no output at all, meaning no user emerald theme directory. Emerald is
+    therefore running on a built-in/default decoration, which is consistent
+    with W-047's repeated `gtk.css` parse errors and with X-009's documented
+    "emerald ignores its theme" history. CONSEQUENCE: none of the R-22
+    .emerald themes can be "switched to" until the directory exists and a
+    theme is imported. This also means the titlebars the user currently sees
+    are NOT part of any theme we have inventoried, and restyling them is a
+    separate task from the GTK theme.
+    Resolving step (deferred, not yet run):
+      mkdir -p ~/.emerald/themes && emerald-theme-manager &
+    RECEIPT: empty output from `ls -la ~/.emerald/themes/`, 2026-08-14.
+
+  [W-057] U-024 ANSWERED — the two missing sound packages exist in the Void
+    repos and are NOT installed ([-] = available, [*] = installed):
+      [-] libcanberra-utils-0.30_15        <- supplies canberra-gtk-play
+      [-] sound-theme-freedesktop-0.8_3    <- supplies /usr/share/sounds/freedesktop
+      [-] ocean-sound-theme-6.6.3_1        <- KDE Plasma Ocean theme, a
+            FULLER alternative to freedesktop and worth auditioning given
+            R-18's warning that freedesktop lacks most UI events
+    Install line (single command, no other changes):
+      sudo xbps-install -S libcanberra-utils sound-theme-freedesktop
+    NOTE there is no libcanberra-gtk2 module package in the results — only
+    gtk3. GTK2 apps may therefore never emit event sounds on this box; that is
+    an acceptable limitation since the desktop is predominantly GTK3.
+    RECEIPT: target `xbps-query -Rs canberra` and `-Rs sound-theme`.
+
+12.11 REVISED PLAN — COMPOSE FROM WHAT EXISTS. Supersedes 12.9's implied
+      "clone B00merang" approach, per W-056.
+  LAYER OWNERSHIP, so each change is made in exactly one place:
+    GTK3 widgets + AMOLED colour  -> a FORK of Skeuo-Dark-Leopard or
+        mac-os-x-cheetah-dark, with backgrounds driven to #000000 in
+        gtk-3.0/gtk.css. Fork, never edit in place, so the original survives.
+    GTK2 gloss/metal              -> pixmap assets, donor Win2-7(Pixmap)
+        and/or the cheetah themes' gtk-2.0 directories.
+    Titlebars                     -> emerald theme (X-041 must be fixed
+        first), candidates in R-22, or switch to gtk-window-decorator.
+    Panel/dock                    -> xfce4-panel opacity + cairo-dock theme,
+        already installed and out of scope until the GTK layer settles.
+  THE ONE COLOUR RULE FOR AMOLED: true black is #000000. Verify by grepping
+  the fork's CSS for the greys it actually ships (#2b2b2b, #303030, #383838
+  are the usual culprits) rather than assuming a "dark" theme is black.
+
+--------------------------------------------------------------------------------
+12.12 SOUND PACKAGES INSTALLED. Target output 2026-08-14. First package
+      installation of the entire project.
+--------------------------------------------------------------------------------
+
+  [W-058] `sudo xbps-install -S libcanberra-utils sound-theme-freedesktop`
+    completed cleanly: 2 downloaded, 2 installed, 0 updated, 2 configured,
+    0 removed, 0 on hold. Both RSA signatures verified.
+      libcanberra-utils-0.30_15        -> supplies /usr/bin/canberra-gtk-play
+      sound-theme-freedesktop-0.8_3    -> supplies /usr/share/sounds/freedesktop
+    380KB downloaded, 498KB on disk. No other package was touched, so this
+    cannot have disturbed the Compiz/NVIDIA stack.
+    ROLLBACK: sudo xbps-remove -R libcanberra-utils sound-theme-freedesktop
+    STILL REQUIRED before any sound will play (all four from R-17, none yet
+    done): EnableEventSounds=true, EnableInputFeedbackSounds=true,
+    SoundThemeName=freedesktop (NOT `default`, per X-040), and
+    canberra-gtk-module present in GTK_MODULES for the session.
+    NOT YET VERIFIED: that `canberra-gtk-play -i bell` produces audible sound.
+    RECEIPT: target xbps-install transaction output pasted 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.13 NEW WORK ITEM: ICON STITCHING. User brief 2026-08-14, deferred to the
+      next session by agreement. Recorded now so it is not lost.
+--------------------------------------------------------------------------------
+
+  [M18] ICON SET REPAIR AND SUBSTITUTION. Three distinct sub-tasks, which are
+  NOT the same job and should not be conflated:
+    (a) SUBSTITUTION: replace the Zen browser icon with the OS X Safari icon
+        (the classic compass). Zen is a Firefox fork; its desktop entry and
+        icon name must be located before anything is swapped. Likely surfaces:
+          /usr/share/applications/zen*.desktop or ~/.local/share/applications/
+          Icon= line names either an absolute path or a themed icon name.
+        Correct method is an ICON THEME OVERRIDE (drop a replacement into a
+        user icon theme and/or edit a COPY of the .desktop in
+        ~/.local/share/applications/), never editing files under /usr/share,
+        which xbps will overwrite on update.
+    (b) MISSING ICONS: Thunar, xfce4-terminal and "some other system stuff"
+        render without correct icons. This is the signature of an INCOMPLETE
+        ICON THEME — the active theme lacks those names and there is no
+        adequate Inherits= fallback chain in its index.theme. Diagnose before
+        fixing: read the active theme, then check whether the specific names
+        resolve.
+          xfconf-query -c xsettings -p /Net/IconThemeName
+          ls ~/.icons /usr/share/icons
+          for n in org.xfce.thunar Thunar org.xfce.terminal utilities-terminal \
+                   system-file-manager; do
+            printf '%-28s %s\n' "$n" "$(find /usr/share/icons ~/.icons -name "$n.*" 2>/dev/null | head -1 || echo MISSING)"
+          done
+        The usual correct fix is adding a proper `Inherits=` fallback (e.g.
+        to hicolor/Adwaita/Papirus) in the user theme's index.theme, plus
+        `gtk-update-icon-cache`, rather than hand-placing dozens of files.
+    (c) COHERENCE: the end state must match the 12.9 brief (OS X 10.4-10.6,
+        AMOLED, glossy). A mixed set of Papirus-flat + Aqua-gloss icons will
+        read as broken regardless of completeness. Choose ONE base icon theme
+        with the right era, then substitute individually.
+  DEPENDENCY: do (b) before (a) — a missing-icon fallback chain may itself
+  resolve some of the wrong icons, changing what actually needs substituting.
+  This milestone is GATED behind nothing technically, but it belongs after the
+  GTK/AMOLED layer (12.11) so icon choices are judged against the final
+  surface, not the current one.
+
+[2026-08-14][M17-RELEASE] PR HOLD LIFTED BY THE USER. The standing M17
+  instruction "do not open a pull request and do not edit CONTINUE_PROMPT.md
+  until the user explicitly declares the PR target reached" is now SATISFIED:
+  on 2026-08-14 the user reported the iteration weight reached ~1557 against a
+  ~405 target and explicitly requested a pull request plus a fresh session.
+  Both previously-withheld actions are therefore authorised and performed in
+  this session: CONTINUE_PROMPT.md rewritten for the next chat, and a PR
+  opened from arena/01a000f0-nvidia-intel-ocblizzard-4x8ddr.
+
+[2026-08-14][M8-FINAL] *** M8 IS COMPLETE AND THE DESKTOP IS THE DELIVERABLE.
+  *** Compiz Reloaded 0.8.18 is the login window manager on a cold boot
+  (W-049, PID 1210 via compiz-session), smooth under __GL_YIELD=USLEEP
+  (W-040 user verdict, unchanged since), geometry-correct on both monitors
+  (W-018/W-026), with a self-healing profile (W-048 option C), a proven
+  one-word revert (W-045 compiz-revert), and a session cache that no longer
+  resurrects CCSM (W-050). Panel, xfdesktop, cairo-dock and emerald all
+  survive the swap. Section IX is functionally complete; the remaining IX.7
+  items are human aesthetic judgements, not gates.
+  OPEN AND CARRIED FORWARD: X-030/X-036/X-037/X-041, U-017, U-020(closed),
+  U-022, U-023, U-024(closed), U-025(closed), U-026(closed), and the three
+  uncollected human checks (smoothness re-confirm, titlebars, panel on
+  workspace switch).
