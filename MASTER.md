@@ -3220,3 +3220,87 @@ controls to rotate between windows."
   THE ONE COLOUR RULE FOR AMOLED: true black is #000000. Verify by grepping
   the fork's CSS for the greys it actually ships (#2b2b2b, #303030, #383838
   are the usual culprits) rather than assuming a "dark" theme is black.
+
+--------------------------------------------------------------------------------
+12.12 SOUND PACKAGES INSTALLED. Target output 2026-08-14. First package
+      installation of the entire project.
+--------------------------------------------------------------------------------
+
+  [W-058] `sudo xbps-install -S libcanberra-utils sound-theme-freedesktop`
+    completed cleanly: 2 downloaded, 2 installed, 0 updated, 2 configured,
+    0 removed, 0 on hold. Both RSA signatures verified.
+      libcanberra-utils-0.30_15        -> supplies /usr/bin/canberra-gtk-play
+      sound-theme-freedesktop-0.8_3    -> supplies /usr/share/sounds/freedesktop
+    380KB downloaded, 498KB on disk. No other package was touched, so this
+    cannot have disturbed the Compiz/NVIDIA stack.
+    ROLLBACK: sudo xbps-remove -R libcanberra-utils sound-theme-freedesktop
+    STILL REQUIRED before any sound will play (all four from R-17, none yet
+    done): EnableEventSounds=true, EnableInputFeedbackSounds=true,
+    SoundThemeName=freedesktop (NOT `default`, per X-040), and
+    canberra-gtk-module present in GTK_MODULES for the session.
+    NOT YET VERIFIED: that `canberra-gtk-play -i bell` produces audible sound.
+    RECEIPT: target xbps-install transaction output pasted 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.13 NEW WORK ITEM: ICON STITCHING. User brief 2026-08-14, deferred to the
+      next session by agreement. Recorded now so it is not lost.
+--------------------------------------------------------------------------------
+
+  [M18] ICON SET REPAIR AND SUBSTITUTION. Three distinct sub-tasks, which are
+  NOT the same job and should not be conflated:
+    (a) SUBSTITUTION: replace the Zen browser icon with the OS X Safari icon
+        (the classic compass). Zen is a Firefox fork; its desktop entry and
+        icon name must be located before anything is swapped. Likely surfaces:
+          /usr/share/applications/zen*.desktop or ~/.local/share/applications/
+          Icon= line names either an absolute path or a themed icon name.
+        Correct method is an ICON THEME OVERRIDE (drop a replacement into a
+        user icon theme and/or edit a COPY of the .desktop in
+        ~/.local/share/applications/), never editing files under /usr/share,
+        which xbps will overwrite on update.
+    (b) MISSING ICONS: Thunar, xfce4-terminal and "some other system stuff"
+        render without correct icons. This is the signature of an INCOMPLETE
+        ICON THEME — the active theme lacks those names and there is no
+        adequate Inherits= fallback chain in its index.theme. Diagnose before
+        fixing: read the active theme, then check whether the specific names
+        resolve.
+          xfconf-query -c xsettings -p /Net/IconThemeName
+          ls ~/.icons /usr/share/icons
+          for n in org.xfce.thunar Thunar org.xfce.terminal utilities-terminal \
+                   system-file-manager; do
+            printf '%-28s %s\n' "$n" "$(find /usr/share/icons ~/.icons -name "$n.*" 2>/dev/null | head -1 || echo MISSING)"
+          done
+        The usual correct fix is adding a proper `Inherits=` fallback (e.g.
+        to hicolor/Adwaita/Papirus) in the user theme's index.theme, plus
+        `gtk-update-icon-cache`, rather than hand-placing dozens of files.
+    (c) COHERENCE: the end state must match the 12.9 brief (OS X 10.4-10.6,
+        AMOLED, glossy). A mixed set of Papirus-flat + Aqua-gloss icons will
+        read as broken regardless of completeness. Choose ONE base icon theme
+        with the right era, then substitute individually.
+  DEPENDENCY: do (b) before (a) — a missing-icon fallback chain may itself
+  resolve some of the wrong icons, changing what actually needs substituting.
+  This milestone is GATED behind nothing technically, but it belongs after the
+  GTK/AMOLED layer (12.11) so icon choices are judged against the final
+  surface, not the current one.
+
+[2026-08-14][M17-RELEASE] PR HOLD LIFTED BY THE USER. The standing M17
+  instruction "do not open a pull request and do not edit CONTINUE_PROMPT.md
+  until the user explicitly declares the PR target reached" is now SATISFIED:
+  on 2026-08-14 the user reported the iteration weight reached ~1557 against a
+  ~405 target and explicitly requested a pull request plus a fresh session.
+  Both previously-withheld actions are therefore authorised and performed in
+  this session: CONTINUE_PROMPT.md rewritten for the next chat, and a PR
+  opened from arena/01a000f0-nvidia-intel-ocblizzard-4x8ddr.
+
+[2026-08-14][M8-FINAL] *** M8 IS COMPLETE AND THE DESKTOP IS THE DELIVERABLE.
+  *** Compiz Reloaded 0.8.18 is the login window manager on a cold boot
+  (W-049, PID 1210 via compiz-session), smooth under __GL_YIELD=USLEEP
+  (W-040 user verdict, unchanged since), geometry-correct on both monitors
+  (W-018/W-026), with a self-healing profile (W-048 option C), a proven
+  one-word revert (W-045 compiz-revert), and a session cache that no longer
+  resurrects CCSM (W-050). Panel, xfdesktop, cairo-dock and emerald all
+  survive the swap. Section IX is functionally complete; the remaining IX.7
+  items are human aesthetic judgements, not gates.
+  OPEN AND CARRIED FORWARD: X-030/X-036/X-037/X-041, U-017, U-020(closed),
+  U-022, U-023, U-024(closed), U-025(closed), U-026(closed), and the three
+  uncollected human checks (smoothness re-confirm, titlebars, panel on
+  workspace switch).
