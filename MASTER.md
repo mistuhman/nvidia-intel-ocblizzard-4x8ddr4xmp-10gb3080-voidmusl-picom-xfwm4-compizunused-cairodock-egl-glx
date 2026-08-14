@@ -4387,3 +4387,30 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
   current Compiz identity, xwinwrap/mpv/ffmpeg/Chromium/Node availability,
   existing xmb-wave workspace, disk, display geometry and existing wallpaper
   processes. Only after that receipt may packages or workspace files change.
+
+--------------------------------------------------------------------------------
+12.43 FINAL GTK V2 RECONFIRMED; OPERATOR ACCIDENTALLY RESELECTED MAC4LIN
+      EMERALD AFTERWARD. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-099] The V2 repair/reload block was run twice and both receipts are
+    identical: CSS `8bed1729...`, aggregate `98f019d...`, active GTK
+    Quake-Gunmetal-3D, rollback Quake-Aqua-AMOLED, Compiz PID 1210, Emerald PID
+    14379 and picom absent. This independently confirms W-096's frozen GTK
+    state; the duplicate run is idempotent and changed no hashes.
+    RECEIPT: two target V2 repair/reload outputs, 2026-08-14.
+
+  [X-056] After those successful GTK receipts, the operator reports “i
+    accidentally chose the mac4lin window deco”. This is a manual Emerald GUI
+    selection and a transient regression from frozen W-085, not a Compiz/GTK
+    failure. Exact current active Emerald bytes are uncollected, but recovery
+    does not require forensics: W-081's generated library theme
+    `~/.emerald/themes/Quake-Gunmetal-Aqua` and installed
+    `gunmetal-emerald-theme apply` remain the canonical accepted forward state;
+    applying it preserves the accidental slot before restart. State escape
+    first because this changes the live decorator.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/DECO-RESTORE] BLOCKED on one bounded re-apply of the frozen
+  Quake-Gunmetal-Aqua artifact and process/hash verification. XMB M9 preflight
+  waits until the accepted decoration is restored; GTK needs no further work.
