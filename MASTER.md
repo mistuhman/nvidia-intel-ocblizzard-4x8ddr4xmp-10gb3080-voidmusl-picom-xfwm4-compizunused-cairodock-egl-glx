@@ -6225,3 +6225,66 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   HUMAN: only main-red carries visual acceptance (W-165); sleep and
   work-monochrome are unreviewed. U-044 (the 59->0 seam) also remains unobserved
   on every role.
+
+--------------------------------------------------------------------------------
+12.90 ALL THREE ROLES COMPLETE. U-047 PREDICTION FAILED — W-172 IS FALSIFIED AND
+      IS SUPERSEDED HERE. Target + human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-174] `WORK_MONOCHROME_VIDEO_BAKE=PASS`. The third and final role is
+    complete: `work-monochrome.loop-60s.mp4` 240,799,621 bytes,
+    `work-monochrome.master-62.3s.mp4` 250,255,810 bytes SHA-256
+    `e03613299cf9c15fe2c677fb1cf49cc09b49246e230a35aa5efa117e08ae9dcc`,
+    `BAKE-RECEIPT.json` 1,762 bytes SHA-256
+    `9052327b22da767302378f97fead83470ef9dca594f142130463b620ac6d2268`.
+    ALL THREE ROLES ARE NOW BAKED with every machine gate passed. The chained
+    `&&` invocation completed both remaining roles unattended.
+    RECEIPT: target log tail and `ls -la` of the work-monochrome output
+    directory, 2026-08-14.
+
+  [X-089] W-172 IS FALSIFIED AND MUST NOT BE CITED. This supersedes W-172 per
+    Directive 7; the row stands as history and this row overturns it. U-047
+    pre-registered that work-monochrome's master would be ~224,800,000 bytes
+    within a 215-225 MB band. Observed: 250,255,810 bytes / 238.7 MB — a miss of
+    +24.3 MB, +11.3%, clearly OUTSIDE the declared band. The three measured
+    throughputs are 421,787, 421,272 and 469,259 B/s, an 11.4% spread, not the
+    0.12% constant W-172 asserted. The correct reading is that the earlier
+    agreement between exactly two roles was a coincidence I over-fitted into a
+    law on n=2. Bake time is NOT a fixed function of encoded bytes. The honest
+    residual finding is only the weaker one already established in W-169: capture
+    and encode dominate frame cost, and per-role time varies with scene content
+    in a way this project has NOT successfully modelled and does not need to.
+    LESSON: two points do not make a law; a pre-registered prediction is what
+    exposed this, and pre-registration should be retained for any future
+    performance claim.
+    RECEIPT: U-047's pre-observation arithmetic against the observed file size,
+    2026-08-14.
+
+  [W-175] A genuine content finding survives the falsification, stated with its
+    limits. Loop-to-master size ratios are main-red 0.749, sleep 0.711 and
+    work-monochrome 0.962. Work-monochrome's 60-second loop is 96.2% the size of
+    its 62.3-second master, whereas the other two compress to roughly three
+    quarters. This is consistent with W-150's measurement that work-monochrome is
+    by far the busiest frame (5,980,800 non-black pixels, average channel 119)
+    and therefore the least compressible. This is a descriptive observation about
+    these three artifacts, NOT a predictive rule — X-089 is exactly the error of
+    promoting such an observation prematurely.
+    RECEIPT: W-163, W-168 and W-174 file sizes against W-150 metrics,
+    2026-08-14.
+
+  [W-176] HUMAN VISUAL ACCEPTANCE for `sleep`, and U-044 IS CLOSED. The operator
+    played the sleep loop twice: once from the start reaching 00:00:19, and once
+    with `--start=55` reaching 00:00:57 of 00:01:00, which lands directly on the
+    59->0 wrap. Verdict: "perfect. sleep. and red, both work." This is the first
+    direct human observation of the seamless-loop transition on any role, and it
+    reports no visible seam, jump or discontinuity. The 2.3-second crossfade
+    aligned to Wall's slide duration (W-124) is therefore visually validated, not
+    merely arithmetically asserted. mpv again reported `hevc 4480x1440 60 fps`
+    via `gpu-next`.
+    RECEIPT: operator statement plus mpv position lines 00:00:19 and 00:00:57,
+    2026-08-14.
+
+[2026-08-14][M11-ALL-ROLES] COMPLETE. Three deterministic 60-second 4480x1440
+  HEVC loops exist with full hash receipts; main-red and sleep carry human
+  acceptance and the loop seam is confirmed by eye. Remaining M11 gate is human
+  review of work-monochrome only. W-172 is dead (X-089); do not reuse it.
