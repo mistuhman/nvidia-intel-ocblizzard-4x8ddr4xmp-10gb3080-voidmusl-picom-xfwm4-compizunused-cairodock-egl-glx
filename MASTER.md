@@ -5507,3 +5507,29 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-14][M9-PRESET-WORK-DOWNLOAD-3] INVALID/NO-OP. Next gate is clipboard
   preparation from Terminal only; it must not submit or change browser state.
+
+--------------------------------------------------------------------------------
+12.75 WORK-MONOCHROME LIVE JSON DOWNLOADED; PRIMARY SCREENSHOT NUMERALS
+      CORRECTED BY EXACT OBJECT STATE. Browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-144] The original WORK MONOCHROME Zen tab successfully produced a
+    same-page Blob download. Live object evidence is 50 spline keys, generator
+    RGB 255/255/255, exact particle tuple `4000/0.37/3.1/0/0.04`, downloaded
+    payload size 1,568 bytes and completion marker
+    `WORK_MONOCHROME_JSON_DOWNLOADED`. The earlier accidental terminal paste was
+    a no-op; this later Console output is the successful receipt.
+    RECEIPT: Zen Developer Tools Console table/key/RGB/byte/completion output and
+    operator clarification, 2026-08-14.
+
+  [X-080] CORRECTION TO W-110/W-113/W-116: the downscaled WORK screenshot was
+    misread as Size Var 0.8 and Flow Speed 0.44. Exact live-object values are
+    Size Var 0 and Flow Speed 0.04. The final primary work tuple is therefore
+    `4000 / 0.37 / 3.1 / 0 / 0.04`. This correction reinforces Directive 12's
+    rule that small rendered numerals cannot outrank machine-readable state.
+    RECEIPT: W-144 live `window.PARTICLE_SETTINGS` console table,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD] BROWSER PASS. Next gate is terminal-safe
+  import/validation/canonicalization from Downloads; deterministic preview still
+  pending per X-074.
