@@ -5111,3 +5111,35 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   wildcard cleanup and no external/NVMe writes are authorized yet. Next block
   removes only eight named hash-matched obsolete outputs and discovers mounted
   filesystems; its receipt determines the durable bake root.
+
+--------------------------------------------------------------------------------
+12.59 HASH-GUARDED CLEANUP PASS; NVME BAKE FILESYSTEM SELECTED.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-128] All eight obsolete XMB outputs matched their recorded SHA-256 before
+    deletion. Exactly 2,021,655,367 bytes (1.883 GiB) were removed; no wildcard
+    was used. The immutable local removal manifest is
+    `~/.local/share/xmb-wave/OLD-OUTPUTS-REMOVED-20260814.sha256`, SHA-256
+    `6a5383df128e722df7a5c724173038247897707bc78f63e5dae9ae470b32d709`.
+    Postconditions prove every named path absent and source, custom editor,
+    scripts, logs, bake directory and node_modules preserved. Root free space
+    increased from 184 MiB to 2.1 GiB. `OLD_XMB_OUTPUT_CLEANUP=PASS`.
+    RECEIPT: target hash checks, byte total, removals, manifest hash, preserved
+    path assertions and df output, 2026-08-14.
+
+  [W-129] `/mnt/games` is the preferred durable bake filesystem: mounted rw,
+    noatime from `/dev/nvme0n1p2`, ext4, 656 GiB total with 109 GiB available.
+    It is materially faster and safer for capture/encode intermediates than the
+    unmounted 1.8 TiB NTFS Sabrent `/dev/sda1`, and avoids refilling the 99%-used
+    root partition. The external HDD remains an optional later archive only;
+    do not mount or write it for the bake. Stage working data under a new bounded
+    `/mnt/games/xmb-wave-bake/` root while runtime launchers/manifests remain
+    small enough for the user's home directory.
+    RECEIPT: target lsblk/findmnt/df inventory, 2026-08-14.
+
+[2026-08-14][M9-STORAGE-GATE] PASS. Cleanup scope and preservation verified;
+  durable bake root selected with 109 GiB headroom. Next gate is to author and
+  install a self-checking staging/preset-export tool that copies—never edits—the
+  authoritative custom editor into the NVMe bake root, records source hashes,
+  and adds durable three-role JSON capture before deterministic renderer work.
