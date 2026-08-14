@@ -4587,3 +4587,39 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   machine/preflight receipt. Preserve Compiz Wall's middle-button input; the
   wallpaper controller must observe workspace state and must never capture or
   replace that binding.
+
+--------------------------------------------------------------------------------
+12.48 THREE-STATE SEMANTICS RESOLVED; HYBRID WALL TRANSITION REQUIRES A LIVE
+      FEASIBILITY PROBE BEFORE RUNTIME DESIGN. Operator choices 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-105] U-029 state semantics are now explicit. “Sleep” is screensaver-only,
+    activated by idle handling rather than assigned to a normal workspace. The
+    red/main and black-and-white night-ocean-city loops are fixed by workspace:
+    each destination workspace owns its visual identity. Runtime switching must
+    preserve the operator's existing Compiz Desktop Wall middle-mouse binding;
+    the wallpaper system observes workspace/viewport state and never captures
+    that input.
+    RECEIPT: operator selections `screensaver_only` and fixed-by-workspace,
+    2026-08-14.
+
+  [U-030] The requested switch presentation is a deliberate hybrid: imagery
+    should appear spatially connected to Desktop Wall motion while also fading
+    between the source and destination XMB loops for “ultimate blending.” A
+    sticky override-redirect xwinwrap layer is not automatically proof that
+    Compiz will map independent videos onto Wall faces, and a settled
+    `_NET_DESKTOP_VIEWPORT` notification alone cannot reveal every animation
+    frame. Do not promise literal per-face motion yet. First inventory the live
+    viewport topology, active Wall settings and available Compiz event/control
+    surfaces; then prototype the least costly observable transition. Acceptable
+    implementation may be a synchronized pan/parallax plus crossfade if Compiz
+    exposes destination changes but not continuous Wall progress. Literal Wall
+    attachment is promoted only by a live visual receipt.
+    RECEIPT: operator custom transition choice plus existing W-004 delivery
+    architecture; target feasibility unverified, 2026-08-14.
+
+[2026-08-14][M9/THREE-STATE-SEMANTICS] PASS. Planned deliverables are two
+  workspace loops, one independent idle/screensaver loop and a controller that
+  preserves Compiz input ownership. Next gate remains the combined post-reboot
+  machine audit and read-only XMB/runtime/viewport preflight from 12.42, now
+  extended to collect Wall transition-control surfaces for U-030.
