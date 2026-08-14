@@ -413,6 +413,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   This is a correction candidate, not yet a proven fix.
   RECEIPT: target IX.3B-1 diff and process output pasted 2026-08-14.
 
+[2026-08-14][W-018] IX.3B-2 proved the explicit output-list correction in a
+  bounded trial. Compiz PID 8579 owned the WM selection while XRandR still
+  reported both exact monitor rectangles; the prior tiny/cropped display did
+  not recur in the user's observation. The 15-second trap then restored
+  xfwm4 PID 8831 and stopped Compiz and emerald exactly as designed. X-012's
+  geometry candidate is therefore accepted, while appearance/performance is
+  not yet accepted.
+  RECEIPT: target timed-trial state, automatic-recovery output and user
+  observation pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -525,6 +535,17 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   be copied into the active profile. Causality remains unproven until a
   corrected volatile launch renders both monitors normally.
   RECEIPT: W-016 plus complete active-profile output, 2026-08-14.
+
+[2026-08-14][X-013] IX.3B-2 appearance/performance is rejected pending a
+  clean baseline: the user observed a strange shiny effect around windows and
+  poor apparent refresh. The active profile explicitly enables `reflex`,
+  `blur`, `mblur`, `bench`, `showmouse` and `mousepoll` together, while also
+  allowing automatic refresh detection despite both displays running near
+  120 Hz. Those are evidence-backed suspects, not yet proven causes. Remove
+  the diagnostic/blur/reflection stack, retain the requested animation stack,
+  force the already verified common 120 Hz rate, then retest under the same
+  timed rollback before keeping Compiz live.
+  RECEIPT: active profile in U-008 plus direct user observation, 2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -672,6 +693,11 @@ Status vocabulary, used strictly:
   receipt: W-017 and the exact target diff.
   This supersedes U-008's pending-correction clause. Overall M8 remains
   BLOCKED on a successful, visually observed IX.3B-2 timed retest.
+
+[2026-08-14][M8/IX.3B-2] Corrected dual-output geometry and timed rollback
+  DONE; receipt W-018.
+  This supersedes IX.3B-1's geometry-test block. Overall M8 remains BLOCKED on
+  X-013 appearance/performance refinement; Compiz is not yet persistent.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
