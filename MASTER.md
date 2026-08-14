@@ -3304,3 +3304,1144 @@ controls to rotate between windows."
   U-022, U-023, U-024(closed), U-025(closed), U-026(closed), and the three
   uncollected human checks (smoothness re-confirm, titlebars, panel on
   workspace switch).
+
+--------------------------------------------------------------------------------
+12.14 M16 EMERALD GATE 1 — X-041 DIRECTORY BLOCKER CLEARED. Target output and
+      attached visual receipt, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-059] `~/.emerald/themes` was confirmed absent immediately before the
+    target block created it as `/home/sd/.emerald/themes`, mode 0755, owned by
+    sd:sd. It contained no files before any import. The installed manager is
+    `/usr/bin/emerald-theme-manager`; it remained live as PID 23838 after a
+    three-second launch check. The operator's attached screenshot visibly
+    shows the `Emerald Themer 0.8.18` window open with its Themes and Emerald
+    Settings tabs. This clears X-041's literal missing-directory blocker.
+    ROLLBACK while empty: `rmdir /home/sd/.emerald/themes`.
+    RECEIPT: target M16/X-041 block output plus attached manager screenshot,
+    pasted 2026-08-14.
+
+  [W-060] X-041's stronger inference that an absent per-user theme directory
+    meant there were no inventoried Emerald themes is superseded. The same
+    target receipt enumerated exactly 76 packaged theme directories under
+    `/usr/share/emerald/themes`, including directly relevant candidates
+    `Mac4Lin_Aqua`, `Mac4Lin_Graphite`, `Fogo_Monochrome`, `Scaled_Black_Mod`,
+    `Wombat_Black`, `Overglossed`, `PlatinUm`, `Yosemite`, and
+    `Yosemite_Graphite`. Those system themes are available without an import;
+    the currently active theme is still UNVERIFIED and must be identified
+    before selecting or forking anything. No theme was imported or selected by
+    this gate; it created the user directory and opened the manager only.
+    RECEIPT: the 76-line `/usr/share/emerald/themes` target listing in the
+    M16/X-041 output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-1] Missing user Emerald directory fixed and manager
+  launch visually VERIFIED. Receipt: W-059/W-060 and attached screenshot.
+  M16 remains IN PROGRESS: next identify the active Emerald selection and
+  inspect the most relevant packaged candidates read-only before making one
+  reversible visual selection. M18 and the sound-chain writes remain pending.
+
+--------------------------------------------------------------------------------
+12.15 M16 EMERALD GATE 2 — ACTIVE THEME AND DONORS IDENTIFIED READ-ONLY.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-061] The active Emerald slot is NOT an unknown built-in default. It is a
+    pre-existing custom theme at `/home/sd/.emerald/theme/theme.ini`, SHA-256
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`,
+    declaring creator `sd-rice`, description `Dark Aqua Hybrid Legacy - Snow
+    Leopard Graphite`, version 0.8.18, engine `legacy`, active text `#ececec`
+    and inactive text `#666666`. It has no byte-identical match among the 76
+    packaged themes. Its active slot includes a complete Mac-style pixmap and
+    button asset set, `theme.screenshot.png`, README/LICENSE, a source archive
+    named `macOS Sierra.emerald`, and a dated `theme.ini.bak.1782451687`.
+    This positively supersedes X-041's earlier inference that the current
+    titlebars belonged to no inventoried theme. The custom active theme is
+    both inventoried and already named for the requested dark Aqua/Graphite
+    surface; it must be preserved rather than overwritten casually.
+    RECEIPT: target EMERALD-2 process/file/hash/metadata output, 2026-08-14.
+
+  [W-062] The packaged donor comparison is resolved without selecting a new
+    theme. `Mac4Lin_Aqua` and `Mac4Lin_Graphite` are 27-file pixmap themes;
+    `Overglossed` is a 35-file pixmap theme with explicit focused titlebar and
+    frame artwork; `PlatinUm` and `Yosemite_Graphite` are pixmap themes;
+    `Fogo_Monochrome` uses oxygen; `Scaled_Black_Mod` and `Wombat_Black` use
+    vrunner. This makes Mac4Lin_Graphite and Overglossed the closest artwork
+    donors for M16, while the custom W-061 active theme remains the safer
+    baseline. Emerald stayed PID 1270 and Emerald Theme Manager PID 23838
+    during the read-only inspection. No theme was selected or modified.
+    RECEIPT: target hashes, engine metadata and bounded asset listings for all
+    eight shortlisted themes in EMERALD-2 output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-2] Active titlebar source and packaged donors
+  IDENTIFIED read-only. Receipt: W-061/W-062. X-041 is CLOSED and superseded:
+  the missing user library directory was real, but its claimed implication
+  about the active titlebar was false. M16 remains IN PROGRESS. Preserve the
+  custom Dark Aqua active slot; proceed to identify and fork the GTK widget
+  theme before deciding whether any Emerald artwork needs composition.
+
+--------------------------------------------------------------------------------
+12.16 M16 GTK GATE 1 — ACTIVE FAMILY AND VIABLE WIDGET BASE NARROWED.
+      Partial target output pasted 2026-08-14; omitted beginning is not treated
+      as observed.
+--------------------------------------------------------------------------------
+
+  [W-063] The GTK-1 receipt identifies `Slickness-Reborn` as the active GTK
+    candidate by construction: the executed block inspected only the active
+    `/Net/ThemeName` followed by three fixed candidates, and
+    `/home/sd/.themes/Slickness-Reborn` appears as the first inspected path.
+    The pasted excerpt is truncated before the explicit XSettings line, so
+    that line itself remains to be reprinted by the next focused gate. The
+    observed Slickness content uses `#242424` as GTK3 theme background and
+    `#474747` as base, with many GTK2 pixmap-engine rules and no broken
+    symlinks. It is dark and glossy but not AMOLED black.
+    RECEIPT: target GTK-1 output excerpt and the exact executed loop, pasted
+    2026-08-14. Scope caveat: the beginning of the output was not supplied.
+
+  [W-064] `Skeuo-Dark-Leopard` is NOT a GTK widget-theme base: it is only
+    156K, 37 files/36 visual assets, and its sole top-level component is
+    `xfwm4`; it has no index.theme, gtk-2.0 or gtk-3.0. In contrast,
+    `mac-os-x-cheetah-dark` is a complete 5.0M theme with 500 files, 463 visual
+    assets, GTK2, GTK3, metacity, openbox and three xfwm4 variants. Its single
+    3200-line GTK3 CSS hashes
+    `2ecdb911e36af6ecf87a200e2cab909402e6abf26eedba25df12dae61eeb452d`;
+    its literal-colour census includes `#000000` 101 times, but main surfaces
+    still include rgba(61,61,62,.999), `#181818`, `#3a3a3a`, `#303030` and
+    other greys. Its GTK2 side already uses the pixmap engine extensively and
+    has explicit Thunar tweaks. No broken symlinks were found. This is the
+    viable M16 GTK fork base; W-056's name-based assumption that
+    Skeuo-Dark-Leopard could provide GTK widgets is superseded.
+    RECEIPT: target GTK-1 component/file/hash/colour/engine/symlink output,
+    2026-08-14.
+
+  [W-065] `Win2-7(Pixmap)` is confirmed as a GTK2-only artwork donor: 1.3M,
+    248 files, 224 visual assets, gtk-2.0 + metacity-1, no gtk-3.0, no broken
+    symlinks. Its index.theme explicitly identifies the pixmap implementation,
+    while its base palette is light (`#e8ecf6`, `#fcfcfc`) and therefore must
+    not replace the dark palette wholesale. Its role is limited to selected
+    glossy pixmap assets after the Cheetah fork works on its own.
+    RECEIPT: target GTK-1 index, engine, colour and file inventory output,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-1] GTK inventory PARTIAL but base-selection question
+  RESOLVED. Receipt: W-063..W-065. Use `mac-os-x-cheetah-dark` as the complete
+  fork base, preserve active Slickness-Reborn as rollback, and treat
+  Win2-7(Pixmap) only as an optional GTK2 artwork donor. Next gate must reprint
+  the explicit active XSettings value and inspect the narrow top-level colour
+  definitions before any fork or recolour is written.
+
+--------------------------------------------------------------------------------
+12.17 M16 GTK GATE 1A — COMPLETE RECEIPT CLOSES GTK-1 TRUNCATION.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-066] The explicit XSettings receipt confirms `/Net/ThemeName =
+    Slickness-Reborn`, closing W-063's scope caveat. The active theme is 2.5M,
+    433 files/418 visual assets, with GTK2, GTK3 and GTK4 components and no
+    broken symlinks. Its index.theme palette sets bg `#242424`, base `#474747`
+    and foreground `#d7d7d7`; its four GTK3 CSS hashes are now recorded by the
+    target receipt (`gtk.css` starts `303ebe33...`, `gtk-widgets.css`
+    `bace908c...`, `applications.css` `2fe62f0f...`, LightDM CSS
+    `fa697689...`). Slickness-Reborn is therefore a complete, named rollback
+    target, not merely inferred from a path.
+    RECEIPT: target GTK-1A XSettings/index/hash/file output, 2026-08-14.
+
+  [W-067] The active icon theme is explicitly `/Net/IconThemeName =
+    Mac-OS-X-Lion`. This is the first target receipt naming the active M18
+    surface and materially narrows the missing-icon diagnosis: M18 must inspect
+    that theme's index.theme and inheritance chain before changing individual
+    application icons. No icon setting was changed.
+    RECEIPT: target GTK-1A XSettings output, 2026-08-14.
+
+[2026-08-14][M16/GTK-1A] GTK inventory COMPLETE. Receipt: W-064..W-067.
+  Active rollback is Slickness-Reborn; full fork base is
+  mac-os-x-cheetah-dark; Win2-7(Pixmap) remains a GTK2-only donor. The next
+  gate remains GTK-2's focused source-palette/parser preflight; no fork or
+  visual setting has yet been written.
+
+--------------------------------------------------------------------------------
+12.18 M16 GTK GATE 2 — GTK3 PREFLIGHT REJECTS DIRECT CHEETAH CSS USE.
+      Target output and operator correction pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-068] The focused receipt reconfirms active GTK `Slickness-Reborn`, icon
+    theme `Mac-OS-X-Lion`, and font `Myriad Pro 10`. The Cheetah source files
+    are intact and hash to `2ecdb911...` (GTK3 gtk.css) and `b9105f34...`
+    (GTK2 gtkrc), with zero broken symlinks. Its narrow palette is now exact:
+    GTK3's two root `.background` declarations use
+    `rgba(61,61,62,0.999)`; fallback/sidebar surfaces use `#181818`; GTK2's
+    single global bg[NORMAL] is `#3d3d3e` and base[NORMAL] is `#303030`.
+    The existing `#222222` and `#313132` uses are predominantly gradients,
+    insets and borders and must not be globally flattened to black.
+    RECEIPT: target GTK-2 hashes, source excerpts and token counts/locations,
+    2026-08-14.
+
+  [X-042] `mac-os-x-cheetah-dark/gtk-3.0/gtk.css` is NOT safe as a direct
+    GTK3 base in its present form. The target found 135 lines containing
+    uncompiled SCSS identifiers. Some are inside comments, but many are active
+    declarations, including `$unfocused_fg_color`, `$unfocused_base_color`,
+    `$unfocused_borders`, `$base_color`, `$bg_color`, `$scrollbar_radius` and
+    Sass-style `gtkmix(...)` calls. GTK3 cannot resolve dollar-prefixed Sass
+    variables. The only installed probe is `/usr/bin/gtk-query-settings`;
+    gtk3-widget-factory and gtk3-demo are absent. The operator also explicitly
+    corrected the plan: this is a GTK3 system. Therefore selecting or simply
+    forking the Cheetah GTK3 CSS is rejected before it can reproduce the
+    historical line-31xx parser-error family in W-047.
+    CONSEQUENCE: W-064's phrase “viable M16 GTK fork base” is superseded for
+    GTK3. Cheetah remains a valuable Aqua artwork/GTK2 donor and reference,
+    but the first working GTK3 fork must come from the known-live
+    Slickness-Reborn tree, with Aqua elements composed only after a clean
+    AMOLED GTK3 gate passes.
+    RECEIPT: target GTK-2 SCSS grep/count (135), tool inventory, source
+    excerpts, and direct operator statement “its a gtk3 system though”,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-2] GTK3 source preflight DONE; direct Cheetah CSS route
+  REJECTED by X-042. Receipt: W-068/X-042. Revised least-risk order: fork the
+  currently working GTK3/GTK4 Slickness-Reborn theme, change only its named
+  bg/base palette entries to true black with exact-count assertions, retain
+  the original active name as one-command rollback, then judge the AMOLED
+  layer before introducing any Cheetah/Win2-7 artwork.
+
+--------------------------------------------------------------------------------
+12.19 M16 GTK-2 REPEAT — SOURCE REMAINED BYTE-STABLE BEFORE WRITE GATE.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-069] A second independent GTK-2 read-only run reproduced the Cheetah
+    source hashes (`2ecdb911...` GTK3, `b9105f34...` GTK2), 3200/2653 line
+    counts, zero broken symlinks, the same exact palette counts and the same
+    135 SCSS-token lines. This adds no new design claim but proves no source
+    file changed between GTK-2 probes. Active settings were not changed by the
+    repeated block; the GTK-3 AMOLED fork/activation gate remains unexecuted.
+    RECEIPT: repeated target GTK-2 output, pasted 2026-08-14.
+
+[2026-08-14][M16/GTK-2-REPEAT] Read-only reproducibility VERIFIED. Receipt:
+  W-069. Next action remains the previously issued GTK-3 AMOLED trial; do not
+  run another Cheetah inspection.
+
+--------------------------------------------------------------------------------
+12.20 M16 GTK GATE 3 — AMOLED FORK BUILT, ACTIVATED, AND VISUALLY ACCEPTED AS
+      A WORKING STAGE; DESIGN PAUSED FOR OPERATOR INFLUENCES. Target output,
+      attached screenshot and operator judgement, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-070] The combined GTK-3 trial (run instead of the later build-only
+    variant) successfully forked the known-live `Slickness-Reborn` tree to
+    `/home/sd/.themes/Quake-Aqua-AMOLED` without touching the source. All
+    exact-count assertions passed: the fork identity changed in index.theme;
+    index, GTK3 and GTK2 named bg/base values changed from `#242424`/`#474747`
+    to true `#000000`; gradients, borders, assets and other colours were left
+    intact. The installed hashes are:
+      index.theme       12895f520156fabea55f84472159e7e88536c5f28ffbd556b2c486a5ae810fe5
+      gtk-3.0/gtk.css   8d3d1980a78c4e0912cfbae2d12911beeca8f78f698e9ecf18f42141ab30b42f
+      gtk-2.0/gtkrc     b20aa4081b3682e32726e0260ca1d952cd0e34f8c43401b8e6a4353d09864606
+      fork receipt      377ed75aad9365ccec3653c83b44125492d4de2602fc6dde4f9493ef15f4096b
+    The 2.5M fork has zero broken symlinks. XSettings then accepted
+    `/Net/ThemeName = Quake-Aqua-AMOLED`; icon theme stayed Mac-OS-X-Lion.
+    Runtime safety labels remained Compiz PID 1210, Emerald PID 1270, picom
+    absent. Rollback remains one command:
+      `xfconf-query -c xsettings -p /Net/ThemeName -s Slickness-Reborn`
+    RECEIPT: target GTK-3 AMOLED trial assertion/hash/XSettings/process output,
+    2026-08-14.
+
+  [X-043] The GTK3 realization probe constructed its window/widgets and exited
+    0 (`GTK3 widget realization: PASS`) but emitted four parser warnings named
+    only `gtk.css`, at 2:19, 6:19, 10:19 and 15:19 (“Junk at end of value for
+    color”). The receipt does NOT identify which gtk.css emitted them. This is
+    the exact four-low-line warning shape already present before M16 in W-043,
+    while the fork's asserted lines use valid named-colour declarations, so it
+    must not be blamed on the fork without a source-vs-fork comparison and an
+    inspection of `~/.config/gtk-3.0/gtk.css`. It is nonfatal but OPEN.
+    RECEIPT: target PyGObject probe stderr/exit output, 2026-08-14; historical
+    comparison W-043.
+
+  [W-071] Human visual receipt: the attached desktop screenshot shows a fresh
+    Thunar GTK3 window and Emerald Themer on true-black main surfaces with
+    readable light text, visible controls, and the existing dark Mac-style
+    Emerald titlebars. The operator judged the stage “okay” but “a little out
+    of place”. This is an acceptance of function/readability, NOT final
+    aesthetic acceptance. The operator explicitly chose the next design gate:
+    first pick a window decoration and visual influences, then continue theme
+    composition from those choices. No further donor artwork should be merged
+    before that direction is supplied.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+[2026-08-14][M16/GTK-3] Quake-Aqua-AMOLED stage 1 BUILT, ACTIVE and visually
+  FUNCTIONAL. Receipt: W-070/W-071; nonfatal parser attribution remains X-043.
+  M16 is intentionally PAUSED for the operator's decoration/influence choices.
+  Preserve the active fork and original Slickness rollback meanwhile; do not
+  compose Cheetah/Win2-7 assets or change Emerald until the operator reports
+  the chosen direction.
+
+--------------------------------------------------------------------------------
+12.21 M16 EMERALD-3 OPERATOR-TRANSPORT FAILURE — NO BACKUP RESULT CLAIMED.
+      Direct operator report, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-044] AGENT ERROR: the EMERALD-3 block used top-level `exit 1` guards even
+    though it was designed for direct paste into an interactive terminal. If
+    any guard fired, `exit` terminated the operator's shell and closed the
+    terminal window, exactly as the operator reports: “i cant paste that back
+    since it just closes the terminal i copy it into”. No output was retained,
+    so it is UNKNOWN which guard fired and UNKNOWN whether only a temporary
+    copy, a final baseline, or no artifact exists. Do not infer success.
+    CORRECTION FOR ALL FUTURE TARGET TRANSPORT: every multi-line paste must be
+    wrapped in a subshell `( ... )` so `exit` can terminate only that block, or
+    avoid `exit` entirely. First run a short, read-only, no-exit reconciliation
+    of the source hash and destination/temp paths. Do not retry the write block
+    until that receipt is observed.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3] Baseline-backup gate UNKNOWN/REJECTED as a receipt.
+  X-044 supersedes the issued block. Current GTK stage remains W-070; no claim
+  is made about Emerald backup state. Next action is read-only reconciliation
+  using a subshell-safe transport.
+
+--------------------------------------------------------------------------------
+12.22 M16 EMERALD GATE 3 — CUSTOM ACTIVE DECORATION BASELINE PRESERVED.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-072] The operator re-ran EMERALD-3 and every guard passed, resolving the
+    unknown state left by X-044. The active custom Emerald theme.ini still
+    matched W-061 exactly at SHA-256
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`.
+    It was copied byte-for-byte into the user theme library at
+    `/home/sd/.emerald/themes/Dark-Aqua-Hybrid-Baseline`. Source and copy
+    aggregate manifests both equal
+    `7bc2e8ff5bcf2a456dc8fae5a9ba8cd7e86e742cef12d253084b99a9358d68d1`;
+    the registered baseline contains 37 files, zero broken symlinks, and
+    retains creator `sd-rice`, description `Dark Aqua Hybrid Legacy - Snow
+    Leopard Graphite`, version 0.8.18 and engine legacy. The active source hash
+    remained unchanged after registration; Emerald PID 1270 and Compiz PID
+    1210 remained live. The exact GUI rollback after any decoration trial is
+    to select `Dark-Aqua-Hybrid-Baseline` in Emerald Themer; the WM recovery
+    escape remains `/home/sd/.local/bin/xfce-wm-recover`.
+    RECEIPT: target EMERALD-3 byte comparison, aggregate hashes, metadata,
+    process labels and active post-check, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3] Decoration rollback baseline VERIFIED and gate
+  DONE. Receipt: W-072. This supersedes only X-044's UNKNOWN artifact state;
+  X-044's transport lesson remains binding. The operator may now audition
+  Emerald decorations manually and report names/screenshots without risking
+  loss of the custom baseline. Quake-Aqua-AMOLED GTK stage 1 remains active.
+
+--------------------------------------------------------------------------------
+12.23 M16 EMERALD-3 POST-BACKUP RECONCILIATION. Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-073] The subshell-safe read-only reconciliation independently confirms
+    the completed W-072 state: active GTK is `Quake-Aqua-AMOLED`; active
+    Emerald and library baseline theme.ini hashes both remain
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`;
+    the baseline has 37 files; no `.Dark-Aqua-Hybrid-Baseline.tmp.*` artifact
+    remains; Emerald PID 1270 and Compiz PID 1210 remain live. The block ended
+    with the terminal still open, confirming X-044's subshell transport fix.
+    RECEIPT: target SAFE EMERALD-3 reconciliation output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3-RECONCILE] Post-backup state VERIFIED. Receipt:
+  W-073. No additional write is needed before the operator's manual decoration
+  audition and influence selection.
+
+--------------------------------------------------------------------------------
+12.24 M16 DECORATION DIRECTION SELECTED — MAC4LIN AQUA AS THE SHAPE LANGUAGE,
+      REWORKED AS DEEP BLACK GUNMETAL. Visual/operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-074] Human design selection is now explicit. In the attached desktop
+    screenshot Emerald Themer 0.8.18 is open on Edit Themes with Name
+    `Mac4Lin_Aqua` and pixmap engine selected; its rounded Mac-style frame and
+    traffic-light button geometry are visible on the manager and Appearance
+    windows. The operator's verdict is “this window deco looks good”, making
+    Mac4Lin_Aqua the accepted decoration SHAPE/ASSET baseline. This is a visual
+    receipt, not yet file evidence that the active slot byte-matches the
+    packaged Mac4Lin_Aqua directory.
+    RECEIPT: attached screenshots and direct operator report, 2026-08-14.
+
+  [W-075] The requested integration brief is now specific enough to implement:
+    retain the Mac4Lin Aqua geometry, but change the frame/titlebar surface to
+    very deep black gunmetal with reflective highlights and a transparency
+    gradient; remove chromatic decoration except for black, white and red
+    window buttons; and make the titlebar blend with the true-black Thunar/
+    GTK3 surfaces instead of appearing as a separate light-grey cap. “Black,
+    white, red” is the final decoration palette constraint; metal/reflection/
+    transparency are surface treatments, not additional accent colours.
+    RECEIPT: direct operator description accompanying the screenshots,
+    2026-08-14.
+
+  [U-027] Which exact bytes now occupy the active Emerald slot after the GUI
+    audition? The screenshot identifies the editor/name visually but not the
+    active file hash or whether Emerald Themer copied a packaged theme, a
+    modified in-memory theme, or the library baseline. Resolve read-only before
+    editing: hash active theme.ini and all active pixmaps, compare against
+    packaged Mac4Lin_Aqua and the W-072 baseline, and print the active engine/
+    metadata. Never edit `/usr/share/emerald/themes/Mac4Lin_Aqua` in place.
+
+[2026-08-14][M16/DECO-DESIGN] Decoration direction SELECTED visually.
+  Receipt: W-074/W-075. Next gate is U-027 read-only active-slot attribution;
+  after it, fork Mac4Lin_Aqua into the user library and perform one reversible
+  gunmetal visual trial. GTK stage remains Quake-Aqua-AMOLED; baseline rollback
+  remains Dark-Aqua-Hybrid-Baseline.
+
+--------------------------------------------------------------------------------
+12.25 M16 GUNMETAL COMPOSER AUTHORED — ONE FILE, STANDARD LIBRARY, REVERSIBLE.
+      Sandbox artifact and test receipts, 2026-08-14; unexecuted on target.
+--------------------------------------------------------------------------------
+
+  [W-076] A canonical target-side composer now exists in the repository at
+    `scripts/gunmetal-emerald-theme`, mode 0755, SHA-256
+    `4754874f6cb867c5271b550cb2d760584a2260cc5fe07da5b8ee5c8e8bdfc8b2`.
+    It uses only Python 3's standard library and never writes under
+    `/usr/share`: `build` copies packaged Mac4Lin_Aqua into the user library as
+    `Quake-Gunmetal-Aqua`, recolours all frame/button PNGs with an internal
+    PNG codec, writes the requested black/white/red palette and reflective
+    translucent gunmetal treatment, and creates a 350x102 manager preview.
+    `apply` preserves the current active slot under a timestamped name before
+    installing/restarting Emerald; `restore` does the same while restoring
+    W-072's `Dark-Aqua-Hybrid-Baseline`; `status` prints hashes/processes.
+    RECEIPT: repository file, `python3 -m py_compile`, `--help`, and source
+    inspection in the sandbox, 2026-08-14. TARGET STATUS: UNEXECUTED.
+
+  [W-077] The composer was tested against the exact upstream
+    Mac4Lin_Aqua.emerald payload whose theme.ini SHA-256 is
+    `c179dc794900ee00d2b8e9b59560f6bdcb45aab9e69fa596627023c0d2a15738`,
+    matching the target package hash already observed in W-062. Two clean
+    builds diffed byte-identical (`DETERMINISTIC_BUILD=PASS`), each producing
+    28 files, aggregate
+    `a15e89875455578742fae07b62477946e4889eee17f4be5c698be245794933b3`,
+    theme.ini `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`
+    and preview PNG
+    `8dd8550faff7191b099618728ae494c20a89f97988ea0b84762b5cf463160fa4`.
+    Every source/output PNG decoded and revalidated (8-bit non-interlaced
+    RGB/RGBA converted to RGBA); frame dimensions and button sprite-sheet
+    dimensions were preserved. A fake-HOME apply/restore matrix passed and
+    retained both timestamped prior active slots. This proves deterministic
+    artifact construction and rollback logic in the sandbox, NOT target
+    appearance or Emerald restart success.
+    RECEIPT: two-build recursive diff, hashes, PNG header matrix and fake-HOME
+    apply/restore logs, 2026-08-14.
+
+[2026-08-14][M16/GUNMETAL-1] Reversible gunmetal composer AUTHORED and
+  sandbox-tested. Receipt: W-076/W-077. Target gate remains: download the
+  immutable committed file, verify its SHA-256, build, apply, observe Emerald
+  PID/Compiz survival, and collect a screenshot/user verdict. The exact escape
+  must be printed before apply. No target success is claimed yet.
+
+--------------------------------------------------------------------------------
+12.26 U-027 CLOSED — ACTIVE MAC4LIN SLOT ATTRIBUTED; ARTWORK MATCHES PACKAGE.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-078] The active Emerald slot after the GUI audition is definitively
+    Mac4Lin Aqua under Emerald 0.8.18's normalized configuration, not a direct
+    byte-copy of the 0.7.2 package theme.ini and not the rollback baseline.
+    Active theme.ini SHA-256 is
+    `a4331e7d1ba9a332baff8ec4cf51b1f83aff98460ac94c3b9ea0f715b48962ed`;
+    it declares creator Anirudh, description Mac4Lin Emerald Aqua, version
+    0.8.18 and engine pixmap. The manager added/reordered modern sections and
+    button mappings/fade settings and changed active_outer_alpha to 0.37, so
+    the active aggregate is `27722df...` versus package `1867314e...`.
+    File counts remain 27 active/27 packaged/37 rollback. U-027 is CLOSED.
+    RECEIPT: target active/package/baseline hashes, diff, sections and aggregate
+    output, 2026-08-14.
+
+  [W-079] Every one of the 26 active Mac4Lin PNG asset hashes in the target
+    receipt byte-matches the upstream/package payload used by W-077's composer
+    test (including 1x30 RGB active_top, RGBA corner/side/bottom pixmaps,
+    97x16/17 and 132x16 button sprite sheets, and 350x102 screenshot). Thus the
+    authored gunmetal transform was tested against the exact artwork currently
+    visible to the operator even though Emerald normalized theme.ini. Target
+    also has ImageMagick `magick`, `convert`, and `identify`, but the composer
+    intentionally needs none of them. Emerald PID 1270 and Compiz PID 1210
+    remained live; picom remained absent.
+    RECEIPT: target asset hash/dimension list plus W-077 upstream payload hash
+    list, compared 2026-08-14.
+
+  [X-045] XSettings now reports GTK theme `mac-os-x-cheetah-dark`, superseding
+    W-070/W-073's live claim that Quake-Aqua-AMOLED is active. This was a user
+    GUI selection visible in the prior screenshot, not an unexplained reset.
+    X-042 still applies: that GTK3 CSS has 135 SCSS-token lines and is not a
+    clean long-term base, although the operator currently finds the visual
+    direction useful. Quake-Aqua-AMOLED remains installed as a rollback/stage;
+    no automatic GTK switch is made during the Emerald trial.
+    RECEIPT: target U-027 runtime XSettings line, 2026-08-14.
+
+[2026-08-14][M16/U-027] Active decoration attribution DONE. Receipt:
+  W-078/W-079. The gunmetal composer consumes exactly matching packaged
+  artwork and preserves the manager-normalized active slot before apply. Next
+  gate remains the immutable-script gunmetal live trial from commit 628b709;
+  target execution and appearance are still unverified.
+
+--------------------------------------------------------------------------------
+12.27 M16 GUNMETAL LIVE TRIAL NO-OP — AGENT TRANSCRIBED THE WRONG EXPECTED
+      HASH; CURRENT SCREENSHOT IS PRE-GUNMETAL. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-046] AGENT ERROR: the live-trial transport carried an incorrect expected
+    SHA-256. The downloaded immutable commit file correctly hashed
+    `4754874f6cb867c5271b550cb2d760584a2260cc5fe07da5b8ee5c8e8bdfc8b2`,
+    exactly matching repository W-076, but the pasted guard expected the
+    mistyped suffix `...b8ee6bee5c5bbe84e`. The guard therefore printed FAIL
+    and the subshell returned status 1 BEFORE mkdir/copy/build/apply. Safety
+    behavior passed: terminal remained open and no gunmetal file, theme build,
+    active-slot copy or Emerald restart occurred. Consequently the attached
+    screenshot is definitively the pre-gunmetal state (Mac4Lin Aqua active
+    decoration plus mac-os-x-cheetah-dark GTK), and must not be used to judge
+    W-076's generated design. Correct only the expected hash; do not weaken or
+    remove verification.
+    RECEIPT: target download/hash/failure/status output and screenshot,
+    2026-08-14.
+
+  [W-080] Human visual rejection of the CURRENT combined surface is specific:
+    “most elements are stripped of their previous theming, there needs to be
+    details and graphics.” The screenshot shows the light/silver pre-gunmetal
+    Mac4Lin frame over a largely flat black Thunar toolbar/content surface,
+    confirming the layer-discontinuity requested in W-075 has not yet been
+    solved. This is a valid visual receipt against the current Cheetah GTK +
+    stock Mac4Lin combination, not against the unexecuted gunmetal composer.
+    X-042 supplies a strong technical suspect for the stripped GTK detail:
+    Cheetah GTK3 has 135 unresolved SCSS-token lines and can stop parsing
+    before later asset rules. Causality remains to be tested after the
+    decoration trial; do not flatten more GTK colours in response.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+[2026-08-14][M16/GUNMETAL-TARGET-1] Target trial NO-OP/REJECTED by X-046 hash
+  typo. Composer remains AUTHORED only. Next gate: repeat immutable download
+  with W-076's exact actual hash, build/apply the decoration, and judge it
+  separately. Then restore detailed GTK graphics from a clean parsed base;
+  current flatness W-080 must not be mistaken for AMOLED success.
+
+================================================================================
+12.28 M16 AESTHETIC CONSTITUTION — DEPTH IS FUNCTION, FLATNESS IS A FAILURE.
+Appended by explicit operator request 2026-08-14 after the first successful
+Quake-Gunmetal-Aqua target trial. This governs all remaining M16 work and the
+visual acceptance of M18. It supplements, never alters, Sections I-II.
+================================================================================
+
+  [W-081] The corrected gunmetal composer completed on target. Immutable tool
+    SHA-256 matched W-076; build created 28 files at
+    `/home/sd/.emerald/themes/Quake-Gunmetal-Aqua`, target aggregate
+    `ee3a4f10f9ae5ebf030e56cb34828e3e8c3999d166ba7bf1d26dd3fa0fdc65d9`
+    and the sandbox-predicted theme.ini
+    `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`.
+    The prior active slot was preserved at
+    `/home/sd/.emerald/theme.pre-gunmetal.1786733532`; active and library
+    aggregates match. Emerald restarted from PID 1270 to PID 13508, Compiz
+    remained PID 1210, and picom remained absent. The operator confirms the
+    generated red/white/black traffic-light controls work. Decoration rollback
+    is `/home/sd/.local/bin/gunmetal-emerald-theme restore` and the independent
+    W-072 baseline remains intact at theme.ini SHA-256 9c8283ab....
+    RECEIPT: target build/apply/status output plus attached post-trial
+    screenshot and direct traffic-light verdict, 2026-08-14.
+
+  [X-047] The decoration passes, but the DESKTOP AS A WHOLE is visually
+    rejected. Direct operator requirement: “the menu bar of Thunar and other
+    elements, like on the terminal require graphics for blending. the entire
+    thing needs to be 3d, no background should be flat and unintuitive, it
+    needs to be coherent and sexy.” The attached screenshot shows why: the
+    gunmetal frame has depth, while Thunar/Terminal GTK menubars, toolbars,
+    content wells and status surfaces remain mostly uniform black rectangles.
+    That discontinuity makes the frame look pasted on rather than integrated.
+    From now on, true black alone is NOT success. A large uniform fill with no
+    edge, material, layer or affordance cue is a failed surface even when its
+    colour is correct. W-070's AMOLED stage is demoted to a colour proof, not
+    an aesthetic baseline.
+    RECEIPT: post-gunmetal screenshot and direct operator verdict, 2026-08-14.
+
+12.28.1 BINDING VISUAL RULES
+
+  A. AMOLED IS THE FLOOR, NOT THE WHOLE MATERIAL. `#000000` remains the darkest
+     stop and negative-space anchor, but no functional surface may be only a
+     flat fill. Every pane must declare whether it is raised, recessed,
+     floating or interactive through artwork and light behavior.
+
+  B. EVERY FUNCTIONAL SURFACE GETS A 3D CUE STACK. At minimum:
+       1. a material body (black brushed-metal microtexture or dark gradient),
+       2. a directional highlight (top/left reflective rim),
+       3. a shadow or inner shadow (bottom/right depth), and
+       4. an edge/separator that remains legible at 100% scale.
+     One border alone is not “3D”. Random decoration without semantic depth is
+     also rejected: raised things receive outer highlights/shadows; wells and
+     entries receive inner shadows; selected things visibly rise or illuminate.
+
+  C. COHERENCE IS CROSS-APPLICATION. The gunmetal titlebar is the material
+     reference. The same light direction, grayscale ramp, corner language and
+     reflection strength must continue through Thunar, xfce4-terminal, dialogs,
+     menus and the panel. Different widgets may have different depth, but may
+     not look like unrelated themes stacked together.
+
+  D. THE PALETTE IS ACHROMATIC GUNMETAL + CONTROL RED. Surfaces use black,
+     charcoal, silver and white. Saturated red is reserved for destructive/
+     close emphasis and small Quake accents. Existing blue selection/icon
+     colours are transitional and must not silently become the final accent.
+     Preserve readable WCAG-like contrast even though this is a skeuomorphic
+     theme: style never excuses invisible labels or ambiguous controls.
+
+  E. GRAPHICS ARE REQUIRED, NOT OPTIONAL. Remaining GTK work must include
+     deterministic pixmap assets (brushed/noise metal, reflective strips,
+     bevels, inset wells, button caps and separators) in addition to CSS
+     gradients. Cheetah and Win2-7 may donate visual grammar/assets, but their
+     themes are never edited in place and the malformed Cheetah CSS (X-042) is
+     never copied wholesale. Recolour/process donor artwork into the user fork.
+
+  F. TRANSPARENCY MUST REVEAL DEPTH, NOT DAMAGE LEGIBILITY. Use it on the
+     window frame, reflective strips and selected floating surfaces. Menus,
+     text-entry wells and content panes must remain opaque enough for stable
+     contrast. Transparency gradients must terminate in a visible rim so a
+     surface boundary never disappears into wallpaper.
+
+  G. NO GLOBAL FLATTENING REPLACEMENTS. Do not replace every `#181818`,
+     `#222222` or `#313132` with black. W-068 proved those values encode
+     borders, insets and gloss. Modify named semantic tokens/selectors and
+     generated assets with exact-count assertions. Preserve hierarchy.
+
+  H. ZERO-PARSER-ERROR GATE. A GTK3 candidate cannot be blessed while it emits
+     Theme parsing errors or contains unresolved `$variables`. X-042 makes
+     mac-os-x-cheetah-dark CSS reference-only. The final fork starts from the
+     known-live Slickness-Reborn/Quake-Aqua-AMOLED tree, not Cheetah CSS, and
+     must pass a fresh Gtk.Window/Button/Entry realization probe with zero new
+     warnings before activation.
+
+12.28.2 REQUIRED SURFACE MAP — THUNAR IS THE REFERENCE APP
+
+  Implement and judge in this order; each row is a separate reversible target
+  gate with a screenshot before proceeding:
+
+    G1 WINDOW FRAME (DONE/PROVISIONAL): Quake-Gunmetal-Aqua titlebar, rounded
+       black reflective frame, working red/white/black traffic lights. Tune
+       later, but do not redesign while GTK is still flat.
+
+    G2 THUNAR MENUBAR + TOOLBAR: raised gunmetal shelf, brushed microtexture,
+       bright 1px top reflection, dark lower bevel, dimensional hover/pressed
+       states. It must visually continue from the Emerald titlebar instead of
+       becoming a featureless black stripe.
+
+    G3 THUNAR CONTENT HIERARCHY: recessed main file well; separately recessed
+       or raised Places sidebar; inset path/location entry; dimensional
+       selected-row plate; metallic scrollbar trough/thumb; inset statusbar.
+       Folder icons sit ON a surface, not in an undifferentiated void.
+
+    G4 XFCE4-TERMINAL: the terminal canvas remains optically quiet and darkest,
+       while menubar, tabs, scrollbar and any search bar inherit the same
+       gunmetal shelf/inset grammar. Do not texture behind terminal glyphs.
+
+    G5 GENERIC GTK3 CONTROLS: menus/popovers, buttons, entries, combo boxes,
+       tabs, checks/radios, tooltips and dialogs receive consistent raised/
+       recessed artwork and focus/hover/pressed states. A control must reveal
+       how to interact with it before the pointer reaches it.
+
+    G6 PANEL + CAIRO-DOCK: only after G2-G5 pass, align panel/dock material,
+       reflections and separators. Do not let a flat panel cap an otherwise
+       dimensional desktop. Compiz geometry and picom masking remain untouched.
+
+    G7 ICONS (M18): repair inheritance first, then select/substitute glossy
+       10.4-10.6-era icons. Flat icon sets are rejected against this material
+       language even if their fallback coverage is technically complete.
+
+12.28.3 IMPLEMENTATION METHOD AND ARTIFACT PLAN
+
+  1. Author `scripts/gunmetal-gtk3-theme` in Git as a deterministic,
+     standard-library composer analogous to W-076. It forks the known-live
+     `Quake-Aqua-AMOLED` or original Slickness-Reborn into a NEW user theme;
+     originals remain immutable.
+  2. Generate a small reusable asset kit: tileable brushed-black texture,
+     raised shelf strip, inset-well strip, reflective rim, separator, button
+     cap, entry well, scrollbar trough/thumb and selected-row plate. Assets
+     are generated on target into `~/.themes`, never committed to Git.
+  3. Add selector-scoped GTK3 CSS for Thunar first. Keep generic rules bounded
+     until Thunar visually passes; then promote the same tokens to Terminal and
+     generic controls. No 3200-line donor CSS dump.
+  4. Every build emits source hashes, output hashes, exact replacement counts,
+     parser-probe log and one-command rollback. Every target paste is wrapped
+     in a subshell per X-044 so a failed guard cannot close the terminal.
+  5. Acceptance requires BOTH machine and human receipts: zero new parser
+     errors, XSettings names the fork, Compiz/Emerald PIDs remain healthy,
+     picom absent, plus screenshots showing obvious depth and the operator's
+     explicit judgement that the material is coherent—not merely “readable”.
+
+[2026-08-14][M16/GUNMETAL-TARGET-2] Emerald gunmetal target trial DONE and
+  traffic lights visually ACCEPTED. Receipt: W-081. M16 overall remains IN
+  PROGRESS and is BLOCKED on X-047's flat GTK surfaces. The one next action is
+  to author and sandbox-test the deterministic GTK3 material composer defined
+  in 12.28.3; do not issue another target recolour block until that artifact
+  exists and its generated graphics/parser checks pass.
+
+--------------------------------------------------------------------------------
+12.29 GTK GRAPHICS PREFLIGHT — EXISTING QUAKE FORK ALREADY CONTAINS THE NEEDED
+      PIXMAP PIPELINE; A/B IT BEFORE WRITING ANOTHER COMPOSER. Sandbox source
+      inspection 2026-08-14, target execution still pending.
+--------------------------------------------------------------------------------
+
+  [W-082] The exact upstream Slickness-Reborn source was pinned at commit
+    `be31c3c2492a6a65859ac0cf8ea633613841d0cc` (2026-06-26). Its GTK3 CSS and
+    index hashes exactly match the target W-066 hashes, so source inspection is
+    valid for the installed tree. Contrary to what the current Cheetah screen
+    suggests, Slickness is not a flat colour theme: GTK3 ships explicit PNG
+    artwork and selectors for menubar, toolbar, normal/hover/disabled buttons,
+    entries and borders, headerbars, selected rows, tabs, progress bars,
+    scrollbar troughs/thumbs, switches and panels. applications.css contains
+    dedicated Thunar selectors at lines 800-824 and terminal layout selectors
+    at 773-790. Example exact asset hashes: menubar `a5fbab09...`, toolbar
+    `02797b23...`, button-normal `c2c77570...`, button-hover `95a0bf9a...`,
+    entry `3dd08ad4...`, selected-bar `902caab2...`, vertical trough
+    `1c39d3ef...`.
+    RECEIPT: upstream commit plus hash comparison to W-066 and bounded source/
+    asset inspection, 2026-08-14.
+
+  [W-083] W-082 changes the minimum next action without weakening 12.28. The
+    already-installed `Quake-Aqua-AMOLED` is a fork of this exact graphical
+    Slickness tree and W-070 changed only named bg/base colours; its pixmaps
+    and selectors remain intact. The currently flat screen instead has
+    `mac-os-x-cheetah-dark` active (X-045), whose malformed CSS is X-042. The
+    least-machinery diagnostic is therefore a reversible XSettings A/B back to
+    Quake-Aqua-AMOLED while keeping W-081's accepted Emerald gunmetal frame.
+    Only if its existing graphics remain insufficient should a new composer be
+    authored to replace/tune those assets. This honors Directive 2's “do not
+    over-engineer” clause and isolates GTK from decoration.
+    RECEIPT: W-066/W-070 target hashes and exact upstream source inspection in
+    W-082.
+
+[2026-08-14][M16/GTK-GRAPHICS-PREFLIGHT] Existing graphical GTK3 route
+  IDENTIFIED. Receipt: W-082/W-083. Supersedes 12.28.3 step 1 only as the
+  IMMEDIATE action: first A/B the existing Quake-Aqua-AMOLED graphical fork.
+  The full composer remains the fallback if the operator rejects that visual.
+
+--------------------------------------------------------------------------------
+12.30 GUNMETAL DECORATION FROZEN; GTK IS NOW THE ONLY M16 VISUAL TARGET.
+      Target output, screenshot and operator verdict 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-084] A second corrected immutable gunmetal run reproduced the build
+    exactly: tool verification passed, target output remained 28 files,
+    aggregate `ee3a4f10f9ae5ebf030e56cb34828e3e8c3999d166ba7bf1d26dd3fa0fdc65d9`
+    and theme.ini `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`.
+    The prior library build and active slot were preserved at timestamped
+    paths ending 1786733609. Emerald restarted as PID 14379; Compiz remained
+    PID 1210; picom remained absent; active and library aggregates match.
+    This independently confirms target reproducibility and rollback behavior.
+    RECEIPT: corrected target build/apply/status output, 2026-08-14.
+
+  [W-085] Human acceptance is now unambiguous: “window deco is fine”. Freeze
+    Quake-Gunmetal-Aqua at the W-084 hashes and stop tuning its geometry,
+    reflection, transparency or traffic lights while GTK integration proceeds.
+    The attached screenshot visually confirms the black reflective frame and
+    traffic-light controls remain present around Terminal and Thunar.
+    RECEIPT: direct operator verdict and attached screenshot, 2026-08-14.
+
+  [X-048] GTK remains the rejected layer: “fix the gtk part of the theme,
+    doesnt fit the window deco.” The corrected gunmetal block intentionally
+    changed only Emerald, so XSettings remains on the malformed/flat Cheetah
+    route from X-045 unless the unrun GTK graphical A/B proves otherwise. The
+    screenshot still shows featureless black menubar/toolbar/content surfaces
+    beneath the accepted dimensional frame. Do not touch Emerald in response;
+    all next visual changes are confined to a new/reversible GTK user theme.
+    RECEIPT: direct operator verdict, screenshot, and scope of the executed
+    decoration-only block, 2026-08-14.
+
+[2026-08-14][M16/DECO-FINAL] Quake-Gunmetal-Aqua decoration ACCEPTED/FROZEN.
+  Receipt: W-084/W-085. M16 remains BLOCKED only on X-048 GTK integration.
+  Execute the W-083 graphical GTK A/B before authoring new assets; if accepted,
+  fork/tune it, and if rejected, use 12.28.3's dedicated composer path.
+
+--------------------------------------------------------------------------------
+12.31 GRAPHICAL GTK3 A/B MACHINE GATE PASSED; HUMAN DEPTH VERDICT PENDING.
+      Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-086] The target switched cleanly from `mac-os-x-cheetah-dark` to
+    `Quake-Aqua-AMOLED`. All seven required graphical assets exist and match
+    the W-082 source hashes exactly: menubar a5fbab09..., toolbar 02797b23...,
+    button-normal c2c77570..., button-hover 95a0bf9a..., entry 3dd08ad4...,
+    selected-bar 902caab2..., vertical scrollbar trough 1c39d3ef.... The live
+    CSS references those assets at the observed menu/button/entry/selection/
+    toolbar/scrollbar selectors. XSettings now reports Quake-Aqua-AMOLED;
+    icon theme remains Mac-OS-X-Lion; Compiz PID 1210 and accepted Emerald PID
+    14379 remain live; picom remains absent. Machine gate passes.
+    RECEIPT: target GRAPHICAL GTK3 A-B output, 2026-08-14.
+
+[2026-08-14][M16/GTK-GRAPHICS-A-B] Machine activation DONE. Receipt: W-086.
+  Human acceptance remains UNCOLLECTED: obtain a screenshot of Thunar and
+  xfce4-terminal after the live update and judge menubar, toolbar, entries,
+  sidebar/content depth, selection plate and scrollbar against 12.28. If depth
+  is insufficient, author the dedicated composer; do not return to malformed
+  Cheetah CSS.
+
+--------------------------------------------------------------------------------
+12.32 GRAPHICAL GTK3 A/B PARTIAL ACCEPTANCE — ASSETS LOAD, DEPTH/BLENDING DO
+      NOT YET MEET THE CONSTITUTION. Screenshot/operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-087] The post-switch screenshot proves Slickness/Quake graphical assets
+    now render: Thunar has a distinct menubar, toolbar/path-entry treatment,
+    selected Places row, scrollbar and status strip; Emerald Themer and
+    Terminal also remain readable under Quake-Aqua-AMOLED. The operator says
+    “thats goods”, accepting this route over malformed Cheetah as the functional
+    GTK3 base. Machine state remains W-086. This is a base acceptance, not a
+    final M16 visual pass.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+  [X-049] The same human receipt rejects the existing asset strength: “most
+    design is relatively flat. and the menu bar needs to blend with the window
+    deco.” In the screenshot, Emerald's accepted top frame has a reflective
+    black/gunmetal ramp, but GTK's menubar and toolbar read as thin, nearly
+    uniform black bands with weak edge hierarchy. Existing pixmaps load, so
+    this is no longer a missing-asset/parser problem; it is an artwork and
+    selector-strength problem. X-047 remains active at a narrower scope.
+    Required correction: retain the working Slickness selectors, replace/tune
+    their referenced assets with a deeper common gunmetal ramp and add explicit
+    Thunar/Terminal layer cues. Do not return to Cheetah or alter Emerald.
+    RECEIPT: attached screenshot and direct operator verdict, 2026-08-14.
+
+[2026-08-14][M16/GTK-GRAPHICS-A-B-HUMAN] Existing graphical base PARTIALLY
+  ACCEPTED. Receipt: W-087/X-049. Trigger 12.28.3's fallback: author the
+  deterministic `gunmetal-gtk3-theme` composer from Quake-Aqua-AMOLED, with a
+  stronger menubar-to-Emerald blend and raised/recessed graphics. Decoration
+  stays frozen at W-085.
+
+--------------------------------------------------------------------------------
+12.33 DEDICATED DIMENSIONAL GTK3 COMPOSER AUTHORED AND DETERMINISM-TESTED.
+      Sandbox receipt 2026-08-14; target remains unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-088] Canonical artifact `scripts/gunmetal-gtk3-theme` now exists, mode
+    0755, SHA-256
+    `1465c44896efdb74f5eacef205fcbbee9698abec07add7403acd9fa1d6d624b2`.
+    It verifies the exact W-086 Slickness/Quake CSS and seven source-asset
+    hashes, then forks rather than edits the active source. Standard-library
+    code deterministically generates 17 new RGBA pixmaps: menubar, toolbar,
+    headerbar, statusbar, content/sidebar wells, four button states, inset
+    entry, selected plate, two troughs, two thumbs and a 640x360 preview. It
+    adds a bounded final GTK3 import with explicit material rules for Thunar,
+    Terminal, menus, toolbars, entries, buttons, sidebars/content, selections,
+    popovers, scrollbars, statusbars and separators. Emerald is untouched.
+    Commands: `build`, differential `probe`, `apply`, `restore`, `status`.
+    RECEIPT: repository source, `python3 -m py_compile`, help/source inspection,
+    and generated asset/reference audit, 2026-08-14. TARGET: UNEXECUTED.
+
+  [W-089] Two independent sandbox builds against exact upstream commit
+    be31c3c diffed recursively byte-identical (`DETERMINISTIC_BUILD=PASS`).
+    Each produced 473 files with aggregate
+    `401e9b1538a7193e9cf5d09b7f93a642109ee869ba499f20125e9837a6fdbf33`;
+    override CSS SHA-256
+    `4a0e36a530ce8176f0fa914d26c2474c97fc05475b1ec0b02add41690a01889b`;
+    preview SHA-256
+    `204fe467c595587a639838b836c2264b84b31f207b92e812b6df8ca332c6d64d`.
+    Generated CSS has balanced 25/25 braces and every referenced gunmetal3d
+    asset exists. The index palette preserves semantic keys exactly: bg/base
+    #000000, selected gunmetal #242424 with white text, tooltip #050505 with
+    #e0e0e0 text. The differential target probe compares candidate warnings
+    against Quake-Aqua-AMOLED so X-043's pre-existing user-CSS warnings cannot
+    be falsely attributed to the new import. Target XSettings/app appearance
+    and parser behavior remain unverified until execution.
+    RECEIPT: two-build diff, hashes, CSS brace/reference check and generated
+    index inspection, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D] Composer AUTHORED and sandbox-tested.
+  Receipt: W-088/W-089. Next target gate: immutable download/hash verification,
+  build, differential GTK3 probe, apply only if probe introduces zero new
+  warnings, process/XSettings receipt, then Thunar+Terminal screenshot and
+  explicit human depth/blending judgement. Rollback restores the recorded
+  Quake-Aqua-AMOLED setting; decoration remains W-085-frozen.
+
+--------------------------------------------------------------------------------
+12.34 PRE-TARGET PROBE CORRECTION — NORMALIZE VOLATILE GTK WARNING PREFIXES.
+      Sandbox self-review/test 2026-08-14; no target attempt occurred.
+--------------------------------------------------------------------------------
+
+  [W-090] Pre-issuance review found the first W-088 differential probe compared
+    complete GTK warning lines, whose PID/timestamp prefixes necessarily differ
+    between baseline and candidate subprocesses. That would have produced a
+    false “new warning” result even for identical X-043 parser messages. The
+    canonical script now normalizes each line to the stable substring beginning
+    `Theme parsing error` before Counter subtraction. A synthetic pair with
+    different PID/timestamps and identical parser location/message compares
+    equal (`WARNING_NORMALIZATION=PASS`). Python compilation and two recursive
+    deterministic builds still pass; generated aggregate/CSS/preview hashes
+    remain W-089 values because the change affects probe logic only. New script
+    SHA-256 is recorded by the commit receipt below; W-088's earlier script hash
+    is superseded before any target download.
+    RECEIPT: sandbox normalization unit assertion, compile, two-build diff and
+    unchanged generated hashes, 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.35 GTK3 COMPOSER SCREENSHOT ARRIVED BEFORE TARGET EXECUTION — NO NEW STATE.
+      Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-050] The attached screenshot still shows the prior `GTK GRAPHICS FIX`
+    terminal output with `active GTK: Quake-Aqua-AMOLED`; it does not show a
+    GUNMETAL GTK3 LIVE TRIAL block, Quake-Gunmetal-3D XSettings value, build
+    hashes, differential probe, or status receipt. Visually it is the same
+    W-087/X-049 base: graphical but too flat. Therefore W-088/W-090's composer
+    remains UNEXECUTED on target and no judgement about its generated depth is
+    permitted from this image. Reissue the immutable c489b9b target block and
+    wait for its output plus post-activation screenshot.
+    RECEIPT: attached screenshot, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-TARGET-1] NO-OP/UNEXECUTED. Receipt: X-050.
+  Next action unchanged: run the c489b9b live-trial block.
+
+--------------------------------------------------------------------------------
+12.36 GUNMETAL GTK3 TARGET V1 PASSED MACHINE GATE, PARTIAL HUMAN PASS — DEPTH
+      WORKS BUT CONTRAST IS TOO ABRUPT. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-091] The immutable GTK3 composer verified at SHA-256 61cf4376..., built
+    and activated successfully on target. Output is 453 files, aggregate
+    `3b8877b565042a171a4a08eedb565427a8f2326a72672253e636024276f45625`,
+    override CSS exactly matches W-089 at `4a0e36a5...`. Differential probe is
+    decisive: baseline and candidate each emit only the identical four
+    pre-existing low-line X-043 warnings; candidate introduces ZERO new parser
+    warnings and both Gtk realizations pass. XSettings now names
+    Quake-Gunmetal-3D, rollback records Quake-Aqua-AMOLED, Compiz remains PID
+    1210, accepted Emerald PID 14379 remains, and picom is absent.
+    RECEIPT: target download/build/probe/apply/status output, 2026-08-14.
+
+  [X-051] Human verdict is “semi successful, make the contrast less jarring.”
+    The screenshot confirms added depth and a materially joined menubar/
+    toolbar, but the brightest rims, selected-row plate, red selection edge,
+    sidebar divider and inset outlines jump too sharply from the #000 content
+    well. This is a tonal-calibration rejection, not a return to flatness.
+    Required V2 correction: compress the gunmetal ramp, lower white-rim alpha,
+    darken selected plates and sidebar edges, mute red to oxblood, soften entry/
+    button borders, and retain all four depth cues. Do not remove textures,
+    wells or bevel semantics and do not touch the accepted Emerald layer.
+    RECEIPT: attached post-V1 screenshot and direct operator verdict,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V1] Machine PASS / human PARTIAL.
+  Receipt: W-091/X-051. Author a deterministic low-contrast V2 from the same
+  composer, verify generated hashes changed only by the intended tonal update,
+  then rebuild/probe/apply with V1 automatically preserved by --force.
+
+--------------------------------------------------------------------------------
+12.37 LOW-CONTRAST GUNMETAL GTK3 V2 AUTHORED AND DETERMINISM-TESTED.
+      Sandbox receipt 2026-08-14; target V2 unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-092] `scripts/gunmetal-gtk3-theme` V2 compresses contrast without removing
+    dimensional semantics, exactly as X-051 requires. Changes lower menubar/
+    toolbar/header/status reflective peaks, grain amplitude, button/entry rims,
+    sidebar edge, selected-plate ramp, scrollbar hardware and CSS highlight/
+    border/shadow alphas; red selection edges narrow from 3px bright red to 2px
+    muted oxblood. Content remains AMOLED and textured, every raised/recessed
+    cue remains, Emerald code/assets remain untouched. V2 script SHA-256 is
+    `631b4f7c461693471b6709dc88d6e2a93c4add0a2bd728ff487f53ad54f1f5c3`.
+    RECEIPT: exact source diff and generated preview inspection, 2026-08-14.
+
+  [W-093] Two fresh V2 builds recursively diff byte-identical
+    (`V2_DETERMINISTIC=PASS`). Sandbox aggregate is
+    `d3c3a67b9eafcbb0c7c59572d33f57242b6fb5a2ae71a74c6c9a3ac11a7a3ba8`;
+    override CSS `8bed1729975d287f2fd7da604270519916d87a9a774225e2e784fa58e0ed13ce`;
+    preview `92fa73713ccfdc9597ec4d1502272b9ff38c8f4f55e9e2b8cc98aecc4c6a436a`.
+    Key changed asset hashes: menubar 561d4087..., toolbar 55dd0050...,
+    selected plate b45b2d46..., sidebar 150e9f6e.... Compilation passes. The
+    target --force path will preserve V1 before rebuilding; differential parser
+    probe still gates activation. Target V2 appearance is not claimed.
+    RECEIPT: two-build recursive diff, compile, hashes and preview, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2] Low-contrast calibration AUTHORED.
+  Receipt: W-092/W-093. Next target gate: immutable V2 download, --force build,
+  differential probe, apply and human screenshot comparison. V1 remains
+  recoverable as the automatic `.pre-rebuild.*` output and GTK rollback remains
+  Quake-Aqua-AMOLED.
+
+--------------------------------------------------------------------------------
+12.38 V2 PRE-TARGET ROLLBACK-STATE HARDENING. Sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-094] Pre-target review caught that re-applying V2 while
+    Quake-Gunmetal-3D is already active would overwrite the saved
+    Quake-Aqua-AMOLED rollback with the current theme name. The script now
+    preserves an existing rollback state whenever current == requested theme;
+    a genuinely different current theme still becomes the new rollback.
+    Synthetic two-case matrix passes (`ROLLBACK_STATE_MATRIX=PASS`). Build
+    output remains byte-identical to W-093 because this changes apply logic
+    only. Final V2 script SHA-256 is
+    `72592afcd2af314657115cbc596c8bf3f8642ee158dfcf64c3b1b5f4bc02eea3`.
+    RECEIPT: sandbox state-file matrix, compile and unchanged build hashes,
+    2026-08-14.
+
+  [X-052] CORRECTION TO W-094 BEFORE TARGET ISSUANCE: W-094 transcribed the
+    final V2 script hash incorrectly. The actual repository/commit receipt from
+    `sha256sum scripts/gunmetal-gtk3-theme` is
+    `d422c627c8287f1a297c40edf321e0053e761c6389dddb98ed88f223620bcb29`.
+    No target command carrying W-094's wrong value was issued. This row
+    supersedes only W-094's final hash string; its rollback-state matrix and
+    unchanged generated-output claims remain valid.
+    RECEIPT: commit d72221f post-commit sha256sum output, 2026-08-14.
+
+--------------------------------------------------------------------------------
+12.39 WRONG VERSION RE-RUN — V2 DID NOT EXECUTE; OLD V1 ALSO OVERWROTE THE
+      ROLLBACK STATE WITH ITSELF. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-053] The operator ran the earlier c489b9b V1 block again, not the issued
+    low-contrast V2. Proof is exact: downloaded script SHA is V1 `61cf4376...`,
+    output aggregate is V1 `3b8877b5...`, override CSS is V1 `4a0e36a5...`,
+    and the pasted URL names c489b9b. Therefore the attached screenshot and
+    “doesnt work well” verdict are a second rejection of V1; they contain NO
+    evidence about W-092/W-093 V2. The run did preserve the previous V1 build
+    at `.pre-rebuild.1786734242` and kept Compiz/Emerald healthy.
+    RECEIPT: target command text, build hashes, screenshot and operator verdict,
+    2026-08-14.
+
+  [X-054] Because the re-run downloaded pre-hardening V1, its apply command
+    wrote `Previous GTK theme recorded: Quake-Gunmetal-3D` and status now says
+    `recorded rollback: Quake-Gunmetal-3D`. The rollback points to itself and
+    no longer returns to Quake-Aqua-AMOLED. This is the exact hazard W-094 fixed
+    in V2. Before applying V2, explicitly repair
+    `~/.local/state/gunmetal-gtk3/previous-theme` to Quake-Aqua-AMOLED and verify
+    it, then use only the post-fix script hash X-052 (`d422c627...`). The actual
+    Quake-Aqua-AMOLED theme directory remains intact; this is state-file damage,
+    not theme loss.
+    RECEIPT: target V1 apply/status lines, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2-TARGET-1] NO-OP with respect to V2;
+  V1 REJECTED again. Receipt: X-053/X-054. Next block must be uniquely labelled
+  V2, repair rollback state first, verify script d422c627..., produce CSS
+  8bed1729... (not 4a0e36a5...), then apply and verify rollback remains
+  Quake-Aqua-AMOLED.
+
+--------------------------------------------------------------------------------
+12.40 LOW-CONTRAST GTK3 V2 BUILT/APPLIED; ROLLBACK STILL SELF-REFERENTIAL AND
+      LIVE APPS NEED AN EXPLICIT THEME TOGGLE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-095] Actual V2 executed successfully. Tool SHA matched d422c627..., prior
+    V1 build was preserved at `.pre-rebuild.1786734500`, and target V2 produced
+    453 files, aggregate
+    `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`,
+    with the decisive V2 override CSS `8bed1729...`. Differential probe again
+    shows identical four pre-existing warnings and zero candidate additions;
+    both realizations pass. XSettings names Quake-Gunmetal-3D; Compiz PID 1210,
+    Emerald PID 14379 and picom absence remain correct. V2 machine gate passes.
+    RECEIPT: target LOW-CONTRAST GTK3 V2 output, 2026-08-14.
+
+  [X-055] The operator ran the earlier V2 block, not 12.39's combined rollback
+    repair/reload block. Since X-054 had already corrupted the state file to
+    Quake-Gunmetal-3D, hardened V2 correctly PRESERVED that existing value;
+    status still says `recorded rollback: Quake-Gunmetal-3D`. V2 did not make
+    this worse, but rollback remains ineffective. Also, apply set XSettings to
+    the same already-active name, so existing GTK processes may retain cached
+    V1 assets. Before visual judgement, write Quake-Aqua-AMOLED into the state
+    file, toggle XSettings to Quake-Aqua-AMOLED and back to
+    Quake-Gunmetal-3D, then verify CSS 8bed1729... and rollback text.
+    RECEIPT: target apply/status lines and scope of executed block, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2-TARGET-2] Machine PASS; visual gate
+  BLOCKED on X-055 repair/reload. No rebuild or download is needed next.
+
+================================================================================
+12.41 M16 FINAL — DIMENSIONAL GUNMETAL DESKTOP ACCEPTED AND FROZEN; XMB BAKE
+GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
+================================================================================
+
+  [W-096] The actual low-contrast V2 is now proven end-to-end. Target verified
+    tool d422c627..., V2 CSS `8bed1729...`, 453-file aggregate
+    `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`,
+    zero new parser warnings, and successful realization. The corrected apply
+    preserves and reports rollback `Quake-Aqua-AMOLED`; XSettings is
+    Quake-Gunmetal-3D. Compiz PID 1210 and frozen Emerald PID 14379 remain live;
+    picom remains absent. The forced A/B toggle reloaded open GTK applications.
+    Current reversible artifacts are therefore:
+      GTK active/rollback  Quake-Gunmetal-3D / Quake-Aqua-AMOLED
+      GTK rollback command `/home/sd/.local/bin/gunmetal-gtk3-theme restore`
+      Emerald active       Quake-Gunmetal-Aqua, theme.ini 0bf7ab50...
+      Emerald rollback     Dark-Aqua-Hybrid-Baseline
+      Emerald rollback cmd `/home/sd/.local/bin/gunmetal-emerald-theme restore`
+    RECEIPT: target V2 repair/build/probe/apply/status output, 2026-08-14.
+
+  [W-097] Final human acceptance: “this is actually quite good, lets call it
+    here.” The attached screenshot shows the accepted result across Thunar,
+    Terminal and Emerald Themer: lower-contrast black gunmetal title/menu/
+    toolbar ramps, subtle content/sidebar depth, muted selection treatment and
+    working red/white/black traffic lights. This closes X-047/X-048/X-049/
+    X-051 as design blockers. X-043's four pre-existing user-CSS warnings stay
+    recorded but are proven unchanged by the accepted theme and are nonblocking.
+    Per operator instruction, freeze the visual stack at W-096 hashes; no more
+    M16 tuning is allowed without a new explicit request.
+    RECEIPT: direct operator verdict and attached final screenshot, 2026-08-14.
+
+[2026-08-14][M16-FINAL] AMOLED / OS X / Quake gunmetal theming COMPLETE and
+  FROZEN. Receipt: W-096/W-097. Sources and generators are committed; generated
+  themes/screenshots remain correctly outside Git. M18 icons and sound remain
+  separable pending work, but neither blocks the wallpaper.
+
+--------------------------------------------------------------------------------
+12.42 WALLPAPER HANDOFF REOPENED — ARCHITECTURE CORRECTION AND NEXT GATE.
+--------------------------------------------------------------------------------
+
+  [W-098] The operator explicitly ended M16 and requested preparation “to bake
+    the xmb wave wallpaper with compiz instead of x11.” Interpreted precisely:
+    Compiz 0.8.18 is itself running on X11 (W-049), so it cannot replace X11.
+    The correct distinction is ROOT-WINDOW delivery versus COMPOSITOR-SAFE
+    delivery: bake the XMB WebGL scene headlessly to a deterministic video,
+    then display it in an override-redirect xwinwrap/mpv window beneath normal
+    windows while Compiz remains the X11 WM/compositor (Section VIII/IX.8,
+    W-004). Do not draw naively to the root and do not re-enable picom.
+    RECEIPT: operator request plus W-049/W-004 architecture, 2026-08-14.
+
+[2026-08-14][M9-REOPEN] XMB workspace/bake work is now AUTHORIZED after M8 and
+  M16 completion. First target gate is READ-ONLY prerequisite reconciliation:
+  current Compiz identity, xwinwrap/mpv/ffmpeg/Chromium/Node availability,
+  existing xmb-wave workspace, disk, display geometry and existing wallpaper
+  processes. Only after that receipt may packages or workspace files change.
+
+--------------------------------------------------------------------------------
+12.43 FINAL GTK V2 RECONFIRMED; OPERATOR ACCIDENTALLY RESELECTED MAC4LIN
+      EMERALD AFTERWARD. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-099] The V2 repair/reload block was run twice and both receipts are
+    identical: CSS `8bed1729...`, aggregate `98f019d...`, active GTK
+    Quake-Gunmetal-3D, rollback Quake-Aqua-AMOLED, Compiz PID 1210, Emerald PID
+    14379 and picom absent. This independently confirms W-096's frozen GTK
+    state; the duplicate run is idempotent and changed no hashes.
+    RECEIPT: two target V2 repair/reload outputs, 2026-08-14.
+
+  [X-056] After those successful GTK receipts, the operator reports “i
+    accidentally chose the mac4lin window deco”. This is a manual Emerald GUI
+    selection and a transient regression from frozen W-085, not a Compiz/GTK
+    failure. Exact current active Emerald bytes are uncollected, but recovery
+    does not require forensics: W-081's generated library theme
+    `~/.emerald/themes/Quake-Gunmetal-Aqua` and installed
+    `gunmetal-emerald-theme apply` remain the canonical accepted forward state;
+    applying it preserves the accidental slot before restart. State escape
+    first because this changes the live decorator.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/DECO-RESTORE] BLOCKED on one bounded re-apply of the frozen
+  Quake-Gunmetal-Aqua artifact and process/hash verification. XMB M9 preflight
+  waits until the accepted decoration is restored; GTK needs no further work.
+
+--------------------------------------------------------------------------------
+12.44 ACCIDENTAL MAC4LIN DECORATION REGRESSION CLOSED; NEW APPEARANCE/GTK
+      SELECTION QUESTION OPEN. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-100] X-056 is closed. The accepted Quake-Gunmetal-Aqua library theme.ini
+    verified at `0bf7ab50...`, re-apply preserved the accidental active slot at
+    `/home/sd/.emerald/theme.pre-gunmetal.1786734721`, and active/library
+    aggregates now both equal `ee3a4f10...`. Emerald restarted as PID 27906;
+    Compiz remains PID 1210; picom remains absent. GTK remained the accepted
+    Quake-Gunmetal-3D. The frozen M16 state is restored exactly.
+    RECEIPT: target RESTORE ACCEPTED GUNMETAL DECORATION output, 2026-08-14.
+
+  [U-028] The operator reports that after changing away from OS X Cheetah Dark
+    in Appearance, “it wont come back for the gtk theming things.” The referent
+    is ambiguous: the theme may be absent from the Appearance list, selectable
+    but visually ineffective, or overridden for already-running GTK apps.
+    Existing facts constrain diagnosis: Cheetah's directory existed but had no
+    index.theme (W-064), its GTK3 CSS contains unresolved SCSS (X-042), and the
+    current accepted XSettings theme is Quake-Gunmetal-3D (W-096/W-100).
+    Resolve read-only before changing anything: print XSettings and GtkSettings
+    effective names, GTK_THEME overrides in shell/app environments, Cheetah
+    directory/hash/index state, user GTK settings files, and running Appearance
+    process. Do not infer that frozen GTK should be reverted until the operator
+    clarifies the intended visual end state.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/APPEARANCE-DIAG] Decoration DONE; GTK selection question
+  BLOCKED on U-028 read-only attribution. XMB preflight remains paused until
+  this user-visible regression/question is resolved.
