@@ -4445,3 +4445,48 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
 [2026-08-14][M16/APPEARANCE-DIAG] Decoration DONE; GTK selection question
   BLOCKED on U-028 read-only attribution. XMB preflight remains paused until
   this user-visible regression/question is resolved.
+
+--------------------------------------------------------------------------------
+12.45 U-028 RESOLVED — XFCE XSETTINGS WAS MANUALLY MOVED TO SLICKNESS-REBORN;
+      ACCEPTED GUNMETAL ARTIFACTS REMAIN INTACT. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-101] Read-only attribution proves there is no GTK_THEME process or shell
+    override. XFCE XSettings and a live Gtk.Settings object both resolve the
+    active widget theme as `Slickness-Reborn` and icons as `Mac-OS-X-Lion`.
+    The generated Quake-Gunmetal-3D artifact remains intact at the accepted
+    aggregate `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`
+    and override CSS `8bed1729975d287f2fd7da604270519916d87a9a774225e2e784fa58e0ed13ce`;
+    rollback remains Quake-Aqua-AMOLED. The accepted Emerald active/library
+    aggregates remain identical at `ee3a4f10...`; Compiz PID 1210 and Emerald
+    PID 27906 are live and picom is absent. Therefore no theme bytes, decorator,
+    WM, compositor or repair artifact was lost.
+    RECEIPT: target `xfconf-query`, Gtk.Settings probe, process-environment scan,
+    both installed theme-tool status commands and process listing, 2026-08-14.
+
+  [X-057] The current divergence is configuration state, not inability to select
+    the accepted theme: XFCE XSettings was changed from frozen
+    Quake-Gunmetal-3D to Slickness-Reborn. Separately,
+    `~/.config/gtk-3.0/settings.ini` is stale and names `Cheetah-Custom`, while
+    live GTK correctly follows XFCE's XSettings and resolves Slickness-Reborn.
+    The original `mac-os-x-cheetah-dark` still has no `index.theme` and its GTK3
+    CSS is the previously rejected unresolved source, so it is not the frozen
+    target. Event/input sounds are also still disabled and SoundThemeName is
+    the invalid `default`, independently confirming M16 sound work is pending.
+    RECEIPT: same target U-028 diagnostic, including exact XSettings,
+    Gtk.Settings, settings.ini and theme-file inventory output, 2026-08-14.
+
+  [X-058] The diagnostic's final WM-name extractor failed because its sed basic
+    regular expression used an over-escaped capture sequence, producing
+    `invalid reference \\1`. This does not invalidate WM identity: process and
+    theme-tool receipts independently show Compiz PID 1210, but future checks
+    must use `xprop -id "$(xprop -root _NET_SUPPORTING_WM_CHECK | awk '{print
+    $NF}')" _NET_WM_NAME` rather than repeating the broken sed assertion.
+    RECEIPT: target diagnostic stderr plus successful process receipts,
+    2026-08-14.
+
+[2026-08-14][M16/APPEARANCE-DIAG] U-028 CLOSED. Next bounded change is to
+  re-select the already accepted Quake-Gunmetal-3D through XFCE XSettings,
+  synchronize the user GTK3 persistence file without changing unrelated keys,
+  and verify GTK/Compiz/Emerald/picom plus exact artifact hashes. Wallpaper
+  prerequisite reconciliation remains the following gate.
