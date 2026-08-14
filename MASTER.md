@@ -1579,3 +1579,168 @@ compiz onto an unknown driver stack is exactly the unverified, unattended
 change Directive 11 exists to prevent.
 
 Then, in order: U-002, U-003, U-007 (cheap, all read-only), then IX.0.
+
+================================================================================
+SECTION XI — STATUS BOARD + OPERATOR LOG (append-only, per Directive 7)
+Opened 2026-08-14 by the fresh session on branch
+arena/01a0009d-nvidia-intel-ocblizzard-4x8ddr. Sections I-X above are
+untouched by this session. New knowledge lands here and in the ledgers.
+================================================================================
+
+11.0 CORRECTIONS TO THE INBOUND HANDOFF (Directive 5: read the branch, do not
+     infer it). The operator prompt for this session asserted three things
+     that the repository contradicts. Recorded so the next model does not
+     re-inherit them:
+
+  (a) CLAIM: "6 unpushed local commits on arena/019ffe03..., 68b1872 is the
+      last pushed; push them and open a PR."
+      REALITY: nothing to push. This checkout is branch
+      arena/01a0009d-... at b4bfd31, working tree clean, and
+      `git log --oneline origin/main..HEAD` prints NOTHING (0 commits;
+      `git rev-list --count` = 0). Commit 68b1872 is not even a valid object
+      in this clone (`git cat-file -t 68b1872` -> "Not a valid object name");
+      it was the base of an earlier clone and has since been superseded.
+      The 019ffe03 work was NOT lost: it is on the remote at 40eab00 and was
+      MERGED as PR #1 on 2026-08-14T02:18:43Z. PRs #2 (019ffedb) and #3
+      (019fff13, "record smooth Compiz scheduler fix") are also MERGED; #3 is
+      main's tip b4bfd31. No GitHub access was lost and no work is missing.
+      RECEIPT: git rev-list --count origin/main..HEAD = 0; git ls-remote
+      origin; gh pr list --state all --json number,state,mergedAt.
+      ACTION TAKEN: none. Pushing an empty range and opening an empty PR
+      would be a no-op that also violates M17's standing "do not open a pull
+      request" instruction.
+
+  (b) CLAIM: 'start at MASTER.md section "STEP 2b", step 2b-2.'
+      REALITY: no such string exists in this file (`grep -c "STEP 2b"` = 0),
+      and neither does "STATUS BOARD" (count 0) before this section. The real
+      forward edge is Section VII's last rows plus ledger X-027. Mapping the
+      intent onto the actual document: the next action is the X-027
+      writer-suspension + profile-restore + keep-live Compiz dwell. That is
+      what this session executes, and it is numbered 11.2 below.
+
+  (c) CLAIM (in the repo name and 3.2): musl.
+      REALITY: already superseded by W-012 — glibc 2.41, NVIDIA proprietary
+      595.84. The operator prompt agrees. Noted only because the repo name
+      still misleads.
+
+11.1 STATUS BOARD — as of 2026-08-14, start of session 01a0009d.
+     Legend: DONE = output observed | BLOCKED = waiting on a named row |
+     LIVE = currently true on the target.
+
+  TARGET RUNTIME (last observed, W-040):  xfwm4 owns the screen (PID 15573
+      after automatic recovery). Compiz ABSENT. picom ABSENT (masked, W-014).
+      xfce4-panel + cairo-dock + emerald survived every swap.  STATE: LIVE,
+      SAFE, and unverified after any reboot since.
+  SMOOTHNESS ....... SOLVED. __GL_YIELD=USLEEP, user verdict "IT WORKS,
+      SMOOTH!" (W-040). This is the single most valuable result in the file.
+  GEOMETRY ......... SOLVED. DP-2 2560x1440+0+0 primary, DP-0 1920x1080+2560
+      +197 inverted; explicit output rectangles proven (W-018, W-026).
+  PROFILE GUARD .... BLOCKED (X-027). CCSM keeps rewriting Default.ini. Exact
+      good guard = Default.ini.pre-gl-yield-usleep.1786692457, SHA-256
+      dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c.
+  RECOVERY ......... DONE and destructively proven (W-029, W-030).
+      /home/sd/.local/bin/xfce-wm-recover, mode 0755.
+  PERSISTENCE ...... NOT STARTED and still PROHIBITED until a keep-live dwell
+      passes. Failsafe Client0_Command still names xfwm4 (W-029).
+  M8 OVERALL ....... BLOCKED on X-027 only.
+  WALLPAPER (VIII) . GATED behind M8 per Directive 10. Do not start.
+  PR ............... WITHHELD per M17 until the user declares the target
+      reached.
+
+11.2 THE ONE NEXT ACTION (supersedes Section X's stale "run U-001" handoff,
+     which W-012 answered).
+     Goal stated by the user this session: "get me to a working compiz from a
+     fresh boot." Decomposed into the minimum ordered gates, one paste each:
+       B1  read-only reconciliation of live state after the reboot   <- HERE
+       B2  suspend the CCSM writer reversibly + restore dcefbadd guard
+       B3  launch Compiz with __GL_YIELD=USLEEP, KEEP IT LIVE, dwell
+       B4  decorations + animations verified while live
+       B5  cairo-dock GL check while Compiz owns the screen
+       B6  persistence, only after B3-B5 pass, with the logout/login gate
+     Every block carries its escape command. The universal escape at all
+     times is:  /home/sd/.local/bin/xfce-wm-recover   (fallback:
+     `xfwm4 --replace &` from a TTY on Ctrl+Alt+F2).
+     B1 is READ-ONLY: it changes nothing, and it exists because the machine
+     has rebooted since W-040 and every LIVE claim above must be re-proven
+     before a single write.
+
+--------------------------------------------------------------------------------
+11.3 B1 RECONCILIATION RECEIPT — target output pasted 2026-08-14T14:16:23Z,
+     fresh boot. This is the first target evidence of this session and it
+     OVERTURNS two standing assumptions. Read all four findings before acting.
+--------------------------------------------------------------------------------
+
+  [B1-a] RUNTIME IS SAFE AND CLEAN. `_NET_WM_NAME = "Xfwm4"`, xfwm4 PID 1216
+    owns the screen. Compiz ABSENT, picom ABSENT, emerald ABSENT,
+    gtk-window-decorator ABSENT. xfce4-panel 1259, xfdesktop 1272 and
+    cairo-dock 1305 are all live. xfwm4 `use_compositing = false` still holds
+    from IX.2 and Failsafe Client0_Command is still the single-item array
+    `xfwm4`, so persistence remains correctly NOT applied.
+
+  [B1-b] *** CCSM IS RUNNING FROM A FRESH BOOT. THIS IS THE X-027 WRITER AND
+    THE ANSWER TO U-014/U-015/U-016. *** `ccsm-python: 1302 python`. The PID
+    sits inside the session-autostart band — xfce4-panel 1259, xfdesktop 1272,
+    CCSM 1302, cairo-dock 1305 — i.e. CCSM is being started BY THE SESSION at
+    login, not respawned by a mystery supervisor. This explains every prior
+    observation that looked supernatural: the "delayed launcher" (W-038, CCSM
+    returning at second 12), the respawn after termination (W-034), and
+    W-037's trace ending too early. Prior runs hunted a runtime respawner and
+    correctly failed to find one, because the launcher is a session/autostart
+    entry, not a parent process. The exact entry is not yet named on disk —
+    that is the first thing B2 must print, and it must be printed before it is
+    touched. NOTE the second interpreter, `1723 python3`, is a DIFFERENT and
+    unidentified process; do not assume it is CCSM and do not signal it.
+
+  [B1-c] *** THE ACTIVE PROFILE IS NOT THE GUARD, AND IT IS THE "FAT" ONE. ***
+    Active Default.ini is 693 bytes, mtime 07:42, SHA-256
+    09f0c6c7d242a2a97c52011127b323f10caa95301964d404b3e9d2164db0e757 — a hash
+    that appears nowhere in the prior ledger, and 07:42 is LATER than every
+    backup in the directory. Its plugin list is
+    `core;ccp;move;resize;place;decoration;water;wobbly;regex;cube;gears;
+    animation;3d;animationaddon;animationplus;` plus Burn/fire close effects
+    and a shadow colour. CRITICALLY, it contains NO `[core]` display values at
+    all: no detect_outputs, no outputs rectangles, no detect_refresh_rate, no
+    refresh_rate, no vblank, no texture filtering. Every hard-won W-018/W-026
+    geometry and refresh value is GONE from the active file, and the heavy
+    eyecandy plugins (water, cube, gears, 3d, wobbly, animationplus) that were
+    never part of the accepted clean list are present. Launching Compiz
+    against THIS file is launching the exact configuration that has never been
+    smooth. The known-good guard survives and verifies:
+    Default.ini.pre-gl-yield-usleep.1786692457 is still SHA-256
+    dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c.
+    A previously unlogged backup Default.ini.pre-keep-live.1786692687
+    (07:31:27Z) also exists, i.e. a keep-live attempt was staged after W-040
+    and is unrecorded in Sections VI/VII.
+
+  [B1-d] *** PICOM AUTOSTART IS BACK ON DISK. *** `~/.config/autostart/`
+    contains BOTH `picom.desktop` AND `picom-mac.desktop`. W-014 recorded
+    picom autostart as masked with a rollback copy; two entries are now
+    present. picom is nevertheless ABSENT at runtime on this fresh boot, which
+    is consistent with the masking being `Hidden=true` /
+    `X-XFCE-Autostart-enabled=false` INSIDE those files rather than their
+    removal — but that is inference, not a receipt, and X-008 (never run picom
+    and compiz together) is a hard blocker. B2 must `cat` both files and prove
+    they are inert before any Compiz launch is persisted.
+
+  RECEIPT: full B1 block output pasted by the operator 2026-08-14T14:16:23Z.
+
+  CONSEQUENCE FOR THE PLAN. The B2 gate defined in 11.2 is now precisely
+  scoped, and it is NOT "suspend a mystery respawner":
+    1. print the autostart/session entry that starts CCSM, and both picom
+       .desktop files, WITHOUT modifying anything;
+    2. reversibly disable the CCSM autostart entry (the writer must be gone at
+       LOGIN, not merely killed at runtime — killing it has already been
+       proven insufficient, W-034);
+    3. back up the fat 09f0c6c7 profile, then restore the dcefbadd guard;
+    4. only then launch with `__GL_YIELD=USLEEP --sm-disable` and KEEP LIVE.
+  The escape command is unchanged and remains verified on disk this boot:
+  /home/sd/.local/bin/xfce-wm-recover, 1896 bytes, mode 0755, SHA-256
+  3f9402d2731d560fecae27a899b8f36c78b1c3a2527bda4a9fb2bdd354e19c24 — byte
+  identical to W-029.
+
+[2026-08-14][M8/B1] Post-reboot reconciliation DONE; runtime safe, guard
+  intact, recovery artifact intact. Receipt: 11.3. This supersedes the
+  U-014/U-015/U-016 "unidentified delayed launcher" line of inquiry with the
+  session-autostart explanation in B1-b, and supersedes 11.1's assumption that
+  the active profile was still near the guard (B1-c: it is the fat 09f0c6c7
+  file with no display values). Overall M8 remains BLOCKED on B2.
