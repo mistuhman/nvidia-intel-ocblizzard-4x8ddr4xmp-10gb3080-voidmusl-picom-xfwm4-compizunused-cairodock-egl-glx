@@ -604,6 +604,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target U-013 full file/diff, process list, descriptor search and
   timestamps pasted 2026-08-14.
 
+[2026-08-14][W-034] Stopping exact CCSM PID 5483, backing up its reordered
+  profile to Default.ini.ccsm-reordered.1786691729 (SHA-256 110c892a...), and
+  restoring W-032 SHA-256 dcefbadd... initially succeeded. During the 15-second
+  dwell, CCSM reappeared as PID 3132 and Default.ini changed at 07:15:41 to
+  SHA-256 eae6553c2567ac7d1fb8bc9519cad3c301561f471823cf8b329c492063af391f.
+  This temporal reproduction promotes CCSM from candidate to proven profile
+  writer. Runtime remained safely xfwm4 with panel/dock and no Compiz/picom.
+  RECEIPT: target exact-process termination, restored hash/mtime, dwell
+  hash/mtime, respawned PID and runtime output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -849,6 +859,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   Python processes.
   RECEIPT: W-033.
 
+[2026-08-14][X-025] A single TERM is insufficient to stand down CCSM: PID
+  5483 exited cleanly but `/usr/bin/python3 /usr/bin/ccsm` respawned as PID
+  3132 within the dwell and rewrote the profile. Do not race it with repeated
+  profile writes or launch Compiz while it remains restart-managed. Inspect
+  PID 3132 ancestry/session environment, XSMP window properties and XFCE saved
+  session/cache references to identify and disable the exact restart source
+  reversibly; generic Python kills remain prohibited.
+  RECEIPT: W-034.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -965,6 +984,12 @@ as its receipt. Do not guess any of them.
   `fuser`/`lsof` tools. Do not kill or write yet; one read-only receipt must
   identify whether CCSM or another process survived before the next guarded
   restoration.
+
+[U-014] What respawned CCSM as PID 3132? Read its PPID/ancestry, session
+  environment and any SM_CLIENT_ID/WM_COMMAND properties, then search XFCE
+  session cache and autostart entries for the exact CCSM command. This is
+  read-only. The next action must disable only the proven restart source with
+  a written inverse before restoring the profile again.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1146,6 +1171,11 @@ Status vocabulary, used strictly:
   Receipt: W-033/X-024. Overall M8 remains BLOCKED on stopping only CCSM,
   restoring W-032 and proving a timed byte-identical dwell before resuming the
   DP-2 OpenGL sync-display A/B test.
+
+[2026-08-14][M8/WRITER-1] CCSM profile-writer causality PROVEN; stand-down
+  FAILED due to respawn. Receipt: W-034/X-025. Overall M8 remains BLOCKED on
+  U-014 exact restart-source identification and reversible suppression before
+  restoring or launching Compiz.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
