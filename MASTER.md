@@ -5488,3 +5488,22 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-14][M9-PRESET-WORK-DOWNLOAD-2] TRANSPORT READY. Issue the same-page
   Blob download now; no loopback fetch.
+
+--------------------------------------------------------------------------------
+12.74 WORK CONSOLE HANDSHAKE PROVED UNRELIABLE; THIRD JAVASCRIPT-TO-BASH
+      NO-OP. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-079] Despite the readiness handshake, the work-monochrome JavaScript again
+    arrived at `[sd@66 ~]$` and produced only Bash errors. No download or preset
+    write occurred. The interaction method, not the operator's preset, is now
+    the repeated failure. Stop asking the operator to transport raw code by
+    choosing a destination. Instead issue a terminal-safe block whose sole job
+    is to place audited JavaScript into the X11 clipboard; after its receipt,
+    instruct the operator to switch to Zen Console and press Ctrl+V/Enter. This
+    makes the transport context explicit and removes the response-code paste
+    ambiguity.
+    RECEIPT: third Bash error stream and visible shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-3] INVALID/NO-OP. Next gate is clipboard
+  preparation from Terminal only; it must not submit or change browser state.
