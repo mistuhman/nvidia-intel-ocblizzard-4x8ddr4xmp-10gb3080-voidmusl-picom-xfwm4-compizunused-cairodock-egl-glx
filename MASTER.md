@@ -4695,3 +4695,49 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9/PRESET-ROLE-MAP] PASS. Three roles are named and one shared
   visible baseline is captured. Distinct preset manifests remain blocked on
   U-031, not on attachment ordering.
+
+--------------------------------------------------------------------------------
+12.51 WORK-MONOCHROME REFERENCE RECEIVED DISTINCTLY — COMPOSITION AND PRIMARY
+      PARTICLE SETTINGS CAPTURED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-109] The separately labelled WORK MONOCHROME reference is visibly distinct
+    in motion geometry from the earlier duplicated transport. It uses a broad,
+    calm, horizontally continuous silver-white wave centered below mid-frame:
+    a shallow left trough rises to a smooth central-right crest and returns to
+    a shallow right trough. The bundle is layered but orderly, with long clean
+    filaments rather than the earlier turbulent crossing mesh. A pure black
+    field and sparse low-intensity points provide the requested night-ocean
+    reading and preserve substantial negative space for desktop windows. No
+    literal skyline is visible; the city quality presently comes from distant
+    light-like particles and restrained monochrome atmosphere.
+    RECEIPT: operator-attached image explicitly labelled WORK MONOCHROME,
+    full-frame and panel-by-panel visual inspection, 2026-08-14.
+
+  [W-110] Clearly legible WORK MONOCHROME particle values are Count 4000,
+    Opacity 0.37, Size Base 3.1, Size Var 0.8 and Flow Speed 0.44. The screenshot
+    also exposes a much longer Spline Controls surface than the prior frame,
+    including gradient RGB, gradient top/bottom multipliers, flow/tension/
+    damping/length/spacing/time-step, band and travel controls, perturbation,
+    wave colour/bias/height/soft-clip, per-pixel blend, reverse-engineered
+    descriptor controls, Fresnel, opacity/brightness/detail and FFD transforms.
+    Several right-panel numerals are too small in the transported rendering to
+    transcribe with audit-grade certainty. Directive 12 forbids guessing them;
+    extract their exact DOM/config values from the live source when the target
+    workspace is inventoried.
+    RECEIPT: direct reading of the left control panel and structural inspection
+    of the complete right panel, 2026-08-14.
+
+  [X-060] W-107's initial 2000/0.75/2.6/1.5/0.18 particle tuple is not the WORK
+    MONOCHROME preset. W-109/W-110 supersede that role attribution with the
+    separately labelled work reference and its distinct
+    4000/0.37/3.1/0.8/0.44 tuple. W-107 remains valid only as a transcription of
+    the earlier unidentified/duplicated frame until the operator maps it to
+    sleep or main-red with distinct evidence.
+    RECEIPT: comparison of the explicitly labelled work image against W-107,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-WORK-MONOCHROME] VISUAL PASS / MANIFEST PARTIAL. Art
+  direction and primary particle tuple are fixed. Exact spline values must come
+  from machine-readable live state rather than downscaled screenshot numerals.
+  Sleep and main-red still require separately labelled distinct references.
