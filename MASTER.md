@@ -3682,3 +3682,47 @@ controls to rotate between windows."
   after it, fork Mac4Lin_Aqua into the user library and perform one reversible
   gunmetal visual trial. GTK stage remains Quake-Aqua-AMOLED; baseline rollback
   remains Dark-Aqua-Hybrid-Baseline.
+
+--------------------------------------------------------------------------------
+12.25 M16 GUNMETAL COMPOSER AUTHORED — ONE FILE, STANDARD LIBRARY, REVERSIBLE.
+      Sandbox artifact and test receipts, 2026-08-14; unexecuted on target.
+--------------------------------------------------------------------------------
+
+  [W-076] A canonical target-side composer now exists in the repository at
+    `scripts/gunmetal-emerald-theme`, mode 0755, SHA-256
+    `4754874f6cb867c5271b550cb2d760584a2260cc5fe07da5b8ee5c8e8bdfc8b2`.
+    It uses only Python 3's standard library and never writes under
+    `/usr/share`: `build` copies packaged Mac4Lin_Aqua into the user library as
+    `Quake-Gunmetal-Aqua`, recolours all frame/button PNGs with an internal
+    PNG codec, writes the requested black/white/red palette and reflective
+    translucent gunmetal treatment, and creates a 350x102 manager preview.
+    `apply` preserves the current active slot under a timestamped name before
+    installing/restarting Emerald; `restore` does the same while restoring
+    W-072's `Dark-Aqua-Hybrid-Baseline`; `status` prints hashes/processes.
+    RECEIPT: repository file, `python3 -m py_compile`, `--help`, and source
+    inspection in the sandbox, 2026-08-14. TARGET STATUS: UNEXECUTED.
+
+  [W-077] The composer was tested against the exact upstream
+    Mac4Lin_Aqua.emerald payload whose theme.ini SHA-256 is
+    `c179dc794900ee00d2b8e9b59560f6bdcb45aab9e69fa596627023c0d2a15738`,
+    matching the target package hash already observed in W-062. Two clean
+    builds diffed byte-identical (`DETERMINISTIC_BUILD=PASS`), each producing
+    28 files, aggregate
+    `a15e89875455578742fae07b62477946e4889eee17f4be5c698be245794933b3`,
+    theme.ini `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`
+    and preview PNG
+    `8dd8550faff7191b099618728ae494c20a89f97988ea0b84762b5cf463160fa4`.
+    Every source/output PNG decoded and revalidated (8-bit non-interlaced
+    RGB/RGBA converted to RGBA); frame dimensions and button sprite-sheet
+    dimensions were preserved. A fake-HOME apply/restore matrix passed and
+    retained both timestamped prior active slots. This proves deterministic
+    artifact construction and rollback logic in the sandbox, NOT target
+    appearance or Emerald restart success.
+    RECEIPT: two-build recursive diff, hashes, PNG header matrix and fake-HOME
+    apply/restore logs, 2026-08-14.
+
+[2026-08-14][M16/GUNMETAL-1] Reversible gunmetal composer AUTHORED and
+  sandbox-tested. Receipt: W-076/W-077. Target gate remains: download the
+  immutable committed file, verify its SHA-256, build, apply, observe Emerald
+  PID/Compiz survival, and collect a screenshot/user verdict. The exact escape
+  must be printed before apply. No target success is claimed yet.

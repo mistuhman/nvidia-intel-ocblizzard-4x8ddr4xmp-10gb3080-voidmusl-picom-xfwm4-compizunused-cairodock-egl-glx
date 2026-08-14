@@ -1,0 +1,551 @@
+#!/usr/bin/env python3
+"""Build and apply a reversible gunmetal Mac4Lin Emerald theme.
+
+The installed Mac4Lin_Aqua theme is used only as a source. This tool never
+writes below /usr/share. PNG recolouring uses only Python's standard library.
+
+Commands:
+  gunmetal-emerald-theme build
+  gunmetal-emerald-theme apply
+  gunmetal-emerald-theme restore
+  gunmetal-emerald-theme status
+"""
+
+from __future__ import annotations
+
+import argparse
+import configparser
+import hashlib
+import os
+from pathlib import Path
+import shutil
+import struct
+import subprocess
+import sys
+import time
+import zlib
+
+THEME_NAME = "Quake-Gunmetal-Aqua"
+DEFAULT_SOURCE = Path("/usr/share/emerald/themes/Mac4Lin_Aqua")
+BASELINE_NAME = "Dark-Aqua-Hybrid-Baseline"
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+
+
+def fail(message: str) -> "NoReturn":
+    raise SystemExit(f"ERROR: {message}")
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def aggregate_hash(root: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        relative = path.relative_to(root).as_posix().encode()
+        digest.update(relative)
+        digest.update(b"\0")
+        digest.update(bytes.fromhex(sha256(path)))
+    return digest.hexdigest()
+
+
+def png_chunk(kind: bytes, payload: bytes) -> bytes:
+    return (
+        struct.pack(">I", len(payload))
+        + kind
+        + payload
+        + struct.pack(">I", zlib.crc32(kind + payload) & 0xFFFFFFFF)
+    )
+
+
+def paeth(a: int, b: int, c: int) -> int:
+    estimate = a + b - c
+    da, db, dc = abs(estimate - a), abs(estimate - b), abs(estimate - c)
+    if da <= db and da <= dc:
+        return a
+    if db <= dc:
+        return b
+    return c
+
+
+def read_png(path: Path) -> tuple[int, int, list[tuple[int, int, int, int]]]:
+    data = path.read_bytes()
+    if not data.startswith(PNG_SIGNATURE):
+        fail(f"not a PNG: {path}")
+
+    position = len(PNG_SIGNATURE)
+    width = height = bit_depth = color_type = interlace = None
+    compressed = bytearray()
+
+    while position < len(data):
+        length = struct.unpack(">I", data[position : position + 4])[0]
+        kind = data[position + 4 : position + 8]
+        payload = data[position + 8 : position + 8 + length]
+        position += 12 + length
+        if kind == b"IHDR":
+            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(
+                ">IIBBBBB", payload
+            )
+        elif kind == b"IDAT":
+            compressed.extend(payload)
+        elif kind == b"IEND":
+            break
+
+    if None in (width, height, bit_depth, color_type, interlace):
+        fail(f"incomplete PNG header: {path}")
+    if bit_depth != 8 or interlace != 0 or color_type not in (0, 2, 4, 6):
+        fail(
+            f"unsupported PNG format in {path}: bit={bit_depth}, "
+            f"type={color_type}, interlace={interlace}"
+        )
+
+    channels = {0: 1, 2: 3, 4: 2, 6: 4}[color_type]
+    stride = width * channels
+    packed = zlib.decompress(bytes(compressed))
+    expected = height * (stride + 1)
+    if len(packed) != expected:
+        fail(f"unexpected PNG data length in {path}: {len(packed)} != {expected}")
+
+    rows: list[bytearray] = []
+    offset = 0
+    previous = bytearray(stride)
+    for _ in range(height):
+        filter_type = packed[offset]
+        offset += 1
+        encoded = packed[offset : offset + stride]
+        offset += stride
+        row = bytearray(stride)
+        for index, value in enumerate(encoded):
+            left = row[index - channels] if index >= channels else 0
+            above = previous[index]
+            upper_left = previous[index - channels] if index >= channels else 0
+            if filter_type == 0:
+                predictor = 0
+            elif filter_type == 1:
+                predictor = left
+            elif filter_type == 2:
+                predictor = above
+            elif filter_type == 3:
+                predictor = (left + above) // 2
+            elif filter_type == 4:
+                predictor = paeth(left, above, upper_left)
+            else:
+                fail(f"unsupported PNG filter {filter_type} in {path}")
+            row[index] = (value + predictor) & 0xFF
+        rows.append(row)
+        previous = row
+
+    pixels: list[tuple[int, int, int, int]] = []
+    for row in rows:
+        for index in range(0, stride, channels):
+            if color_type == 6:
+                r, g, b, a = row[index : index + 4]
+            elif color_type == 2:
+                r, g, b = row[index : index + 3]
+                a = 255
+            elif color_type == 4:
+                gray, a = row[index : index + 2]
+                r = g = b = gray
+            else:
+                gray = row[index]
+                r = g = b = gray
+                a = 255
+            pixels.append((r, g, b, a))
+    return width, height, pixels
+
+
+def write_png(
+    path: Path, width: int, height: int, pixels: list[tuple[int, int, int, int]]
+) -> None:
+    if len(pixels) != width * height:
+        fail(f"pixel count mismatch while writing {path}")
+    raw = bytearray()
+    for y in range(height):
+        raw.append(0)  # deterministic filter: None
+        for pixel in pixels[y * width : (y + 1) * width]:
+            raw.extend(max(0, min(255, int(channel))) for channel in pixel)
+    header = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+    output = (
+        PNG_SIGNATURE
+        + png_chunk(b"IHDR", header)
+        + png_chunk(b"IDAT", zlib.compress(bytes(raw), level=9))
+        + png_chunk(b"IEND", b"")
+    )
+    path.write_bytes(output)
+
+
+def luminance(r: int, g: int, b: int) -> int:
+    return (54 * r + 183 * g + 19 * b) // 256
+
+
+def clamp(value: float, low: int = 0, high: int = 255) -> int:
+    return max(low, min(high, round(value)))
+
+
+def gunmetal_frame(path: Path) -> None:
+    width, height, pixels = read_png(path)
+    result: list[tuple[int, int, int, int]] = []
+    is_top = "top" in path.name
+    is_bottom = "bottom" in path.name
+
+    for index, (r, g, b, a) in enumerate(pixels):
+        y = index // width
+        source_luma = luminance(r, g, b)
+        if is_top:
+            position = y / max(1, height - 1)
+            if position < 0.08:
+                base = 58 - position * 210
+            elif position < 0.25:
+                base = 34 - (position - 0.08) * 100
+            elif position < 0.72:
+                base = 9 - (position - 0.25) * 8
+            elif position < 0.92:
+                base = 4 + (position - 0.72) * 30
+            else:
+                base = 20 + (position - 0.92) * 200
+            value = clamp(base + (source_luma - 128) * 0.055, 2, 68)
+            # Slightly translucent in the body, more solid at reflective edges.
+            surface_alpha = 238 if position < 0.12 or position > 0.90 else 218
+        elif is_bottom:
+            value = clamp(5 + source_luma * 0.12, 3, 34)
+            surface_alpha = 226
+        else:
+            value = clamp(4 + source_luma * 0.10, 3, 28)
+            surface_alpha = 222
+        result.append((value, value, value, a * surface_alpha // 255))
+
+    write_png(path, width, height, result)
+
+
+def recolor_button(path: Path, role: str) -> None:
+    width, height, pixels = read_png(path)
+    result: list[tuple[int, int, int, int]] = []
+    for r, g, b, a in pixels:
+        light = luminance(r, g, b)
+        if role == "red":
+            nr = clamp(34 + light * 0.86, 28, 238)
+            ng = clamp(3 + light * 0.13, 2, 48)
+            nb = clamp(5 + light * 0.12, 3, 44)
+        elif role == "white":
+            value = clamp(52 + light * 0.78, 48, 246)
+            nr = ng = nb = value
+        elif role == "black":
+            value = clamp(7 + light * 0.30, 6, 86)
+            nr = ng = nb = value
+        else:
+            value = clamp(18 + light * 0.56, 16, 176)
+            nr = ng = nb = value
+        result.append((nr, ng, nb, a))
+    write_png(path, width, height, result)
+
+
+def preview_pixels(width: int = 350, height: int = 102):
+    pixels = [(0, 0, 0, 0)] * (width * height)
+
+    def put(x: int, y: int, rgba):
+        if 0 <= x < width and 0 <= y < height:
+            pixels[y * width + x] = rgba
+
+    # Window and soft shadow.
+    for y in range(15, 91):
+        for x in range(17, 333):
+            edge = min(x - 17, 332 - x, y - 15, 90 - y)
+            if edge < 0:
+                continue
+            if edge < 2:
+                put(x, y, (58, 58, 58, 235))
+            elif y < 46:
+                t = (y - 17) / 29
+                value = clamp(48 * (1 - t) + 3 * t)
+                if y in (18, 19):
+                    value = 64
+                put(x, y, (value, value, value, 235))
+            else:
+                put(x, y, (0, 0, 0, 245))
+
+    # White content separators.
+    for x in range(32, 210):
+        put(x, 59, (110, 110, 110, 170))
+    for x in range(32, 175):
+        put(x, 70, (72, 72, 72, 150))
+
+    def circle(cx: int, cy: int, radius: int, role: str):
+        for y in range(cy - radius - 1, cy + radius + 2):
+            for x in range(cx - radius - 1, cx + radius + 2):
+                distance = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+                if distance > radius + 0.6:
+                    continue
+                if role == "red":
+                    color = (185, 17, 22, 255)
+                elif role == "white":
+                    color = (225, 225, 225, 255)
+                else:
+                    color = (12, 12, 12, 255)
+                if distance > radius - 1.2:
+                    color = (2, 2, 2, 255) if role != "black" else (205, 205, 205, 255)
+                elif y <= cy - 2:
+                    color = tuple(min(255, c + 38) for c in color[:3]) + (255,)
+                put(x, y, color)
+
+    circle(33, 31, 7, "red")
+    circle(52, 31, 7, "white")
+    circle(71, 31, 7, "black")
+    return width, height, pixels
+
+
+def update_theme_ini(path: Path) -> None:
+    parser = configparser.ConfigParser(interpolation=None, strict=False)
+    parser.optionxform = str
+    with path.open() as handle:
+        parser.read_file(handle)
+
+    required = ["theme", "engine", "buttons", "shadow", "titlebar", "pixmap_settings"]
+    missing = [section for section in required if section not in parser]
+    if missing:
+        fail(f"theme.ini lacks sections: {', '.join(missing)}")
+
+    parser["engine"]["engine"] = "pixmap"
+    parser["theme"]["creator"] = "Anirudh; gunmetal composition for sd-rice"
+    parser["theme"]["description"] = (
+        "Quake Gunmetal Aqua - black reflective Mac4Lin geometry"
+    )
+    parser["theme"]["theme_version"] = "gunmetal-stage-1"
+    parser["theme"]["suggested"] = "Quake-Aqua-AMOLED"
+    parser["theme"]["version"] = "0.8.18"
+
+    parser["buttons"]["use_pixmap_buttons"] = "true"
+    parser["buttons"]["use_button_glow"] = "false"
+    parser["buttons"]["use_button_inactive_glow"] = "false"
+    parser["buttons"]["vertical_offset"] = "2"
+    parser["buttons"]["horizontal_offset"] = "4"
+
+    parser["titlebar"]["active_text"] = "#f4f4f4"
+    parser["titlebar"]["active_text_alpha"] = "1"
+    parser["titlebar"]["active_text_halo"] = "#000000"
+    parser["titlebar"]["active_text_halo_alpha"] = "0.85"
+    parser["titlebar"]["inactive_text"] = "#8a8a8a"
+    parser["titlebar"]["inactive_text_alpha"] = "1"
+    parser["titlebar"]["inactive_text_halo"] = "#000000"
+    parser["titlebar"]["inactive_text_halo_alpha"] = "0.7"
+    parser["titlebar"]["titlebar_font"] = "Myriad Pro Bold 9"
+
+    parser["shadow"]["shadow_color"] = "#000000"
+    parser["shadow"]["shadow_opacity"] = "0.78"
+    parser["shadow"]["shadow_radius"] = "18"
+    parser["shadow"]["shadow_offset_x"] = "1"
+    parser["shadow"]["shadow_offset_y"] = "2"
+
+    parser["pixmap_settings"]["inactive_use_active_pixmaps"] = "true"
+    parser["pixmap_settings"]["active_separator_line"] = "#000000"
+    parser["pixmap_settings"]["active_separator_line_alpha"] = "0.65"
+    parser["pixmap_settings"]["inactive_separator_line"] = "#000000"
+    parser["pixmap_settings"]["inactive_separator_line_alpha"] = "0.75"
+
+    with path.open("w") as handle:
+        parser.write(handle, space_around_delimiters=False)
+
+
+def build(source: Path, output: Path, force: bool) -> None:
+    if not (source / "theme.ini").is_file():
+        fail(f"Mac4Lin source is missing: {source}")
+    if output.exists():
+        if not force:
+            fail(f"output already exists (use --force to rebuild): {output}")
+        backup = output.with_name(f"{output.name}.pre-rebuild.{int(time.time())}")
+        output.rename(backup)
+        print(f"Preserved prior build: {backup}")
+
+    temporary = output.with_name(f".{output.name}.tmp.{os.getpid()}")
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    shutil.copytree(source, temporary, symlinks=True)
+
+    try:
+        update_theme_ini(temporary / "theme.ini")
+        for path in sorted(temporary.glob("pixmaps.*.png")):
+            gunmetal_frame(path)
+            print(f"Gunmetal frame: {path.name}")
+
+        roles = {
+            "close": "red",
+            "min": "white",
+            "max": "black",
+            "restore": "black",
+            "help": "white",
+            "menu": "neutral",
+            "shade": "neutral",
+            "unshade": "neutral",
+            "dimple": "neutral",
+        }
+        for path in sorted(temporary.glob("*.png")):
+            stem = path.name.removeprefix("buttons.").split(".")[0]
+            if stem in roles:
+                recolor_button(path, roles[stem])
+                print(f"Button {roles[stem]}: {path.name}")
+
+        width, height, pixels = preview_pixels()
+        write_png(temporary / "theme.screenshot.png", width, height, pixels)
+
+        receipt = temporary / "GUNMETAL-BUILD-RECEIPT.txt"
+        receipt.write_text(
+            "Theme: Quake-Gunmetal-Aqua\n"
+            f"Source: {source}\n"
+            f"Source aggregate: {aggregate_hash(source)}\n"
+            "Palette: black, white, red\n"
+            "Surface: deep black grayscale gunmetal, reflective top edge, "
+            "translucent frame body\n"
+            f"Rollback library theme: {BASELINE_NAME}\n"
+        )
+
+        unsupported = []
+        for path in temporary.glob("*.png"):
+            # Re-read every generated/copied PNG that Emerald will consume.
+            try:
+                read_png(path)
+            except SystemExit as error:
+                unsupported.append(str(error))
+        if unsupported:
+            fail("PNG validation failed:\n" + "\n".join(unsupported))
+
+        temporary.rename(output)
+    except BaseException:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
+
+    print(f"Built: {output}")
+    print(f"Files: {sum(1 for p in output.rglob('*') if p.is_file())}")
+    print(f"Aggregate: {aggregate_hash(output)}")
+    print(f"theme.ini: {sha256(output / 'theme.ini')}")
+    print(f"Preview: {output / 'theme.screenshot.png'}")
+
+
+def replace_active(theme: Path, label: str) -> Path:
+    if not (theme / "theme.ini").is_file():
+        fail(f"theme is missing theme.ini: {theme}")
+    emerald_root = Path.home() / ".emerald"
+    active = emerald_root / "theme"
+    emerald_root.mkdir(parents=True, exist_ok=True)
+    temporary = emerald_root / f".theme.{label}.tmp.{os.getpid()}"
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    shutil.copytree(theme, temporary, symlinks=True)
+
+    stamp = int(time.time())
+    backup = emerald_root / f"theme.pre-{label}.{stamp}"
+    if active.exists():
+        active.rename(backup)
+    try:
+        temporary.rename(active)
+    except BaseException:
+        if backup.exists() and not active.exists():
+            backup.rename(active)
+        raise
+    print(f"Previous active theme preserved: {backup}")
+    print(f"Active theme installed from: {theme}")
+    return backup
+
+
+def restart_emerald() -> None:
+    executable = shutil.which("emerald")
+    if not executable:
+        fail("emerald executable is not in PATH")
+    log = Path("/tmp") / f"emerald-gunmetal-{int(time.time())}.log"
+    handle = log.open("wb")
+    subprocess.Popen(
+        [executable, "--replace"],
+        stdout=handle,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+        env=os.environ.copy(),
+    )
+    handle.close()
+    time.sleep(2)
+    result = subprocess.run(
+        ["pgrep", "-ax", "emerald"], text=True, capture_output=True, check=False
+    )
+    print("Emerald processes:")
+    print(result.stdout.strip() or "(none detected)")
+    print(f"Emerald log: {log}")
+
+
+def apply(theme: Path, no_restart: bool) -> None:
+    print("ESCAPE: /home/sd/.local/bin/xfce-wm-recover")
+    print("TTY fallback: Ctrl+Alt+F2, then xfwm4 --replace &")
+    replace_active(theme, "gunmetal")
+    if not no_restart:
+        restart_emerald()
+    print(f"Active theme.ini: {sha256(Path.home() / '.emerald/theme/theme.ini')}")
+
+
+def restore(baseline: Path, no_restart: bool) -> None:
+    print("ESCAPE: /home/sd/.local/bin/xfce-wm-recover")
+    replace_active(baseline, "gunmetal-restore")
+    if not no_restart:
+        restart_emerald()
+    print(f"Restored baseline: {baseline}")
+    print(f"Active theme.ini: {sha256(Path.home() / '.emerald/theme/theme.ini')}")
+
+
+def status(output: Path, baseline: Path) -> None:
+    paths = {
+        "active": Path.home() / ".emerald/theme",
+        "gunmetal library": output,
+        "rollback baseline": baseline,
+    }
+    for label, path in paths.items():
+        print(f"{label}: {path}")
+        if (path / "theme.ini").is_file():
+            print(f"  theme.ini {sha256(path / 'theme.ini')}")
+            print(f"  aggregate {aggregate_hash(path)}")
+        else:
+            print("  MISSING")
+    for process in ("compiz", "emerald", "picom"):
+        result = subprocess.run(
+            ["pgrep", "-ax", process], text=True, capture_output=True, check=False
+        )
+        print(f"{process}: {result.stdout.strip() or '(absent)'}")
+
+
+def main() -> None:
+    home = Path.home()
+    default_output = home / ".emerald/themes" / THEME_NAME
+    default_baseline = home / ".emerald/themes" / BASELINE_NAME
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    build_parser = subparsers.add_parser("build", help="build the user theme")
+    build_parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    build_parser.add_argument("--output", type=Path, default=default_output)
+    build_parser.add_argument("--force", action="store_true")
+
+    apply_parser = subparsers.add_parser("apply", help="activate and restart Emerald")
+    apply_parser.add_argument("--theme", type=Path, default=default_output)
+    apply_parser.add_argument("--no-restart", action="store_true")
+
+    restore_parser = subparsers.add_parser("restore", help="restore saved baseline")
+    restore_parser.add_argument("--baseline", type=Path, default=default_baseline)
+    restore_parser.add_argument("--no-restart", action="store_true")
+
+    status_parser = subparsers.add_parser("status", help="print hashes/processes")
+    status_parser.add_argument("--output", type=Path, default=default_output)
+    status_parser.add_argument("--baseline", type=Path, default=default_baseline)
+
+    args = parser.parse_args()
+    if args.command == "build":
+        build(args.source.expanduser(), args.output.expanduser(), args.force)
+    elif args.command == "apply":
+        apply(args.theme.expanduser(), args.no_restart)
+    elif args.command == "restore":
+        restore(args.baseline.expanduser(), args.no_restart)
+    else:
+        status(args.output.expanduser(), args.baseline.expanduser())
+
+
+if __name__ == "__main__":
+    main()
