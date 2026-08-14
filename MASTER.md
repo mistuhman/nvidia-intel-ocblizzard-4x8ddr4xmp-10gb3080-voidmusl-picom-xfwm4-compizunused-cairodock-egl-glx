@@ -6078,3 +6078,47 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   Directive 2. U-037's one-role-first rule is satisfied; `sleep` and
   `work-monochrome` are now authorized to bake back to back at ~9 minutes each.
   Runtime deployment (xwinwrap/mpv, Section IX) remains a separate later stage.
+
+--------------------------------------------------------------------------------
+12.87 SLEEP MASTER RENDERED COMPLETE AT REDUCED THROUGHPUT.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-167] The `sleep` master is COMPLETE: all 3,738 frames, ending
+    `progress frame=3738/3738 t=62.3s elapsed=591.0s fps=6.32 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/sleep/sleep.master-62.3s.mp4`, SHA-256
+    `f82914597a2009003939fc83b0f8c981565e1ad522013fad9929c04520e462cb`. The
+    chained back-to-back invocation behaved as designed; `work-monochrome` is
+    gated behind `&&` and follows only on sleep's success.
+    RECEIPT: target `roles-sleep-work.log` tail and master hash line,
+    2026-08-14.
+
+  [X-088] Throughput regression, cause NOT established — recorded as an
+    observation, not a diagnosis. Sleep rendered at 6.32 fps / 591.0 s against
+    main-red's 7.54 fps / 495.8 s (W-160): 19.2% slower, +95.2 s. This is
+    counter-intuitive and must not be hand-waved: per W-150 sleep is by far the
+    DARKER scene (648,517 non-black pixels versus main-red's 5,770,240), so if
+    the bake were purely PNG-bound as W-158 concluded, sleep should have been
+    FASTER, not slower. Candidate explanations, none yet evidenced: (a) GPU or
+    NVENC thermal/clock behaviour after main-red's immediately preceding 8-minute
+    run plus the loop pass; (b) sleep's particle/spline settings costing more
+    scene time despite producing fewer lit pixels; (c) desktop contention during
+    the run; (d) PNG size not tracking non-black pixel count in the way assumed.
+    The deliverable is unaffected — frame content is a pure function of frame
+    index (W-159), so timing cannot alter output — and this is therefore a
+    performance curiosity, NOT a correctness defect. Do not "fix" it blind.
+    RECEIPT: W-160 versus W-167 elapsed/fps, cross-checked against W-150 pixel
+    counts, 2026-08-14.
+
+  [U-045] The cheap decisive test for X-088, if it is ever worth the time, is to
+    re-run `xmb-bake-profile sleep` from cold and compare its per-stage medians
+    against the main-red profile in W-158 (render 2.0 ms, PNG 113.0 ms). If PNG
+    time is unchanged and scene render has grown, cause (b) holds; if PNG time
+    itself has grown for a darker scene, cause (d) holds and W-158's model needs
+    revision. This is optional: it changes no artifact and blocks nothing.
+    RECEIPT: W-156 profiler capability versus X-088 open question, 2026-08-14.
+
+[2026-08-14][M11-SLEEP-MASTER] MASTER COMPLETE, LOOP PASS PENDING, then
+  work-monochrome follows automatically. Await two `..._VIDEO_BAKE=PASS`
+  markers. X-088 throughput variance is logged and explicitly does not gate
+  anything.
