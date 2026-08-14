@@ -3625,3 +3625,20 @@ controls to rotate between windows."
   X-044's transport lesson remains binding. The operator may now audition
   Emerald decorations manually and report names/screenshots without risking
   loss of the custom baseline. Quake-Aqua-AMOLED GTK stage 1 remains active.
+
+--------------------------------------------------------------------------------
+12.23 M16 EMERALD-3 POST-BACKUP RECONCILIATION. Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-073] The subshell-safe read-only reconciliation independently confirms
+    the completed W-072 state: active GTK is `Quake-Aqua-AMOLED`; active
+    Emerald and library baseline theme.ini hashes both remain
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`;
+    the baseline has 37 files; no `.Dark-Aqua-Hybrid-Baseline.tmp.*` artifact
+    remains; Emerald PID 1270 and Compiz PID 1210 remain live. The block ended
+    with the terminal still open, confirming X-044's subshell transport fix.
+    RECEIPT: target SAFE EMERALD-3 reconciliation output, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3-RECONCILE] Post-backup state VERIFIED. Receipt:
+  W-073. No additional write is needed before the operator's manual decoration
+  audition and influence selection.
