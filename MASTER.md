@@ -2667,3 +2667,62 @@ controls to rotate between windows."
        - every plugin added is GPU work on top of a compositor whose
          smoothness was hard-won via __GL_YIELD=USLEEP (W-040). Add plugins
          ONE AT A TIME and re-judge smoothness after each.
+
+--------------------------------------------------------------------------------
+12.3 U-021 ANSWERED — THE FULL PLUGIN INVENTORY IS PRESENT. Target output
+     pasted 2026-08-14. Three ledger rows resolved by this one block.
+--------------------------------------------------------------------------------
+
+  [W-051] EVERY PLUGIN THE 12.2 DESIGN NEEDS EXISTS ON THIS MACHINE. All
+    eleven checked resolved to a real .so: cube, rotate, 3d, cubeaddon, shift,
+    ring, expo, scale, wall, vpswitch, text. Nothing needs installing.
+    The packages behind them, all at 0.8.18, all Compiz Reloaded:
+      compiz-core-0.8.18_3, compiz-plugins-main-0.8.18_1,
+      compiz-plugins-extra-0.8.18_1, compiz-plugins-experimental-0.8.18_1,
+      compiz-bcop, compizconfig-python, libcompizconfig-0.8.18_15,
+      ccsm-0.8.18_8, emerald + emerald-themes 0.8.18, compiz-reloaded meta.
+    R-4's concern (3D Windows lives in plugins-extra and may be absent) is
+    therefore MOOT: compiz-plugins-extra AND -experimental are both installed.
+    RECEIPT: target `ls /usr/lib*/compiz/`, `xbps-query -l | grep -i compiz`
+    and the eleven-plugin existence loop, pasted 2026-08-14.
+
+  [W-052] U-020 IS ANSWERED IN PASSING: `libanimationplus.so` IS present, as
+    are libanimationaddon and libanimationsim. So the CCSM Animations pool
+    showing Blinds/Bonanza/Dream/Helix/Shatter/Vacuum was legitimate — those
+    effects exist on disk. They still require the animationplus PLUGIN to be
+    ENABLED in CCSM > Effects before a row using them will play; the profile's
+    as_active_plugins list did not include it at the time of 11.9. U-020's
+    "does CCSM enumerate uninstalled effects" question is closed: it does not,
+    they were installed all along.
+    RECEIPT: libanimationplus present in both plugin directories, 2026-08-14.
+
+  [W-053] X-035 RESOLVED FAVOURABLY. The golden snapshot taken while CCSM was
+    running is SHA-256
+    af457926dbc76d642708e37fb2fe206aa94e55d56e968bf842aa8517c0b1e971 and the
+    section-scoped check returns 7/7 enforced [core] keys. It differs from the
+    login-verified a9c157ad... (CCSM has since written plugin sections), but
+    it is structurally sound and safe as a revert target. No re-bless needed.
+    NOTE the general rule from X-035 still stands for future snapshots.
+    RECEIPT: target sha256sum + section-scoped grep -c returning 7.
+
+  [X-036] TWO PLUGIN DIRECTORIES EXIST AND IT IS UNRESOLVED WHICH ONE LOADS.
+    `ls /usr/lib*/compiz/` expanded to BOTH `/usr/lib/compiz/` and
+    `/usr/lib64/compiz/`, and every plugin appears in both listings. On Void
+    x86_64, /usr/lib64 is conventionally a symlink to /usr/lib, which would
+    make these the same files listed twice — that is the LIKELY explanation
+    and it is consistent with the column output showing duplicate names. It is
+    NOT verified. Harmless today; would matter if a plugin were ever installed
+    to only one path. Resolving command, read-only:
+      ls -ld /usr/lib64; readlink -f /usr/lib64/compiz/libcube.so
+    Do not act on this; record only.
+    RECEIPT: target `ls /usr/lib*/compiz/` two-header output, 2026-08-14.
+
+  [X-037] *** HSIZE IS NOT SET AND THE CUBE WILL RENDER AS A FLAT SHEET UNTIL
+    IT IS. *** `grep -E '^s0_hsize|^s0_vsize'` returned nothing: the profile
+    carries no desktop-size values, so Compiz defaults apply (hsize 1 on a
+    fresh 0.8 profile once wall/cube arbitration is involved). Per R-2 the
+    cube REQUIRES Horizontal Virtual Size = 4 and Vertical Virtual Size = 1.
+    This is the single most common "my cube is flat" cause and it must be set
+    BEFORE judging whether the cube works. Set it in CCSM > General Options >
+    Desktop Size (CCSM is authoritative while running, W-046).
+    RECEIPT: empty grep for s0_hsize/s0_vsize in the active profile.
