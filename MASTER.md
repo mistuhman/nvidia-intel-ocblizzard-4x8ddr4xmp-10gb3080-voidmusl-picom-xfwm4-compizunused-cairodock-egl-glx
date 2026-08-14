@@ -4547,3 +4547,43 @@ resolution, occlusion or compression. Preserve the operator's visual report as
 a separate human receipt: machine inspection can describe pixels and spatial
 relationships, but it cannot silently replace the operator's judgement of
 legibility, depth, motion, comfort or aesthetic success.
+
+================================================================================
+SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
+================================================================================
+
+--------------------------------------------------------------------------------
+12.47 COLD-LOGIN VISUAL PERSISTENCE ACCEPTED; THREE-STATE XMB ART DIRECTION
+      PROPOSED. Human/visual receipt and operator brief 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-104] The operator rebooted, logged back into XFCE and reported “looks
+    perfect after logging back in” and “persistence works.” The attached
+    full-desktop screenshot visibly shows the accepted black gunmetal GTK and
+    Emerald treatment present across Thunar, Terminal and CCSM, with the XFCE
+    panel and Cairo-Dock also present. This is a valid human/visual cold-login
+    persistence receipt. It does not by itself re-prove process identity,
+    hashes, pinned geometry or picom absence after reboot; those machine checks
+    remain the next read-only gate before persistence is called fully audited.
+    RECEIPT: direct operator report and attached post-login screenshot
+    `image.png`, 2026-08-14.
+
+  [U-029] The requested XMB system now has three authored visual states/prebakes
+    connected conceptually to the existing Compiz Desktop Wall workflow and
+    middle-mouse workspace switching: (1) a sleep state, (2) a main red state
+    with night-light particles governed by operator settings, and (3) a
+    black-and-white night ocean/city state governed by operator preferences.
+    This supersedes any assumption that one universal loop is sufficient.
+    Unresolved architecture detail: “sleep” may mean the actual idle
+    screensaver state rather than a third workspace background, and the brief
+    does not yet identify exact workspace-to-state mapping or whether the
+    visual must transition while Wall is moving versus only after the selected
+    workspace settles. Resolve those semantics before bake parameters or
+    runtime switching are designed.
+    RECEIPT: direct operator design brief, 2026-08-14.
+
+[2026-08-14][M9/THREE-STATE-BRIEF] Visual direction RECORDED, implementation
+  BLOCKED only on U-029 state semantics and the already-required post-reboot
+  machine/preflight receipt. Preserve Compiz Wall's middle-button input; the
+  wallpaper controller must observe workspace state and must never capture or
+  replace that binding.
