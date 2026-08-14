@@ -3965,3 +3965,43 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   to author and sandbox-test the deterministic GTK3 material composer defined
   in 12.28.3; do not issue another target recolour block until that artifact
   exists and its generated graphics/parser checks pass.
+
+--------------------------------------------------------------------------------
+12.29 GTK GRAPHICS PREFLIGHT — EXISTING QUAKE FORK ALREADY CONTAINS THE NEEDED
+      PIXMAP PIPELINE; A/B IT BEFORE WRITING ANOTHER COMPOSER. Sandbox source
+      inspection 2026-08-14, target execution still pending.
+--------------------------------------------------------------------------------
+
+  [W-082] The exact upstream Slickness-Reborn source was pinned at commit
+    `be31c3c2492a6a65859ac0cf8ea633613841d0cc` (2026-06-26). Its GTK3 CSS and
+    index hashes exactly match the target W-066 hashes, so source inspection is
+    valid for the installed tree. Contrary to what the current Cheetah screen
+    suggests, Slickness is not a flat colour theme: GTK3 ships explicit PNG
+    artwork and selectors for menubar, toolbar, normal/hover/disabled buttons,
+    entries and borders, headerbars, selected rows, tabs, progress bars,
+    scrollbar troughs/thumbs, switches and panels. applications.css contains
+    dedicated Thunar selectors at lines 800-824 and terminal layout selectors
+    at 773-790. Example exact asset hashes: menubar `a5fbab09...`, toolbar
+    `02797b23...`, button-normal `c2c77570...`, button-hover `95a0bf9a...`,
+    entry `3dd08ad4...`, selected-bar `902caab2...`, vertical trough
+    `1c39d3ef...`.
+    RECEIPT: upstream commit plus hash comparison to W-066 and bounded source/
+    asset inspection, 2026-08-14.
+
+  [W-083] W-082 changes the minimum next action without weakening 12.28. The
+    already-installed `Quake-Aqua-AMOLED` is a fork of this exact graphical
+    Slickness tree and W-070 changed only named bg/base colours; its pixmaps
+    and selectors remain intact. The currently flat screen instead has
+    `mac-os-x-cheetah-dark` active (X-045), whose malformed CSS is X-042. The
+    least-machinery diagnostic is therefore a reversible XSettings A/B back to
+    Quake-Aqua-AMOLED while keeping W-081's accepted Emerald gunmetal frame.
+    Only if its existing graphics remain insufficient should a new composer be
+    authored to replace/tune those assets. This honors Directive 2's “do not
+    over-engineer” clause and isolates GTK from decoration.
+    RECEIPT: W-066/W-070 target hashes and exact upstream source inspection in
+    W-082.
+
+[2026-08-14][M16/GTK-GRAPHICS-PREFLIGHT] Existing graphical GTK3 route
+  IDENTIFIED. Receipt: W-082/W-083. Supersedes 12.28.3 step 1 only as the
+  IMMEDIATE action: first A/B the existing Quake-Aqua-AMOLED graphical fork.
+  The full composer remains the fallback if the operator rejects that visual.
