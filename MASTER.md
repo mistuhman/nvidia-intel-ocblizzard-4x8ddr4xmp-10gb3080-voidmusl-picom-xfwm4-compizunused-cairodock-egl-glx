@@ -5361,3 +5361,31 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-1] INVALID/NO-OP. Main-red original tab
   remains the input; repeat only in browser Developer Tools Console.
+
+--------------------------------------------------------------------------------
+12.68 MAIN-RED LIVE OBJECT VERIFIED; POST BLOCKED ON LOCAL NETWORK PERMISSION.
+      Browser/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-139] The original MAIN RED tab is confirmed correct before transport: 50
+    spline keys, generator RGB 255/0/0, and exact particle tuple
+    `172/0.41/4.8/16.3/0.18`. The attached full-frame screenshot independently
+    matches W-111's red gradient, broad pale crossing sheets and sparse varied
+    night-light particles. This closes numeric uncertainty for the primary
+    tuple but does not yet prove a filesystem manifest.
+    RECEIPT: browser console table/RGB/key count and attached labelled visual,
+    2026-08-14.
+
+  [X-076] The main-red fetch has not yet produced HTTP 200 or
+    `MAIN_RED_PRESET_SUBMITTED`. Firefox reports Local Network Access permission
+    required for the GitHub Pages origin to contact 127.0.0.1:8765; unlike the
+    sleep receipt, no `prompt_allow` or completion follows in the pasted output.
+    Do not rerun, reload or close the tab yet. The operator must allow the
+    browser's local-network prompt and wait for the pending promise; if no prompt
+    is visible, a controlled resubmission after permission is allowed.
+    RECEIPT: browser console network diagnostic and missing completion marker,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-2] LIVE SETTINGS PASS / transport
+  PENDING. No shell verification and no work-monochrome capture until HTTP 200
+  or completion is observed.
