@@ -698,6 +698,66 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target A/B environment/process/resource/log/recovery output and
   direct user smoothness acceptance pasted 2026-08-14.
 
+[2026-08-14][W-041] B2-1 read-only enumeration is complete and it PARTIALLY
+  OVERTURNS B1-b. There is NO autostart or session entry that launches CCSM.
+  Proven by exhaustion, not inference: `/home/sd/.config/autostart/` holds
+  exactly ten .desktop files plus a `backup/` dir and `nvidia-oc.desktop.bak`
+  — Dl, cairo-dock-glx, easyeffects, fleasion, gnome-keyring-pkcs11, lama,
+  picom, picom-mac, pipewire-pulse, ulauncher — and NONE is ccsm. Content
+  grep across BOTH `~/.config/autostart` and `/etc/xdg/autostart` for `ccsm`
+  returned "(no autostart .desktop references ccsm)". `xfce4-session.xml`
+  contains no `ccsm`. `/etc/xdg/autostart` contains no ccsm/compiz/emerald
+  entry; its ONLY match in that class is a root-owned `picom.desktop`
+  (334 bytes, Jun 3 15:10).
+  The only two ccsm references in the whole session surface are:
+    (i) `~/.cache/sessions/xfwm4-267e9b988-b54b-4508-92e5-2cbde9365bdb.state`
+        lines 40/41/43: `[RES_NAME] ccsm`, `[RES_CLASS] Ccsm`,
+        `[WM_COMMAND] (1) "ccsm"`  <-- THIS IS THE LAUNCHER. It is the xfwm4
+        SESSION-CACHE state file, and `[WM_COMMAND] (1) "ccsm"` is exactly
+        the legacy X11 session-management restart record: the session manager
+        re-executes the bare command `ccsm` at login for a window that was
+        open when the session was last saved. This is a WM_COMMAND/X-SMP
+        legacy restart, NOT an XDG autostart entry, which is precisely why
+        every prior autostart hunt (W-035) found nothing, why the respawned
+        instance had NO SM_CLIENT_ID on its windows (W-035), why it was
+        orphaned under PID 1 (W-033/W-035), and why it appeared at a session-
+        band PID (B1-b) yet was not a child of xfce4-session.
+    (ii) `xfce4-panel.xml:95  <value type="string" value="ccsm.desktop"/>` —
+        a manual launcher item only, already ruled out as a restart mechanism
+        by W-036 (Xfce launcher docs).
+  All other `~/.config` hits are cairo-dock theme icons/help files
+  (`.../icons/ccsm.svg`, `plug-ins/help/help.conf`) and one Firefox IndexedDB
+  blob. None is executable session state.
+  CONSEQUENCE: the correct reversible suppression is to delete the STALE
+  SESSION CACHE, not to edit an autostart file. This is the same
+  `~/.cache/sessions` clearing already mandated for a different reason by
+  X-010, so one action satisfies both. Nothing may be signalled or killed to
+  achieve it.
+  RECEIPT: target B2-1 block output pasted 2026-08-14 (blocks a-f verbatim).
+
+[2026-08-14][W-042] B1-d is CLOSED: both picom autostart files are INERT and
+  now proven by content, not inference. `~/.config/autostart/picom.desktop`
+  and `~/.config/autostart/picom-mac.desktop` are byte-for-byte the same
+  108-byte five-line file, both mtime Aug 14 06:16:
+    [Desktop Entry] / Type=Application / Name=Picom disabled for Compiz /
+    Hidden=true / X-GNOME-Autostart-enabled=false
+  `Hidden=true` alone is sufficient under the XDG autostart spec — a Hidden
+  entry is treated as though it does not exist — and it also masks the
+  root-owned `/etc/xdg/autostart/picom.desktop` by name, which is why picom
+  was ABSENT at runtime on the fresh boot (B1-a). The B2-1f status sweep
+  confirms these are the only two entries in the directory carrying
+  `Hidden=true`; every other enabled entry (Dl, cairo-dock-glx, easyeffects,
+  fleasion, lama, pipewire-pulse, and the two bare entries
+  gnome-keyring-pkcs11 and ulauncher) is unrelated to compositing.
+  X-008 (never run picom and compiz together) is therefore SATISFIED at login
+  and no longer blocks persisting a Compiz launch. NOTE for later: the
+  `picom-mac.desktop` name suggests a second, differently-named picom unit
+  once existed; masking by that exact basename only works if the system entry
+  shares the basename, so if a `picom-mac` system entry is ever added
+  elsewhere this guarantee must be re-checked.
+  RECEIPT: target B2-1e verbatim cat of both files and B2-1f status sweep,
+  pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -970,6 +1030,24 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   being stabilized.
   RECEIPT: W-040.
 
+[2026-08-14][X-028] DO NOT OPEN CCSM, AND DO NOT LEAVE IT OPEN AT LOGOUT.
+  This is the mechanism behind X-027 and it is now understood end-to-end
+  (W-041). CCSM's return is self-perpetuating through the session cache: if a
+  CCSM window is open when the session is saved, xfwm4 writes
+  `[WM_COMMAND] (1) "ccsm"` into `~/.cache/sessions/xfwm4-<uuid>.state`, and
+  the next login re-executes bare `ccsm`, which reopens the window, which is
+  saved again. Clearing the cache once fixes THIS boot; opening CCSM and then
+  logging out re-arms it. Therefore: while the machine-authored baseline is
+  being stabilized, configure Compiz by editing Default.ini directly with
+  Compiz stopped (the W-032 atomic-replacement method), never through the GUI.
+  When CCSM is eventually needed for personalization, the safe procedure is:
+  make the change, CLOSE CCSM, verify no `ccsm` process remains, and only then
+  log out. Corollary: any session-save that happens while Compiz is live will
+  likewise be recorded, which is a hazard for the persistence gate B6 and must
+  be handled by disabling session save-on-exit rather than by racing it.
+  RECEIPT: W-041 (the WM_COMMAND record), W-033/W-034/W-035 (orphaned, no
+  SM_CLIENT_ID), B1-b (session-band PID, not a child of xfce4-session).
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -1106,6 +1184,22 @@ as its receipt. Do not guess any of them.
   a bounded ring of non-noise exec events, and snapshot the new CCSM ancestry
   immediately. Explicitly suppress the known PID-1297 `pgrep` flood from the
   report without killing it. Preserve the profile unchanged during tracing.
+
+[U-017] SUPERSEDES U-014/U-015/U-016, which are now CLOSED by W-041 (the
+  launcher is the xfwm4 session-cache WM_COMMAND record, not a respawner and
+  not an autostart entry). The remaining open question is narrow: does
+  clearing `~/.cache/sessions` actually stop CCSM from returning across a
+  full logout/login, and does xfce4-session write the record back at logout?
+  Resolving command is gate B2-2 below, then the B6 logout/login cycle.
+  Predicates: `pgrep -fx ccsm` empty after login; no `ccsm` string anywhere
+  under `~/.cache/sessions` after login.
+
+[U-018] Is xfce4-session's save-on-exit currently enabled? If it is, the B6
+  persistence gate will re-save whatever is on screen at logout, including a
+  live Compiz and any open CCSM (X-028).
+    xfconf-query -c xfce4-session -p /general/SaveOnExit
+    xfconf-query -c xfce4-session -lv | sed -n '1,40p'
+  Read-only. Do not change it until B3-B5 have passed.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1744,3 +1838,50 @@ untouched by this session. New knowledge lands here and in the ledgers.
   session-autostart explanation in B1-b, and supersedes 11.1's assumption that
   the active profile was still near the guard (B1-c: it is the fat 09f0c6c7
   file with no display values). Overall M8 remains BLOCKED on B2.
+
+--------------------------------------------------------------------------------
+11.4 B2-1 RECEIPT AND THE CORRECTED WRITER MODEL — target output pasted
+     2026-08-14, same boot as 11.3. Read this before running any write block.
+--------------------------------------------------------------------------------
+
+  THE LAUNCHER IS NAMED. It is not an autostart entry. B1-b's phrase "started
+  BY THE SESSION at login" was directionally right and mechanically wrong, and
+  the distinction decides what we are allowed to touch:
+
+      /home/sd/.cache/sessions/xfwm4-267e9b988-b54b-4508-92e5-2cbde9365bdb.state
+        line 40   [RES_NAME]   ccsm
+        line 41   [RES_CLASS]  Ccsm
+        line 43   [WM_COMMAND] (1) "ccsm"
+
+  That is a legacy X11 session-management restart record written by xfwm4 when
+  the session was last saved with a CCSM window open. At login the session
+  manager re-executes the bare string `ccsm`. Full derivation, the exhaustive
+  negative evidence, and the picom closure are in ledger rows W-041, W-042 and
+  X-028. Every previously baffling observation is explained by this one fact:
+  orphaned under PID 1, no SM_CLIENT_ID, not a child of xfce4-session, absent
+  from every autostart directory, yet reliably present at a session-band PID.
+
+  WHAT THIS CHANGES ABOUT B2. The plan in 11.3 said "reversibly disable the
+  CCSM autostart entry". There is no such entry to disable. The correct and
+  strictly gentler action is to delete the stale session cache — which X-010
+  already requires for an unrelated reason, so one action clears two blockers.
+  Nothing is killed, nothing is signalled, and the inverse is a tarball.
+
+  REVISED GATE LIST (supersedes 11.2's B2-B6 wording, same ordering intent):
+    B2-2  clear the session cache (with a tarball inverse) + back up the fat
+          09f0c6c7 profile + restore the dcefbadd guard.        <- NEXT
+    B3    launch Compiz with __GL_YIELD=USLEEP --sm-disable and KEEP IT LIVE;
+          dwell and confirm the profile hash does not move.
+    B4    decorations + animations verified while live.
+    B5    cairo-dock GL check while Compiz owns the screen.
+    B6    persistence, only after B3-B5 pass, with the logout/login gate and
+          the U-018 save-on-exit question answered first.
+  Escape at every step is unchanged: /home/sd/.local/bin/xfce-wm-recover
+  (fallback: Ctrl+Alt+F2, then `xfwm4 --replace &`).
+
+[2026-08-14][M8/B2-1] Writer identification DONE and picom inertness PROVEN.
+  Receipt: W-041, W-042, 11.4. This supersedes B1-b's "session-autostart
+  entry" reading with the WM_COMMAND session-cache mechanism, and CLOSES
+  U-014, U-015 and U-016. New blocker recorded as X-028 (do not open CCSM /
+  do not leave it open at logout). Overall M8 now BLOCKED only on B2-2's
+  cache clear + guard restoration, then the B3 keep-live dwell.
