@@ -388,6 +388,13 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   autostart.
   RECEIPT: target IX.2B output pasted 2026-08-14.
 
+[2026-08-14][W-015] The IX.3 emergency rollback is proven. From the target
+  shell, Compiz and emerald were stopped and `DISPLAY=:0.0 xfwm4 --replace`
+  restored xfwm4 PID 3242 and root WM window 0x1000032. Verification showed
+  no Compiz or emerald process. Picom was intentionally not restarted, so the
+  safe post-abort state is xfwm4 without either compositor.
+  RECEIPT: target emergency-abort output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -481,6 +488,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   take. RECEIPT: Arch BBS 97055 (pseup). Clearing that cache is a required
   step, not a troubleshooting afterthought.
 
+[2026-08-14][X-011] The first IX.3 volatile replacement is rejected. Compiz
+  PID 789 successfully replaced xfwm4 and owned `_NET_SUPPORTING_WM_CHECK` as
+  `compiz`, with picom stopped, but the user could see only a very small part
+  of the main monitor and requested an immediate abort. The log reported no
+  XI2 extension and two emerald instances emitting GTK CSS and Wnck warnings;
+  it did not report a fatal Compiz error. Do not make Compiz persistent or
+  repeat the same launch until output geometry and the existing Compiz profile
+  have been inspected and corrected.
+  RECEIPT: target IX.3 output and direct user observation, 2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -540,6 +557,20 @@ as its receipt. Do not guess any of them.
     df -h /home/sd
   Never assume the workspace is empty. A prior run may have left artifacts.
 
+[U-008] Which display/profile setting caused the rejected IX.3 Compiz launch
+  to expose only a very small part of the main monitor?
+    xrandr --query; xrandr --listmonitors
+    xdpyinfo | grep -E 'dimensions:|resolution:'
+    nvidia-settings -q CurrentMetaMode -t
+    xprop -root _NET_DESKTOP_GEOMETRY _NET_DESKTOP_VIEWPORT _NET_WORKAREA
+    inspect ~/.config/compiz*, ~/.compiz*, ~/.gconf/apps/compiz* and
+            /etc/compizconfig for profile, output and active-plugin settings
+  Resolve before another launch. The relevant predicates are native X output
+  geometry, Compiz output detection/list, selected config backend/profile,
+  viewport size, active plugins and decorator command. Back up the discovered
+  profile before correcting any value; do not infer a geometry fix from the
+  emerald warnings.
+
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
 ================================================================================
@@ -598,6 +629,11 @@ Status vocabulary, used strictly:
   transitions, receipts, checkpoints, exact actions, expected observations,
   rollback actions, troubleshooting branches, glossary and `next_action`;
   retain MASTER.md as the human audit log rather than replacing it.
+
+[2026-08-14][M8/IX.3-A] First volatile Compiz test rejected; emergency
+  rollback proven DONE.
+  receipt: X-011 and W-015; WM identity/process output plus user observation.
+  Overall M8 is BLOCKED on U-008. Do not persist or repeat the same launch.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
