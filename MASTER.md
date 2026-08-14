@@ -6477,3 +6477,66 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   problem. Next action is one instrumented, logged, background trial that
   distinguishes U-050 (a)/(b)/(c). Kill switch remains
   `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'`.
+
+--------------------------------------------------------------------------------
+12.94 ROOT CAUSE FOUND: mpv CRASHES IN hevc-vulkan HWDEC INIT. XWINWRAP AND
+      COMPIZ ARE EXONERATED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-183] U-050 is RESOLVED and the answer is hypothesis (c), not (a) or (b).
+    Removing `--really-quiet` produced a decisive trace. mpv got FURTHER than
+    X-092 suggested: libplacebo enumerated Vulkan surface formats and picked
+    `VK_FORMAT_B8G8R8A8_UNORM + VK_COLOR_SPACE_SRGB_NONLINEAR_KHR`; it detected
+    `Assuming 119.997589 FPS for display sync`; it reached
+    `[cplayer] Starting playback...`. The final line is
+    `[vd] Requesting pixfmt 'vulkan' from decoder.` and there is NO `Exiting...`
+    line, which for mpv indicates abnormal termination rather than clean exit.
+    Death occurs inside hardware-decoder initialisation, AFTER window setup and
+    after playback start.
+    RECEIPT: target `/tmp/xww.log` tail from the instrumented background trial,
+    2026-08-14.
+
+  [W-184] XWINWRAP IS EXONERATED, superseding the natural reading of X-092. The
+    window was genuinely created: mpv could not have queried the display and
+    reported a 119.997589 Hz sync rate, nor configured a Vulkan swapchain
+    surface, without a real X drawable supplied through `-wid WID`. xwinwrap
+    exited immediately only BECAUSE its child died immediately — it is designed
+    to terminate with its child. The `-g/-ov/-ni/-b/-nf/-un/-fdt/-argb` flag set
+    is therefore not implicated, and neither is Compiz compositing policy. The
+    delivery mechanism was never the problem.
+    RECEIPT: W-183 log lines showing display sync and surface configuration
+    before the crash, 2026-08-14.
+
+  [X-093] THE FAULT IS MINE, IN THE FLAG I ADDED. The three successful playbacks
+    that produced human acceptance (W-164, W-176, W-177) all ran plain
+    `mpv --loop-file=inf --no-audio FILE`, whose banner reported
+    `VO: [gpu-next] 4480x1440 yuv420p` — i.e. software decode, with hwdec never
+    requested. Both failed wallpaper attempts added `--hwdec=auto`, which
+    selected `hevc-vulkan`, and that is the ONLY material new variable between
+    the working and failing invocations. Section IX.8 never specified Vulkan;
+    U-049 explicitly left the pin undecided and I nonetheless shipped `auto`
+    into a live-desktop trial. Consequence: `--hwdec=auto` must be treated as
+    UNSAFE on this target until a specific decoder is proven, because `auto` is
+    free to re-select the crashing hevc-vulkan path at any time.
+    RECEIPT: W-164/W-176/W-177 mpv banners versus the two failed commands and
+    W-183's crash point, 2026-08-14.
+
+  [U-051] Which hardware decoder actually survives here is now the single open
+    question, and W-179's enumeration is explicitly NOT sufficient evidence —
+    it proved `hevc_cuvid` is COMPILED IN, while W-183 proves compiled-in does
+    not imply working. This is the same class of error as X-083, where
+    `ffmpeg -encoders` listing `h264_nvenc` did not mean it could encode
+    4480x1440. Candidates in priority order: `nvdec` (the CUVID path, native to
+    this proprietary driver), `vaapi`, `no` (software, already proven working
+    three times). Each must be tested WITHOUT xwinwrap first, in a plain
+    windowed mpv, because that isolates the decoder from the delivery mechanism.
+    Only a decoder that survives a plain window may then be combined with
+    xwinwrap.
+    RECEIPT: W-179 enumeration versus W-183 runtime crash, and the X-083
+    precedent, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-2] ROOT CAUSE IDENTIFIED. No artifact, WM, package or
+  file was changed by either failed attempt. Next action tests decoders in a
+  PLAIN mpv window with no xwinwrap, one flag at a time, and records which
+  survive; then the surviving decoder is combined with the already-exonerated
+  xwinwrap invocation.
