@@ -5409,3 +5409,20 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-3] API transport REJECTED by browser
   policy. Live tab remains valid. Next gate is browser-local JSON download only;
   no loopback request and no preview claim.
+
+--------------------------------------------------------------------------------
+12.70 MAIN-RED LIVE JSON DOWNLOADED LOCALLY FROM ZEN; FILE IMPORT PENDING.
+      Browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-140] The browser-local Blob fallback succeeds without loopback access. Zen
+    reports exact main-red tuple `172/0.41/4.8/16.3/0.18`, 50 spline keys,
+    generator RGB 255/0/0, downloaded payload size 1,535 bytes and completion
+    marker `MAIN_RED_JSON_DOWNLOADED`. The preceding network-denial lines belong
+    to X-077's failed fetch and do not invalidate the later same-page download.
+    RECEIPT: Zen Developer Tools Console output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-DOWNLOAD] BROWSER PASS. Next gate is a
+  terminal-safe child-shell import: locate the downloaded file, validate schema/
+  role/source/50 keys/tuple/RGB, canonicalize atomically into the NVMe preset
+  directory and emit hashes. No preview is expected at this gate per X-074.
