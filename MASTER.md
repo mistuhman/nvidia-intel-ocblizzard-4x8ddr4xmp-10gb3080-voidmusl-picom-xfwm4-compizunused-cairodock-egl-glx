@@ -5563,3 +5563,33 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-WORK-IMPORT-TOOL] AUTHORED. Next target block must be
   short: immutable updated-tool download/hash/install followed by one import
   subcommand. No interactive `set -e`, heredoc or inline Python.
+
+--------------------------------------------------------------------------------
+12.77 WORK-MONOCHROME EXACT MANIFEST IMPORTED AND VERIFIED ON NVME.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-146] The updated short importer installed and executed successfully. Zen
+    download is 1,568 bytes, SHA-256 `d9f4ff85...`; canonical preset is
+    `/mnt/games/xmb-wave-bake/presets/work-monochrome.json`, SHA-256
+    `a3efb5063867d7de93974c451f3bda006d06ab118aa5cec33f61d72a58fdf730`;
+    receipt SHA is `827c878b...`. Schema, role, staged-source aggregate, 50
+    spline keys, RGB 255/255/255 and exact particle tuple
+    `4000/0.37/3.1/0/0.04` pass. `WORK_MONOCHROME_PRESET_IMPORT=PASS`.
+    RECEIPT: target updated-tool hash gate and short importer output,
+    2026-08-14.
+
+  [W-147] Exact work spline identity is frozen by W-146's canonical JSON;
+    decisive values include flowSpeed 1.2, gradient 0/0.92, spacing 407.658,
+    band 0.2 with secondary 7/0.025, perturbation 0.172 at scale 0.3, white RGB,
+    opacity 0.2, brightness 2, Fresnel 8/2, reverse seed 13347, blend 0.3,
+    normalize 2, jitter 0.5, temporal smooth 0.98, zero wave height, soft clip
+    0.05 and exact FFD transforms in the manifest. The JSON hash remains the
+    authoritative complete record.
+    RECEIPT: target sorted 50-key spline output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MANIFESTS] THREE ROLE JSON INPUTS COMPLETE: sleep
+  `57bdad0e...`, main-red `af0d75e4...`, work-monochrome `a3efb506...`.
+  Screenshot-derived numeric ambiguities are superseded. Next gate is a seeded,
+  explicit-clock deterministic renderer producing one real nonblank preview per
+  manifest; no full-duration encode before preview A/B acceptance.
