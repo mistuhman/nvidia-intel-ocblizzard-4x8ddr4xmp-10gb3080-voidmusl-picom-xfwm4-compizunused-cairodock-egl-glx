@@ -462,6 +462,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target U-009 ancestry, environment, cache, INI and Python-context
   output pasted 2026-08-14.
 
+[2026-08-14][W-023] IX.4B-1 successfully hot-removed D-Bus and the heavy
+  experimental plugin stack without replacing Compiz PID 18768. Effective and
+  on-disk lists agree on the clean core/window-management/animation baseline;
+  xfwm4 and picom remain absent. The user accepts its memory efficiency,
+  theme, animations and immediate stability. Snapshot: 8.7% Compiz CPU,
+  253100 KiB RSS, 42% GPU, 929 MiB GPU memory and 40.86 W. Refresh smoothness
+  remains explicitly unaccepted.
+  RECEIPT: target IX.4B-1 context/file/process output and user observation,
+  2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -613,6 +623,18 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   then add desired effects one at a time behind a stability measurement.
   RECEIPT: U-009 active list/context and log lines 1301-1460, 2026-08-14.
 
+[2026-08-14][X-016] IX.4B-1 is only a partial pass. `Context.Write()` restored
+  the plugin list but rewrote the INI such that the verification grep found no
+  explicit output, refresh or vblank settings. The attached post-cleanup CCSM
+  screenshot shows a single `640x480+0+0` Compiz output instead of the proven
+  dual-output list, while the user still reports poor refresh. The already
+  running process remains visually usable, but the next launch is unsafe and
+  persistence remains prohibited. Identify the exact libcompizconfig setting
+  scopes, restore both monitor rectangles and explicit 120 Hz/vblank values,
+  then perform a controlled restart rather than another broad Context write.
+  RECEIPT: IX.4B-1 empty truth grep, screenshot and user observation,
+  2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -697,6 +719,15 @@ as its receipt. Do not guess any of them.
   it from the stable baseline. If CCSM or another backend rewrote effective
   values, establish exactly one profile/backend and verify 120 Hz plus vblank
   in both the file and the live settings before another performance gate.
+
+[U-010] Where does Compiz 0.8.18 expose output, refresh and vblank settings to
+  compizconfig-python after IX.4B-1 removed their explicit INI lines?
+    print every setting whose name contains output, refresh, vblank or lighting
+    together with plugin, Display/Screen scope, value and default
+    print the complete current INI before writing anything else
+  Use the resulting exact setting objects for narrow writes only. Do not call
+  a broad Context.Write after changing only active_plugins: IX.4B-1 proved
+  that it can collapse the output list to the 640x480 default.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -807,6 +838,11 @@ Status vocabulary, used strictly:
   This supersedes IX.4A's broad U-009 block. Overall M8 remains BLOCKED on a
   backed-up clean-list restoration without D-Bus and a new live stability
   gate. Effects may then return only one measured plugin group at a time.
+
+[2026-08-14][M8/IX.4B-1] Clean plugin list without D-Bus DONE; output/refresh
+  preservation REJECTED.
+  receipt: W-023 and X-016. Overall M8 is BLOCKED on U-010; do not restart,
+  persist, log out or reboot while the saved output list is 640x480.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
