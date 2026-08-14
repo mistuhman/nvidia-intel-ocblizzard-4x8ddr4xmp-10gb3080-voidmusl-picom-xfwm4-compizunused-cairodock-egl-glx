@@ -540,6 +540,18 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target U-011 unique-PID, `/proc`, ancestry, environment, fd and log
   output pasted 2026-08-14.
 
+[2026-08-14][W-029] The target now has an executable recovery artifact at
+  /home/sd/.local/bin/xfce-wm-recover (1896 bytes, mode 0755, SHA-256
+  3f9402d2731d560fecae27a899b8f36c78b1c3a2527bda4a9fb2bdd354e19c24).
+  `sh -n` passed and its non-destructive `--check` returned 0 after finding
+  pkill, nohup, xfwm4, xprop and pgrep, reaching DISPLAY=:0.0, observing the
+  current supporting-WM window, and confirming persistent Client0 still names
+  xfwm4. Normal invocation stops Compiz/Emerald, starts `xfwm4 --replace`, and
+  verifies xfwm4-live/Compiz-absent; it has not yet been destructively invoked.
+  Installation rollback is `rm -f /home/sd/.local/bin/xfce-wm-recover`.
+  RECEIPT: target artifact listing, checksum, syntax check, `--check` output
+  and printed rollback pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -978,6 +990,11 @@ Status vocabulary, used strictly:
   M8 remains BLOCKED on installing and receipting an executable TTY recovery
   artifact before any fresh-process Compiz test; persistence remains
   prohibited.
+
+[2026-08-14][M8/RECOVERY-1] Executable TTY recovery artifact INSTALLED and
+  non-destructively verified. Receipt: W-029. This clears the recovery-artifact
+  prerequisite for X-019's bounded fresh-process test. Overall M8 remains
+  BLOCKED on that visual/resource test and later persistence reproduction.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
