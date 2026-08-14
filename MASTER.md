@@ -5426,3 +5426,34 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   terminal-safe child-shell import: locate the downloaded file, validate schema/
   role/source/50 keys/tuple/RGB, canonicalize atomically into the NVMe preset
   directory and emit hashes. No preview is expected at this gate per X-074.
+
+--------------------------------------------------------------------------------
+12.71 MAIN-RED EXACT MANIFEST IMPORTED AND VERIFIED ON NVME.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-141] MAIN RED now has an audit-grade filesystem manifest. Zen download
+    `/home/sd/Downloads/xmb-main-red-live.json` is 1,535 bytes, SHA-256
+    `6d585ffe...`; validated/canonical preset is
+    `/mnt/games/xmb-wave-bake/presets/main-red.json`, SHA-256
+    `af0d75e4c102f29fe4b7c53314ec93b7ddda1ee92b62e8b508f46bcd7db0998b`;
+    import receipt SHA is `d78436b...`. Schema, role, staged-source aggregate,
+    50 spline keys, RGB 255/0/0 and particle tuple
+    `172/0.41/4.8/16.3/0.18` all pass. Child-shell and parent-terminal survival
+    pass.
+    RECEIPT: target safe import, canonicalization, hashes and assertions,
+    2026-08-14.
+
+  [W-142] Exact main-red spline values are frozen by W-141's canonical JSON;
+    decisive identity values include flowSpeed 1.2, gradient 0/0.45, spacing
+    617, timeStep 2.8, bandAmplitude 0.218, secondary frequency/amplitude
+    16/0.026, perturbation/scale 0.1/0.037, wave height/soft clip 0.5/0.255,
+    reverse blend/seed/motion 0.45/1337/0.65, temporal smooth 0.84, Fresnel
+    1.75/0.5, brightness 0.83, z detail 0.25, and the exact FFD transforms
+    retained in the manifest. The JSON hash, not this prose subset, is the
+    authoritative complete preset.
+    RECEIPT: target sorted 50-key spline output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED] JSON PASS / deterministic preview PENDING.
+  Proceed to WORK MONOCHROME using the proven same-page Blob download path; do
+  not retry Zen loopback fetch.
