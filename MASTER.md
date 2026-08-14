@@ -3501,3 +3501,20 @@ controls to rotate between windows."
   bg/base palette entries to true black with exact-count assertions, retain
   the original active name as one-command rollback, then judge the AMOLED
   layer before introducing any Cheetah/Win2-7 artwork.
+
+--------------------------------------------------------------------------------
+12.19 M16 GTK-2 REPEAT — SOURCE REMAINED BYTE-STABLE BEFORE WRITE GATE.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-069] A second independent GTK-2 read-only run reproduced the Cheetah
+    source hashes (`2ecdb911...` GTK3, `b9105f34...` GTK2), 3200/2653 line
+    counts, zero broken symlinks, the same exact palette counts and the same
+    135 SCSS-token lines. This adds no new design claim but proves no source
+    file changed between GTK-2 probes. Active settings were not changed by the
+    repeated block; the GTK-3 AMOLED fork/activation gate remains unexecuted.
+    RECEIPT: repeated target GTK-2 output, pasted 2026-08-14.
+
+[2026-08-14][M16/GTK-2-REPEAT] Read-only reproducibility VERIFIED. Receipt:
+  W-069. Next action remains the previously issued GTK-3 AMOLED trial; do not
+  run another Cheetah inspection.
