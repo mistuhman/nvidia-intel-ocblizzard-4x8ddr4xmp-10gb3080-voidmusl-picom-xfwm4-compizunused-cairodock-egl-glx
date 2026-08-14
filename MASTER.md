@@ -4623,3 +4623,47 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   preserves Compiz input ownership. Next gate remains the combined post-reboot
   machine audit and read-only XMB/runtime/viewport preflight from 12.42, now
   extended to collect Wall transition-control surfaces for U-030.
+
+--------------------------------------------------------------------------------
+12.49 XMB REFERENCE IMAGE INSPECTED — ONE MONOCHROME PRESET IS LEGIBLE;
+      THREE DISTINCT STYLES WERE NOT TRANSPORTED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-106] The visible reference is a strong candidate for the black-and-white
+    night-ocean state: an AMOLED-black field carries layered translucent silver
+    spline filaments, with a low left swell, central trough/cross-current and a
+    brighter rising crest toward the right. Sparse white point particles read
+    as distant night lights or spray without filling the negative space. The
+    controls must be hidden in every bake. No city silhouette is directly
+    visible in this frame; “city” remains atmosphere/direction unless the
+    operator supplies or requests an explicit skyline layer.
+    RECEIPT: operator-attached XMB control screenshot(s), visually inspected
+    full-frame and by control groups, 2026-08-14.
+
+  [W-107] Legible values in the transported monochrome reference are:
+    particles Count 2000, Opacity 0.75, Size Base 2.6, Size Var 1.5 and Flow
+    Speed 0.18; spline Re Synthetic Descriptor Motion 4.85, Re Kernel Gain
+    0.145, Re Normalize Gain 2.00, Re Kernel Phase Step 0.00, Re Index Jitter
+    0.006, Re Temporal Smooth 0.64, Fresnel Power 4.00, Fresnel Scale 0.50,
+    Opacity 1.000, Brightness 2.00 and Z Detail Scale 0.080; FFD Scale1
+    X/Y/Z 5.68/1.00/1.00, FFD Scale2 X/Y/Z 2.83/1.28/2.89, and FFD Offset
+    X/Y/Z 0.00/-0.47/0.00. The next FFD control is clipped at the bottom, so its
+    value and all controls below it are not evidence and must not be guessed.
+    RECEIPT: direct reading of the visible control labels and values,
+    2026-08-14.
+
+  [X-059] Although the operator says the attachments contain all three desired
+    XMB settings/styles, the four rendered attachments available to this agent
+    appear visually identical: each shows the same monochrome wave and the same
+    visible values. No distinct red/main or sleep preset can be extracted from
+    this receipt. This may be duplicate upload/transport rather than operator
+    intent. Do not manufacture the two missing palettes or parameter sets; ask
+    for separately identifiable references or an explicit statement that one
+    geometry/settings preset is intentionally shared and only palettes/effects
+    differ.
+    RECEIPT: side-by-side visual comparison of all four rendered attachments,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-CAPTURE-1] MONOCHROME preset PARTIAL PASS: visible values
+  and composition captured, lower clipped settings remain open. Red/main and
+  sleep references remain unreceived as distinct evidence because of X-059.
