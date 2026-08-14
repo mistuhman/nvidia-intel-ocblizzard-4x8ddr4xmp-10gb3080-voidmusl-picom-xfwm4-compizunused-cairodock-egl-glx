@@ -4097,3 +4097,48 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   deterministic `gunmetal-gtk3-theme` composer from Quake-Aqua-AMOLED, with a
   stronger menubar-to-Emerald blend and raised/recessed graphics. Decoration
   stays frozen at W-085.
+
+--------------------------------------------------------------------------------
+12.33 DEDICATED DIMENSIONAL GTK3 COMPOSER AUTHORED AND DETERMINISM-TESTED.
+      Sandbox receipt 2026-08-14; target remains unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-088] Canonical artifact `scripts/gunmetal-gtk3-theme` now exists, mode
+    0755, SHA-256
+    `1465c44896efdb74f5eacef205fcbbee9698abec07add7403acd9fa1d6d624b2`.
+    It verifies the exact W-086 Slickness/Quake CSS and seven source-asset
+    hashes, then forks rather than edits the active source. Standard-library
+    code deterministically generates 17 new RGBA pixmaps: menubar, toolbar,
+    headerbar, statusbar, content/sidebar wells, four button states, inset
+    entry, selected plate, two troughs, two thumbs and a 640x360 preview. It
+    adds a bounded final GTK3 import with explicit material rules for Thunar,
+    Terminal, menus, toolbars, entries, buttons, sidebars/content, selections,
+    popovers, scrollbars, statusbars and separators. Emerald is untouched.
+    Commands: `build`, differential `probe`, `apply`, `restore`, `status`.
+    RECEIPT: repository source, `python3 -m py_compile`, help/source inspection,
+    and generated asset/reference audit, 2026-08-14. TARGET: UNEXECUTED.
+
+  [W-089] Two independent sandbox builds against exact upstream commit
+    be31c3c diffed recursively byte-identical (`DETERMINISTIC_BUILD=PASS`).
+    Each produced 473 files with aggregate
+    `401e9b1538a7193e9cf5d09b7f93a642109ee869ba499f20125e9837a6fdbf33`;
+    override CSS SHA-256
+    `4a0e36a530ce8176f0fa914d26c2474c97fc05475b1ec0b02add41690a01889b`;
+    preview SHA-256
+    `204fe467c595587a639838b836c2264b84b31f207b92e812b6df8ca332c6d64d`.
+    Generated CSS has balanced 25/25 braces and every referenced gunmetal3d
+    asset exists. The index palette preserves semantic keys exactly: bg/base
+    #000000, selected gunmetal #242424 with white text, tooltip #050505 with
+    #e0e0e0 text. The differential target probe compares candidate warnings
+    against Quake-Aqua-AMOLED so X-043's pre-existing user-CSS warnings cannot
+    be falsely attributed to the new import. Target XSettings/app appearance
+    and parser behavior remain unverified until execution.
+    RECEIPT: two-build diff, hashes, CSS brace/reference check and generated
+    index inspection, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D] Composer AUTHORED and sandbox-tested.
+  Receipt: W-088/W-089. Next target gate: immutable download/hash verification,
+  build, differential GTK3 probe, apply only if probe introduces zero new
+  warnings, process/XSettings receipt, then Thunar+Terminal screenshot and
+  explicit human depth/blending judgement. Rollback restores the recorded
+  Quake-Aqua-AMOLED setting; decoration remains W-085-frozen.
