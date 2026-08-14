@@ -487,6 +487,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: complete active INI, CCSM screenshot and xrandr output in U-010,
   2026-08-14.
 
+[2026-08-14][W-025] IX.4B-2 changed only the live Compiz 0.8 core vblank value
+  from false to true. PID 18768 and WM ownership remained stable, picom and
+  xfwm4 remained absent, and XRandR still reported DP-2 2560x1440+0+0 and
+  DP-0 1920x1080+2560+197. Snapshot: 7.4% Compiz CPU, 253220 KiB RSS, 46% GPU,
+  930 MiB GPU memory and 31.20 W. The user still does not perceive 120 Hz, so
+  vblank=true alone is not an accepted refresh fix.
+  RECEIPT: target IX.4B-2 diff/process/geometry/resource output and user
+  observation, 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -657,6 +666,18 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   lighting or texture filtering. Accept only if PID/WM stability remains and
   the user observes smoother motion; otherwise restore false.
   RECEIPT: U-010 active INI and direct user observation, 2026-08-14.
+
+[2026-08-14][X-018] IX.4B-2 disproves vblank=false as the sole cause. CCSM
+  still shows Detect Refresh Rate enabled, so the displayed numeric 120 can be
+  ignored in favor of Compiz autodetection; the user still rejects perceived
+  refresh after vblank=true. Detect Outputs is also enabled, making the visible
+  640x480 list an inactive fallback rather than the XRandR mode: XRandR proves
+  the actual monitors are already 2560x1440@120 and 1920x1080@119.98. Remove
+  both ambiguities with the correct 0.8 core keys: detect_refresh_rate=false,
+  refresh_rate=120, detect_outputs=false, and the already proven two explicit
+  rectangles. Keep vblank=true for this next isolated test.
+  RECEIPT: IX.4B-2 screenshot, active INI, xrandr and user observation,
+  2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -871,6 +892,11 @@ Status vocabulary, used strictly:
   receipt: W-024; this supersedes IX.4B-1's 640x480/reboot interpretation but
   not its persistence prohibition. Overall M8 remains BLOCKED on X-017's
   narrow vblank A/B test and a later controlled restart/logout gate.
+
+[2026-08-14][M8/IX.4B-2] Vblank=true A/B stability DONE; refresh result
+  REJECTED. Receipt: W-025 and X-018.
+  Overall M8 remains BLOCKED on an explicit detect-refresh/output test and a
+  later controlled restart/logout gate.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
