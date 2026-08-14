@@ -3457,3 +3457,47 @@ controls to rotate between windows."
   mac-os-x-cheetah-dark; Win2-7(Pixmap) remains a GTK2-only donor. The next
   gate remains GTK-2's focused source-palette/parser preflight; no fork or
   visual setting has yet been written.
+
+--------------------------------------------------------------------------------
+12.18 M16 GTK GATE 2 — GTK3 PREFLIGHT REJECTS DIRECT CHEETAH CSS USE.
+      Target output and operator correction pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-068] The focused receipt reconfirms active GTK `Slickness-Reborn`, icon
+    theme `Mac-OS-X-Lion`, and font `Myriad Pro 10`. The Cheetah source files
+    are intact and hash to `2ecdb911...` (GTK3 gtk.css) and `b9105f34...`
+    (GTK2 gtkrc), with zero broken symlinks. Its narrow palette is now exact:
+    GTK3's two root `.background` declarations use
+    `rgba(61,61,62,0.999)`; fallback/sidebar surfaces use `#181818`; GTK2's
+    single global bg[NORMAL] is `#3d3d3e` and base[NORMAL] is `#303030`.
+    The existing `#222222` and `#313132` uses are predominantly gradients,
+    insets and borders and must not be globally flattened to black.
+    RECEIPT: target GTK-2 hashes, source excerpts and token counts/locations,
+    2026-08-14.
+
+  [X-042] `mac-os-x-cheetah-dark/gtk-3.0/gtk.css` is NOT safe as a direct
+    GTK3 base in its present form. The target found 135 lines containing
+    uncompiled SCSS identifiers. Some are inside comments, but many are active
+    declarations, including `$unfocused_fg_color`, `$unfocused_base_color`,
+    `$unfocused_borders`, `$base_color`, `$bg_color`, `$scrollbar_radius` and
+    Sass-style `gtkmix(...)` calls. GTK3 cannot resolve dollar-prefixed Sass
+    variables. The only installed probe is `/usr/bin/gtk-query-settings`;
+    gtk3-widget-factory and gtk3-demo are absent. The operator also explicitly
+    corrected the plan: this is a GTK3 system. Therefore selecting or simply
+    forking the Cheetah GTK3 CSS is rejected before it can reproduce the
+    historical line-31xx parser-error family in W-047.
+    CONSEQUENCE: W-064's phrase “viable M16 GTK fork base” is superseded for
+    GTK3. Cheetah remains a valuable Aqua artwork/GTK2 donor and reference,
+    but the first working GTK3 fork must come from the known-live
+    Slickness-Reborn tree, with Aqua elements composed only after a clean
+    AMOLED GTK3 gate passes.
+    RECEIPT: target GTK-2 SCSS grep/count (135), tool inventory, source
+    excerpts, and direct operator statement “its a gtk3 system though”,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-2] GTK3 source preflight DONE; direct Cheetah CSS route
+  REJECTED by X-042. Receipt: W-068/X-042. Revised least-risk order: fork the
+  currently working GTK3/GTK4 Slickness-Reborn theme, change only its named
+  bg/base palette entries to true black with exact-count assertions, retain
+  the original active name as one-command rollback, then judge the AMOLED
+  layer before introducing any Cheetah/Win2-7 artwork.
