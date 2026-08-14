@@ -1579,3 +1579,87 @@ compiz onto an unknown driver stack is exactly the unverified, unattended
 change Directive 11 exists to prevent.
 
 Then, in order: U-002, U-003, U-007 (cheap, all read-only), then IX.0.
+
+================================================================================
+SECTION XI — STATUS BOARD + OPERATOR LOG (append-only, per Directive 7)
+Opened 2026-08-14 by the fresh session on branch
+arena/01a0009d-nvidia-intel-ocblizzard-4x8ddr. Sections I-X above are
+untouched by this session. New knowledge lands here and in the ledgers.
+================================================================================
+
+11.0 CORRECTIONS TO THE INBOUND HANDOFF (Directive 5: read the branch, do not
+     infer it). The operator prompt for this session asserted three things
+     that the repository contradicts. Recorded so the next model does not
+     re-inherit them:
+
+  (a) CLAIM: "6 unpushed local commits on arena/019ffe03..., 68b1872 is the
+      last pushed; push them and open a PR."
+      REALITY: nothing to push. This checkout is branch
+      arena/01a0009d-... at b4bfd31, working tree clean, and
+      `git log --oneline origin/main..HEAD` prints NOTHING (0 commits;
+      `git rev-list --count` = 0). Commit 68b1872 is not even a valid object
+      in this clone (`git cat-file -t 68b1872` -> "Not a valid object name");
+      it was the base of an earlier clone and has since been superseded.
+      The 019ffe03 work was NOT lost: it is on the remote at 40eab00 and was
+      MERGED as PR #1 on 2026-08-14T02:18:43Z. PRs #2 (019ffedb) and #3
+      (019fff13, "record smooth Compiz scheduler fix") are also MERGED; #3 is
+      main's tip b4bfd31. No GitHub access was lost and no work is missing.
+      RECEIPT: git rev-list --count origin/main..HEAD = 0; git ls-remote
+      origin; gh pr list --state all --json number,state,mergedAt.
+      ACTION TAKEN: none. Pushing an empty range and opening an empty PR
+      would be a no-op that also violates M17's standing "do not open a pull
+      request" instruction.
+
+  (b) CLAIM: 'start at MASTER.md section "STEP 2b", step 2b-2.'
+      REALITY: no such string exists in this file (`grep -c "STEP 2b"` = 0),
+      and neither does "STATUS BOARD" (count 0) before this section. The real
+      forward edge is Section VII's last rows plus ledger X-027. Mapping the
+      intent onto the actual document: the next action is the X-027
+      writer-suspension + profile-restore + keep-live Compiz dwell. That is
+      what this session executes, and it is numbered 11.2 below.
+
+  (c) CLAIM (in the repo name and 3.2): musl.
+      REALITY: already superseded by W-012 — glibc 2.41, NVIDIA proprietary
+      595.84. The operator prompt agrees. Noted only because the repo name
+      still misleads.
+
+11.1 STATUS BOARD — as of 2026-08-14, start of session 01a0009d.
+     Legend: DONE = output observed | BLOCKED = waiting on a named row |
+     LIVE = currently true on the target.
+
+  TARGET RUNTIME (last observed, W-040):  xfwm4 owns the screen (PID 15573
+      after automatic recovery). Compiz ABSENT. picom ABSENT (masked, W-014).
+      xfce4-panel + cairo-dock + emerald survived every swap.  STATE: LIVE,
+      SAFE, and unverified after any reboot since.
+  SMOOTHNESS ....... SOLVED. __GL_YIELD=USLEEP, user verdict "IT WORKS,
+      SMOOTH!" (W-040). This is the single most valuable result in the file.
+  GEOMETRY ......... SOLVED. DP-2 2560x1440+0+0 primary, DP-0 1920x1080+2560
+      +197 inverted; explicit output rectangles proven (W-018, W-026).
+  PROFILE GUARD .... BLOCKED (X-027). CCSM keeps rewriting Default.ini. Exact
+      good guard = Default.ini.pre-gl-yield-usleep.1786692457, SHA-256
+      dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c.
+  RECOVERY ......... DONE and destructively proven (W-029, W-030).
+      /home/sd/.local/bin/xfce-wm-recover, mode 0755.
+  PERSISTENCE ...... NOT STARTED and still PROHIBITED until a keep-live dwell
+      passes. Failsafe Client0_Command still names xfwm4 (W-029).
+  M8 OVERALL ....... BLOCKED on X-027 only.
+  WALLPAPER (VIII) . GATED behind M8 per Directive 10. Do not start.
+  PR ............... WITHHELD per M17 until the user declares the target
+      reached.
+
+11.2 THE ONE NEXT ACTION (supersedes Section X's stale "run U-001" handoff,
+     which W-012 answered).
+     Goal stated by the user this session: "get me to a working compiz from a
+     fresh boot." Decomposed into the minimum ordered gates, one paste each:
+       B1  read-only reconciliation of live state after the reboot   <- HERE
+       B2  suspend the CCSM writer reversibly + restore dcefbadd guard
+       B3  launch Compiz with __GL_YIELD=USLEEP, KEEP IT LIVE, dwell
+       B4  decorations + animations verified while live
+       B5  cairo-dock GL check while Compiz owns the screen
+       B6  persistence, only after B3-B5 pass, with the logout/login gate
+     Every block carries its escape command. The universal escape at all
+     times is:  /home/sd/.local/bin/xfce-wm-recover   (fallback:
+     `xfwm4 --replace &` from a TTY on Ctrl+Alt+F2).
+     B1 is READ-ONLY: it changes nothing, and it exists because the machine
+     has rebooted since W-040 and every LIVE claim above must be re-proven
+     before a single write.
