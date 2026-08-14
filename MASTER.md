@@ -796,6 +796,14 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   line and checksum, and only then begin one-variable renderer A/B trials.
   RECEIPT: W-031 and X-020.
 
+[2026-08-14][X-022] The first atomic-restoration block made no change: its
+  safety gate observed xfwm4 PID 16448 and supporting-WM window 0x1600032 but
+  parsed the WM name as UNRESOLVED because the sed capture was over-escaped.
+  It stopped before backing up or writing Default.ini, exactly as designed.
+  Supersede only the parser with a literal `xprop` match for `= "Xfwm4"` and
+  repeat the same safe restoration; do not weaken the no-Compiz/no-picom gate.
+  RECEIPT: target restoration precondition and STOP output pasted 2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -1064,6 +1072,11 @@ Status vocabulary, used strictly:
   collapse CONFIRMED. Receipt: W-031 and X-021. This supersedes the U-012
   block, but overall M8 remains BLOCKED on a receipt-backed atomic restoration
   of the exact clean plugin/display baseline before any renderer A/B test.
+
+[2026-08-14][M8/RESTORE-1] Atomic profile restoration NO-OP/REJECTED.
+  Receipt: X-022. Safety behavior passed, but the WM-name parser rejected the
+  valid xfwm4 state before any file change. Overall M8 remains BLOCKED on the
+  corrected literal-match restoration.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
