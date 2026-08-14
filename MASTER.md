@@ -370,6 +370,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   apply to this target and the project takes the glibc/NVIDIA branch.
   RECEIPT: target U-001 output pasted 2026-08-14.
 
+[2026-08-14][W-013] IX.2A stood down the live standalone compositor without
+  replacing the WM. xfwm4's internal `use_compositing` value was already
+  false and remains false; picom PID 2462 terminated, xfwm4 PID 1209 remained
+  live, and `_NET_SUPPORTING_WM_CHECK` remained window 0x1000032. Picom
+  startup sources were found at ~/.config/autostart/picom-mac.desktop and
+  /etc/xdg/autostart/picom.desktop; disabling both persistently is the next
+  sub-gate.
+  RECEIPT: target IX.2A output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -563,6 +572,11 @@ Status vocabulary, used strictly:
 [2026-08-14][M7] U-001 answered; glibc/NVIDIA branch chosen DONE.
   receipt: W-012; target arch, libc, GL renderer, modules and NVIDIA-SMI.
   This supersedes the earlier M7 BLOCKED row.
+
+[2026-08-14][M8/IX.2A] Runtime picom stopped; xfwm4 left live DONE.
+  receipt: W-013; before/after target process and xfconf output.
+  Overall M8 remains PLANNED: autostart still needs masking and compiz has not
+  yet been started.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
