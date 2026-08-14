@@ -340,6 +340,28 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   differ from every tutorial written in the last three years.
   RECEIPT: srcpkgs/ffmpeg/template, srcpkgs/ffmpeg6/template.
 
+[2026-08-14][W-009] U-002 is resolved. The live pre-swap desktop has xfwm4
+  PID 1209, picom PID 2462 using
+  /home/sd/.config/picom-animations.conf, and cairo-dock PID 1301 in OpenGL
+  mode (`-o`). No compiz process was reported. XFCE's failsafe Client0 command
+  is `xfwm4`; the root `_NET_SUPPORTING_WM_CHECK` points to window 0x1000032.
+  RECEIPT: target-shell IX.0 output pasted 2026-08-14.
+
+[2026-08-14][W-010] U-003 is resolved for the swap. The target already has
+  the full compiz-reloaded 0.8.18 surface installed: core, main/extra/
+  experimental plugins, ccsm, compizconfig libraries, emerald and themes.
+  cairo-dock 3.4.1 plus plugins and mpv 0.41.0 are also installed. xwinwrap
+  did not appear in the installed-package query and remains a later delivery
+  prerequisite, not a blocker for the compositor swap.
+  RECEIPT: target `xbps-query -l` output pasted 2026-08-14.
+
+[2026-08-14][W-011] IX.0 created rollback anchors before any desktop change:
+  /home/sd/xfce4-session.xml.bak.1786687627 (2234 bytes) and
+  /home/sd/wm-command.bak (39 bytes). The observed duplicate-vblank warnings
+  were emitted while the NVIDIA-named vblank scheduler and picom were live;
+  no WM replacement had been attempted when they were captured.
+  RECEIPT: target `ls -la` and process output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -524,6 +546,11 @@ Status vocabulary, used strictly:
   M13 Wallpaper live under the new compositor, idle cost
       measured and recorded ............................... PLANNED
   M14 Autostart + one-command teardown installed .......... PLANNED
+
+[2026-08-14][M8/IX.0] Pre-swap baseline and rollback anchors DONE.
+  receipt: W-009..W-011; target process/package query and backup listing.
+  Overall M8 remains PLANNED: xfwm4 and picom are still live and compiz has
+  not yet been started.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
