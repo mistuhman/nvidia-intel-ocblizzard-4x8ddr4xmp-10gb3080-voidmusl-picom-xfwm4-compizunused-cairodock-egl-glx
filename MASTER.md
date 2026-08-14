@@ -579,6 +579,18 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target U-012 file inventory, checksums, complete current core
   section, backup diffs and key comparison pasted 2026-08-14.
 
+[2026-08-14][W-032] The collapsed profile was preserved at
+  /home/sd/.config/compiz/compizconfig/Default.ini.collapsed.1786691513 with
+  its matching 89-byte SHA-256 a572585c.... While xfwm4 PID 16448 owned the
+  screen and Compiz/picom were absent, an atomic replacement installed a
+  351-byte, 10-line minimal baseline with the complete accepted clean plugin
+  list and all W-026 core display values. Every exact line and line count
+  validated; restored SHA-256 is
+  dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c.
+  Exact rollback is `cp -a Default.ini.collapsed.1786691513 Default.ini`.
+  RECEIPT: target corrected precondition, backup, full file, checksum and
+  exact-value validation output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1077,6 +1089,12 @@ Status vocabulary, used strictly:
   Receipt: X-022. Safety behavior passed, but the WM-name parser rejected the
   valid xfwm4 state before any file change. Overall M8 remains BLOCKED on the
   corrected literal-match restoration.
+
+[2026-08-14][M8/RESTORE-2] Minimal clean plugin/display baseline restored
+  DONE. Receipt: W-032. This supersedes RESTORE-1/X-022 and clears X-021's
+  launch-unsafe file state. Overall M8 remains BLOCKED on one-variable bounded
+  NVIDIA/GLX A/B trials, beginning with the missing OpenGL sync-display
+  selector while preserving/restoring this exact profile around every run.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
