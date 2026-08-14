@@ -452,6 +452,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   persistence change has been made.
   RECEIPT: target IX.4A process/resource/session output pasted 2026-08-14.
 
+[2026-08-14][W-022] U-009 is resolved. Compiz PID 18768 is a direct child of
+  xfce4-session and carries `--sm-client-id`, proving live XSMP restart by the
+  session manager after PID 16048 ended. No Compiz backend/profile environment
+  override exists, Client0 still names xfwm4, and the large saved-session cache
+  contains xfwm4/Thunar state but no reported Compiz launch entry. The active
+  backend remains ~/.config/compiz/compizconfig/Default.ini; both that file and
+  libcompizconfig report the same expanded active-plugin list.
+  RECEIPT: target U-009 ancestry, environment, cache, INI and Python-context
+  output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -588,6 +598,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   Git; this ledger records their factual content.
   RECEIPT: W-020/W-021, IX.4A log scan, user observation and attached CCSM
   screenshot, 2026-08-14.
+
+[2026-08-14][X-015] The clean IX.3C profile was invalidated by a later CCSM
+  edit before IX.4A: the live/file list again contains mblur, blur and bench,
+  plus water, wobbly, cube, rotate, cubeaddon, cubemodel, gears and 3d, while
+  the accepted animation/fade baseline is absent. D-Bus was left enabled; the
+  original log ends after hundreds of duplicate-handler messages for these
+  plugins and a D-Bus boolean assertion. This is the evidence-backed source
+  of the restart/choppiness gate, not a reason to abandon Compiz. Also, every
+  visible CCSM boolean in the screenshot is the inverse of its same-backend
+  INI value (including lighting and vblank), so the current GTK theme renders
+  those checkbox states unreliably. Do not tune booleans by their checkmark;
+  use the INI/libcompizconfig receipt. Restore the clean list without D-Bus,
+  then add desired effects one at a time behind a stability measurement.
+  RECEIPT: U-009 active list/context and log lines 1301-1460, 2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -777,6 +801,12 @@ Status vocabulary, used strictly:
   receipt: W-021 and X-014; dwell/resource output, assertion, screenshot and
   user-observed choppiness. Overall M8 is BLOCKED on U-009; persistence and
   reboot testing remain prohibited.
+
+[2026-08-14][M8/U-009] XSMP restart and profile divergence diagnosed DONE.
+  receipt: W-022 and X-015.
+  This supersedes IX.4A's broad U-009 block. Overall M8 remains BLOCKED on a
+  backed-up clean-list restoration without D-Bus and a new live stability
+  gate. Effects may then return only one measured plugin group at a time.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
