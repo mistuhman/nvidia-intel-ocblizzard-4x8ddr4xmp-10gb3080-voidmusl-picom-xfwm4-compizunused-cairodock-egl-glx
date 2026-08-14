@@ -4261,3 +4261,12 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
     `72592afcd2af314657115cbc596c8bf3f8642ee158dfcf64c3b1b5f4bc02eea3`.
     RECEIPT: sandbox state-file matrix, compile and unchanged build hashes,
     2026-08-14.
+
+  [X-052] CORRECTION TO W-094 BEFORE TARGET ISSUANCE: W-094 transcribed the
+    final V2 script hash incorrectly. The actual repository/commit receipt from
+    `sha256sum scripts/gunmetal-gtk3-theme` is
+    `d422c627c8287f1a297c40edf321e0053e761c6389dddb98ed88f223620bcb29`.
+    No target command carrying W-094's wrong value was issued. This row
+    supersedes only W-094's final hash string; its rollback-state matrix and
+    unchanged generated-output claims remain valid.
+    RECEIPT: commit d72221f post-commit sha256sum output, 2026-08-14.
