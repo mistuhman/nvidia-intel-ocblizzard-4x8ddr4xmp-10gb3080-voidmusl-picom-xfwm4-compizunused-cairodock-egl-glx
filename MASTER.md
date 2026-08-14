@@ -3810,3 +3810,158 @@ controls to rotate between windows."
   with W-076's exact actual hash, build/apply the decoration, and judge it
   separately. Then restore detailed GTK graphics from a clean parsed base;
   current flatness W-080 must not be mistaken for AMOLED success.
+
+================================================================================
+12.28 M16 AESTHETIC CONSTITUTION — DEPTH IS FUNCTION, FLATNESS IS A FAILURE.
+Appended by explicit operator request 2026-08-14 after the first successful
+Quake-Gunmetal-Aqua target trial. This governs all remaining M16 work and the
+visual acceptance of M18. It supplements, never alters, Sections I-II.
+================================================================================
+
+  [W-081] The corrected gunmetal composer completed on target. Immutable tool
+    SHA-256 matched W-076; build created 28 files at
+    `/home/sd/.emerald/themes/Quake-Gunmetal-Aqua`, target aggregate
+    `ee3a4f10f9ae5ebf030e56cb34828e3e8c3999d166ba7bf1d26dd3fa0fdc65d9`
+    and the sandbox-predicted theme.ini
+    `0bf7ab502a90ed87eb39eae09b3f72a312fe3d86b37d7bfd03ff7ea8c843c5d5`.
+    The prior active slot was preserved at
+    `/home/sd/.emerald/theme.pre-gunmetal.1786733532`; active and library
+    aggregates match. Emerald restarted from PID 1270 to PID 13508, Compiz
+    remained PID 1210, and picom remained absent. The operator confirms the
+    generated red/white/black traffic-light controls work. Decoration rollback
+    is `/home/sd/.local/bin/gunmetal-emerald-theme restore` and the independent
+    W-072 baseline remains intact at theme.ini SHA-256 9c8283ab....
+    RECEIPT: target build/apply/status output plus attached post-trial
+    screenshot and direct traffic-light verdict, 2026-08-14.
+
+  [X-047] The decoration passes, but the DESKTOP AS A WHOLE is visually
+    rejected. Direct operator requirement: “the menu bar of Thunar and other
+    elements, like on the terminal require graphics for blending. the entire
+    thing needs to be 3d, no background should be flat and unintuitive, it
+    needs to be coherent and sexy.” The attached screenshot shows why: the
+    gunmetal frame has depth, while Thunar/Terminal GTK menubars, toolbars,
+    content wells and status surfaces remain mostly uniform black rectangles.
+    That discontinuity makes the frame look pasted on rather than integrated.
+    From now on, true black alone is NOT success. A large uniform fill with no
+    edge, material, layer or affordance cue is a failed surface even when its
+    colour is correct. W-070's AMOLED stage is demoted to a colour proof, not
+    an aesthetic baseline.
+    RECEIPT: post-gunmetal screenshot and direct operator verdict, 2026-08-14.
+
+12.28.1 BINDING VISUAL RULES
+
+  A. AMOLED IS THE FLOOR, NOT THE WHOLE MATERIAL. `#000000` remains the darkest
+     stop and negative-space anchor, but no functional surface may be only a
+     flat fill. Every pane must declare whether it is raised, recessed,
+     floating or interactive through artwork and light behavior.
+
+  B. EVERY FUNCTIONAL SURFACE GETS A 3D CUE STACK. At minimum:
+       1. a material body (black brushed-metal microtexture or dark gradient),
+       2. a directional highlight (top/left reflective rim),
+       3. a shadow or inner shadow (bottom/right depth), and
+       4. an edge/separator that remains legible at 100% scale.
+     One border alone is not “3D”. Random decoration without semantic depth is
+     also rejected: raised things receive outer highlights/shadows; wells and
+     entries receive inner shadows; selected things visibly rise or illuminate.
+
+  C. COHERENCE IS CROSS-APPLICATION. The gunmetal titlebar is the material
+     reference. The same light direction, grayscale ramp, corner language and
+     reflection strength must continue through Thunar, xfce4-terminal, dialogs,
+     menus and the panel. Different widgets may have different depth, but may
+     not look like unrelated themes stacked together.
+
+  D. THE PALETTE IS ACHROMATIC GUNMETAL + CONTROL RED. Surfaces use black,
+     charcoal, silver and white. Saturated red is reserved for destructive/
+     close emphasis and small Quake accents. Existing blue selection/icon
+     colours are transitional and must not silently become the final accent.
+     Preserve readable WCAG-like contrast even though this is a skeuomorphic
+     theme: style never excuses invisible labels or ambiguous controls.
+
+  E. GRAPHICS ARE REQUIRED, NOT OPTIONAL. Remaining GTK work must include
+     deterministic pixmap assets (brushed/noise metal, reflective strips,
+     bevels, inset wells, button caps and separators) in addition to CSS
+     gradients. Cheetah and Win2-7 may donate visual grammar/assets, but their
+     themes are never edited in place and the malformed Cheetah CSS (X-042) is
+     never copied wholesale. Recolour/process donor artwork into the user fork.
+
+  F. TRANSPARENCY MUST REVEAL DEPTH, NOT DAMAGE LEGIBILITY. Use it on the
+     window frame, reflective strips and selected floating surfaces. Menus,
+     text-entry wells and content panes must remain opaque enough for stable
+     contrast. Transparency gradients must terminate in a visible rim so a
+     surface boundary never disappears into wallpaper.
+
+  G. NO GLOBAL FLATTENING REPLACEMENTS. Do not replace every `#181818`,
+     `#222222` or `#313132` with black. W-068 proved those values encode
+     borders, insets and gloss. Modify named semantic tokens/selectors and
+     generated assets with exact-count assertions. Preserve hierarchy.
+
+  H. ZERO-PARSER-ERROR GATE. A GTK3 candidate cannot be blessed while it emits
+     Theme parsing errors or contains unresolved `$variables`. X-042 makes
+     mac-os-x-cheetah-dark CSS reference-only. The final fork starts from the
+     known-live Slickness-Reborn/Quake-Aqua-AMOLED tree, not Cheetah CSS, and
+     must pass a fresh Gtk.Window/Button/Entry realization probe with zero new
+     warnings before activation.
+
+12.28.2 REQUIRED SURFACE MAP — THUNAR IS THE REFERENCE APP
+
+  Implement and judge in this order; each row is a separate reversible target
+  gate with a screenshot before proceeding:
+
+    G1 WINDOW FRAME (DONE/PROVISIONAL): Quake-Gunmetal-Aqua titlebar, rounded
+       black reflective frame, working red/white/black traffic lights. Tune
+       later, but do not redesign while GTK is still flat.
+
+    G2 THUNAR MENUBAR + TOOLBAR: raised gunmetal shelf, brushed microtexture,
+       bright 1px top reflection, dark lower bevel, dimensional hover/pressed
+       states. It must visually continue from the Emerald titlebar instead of
+       becoming a featureless black stripe.
+
+    G3 THUNAR CONTENT HIERARCHY: recessed main file well; separately recessed
+       or raised Places sidebar; inset path/location entry; dimensional
+       selected-row plate; metallic scrollbar trough/thumb; inset statusbar.
+       Folder icons sit ON a surface, not in an undifferentiated void.
+
+    G4 XFCE4-TERMINAL: the terminal canvas remains optically quiet and darkest,
+       while menubar, tabs, scrollbar and any search bar inherit the same
+       gunmetal shelf/inset grammar. Do not texture behind terminal glyphs.
+
+    G5 GENERIC GTK3 CONTROLS: menus/popovers, buttons, entries, combo boxes,
+       tabs, checks/radios, tooltips and dialogs receive consistent raised/
+       recessed artwork and focus/hover/pressed states. A control must reveal
+       how to interact with it before the pointer reaches it.
+
+    G6 PANEL + CAIRO-DOCK: only after G2-G5 pass, align panel/dock material,
+       reflections and separators. Do not let a flat panel cap an otherwise
+       dimensional desktop. Compiz geometry and picom masking remain untouched.
+
+    G7 ICONS (M18): repair inheritance first, then select/substitute glossy
+       10.4-10.6-era icons. Flat icon sets are rejected against this material
+       language even if their fallback coverage is technically complete.
+
+12.28.3 IMPLEMENTATION METHOD AND ARTIFACT PLAN
+
+  1. Author `scripts/gunmetal-gtk3-theme` in Git as a deterministic,
+     standard-library composer analogous to W-076. It forks the known-live
+     `Quake-Aqua-AMOLED` or original Slickness-Reborn into a NEW user theme;
+     originals remain immutable.
+  2. Generate a small reusable asset kit: tileable brushed-black texture,
+     raised shelf strip, inset-well strip, reflective rim, separator, button
+     cap, entry well, scrollbar trough/thumb and selected-row plate. Assets
+     are generated on target into `~/.themes`, never committed to Git.
+  3. Add selector-scoped GTK3 CSS for Thunar first. Keep generic rules bounded
+     until Thunar visually passes; then promote the same tokens to Terminal and
+     generic controls. No 3200-line donor CSS dump.
+  4. Every build emits source hashes, output hashes, exact replacement counts,
+     parser-probe log and one-command rollback. Every target paste is wrapped
+     in a subshell per X-044 so a failed guard cannot close the terminal.
+  5. Acceptance requires BOTH machine and human receipts: zero new parser
+     errors, XSettings names the fork, Compiz/Emerald PIDs remain healthy,
+     picom absent, plus screenshots showing obvious depth and the operator's
+     explicit judgement that the material is coherent—not merely “readable”.
+
+[2026-08-14][M16/GUNMETAL-TARGET-2] Emerald gunmetal target trial DONE and
+  traffic lights visually ACCEPTED. Receipt: W-081. M16 overall remains IN
+  PROGRESS and is BLOCKED on X-047's flat GTK surfaces. The one next action is
+  to author and sandbox-test the deterministic GTK3 material composer defined
+  in 12.28.3; do not issue another target recolour block until that artifact
+  exists and its generated graphics/parser checks pass.
