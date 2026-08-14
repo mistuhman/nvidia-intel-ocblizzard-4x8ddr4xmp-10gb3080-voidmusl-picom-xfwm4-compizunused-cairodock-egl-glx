@@ -2308,3 +2308,63 @@ untouched by this session. New knowledge lands here and in the ledgers.
   RECOMMENDATION: (C) as the safety net, with (A) attempted first so the two
   agree. (C) alone means the user can use CCSM freely and a bad write can
   never reach a boot.
+
+--------------------------------------------------------------------------------
+11.14 OPTION (C) CHOSEN AND BUILT: REPAIR-ON-LOGIN. User selected (C) from
+      11.13 on 2026-08-14. Artifact authored and TESTED IN SANDBOX; unexecuted
+      on target at time of writing (Directive 9).
+--------------------------------------------------------------------------------
+
+  THE ARTIFACT. repo path `scripts/compiz-profile-repair`, 2715 bytes,
+  mode 0755, SHA-256
+  4bac9046e18bcd9e238dbb5fc71fa7c07f76235696c593461ec24ce1f0659221.
+  Python 3, no third-party imports. Target install path
+  /home/sd/.local/bin/compiz-profile-repair.
+
+  WHAT IT OWNS, AND NOTHING ELSE. Exactly seven keys in the `[core]` section,
+  every one a hardware fact verified by W-016/W-018/W-026:
+      s0_detect_refresh_rate = false
+      s0_refresh_rate        = 120
+      s0_detect_outputs      = false
+      s0_outputs             = 2560x1440+0+0;1920x1080+2560+197;
+      s0_sync_to_vblank      = true
+      s0_lighting            = true
+      as_texture_filter      = 0
+  It does NOT touch as_active_plugins, so every plugin the user enables in
+  CCSM survives. It does NOT touch any other section, so all CCSM plugin
+  settings (animation rules, effects, keybindings) survive. This is the
+  minimum possible override consistent with X-031.
+
+  SANDBOX TEST MATRIX — 7/7 pass, run 2026-08-14 against fixtures built from
+  the real observed profiles:
+    T1 damaged e4369dd-shape profile -> all 7 keys restored, plugin list
+       (water;wobbly;cube;3d) left intact as written by CCSM.        PASS
+    T2 idempotency: second run reports "all 7 enforced keys already correct",
+       writes nothing, creates no backup.                            PASS
+    T3 the good dcefbadd guard content -> byte-identical output, `cmp` YES.
+       The tool is a no-op on a correct file.                        PASS
+    T4 *** the important one *** multi-section file containing a DECOY
+       `s0_refresh_rate = 999` inside `[animation]`: [core] corrected to 120
+       while [animation]'s 999 left untouched. Section boundaries hold.  PASS
+    T5 file with no [core] section -> [core] synthesised and prepended,
+       existing [animation] section preserved.                       PASS
+    T6 empty file -> valid [core] written, exit 0. Missing file -> refuses,
+       prints "no profile", exit 1 (does not create from nothing).   PASS
+    T7 `--check` reports the 7 wrong keys and writes NOTHING (md5 unchanged).
+                                                                     PASS
+  Every write is atomic (write .tmp then os.replace) and takes a timestamped
+  backup Default.ini.pre-repair.<epoch> first.
+
+  HOW IT IS WIRED IN. compiz-session becomes:
+      #!/bin/sh
+      /home/sd/.local/bin/compiz-profile-repair || true
+      exec env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp
+  `|| true` is deliberate: a repair failure must never prevent the WM from
+  starting. Worst case is a bad profile, which is recoverable; no WM at all
+  is much worse.
+
+  CONSEQUENCE FOR THE AUTHORITY PROBLEM (11.13). With (C) installed, CCSM can
+  no longer produce an unbootable machine: whatever it deletes is restored
+  before Compiz reads the file. Option (A) is still worth doing so the two
+  agree rather than fight, but it is no longer load-bearing. The user may now
+  use CCSM freely, which was the stated goal.
