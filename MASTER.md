@@ -4831,3 +4831,23 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   is machine extraction of every spline value from the live page, not further
   screenshot transcription. No bake is authorized until the operator finishes
   pre-XMB theme/desktop ideas and the read-only target preflight passes.
+
+--------------------------------------------------------------------------------
+12.54 OPERATOR CLOSES DESIGN INTAKE AND AUTHORIZES THE XMB BAKE PIPELINE.
+      Operator authorization 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-117] The operator explicitly ended pre-bake ideation with “thats it, lets
+    move on to baking.” The frozen inputs are therefore the three-state visual
+    constitution W-116, screensaver/workspace semantics W-105, and hybrid Wall
+    transition request U-030. This authorizes the M9 prerequisite reconciliation
+    and subsequent deterministic source/preset staging. It does not waive any
+    machine gate, authorize guessed slider values, or claim that a bake can run
+    before source/runtime prerequisites are verified on the target.
+    RECEIPT: direct operator authorization, 2026-08-14.
+
+[2026-08-14][M9-REOPEN-FINAL] AUTHORIZED. Next action is exactly one read-only
+  target block combining the post-reboot stack audit with XMB workspace,
+  toolchain, display/viewport, Desktop Wall, screensaver and existing wallpaper
+  process inventory. No target files or packages change until that receipt is
+  recorded.
