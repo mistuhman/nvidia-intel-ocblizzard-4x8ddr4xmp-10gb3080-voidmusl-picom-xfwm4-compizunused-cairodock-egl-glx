@@ -5721,3 +5721,28 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M11-VIDEO-BAKER] AUTHORED/SYNTAX PASS, target unexecuted. Next
   target action is immutable tool install and MAIN RED only. This is expected to
   be a long foreground render; no reboot, WM change or source modification.
+
+--------------------------------------------------------------------------------
+12.82 NVENC H.264 WIDTH LIMIT EXCEEDED FOR 4480 CANVAS; ENCODER SWITCHED TO HEVC_NVENC.
+      Target failure and script update receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-082] `h264_nvenc` failed when baking `main-red` at 4480x1440 canvas resolution
+    with error `[h264_nvenc @ 0x55c908243340] Width 4480 exceeds 4096`. NVIDIA
+    NVENC hardware H.264 encoder has a hard maximum width constraint of 4096 pixels.
+    Consequently `h264_nvenc` cannot encode the 4480x1440 dual-monitor canvas.
+    RECEIPT: target execution log `[h264_nvenc @ 0x55c908243340] Width 4480 exceeds 4096`,
+    2026-08-14.
+
+  [W-153] `scripts/xmb-bake-video.mjs` was updated to switch from `h264_nvenc` to
+    `hevc_nvenc` for both master rendering and seamless loop encoding. NVIDIA
+    NVENC HEVC (`hevc_nvenc`) supports encoding resolutions up to 8192x8192 on the
+    target RTX 3080, fully accommodating the 4480x1440 resolution (matching prior
+    proven HEVC outputs recorded in W-122). Encoder check, master encoder args and
+    seamless loop encoder args all use `hevc_nvenc`.
+    RECEIPT: `node --check scripts/xmb-bake-video.mjs` PASS and `git diff scripts/xmb-bake-video.mjs`,
+    2026-08-14.
+
+[2026-08-14][M11-VIDEO-BAKER-HEVC] ENCODER UPDATED TO HEVC_NVENC.
+  `scripts/xmb-bake-video.mjs` updated to use `hevc_nvenc` to resolve the 4096-width
+  hardware limit of `h264_nvenc`. Ready for target execution.

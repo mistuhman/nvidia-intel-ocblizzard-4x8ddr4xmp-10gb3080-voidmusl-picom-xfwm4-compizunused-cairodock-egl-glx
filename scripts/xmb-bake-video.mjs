@@ -106,7 +106,7 @@ async function startEncoder(masterTemporary) {
   const args = [
     '-y', '-hide_banner', '-loglevel', 'warning',
     '-f', 'image2pipe', '-framerate', String(fps), '-vcodec', 'png', '-i', 'pipe:0',
-    '-an', '-c:v', 'h264_nvenc', '-preset', 'p5', '-tune', 'hq',
+    '-an', '-c:v', 'hevc_nvenc', '-preset', 'p5', '-tune', 'hq',
     '-rc', 'vbr', '-cq', '16', '-b:v', '0', '-g', String(fps * 2),
     '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709',
     '-colorspace', 'bt709', '-movflags', '+faststart', masterTemporary,
@@ -211,7 +211,7 @@ async function main() {
   checkExecutable(ffprobe);
   const preset = loadPreset();
   const encoderList = runChecked(ffmpeg, ['-hide_banner', '-encoders'], 'ffmpeg encoder inventory');
-  if (!encoderList.includes('h264_nvenc')) fail('h264_nvenc unavailable');
+  if (!encoderList.includes('hevc_nvenc')) fail('hevc_nvenc unavailable');
   const health = await fetch('http://127.0.0.1:8765/api/status');
   if (!health.ok) fail(`editor service health HTTP ${health.status}`);
 
@@ -244,7 +244,7 @@ async function main() {
   await runProcess(ffmpeg, [
     '-y', '-hide_banner', '-loglevel', 'warning', '-i', master,
     '-filter_complex', filter, '-map', '[out]', '-an', '-r', String(fps),
-    '-fps_mode', 'cfr', '-c:v', 'h264_nvenc', '-preset', 'p5', '-tune', 'hq',
+    '-fps_mode', 'cfr', '-c:v', 'hevc_nvenc', '-preset', 'p5', '-tune', 'hq',
     '-rc', 'vbr', '-cq', '19', '-b:v', '0', '-g', String(fps * 2),
     '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709',
     '-colorspace', 'bt709', '-movflags', '+faststart', loopTemporary,
