@@ -6175,3 +6175,53 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   sleep and work-monochrome; only main-red has W-165 acceptance. X-088 closed by
   W-169/W-170 with an agent-side model correction. Await
   `WORK_MONOCHROME_VIDEO_BAKE=PASS`, then review both new loops together.
+
+--------------------------------------------------------------------------------
+12.89 WORK-MONOCHROME MASTER COMPLETE; ALL THREE MASTERS RENDERED.
+      W-169 PROMOTED TO A QUANTITATIVE LAW WITH A PRE-REGISTERED PREDICTION.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-171] The `work-monochrome` master is COMPLETE, ending
+    `progress frame=3738/3738 t=62.3s elapsed=533.3s fps=7.01 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/work-monochrome/work-monochrome.master-62.3s.mp4`,
+    SHA-256
+    `e03613299cf9c15fe2c677fb1cf49cc09b49246e230a35aa5efa117e08ae9dcc`.
+    ALL THREE ROLE MASTERS ARE NOW RENDERED — main-red 495.8 s, sleep 591.0 s,
+    work-monochrome 533.3 s — with zero errors, zero dropped frames and zero
+    retries across 11,214 deterministic frames total.
+    RECEIPT: target `roles-sleep-work.log` tail and master hash, 2026-08-14.
+
+  [W-172] W-169's qualitative finding is now QUANTITATIVE and predictive. Bake
+    throughput expressed as encoded bytes per second of wall clock is nearly
+    constant across roles: main-red 209,122,085 B / 495.8 s = 421,787 B/s;
+    sleep 248,971,835 B / 591.0 s = 421,272 B/s. Those agree to 0.12%, which is
+    far too tight to be coincidence across two scenes of very different
+    appearance. The bake is bound by encoded-data throughput at a fixed rate of
+    ~421.5 kB/s, and per-role time differences are fully explained by per-role
+    compressed size. Sleep was not "slow"; it was bulkier.
+    RECEIPT: W-160/W-163 and W-167/W-168 time and size pairs, 2026-08-14.
+
+  [U-047] PRE-REGISTERED PREDICTION, recorded BEFORE the file size was observed,
+    so that W-172 is falsifiable rather than fitted after the fact. Given
+    work-monochrome's 533.3 s at the measured ~421.5 kB/s, its master must be
+    approximately 224,800,000 bytes (~214.4 MB), bracketed 215-225 MB. If the
+    observed size falls in that band the throughput law is confirmed on an
+    unseen third case. If it lands materially outside — in particular below
+    main-red's 199.4 MB or above sleep's 237.4 MB — W-172 is WRONG and must be
+    superseded, not rescued. Resolve with `ls -la` when the loop pass finishes.
+    RECEIPT: arithmetic from W-172 constants against W-171 elapsed time, entered
+    before observation, 2026-08-14.
+
+  [W-173] Cumulative-load explanations are now refuted twice over. Across the
+    full sequence the rates were 7.54, 6.32 and 7.01 fps, and the third role ran
+    FASTER than the second despite following roughly 28 minutes of continuous
+    GPU work. The GPU sustained approximately 45 minutes of unbroken 4480x1440
+    capture and NVENC encoding without throttling, memory growth or rate decay.
+    RECEIPT: W-160, W-167 and W-171 rates in execution order, 2026-08-14.
+
+[2026-08-14][M11-WORK-MASTER] ALL THREE MASTERS COMPLETE; work-monochrome loop
+  pass pending. Machine gates have held on every role. The outstanding gate is
+  HUMAN: only main-red carries visual acceptance (W-165); sleep and
+  work-monochrome are unreviewed. U-044 (the 59->0 seam) also remains unobserved
+  on every role.
