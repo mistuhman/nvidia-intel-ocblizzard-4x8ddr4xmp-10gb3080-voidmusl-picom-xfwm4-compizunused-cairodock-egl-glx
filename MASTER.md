@@ -2085,3 +2085,47 @@ untouched by this session. New knowledge lands here and in the ledgers.
   cache deletion is what worked). M8 is now BLOCKED only on the reboot gate:
   a login-started Compiz must be observed owning the WM, with decorations,
   animations and cairo-dock GL, before Section VIII wallpaper work may start.
+
+--------------------------------------------------------------------------------
+11.9 CCSM ANIMATIONS — OPERATING NOTES (user opened CCSM 2026-08-14, pre-reboot,
+     Compiz PID 5065 still live). Reference, not a receipt.
+--------------------------------------------------------------------------------
+
+  STRUCTURE. Animations has five independent ordered rule lists, one per tab:
+  Open / Close / Minimize / Shade / Focus. Each row is
+  (Effect, Duration ms, Window Match, per-row Options).
+  *** ROWS ARE EVALUATED TOP-TO-BOTTOM; FIRST MATCH WINS. *** `Up`/`Down` are
+  therefore semantic, not cosmetic. The observed default row 1 matches
+  `(type=Normal | Dialog | ModalDialog | Unknown) & !(name=mate-screensaver)`,
+  which swallows nearly everything, so any new per-application rule MUST be
+  moved above it or it can never fire.
+
+  EDITING. Select row -> Edit -> set Open Effect / Duration / Window Match.
+  The per-row `Options` column is effect-specific and is distinct from the
+  global `Effect Settings` tab.
+  Match syntax: class= (WM_CLASS 2nd value, read via `xprop WM_CLASS`),
+  name=, title=, type=, combined with & | and negated with !.
+  Duration: 150-250 ms is the usable band; >400 reads as sluggish.
+
+  RANDOM EFFECTS POOL. The checkbox grid is inert unless a row's effect is set
+  to `Random`; it is the candidate set for that keyword only.
+
+  [U-020] UNVERIFIED, and it will bite during personalization: the active
+  plugin list contains `animation;animationaddon;` but NOT `animationplus`,
+  yet the CCSM pool displays effects commonly attributed to animationplus
+  (Blinds, Bonanza, Dream, Helix, Shatter, Vacuum). Either CCSM enumerates
+  effects from installed-but-unloaded plugins, or this build ships them in
+  animationaddon. Resolving test: set one row to Shatter, apply, and observe
+  whether the animation plays. If it does not, enable Animations Plus under
+  CCSM > Effects. Do not assume which; observe.
+
+  PROFILE HYGIENE DURING THIS PHASE (X-013, X-011, X-029):
+    - Detect Outputs and Detect Refresh Rate stay OFF, always.
+    - Avoid reflex, blur, mblur, bench, showmouse, mousepoll.
+    - After a good change set, re-bless the revert target:
+        cp -a /home/sd/.config/compiz/compizconfig/Default.ini \
+              /home/sd/.local/share/compiz-guard/Default.ini.golden
+      Until that is run, `compiz-revert` restores dcefbadd... and DISCARDS the
+      CCSM work, which is correct behaviour but surprising if unexpected.
+    - Close CCSM before logout; never tick "Save session for future logins"
+      (X-029: that is the suspected origin of the WM_COMMAND relaunch record).
