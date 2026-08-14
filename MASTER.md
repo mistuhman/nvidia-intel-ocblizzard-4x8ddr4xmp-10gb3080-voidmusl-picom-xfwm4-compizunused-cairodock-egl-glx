@@ -3137,3 +3137,86 @@ controls to rotate between windows."
       ls -la ~/.themes/ /usr/share/themes/ 2>/dev/null
       ls -la ~/.emerald/themes/ 2>/dev/null
       ls -la ~/.icons/ /usr/share/icons/ 2>/dev/null | head -40
+
+--------------------------------------------------------------------------------
+12.10 U-024/U-025/U-026 ANSWERED. THE BOX IS BETTER EQUIPPED THAN ASSUMED AND
+      THE USER'S EXISTING THEMES ARE THE RIGHT BASE. Target output 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-055] *** THE PIXMAP ENGINE IS PRESENT. BRUSHED METAL AND GLOSS ARE
+    ACHIEVABLE. *** `/usr/lib/gtk-2.0/2.10.0/engines/` contains
+    libpixmap.so, libmurrine.so and libadwaita.so. Both engines named as hard
+    requirements by R-19 are therefore satisfied:
+      gtk-engine-murrine-0.98.2_7   installed
+      libpixmap.so                  present (ships with gtk+2 on Void)
+      gtk+-2.24.33_3 AND gtk+3-3.24.52_1 both installed
+    This closes U-025 affirmatively. The 10.4-10.6 skeuomorphic route is
+    viable; no engine work is needed. NOTE libXpm is unrelated to the GTK2
+    pixmap engine and was a red herring in the grep.
+    RECEIPT: target U-025 output, 2026-08-14.
+
+  [W-056] *** THE USER ALREADY OWNS AN ALMOST-IDEAL THEME SET. *** ~/.themes:
+      Skeuo-Dark-Leopard      (Jun 28 2025)  <- name matches the brief exactly
+      mac-os-x-cheetah-dark   (Jun 28 2025)  <- dark Aqua/gel, 10.0 lineage
+      OS-X-Cheetah-grey       (Jan  4 2025)
+      ReVista-dark            (Aug 14 2025)  <- the x35gaming Vista theme,
+                                                 dark variant, R-21 family
+      ReVista-main            (Sep 27 2024)
+      Win2-7(Pixmap)          (Oct 15 2010)  <- *** PIXMAP-based Aero/gloss,
+                                                 a parts donor for glossy
+                                                 widget assets ***
+      Slickness-Reborn        (Jun 25 2024)
+      OmNu-Ice                (Oct 27 2022)
+    Two of these (Skeuo-Dark-Leopard, mac-os-x-cheetah-dark) are already
+    dark + skeuomorphic, and Win2-7(Pixmap) is an explicit pixmap theme. The
+    correct strategy is therefore RECOLOUR + COMPOSE from these, NOT clone
+    B00merang from scratch (R-19/R-20 downgrade to reference material).
+    /usr/share/themes holds the stock xfwm4 decoration set (Agua, Atlanta,
+    Crux, Redmond, Platinum, Keramik, Smoke, Slick, Coldsteel, ...) — these
+    are xfwm4 themes, relevant only if the decorator is switched from emerald
+    to xfwm4-style decoration, which it is not today.
+    RECEIPT: target `ls ~/.themes/` and `ls /usr/share/themes/`, 2026-08-14.
+
+  [X-041] *** ~/.emerald/themes DOES NOT EXIST, YET EMERALD IS THE ACTIVE
+    DECORATOR (PID 1270, W-049). *** The `ls -la ~/.emerald/themes/` produced
+    no output at all, meaning no user emerald theme directory. Emerald is
+    therefore running on a built-in/default decoration, which is consistent
+    with W-047's repeated `gtk.css` parse errors and with X-009's documented
+    "emerald ignores its theme" history. CONSEQUENCE: none of the R-22
+    .emerald themes can be "switched to" until the directory exists and a
+    theme is imported. This also means the titlebars the user currently sees
+    are NOT part of any theme we have inventoried, and restyling them is a
+    separate task from the GTK theme.
+    Resolving step (deferred, not yet run):
+      mkdir -p ~/.emerald/themes && emerald-theme-manager &
+    RECEIPT: empty output from `ls -la ~/.emerald/themes/`, 2026-08-14.
+
+  [W-057] U-024 ANSWERED — the two missing sound packages exist in the Void
+    repos and are NOT installed ([-] = available, [*] = installed):
+      [-] libcanberra-utils-0.30_15        <- supplies canberra-gtk-play
+      [-] sound-theme-freedesktop-0.8_3    <- supplies /usr/share/sounds/freedesktop
+      [-] ocean-sound-theme-6.6.3_1        <- KDE Plasma Ocean theme, a
+            FULLER alternative to freedesktop and worth auditioning given
+            R-18's warning that freedesktop lacks most UI events
+    Install line (single command, no other changes):
+      sudo xbps-install -S libcanberra-utils sound-theme-freedesktop
+    NOTE there is no libcanberra-gtk2 module package in the results — only
+    gtk3. GTK2 apps may therefore never emit event sounds on this box; that is
+    an acceptable limitation since the desktop is predominantly GTK3.
+    RECEIPT: target `xbps-query -Rs canberra` and `-Rs sound-theme`.
+
+12.11 REVISED PLAN — COMPOSE FROM WHAT EXISTS. Supersedes 12.9's implied
+      "clone B00merang" approach, per W-056.
+  LAYER OWNERSHIP, so each change is made in exactly one place:
+    GTK3 widgets + AMOLED colour  -> a FORK of Skeuo-Dark-Leopard or
+        mac-os-x-cheetah-dark, with backgrounds driven to #000000 in
+        gtk-3.0/gtk.css. Fork, never edit in place, so the original survives.
+    GTK2 gloss/metal              -> pixmap assets, donor Win2-7(Pixmap)
+        and/or the cheetah themes' gtk-2.0 directories.
+    Titlebars                     -> emerald theme (X-041 must be fixed
+        first), candidates in R-22, or switch to gtk-window-decorator.
+    Panel/dock                    -> xfce4-panel opacity + cairo-dock theme,
+        already installed and out of scope until the GTK layer settles.
+  THE ONE COLOUR RULE FOR AMOLED: true black is #000000. Verify by grepping
+  the fork's CSS for the greys it actually ships (#2b2b2b, #303030, #383838
+  are the usual culprits) rather than assuming a "dark" theme is black.
