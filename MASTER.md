@@ -340,6 +340,174 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   differ from every tutorial written in the last three years.
   RECEIPT: srcpkgs/ffmpeg/template, srcpkgs/ffmpeg6/template.
 
+[2026-08-14][W-009] U-002 is resolved. The live pre-swap desktop has xfwm4
+  PID 1209, picom PID 2462 using
+  /home/sd/.config/picom-animations.conf, and cairo-dock PID 1301 in OpenGL
+  mode (`-o`). No compiz process was reported. XFCE's failsafe Client0 command
+  is `xfwm4`; the root `_NET_SUPPORTING_WM_CHECK` points to window 0x1000032.
+  RECEIPT: target-shell IX.0 output pasted 2026-08-14.
+
+[2026-08-14][W-010] U-003 is resolved for the swap. The target already has
+  the full compiz-reloaded 0.8.18 surface installed: core, main/extra/
+  experimental plugins, ccsm, compizconfig libraries, emerald and themes.
+  cairo-dock 3.4.1 plus plugins and mpv 0.41.0 are also installed. xwinwrap
+  did not appear in the installed-package query and remains a later delivery
+  prerequisite, not a blocker for the compositor swap.
+  RECEIPT: target `xbps-query -l` output pasted 2026-08-14.
+
+[2026-08-14][W-011] IX.0 created rollback anchors before any desktop change:
+  /home/sd/xfce4-session.xml.bak.1786687627 (2234 bytes) and
+  /home/sd/wm-command.bak (39 bytes). The observed duplicate-vblank warnings
+  were emitted while the NVIDIA-named vblank scheduler and picom were live;
+  no WM replacement had been attempted when they were captured.
+  RECEIPT: target `ls -la` and process output pasted 2026-08-14.
+
+[2026-08-14][W-012] U-001 is resolved: the target is Void x86_64 with GNU
+  libc 2.41, not musl. Direct rendering is active on the proprietary NVIDIA
+  stack: GeForce RTX 3080, OpenGL 4.6.0 NVIDIA 595.84, with nvidia_uvm,
+  nvidia_drm, nvidia_modeset and nvidia loaded; no nouveau module was
+  reported. NVIDIA-SMI also reports driver 595.84. Therefore X-001 does not
+  apply to this target and the project takes the glibc/NVIDIA branch.
+  RECEIPT: target U-001 output pasted 2026-08-14.
+
+[2026-08-14][W-013] IX.2A stood down the live standalone compositor without
+  replacing the WM. xfwm4's internal `use_compositing` value was already
+  false and remains false; picom PID 2462 terminated, xfwm4 PID 1209 remained
+  live, and `_NET_SUPPORTING_WM_CHECK` remained window 0x1000032. Picom
+  startup sources were found at ~/.config/autostart/picom-mac.desktop and
+  /etc/xdg/autostart/picom.desktop; disabling both persistently is the next
+  sub-gate.
+  RECEIPT: target IX.2A output pasted 2026-08-14.
+
+[2026-08-14][W-014] IX.2B persistently masked both discovered picom autostart
+  names with per-user XDG entries containing `Hidden=true` and
+  `X-GNOME-Autostart-enabled=false`. The exact prior user entries are backed
+  up at /home/sd/picom-autostart-backup.1786688178. Runtime verification still
+  showed picom stopped, xfwm4 PID 1209 live, and xfwm4 internal compositing
+  false. IX.2 is complete: no old compositor remains active or enabled for
+  autostart.
+  RECEIPT: target IX.2B output pasted 2026-08-14.
+
+[2026-08-14][W-015] The IX.3 emergency rollback is proven. From the target
+  shell, Compiz and emerald were stopped and `DISPLAY=:0.0 xfwm4 --replace`
+  restored xfwm4 PID 3242 and root WM window 0x1000032. Verification showed
+  no Compiz or emerald process. Picom was intentionally not restarted, so the
+  safe post-abort state is xfwm4 without either compositor.
+  RECEIPT: target emergency-abort output pasted 2026-08-14.
+
+[2026-08-14][W-016] U-005 and the factual half of U-008 are resolved. X screen
+  0 is 4480x1440. DP-2 is primary at 2560x1440+0+0 and 120 Hz; DP-0 is
+  1920x1080+2560+197, inverted, at about 120 Hz. NVIDIA MetaMode applies
+  ForceCompositionPipeline and ForceFullCompositionPipeline to both. The
+  Compiz 0.8.18 launch demonstrably selected ~/.config/compiz, not the stale
+  ~/.config/compiz-1 tree: the former names `emerald --replace`, matching the
+  decorator observed in the IX.3 log, while the latter names
+  /usr/bin/compiz-decorator.
+  RECEIPT: target U-008 xrandr, NVIDIA MetaMode and config output, 2026-08-14.
+
+[2026-08-14][W-017] IX.3B-1 backed up the active profile to
+  Default.ini.pre-ix3b.1786688802 and added the exact verified output list
+  `2560x1440+0+0;1920x1080+2560+197;` while retaining manual output mode
+  (`s0_detect_outputs = false`). The printed diff contains no other change.
+  Post-change runtime remained safe: xfwm4 PID 3242, no Compiz, no picom.
+  This is a correction candidate, not yet a proven fix.
+  RECEIPT: target IX.3B-1 diff and process output pasted 2026-08-14.
+
+[2026-08-14][W-018] IX.3B-2 proved the explicit output-list correction in a
+  bounded trial. Compiz PID 8579 owned the WM selection while XRandR still
+  reported both exact monitor rectangles; the prior tiny/cropped display did
+  not recur in the user's observation. The 15-second trap then restored
+  xfwm4 PID 8831 and stopped Compiz and emerald exactly as designed. X-012's
+  geometry candidate is therefore accepted, while appearance/performance is
+  not yet accepted.
+  RECEIPT: target timed-trial state, automatic-recovery output and user
+  observation pasted 2026-08-14.
+
+[2026-08-14][W-019] IX.3C-1 installed a backed-up clean performance candidate.
+  The exact diff removed reflex, both blur engines, bench, showmouse,
+  mousepoll, cube, expo and scale while retaining window management,
+  decoration, animation, animationaddon, fade and switcher; it added
+  workarounds and winrules. Composite refresh autodetection changed from true
+  to false with the verified common rate fixed at 120 Hz. Rollback file is
+  Default.ini.pre-refresh.1786689070. Runtime stayed on safe xfwm4 PID 8831;
+  Compiz and picom remained stopped. Visual performance is not yet proven.
+  RECEIPT: target IX.3C-1 diff and process output pasted 2026-08-14.
+
+[2026-08-14][W-020] IX.3C-2 is the first visually accepted live Compiz state.
+  Compiz PID 16048 owns `_NET_SUPPORTING_WM_CHECK`; xfwm4 is replaced, picom
+  is stopped, and one emerald PID 16060 remains as decorator. Both exact
+  monitor rectangles and the refined plugin/120 Hz profile were printed.
+  The user confirmed smooth movement, removal of the shiny effect, correct
+  complete monitor placement, and working plugins. The log contains only the
+  already observed no-XI2 and emerald GTK CSS/Wnck warnings, with no reported
+  fatal startup error. X-013's observed symptoms are superseded by this state.
+  RECEIPT: target IX.3C-2 process/WM/profile/log output plus four direct visual
+  checks, 2026-08-14.
+
+[2026-08-14][W-021] IX.4A's 30-second interval itself retained Compiz PID
+  18768 and WM ownership. xfce4-panel PID 1252, cairo-dock PID 1301 and emerald
+  PID 16060 remained live; picom and xfwm4 remained absent. The snapshot was
+  7.5% Compiz CPU, 219788 KiB RSS, 18% GPU, 947 MiB GPU memory and 42.51 W.
+  XFCE's persistent Client0 command is still `xfwm4`, so no reboot/session
+  persistence change has been made.
+  RECEIPT: target IX.4A process/resource/session output pasted 2026-08-14.
+
+[2026-08-14][W-022] U-009 is resolved. Compiz PID 18768 is a direct child of
+  xfce4-session and carries `--sm-client-id`, proving live XSMP restart by the
+  session manager after PID 16048 ended. No Compiz backend/profile environment
+  override exists, Client0 still names xfwm4, and the large saved-session cache
+  contains xfwm4/Thunar state but no reported Compiz launch entry. The active
+  backend remains ~/.config/compiz/compizconfig/Default.ini; both that file and
+  libcompizconfig report the same expanded active-plugin list.
+  RECEIPT: target U-009 ancestry, environment, cache, INI and Python-context
+  output pasted 2026-08-14.
+
+[2026-08-14][W-023] IX.4B-1 successfully hot-removed D-Bus and the heavy
+  experimental plugin stack without replacing Compiz PID 18768. Effective and
+  on-disk lists agree on the clean core/window-management/animation baseline;
+  xfwm4 and picom remain absent. The user accepts its memory efficiency,
+  theme, animations and immediate stability. Snapshot: 8.7% Compiz CPU,
+  253100 KiB RSS, 42% GPU, 929 MiB GPU memory and 40.86 W. Refresh smoothness
+  remains explicitly unaccepted.
+  RECEIPT: target IX.4B-1 context/file/process output and user observation,
+  2026-08-14.
+
+[2026-08-14][W-024] CORRECTION/SUPERSESSION for parts of X-015 and X-016:
+  U-010 shows the active Compiz 0.8 core schema is `[core] s0_*`, not the old
+  `[opengl]/[composite] as_*` lines previously treated as live truth. The
+  current profile explicitly has refresh_rate=120, sync_to_vblank=false,
+  lighting=true and fast texture filtering. Therefore the CCSM boolean drawing
+  was not inverted; it represented the live core values, while the earlier
+  `as_*` values were ineffective. Detect Outputs is enabled in the screenshot,
+  so its displayed 640x480 fallback list is inactive; live X geometry remains
+  the complete 4480x1440 screen with both correct monitor rectangles. The
+  plugin-cleanup profile is not proven reboot-safe yet, but it did not recreate
+  X-011's manual-detection-with-missing-list fault. The remaining measured
+  candidate for poor refresh is vblank being explicitly false.
+  RECEIPT: complete active INI, CCSM screenshot and xrandr output in U-010,
+  2026-08-14.
+
+[2026-08-14][W-025] IX.4B-2 changed only the live Compiz 0.8 core vblank value
+  from false to true. PID 18768 and WM ownership remained stable, picom and
+  xfwm4 remained absent, and XRandR still reported DP-2 2560x1440+0+0 and
+  DP-0 1920x1080+2560+197. Snapshot: 7.4% Compiz CPU, 253220 KiB RSS, 46% GPU,
+  930 MiB GPU memory and 31.20 W. The user still does not perceive 120 Hz, so
+  vblank=true alone is not an accepted refresh fix.
+  RECEIPT: target IX.4B-2 diff/process/geometry/resource output and user
+  observation, 2026-08-14.
+
+[2026-08-14][W-026] IX.4B-3 installed the complete explicit Compiz 0.8 core
+  display candidate without changing plugins: detect_refresh_rate=false,
+  refresh_rate=120, detect_outputs=false, the two proven output rectangles,
+  and sync_to_vblank=true. PID 18768 and WM ownership remained stable; XRandR
+  independently confirmed DP-2 2560x1440@120.00 and inverted DP-0
+  1920x1080@119.98. Snapshot: 7.1% Compiz CPU, 253220 KiB RSS, 44% GPU,
+  934 MiB GPU memory and 29.01 W. The profile/geometry side is now explicit
+  and internally consistent, but the user still perceives no refresh
+  improvement.
+  RECEIPT: target IX.4B-3 diff/process/profile/xrandr/resource output and user
+  observation, 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -433,6 +601,106 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   take. RECEIPT: Arch BBS 97055 (pseup). Clearing that cache is a required
   step, not a troubleshooting afterthought.
 
+[2026-08-14][X-011] The first IX.3 volatile replacement is rejected. Compiz
+  PID 789 successfully replaced xfwm4 and owned `_NET_SUPPORTING_WM_CHECK` as
+  `compiz`, with picom stopped, but the user could see only a very small part
+  of the main monitor and requested an immediate abort. The log reported no
+  XI2 extension and two emerald instances emitting GTK CSS and Wnck warnings;
+  it did not report a fatal Compiz error. Do not make Compiz persistent or
+  repeat the same launch until output geometry and the existing Compiz profile
+  have been inspected and corrected.
+  RECEIPT: target IX.3 output and direct user observation, 2026-08-14.
+
+[2026-08-14][X-012] The active Compiz profile is unsafe for the verified
+  dual-monitor geometry: ~/.config/compiz/compizconfig/Default.ini explicitly
+  sets `s0_detect_outputs = false` but contains no `s0_outputs` list. This is
+  the leading causal fault for X-011 and must be corrected to the observed
+  DP-2/DP-0 rectangles before IX.3 is retried. The separate compiz-1 profile's
+  stale, reversed offsets are not the settings that launched IX.3 and must not
+  be copied into the active profile. Causality remains unproven until a
+  corrected volatile launch renders both monitors normally.
+  RECEIPT: W-016 plus complete active-profile output, 2026-08-14.
+
+[2026-08-14][X-013] IX.3B-2 appearance/performance is rejected pending a
+  clean baseline: the user observed a strange shiny effect around windows and
+  poor apparent refresh. The active profile explicitly enables `reflex`,
+  `blur`, `mblur`, `bench`, `showmouse` and `mousepoll` together, while also
+  allowing automatic refresh detection despite both displays running near
+  120 Hz. Those are evidence-backed suspects, not yet proven causes. Remove
+  the diagnostic/blur/reflection stack, retain the requested animation stack,
+  force the already verified common 120 Hz rate, then retest under the same
+  timed rollback before keeping Compiz live.
+  RECEIPT: active profile in U-008 plus direct user observation, 2026-08-14.
+
+[2026-08-14][X-014] IX.4A rejects persistence despite the 30-second PID dwell.
+  The accepted launch PID 16048 was replaced before the dwell by PID 18768,
+  invoked as `compiz --sm-client-id ...`; the original log now contains a D-Bus
+  boolean assertion failure. The user still perceives choppy refresh. A CCSM
+  screenshot simultaneously shows Detect Refresh Rate and Detect Outputs
+  checked and Sync to VBlank unchecked, contradicting the on-disk candidate
+  (`detect_refresh=false`, manual outputs, `sync_to_vblank=true`). Do not
+  persist or reboot into Compiz until the restart parentage, D-Bus plugin and
+  live-vs-disk option mismatch are resolved. Keep screenshot binaries outside
+  Git; this ledger records their factual content.
+  RECEIPT: W-020/W-021, IX.4A log scan, user observation and attached CCSM
+  screenshot, 2026-08-14.
+
+[2026-08-14][X-015] The clean IX.3C profile was invalidated by a later CCSM
+  edit before IX.4A: the live/file list again contains mblur, blur and bench,
+  plus water, wobbly, cube, rotate, cubeaddon, cubemodel, gears and 3d, while
+  the accepted animation/fade baseline is absent. D-Bus was left enabled; the
+  original log ends after hundreds of duplicate-handler messages for these
+  plugins and a D-Bus boolean assertion. This is the evidence-backed source
+  of the restart/choppiness gate, not a reason to abandon Compiz. Also, every
+  visible CCSM boolean in the screenshot is the inverse of its same-backend
+  INI value (including lighting and vblank), so the current GTK theme renders
+  those checkbox states unreliably. Do not tune booleans by their checkmark;
+  use the INI/libcompizconfig receipt. Restore the clean list without D-Bus,
+  then add desired effects one at a time behind a stability measurement.
+  RECEIPT: U-009 active list/context and log lines 1301-1460, 2026-08-14.
+
+[2026-08-14][X-016] IX.4B-1 is only a partial pass. `Context.Write()` restored
+  the plugin list but rewrote the INI such that the verification grep found no
+  explicit output, refresh or vblank settings. The attached post-cleanup CCSM
+  screenshot shows a single `640x480+0+0` Compiz output instead of the proven
+  dual-output list, while the user still reports poor refresh. The already
+  running process remains visually usable, but the next launch is unsafe and
+  persistence remains prohibited. Identify the exact libcompizconfig setting
+  scopes, restore both monitor rectangles and explicit 120 Hz/vblank values,
+  then perform a controlled restart rather than another broad Context write.
+  RECEIPT: IX.4B-1 empty truth grep, screenshot and user observation,
+  2026-08-14.
+
+[2026-08-14][X-017] After W-024 corrects the schema interpretation, the clean
+  profile's remaining rejected property is poor perceived refresh with
+  `s0_refresh_rate = 120` but `s0_sync_to_vblank = false`. Perform one narrow,
+  backed-up A/B change to vblank=true without changing plugins, outputs,
+  lighting or texture filtering. Accept only if PID/WM stability remains and
+  the user observes smoother motion; otherwise restore false.
+  RECEIPT: U-010 active INI and direct user observation, 2026-08-14.
+
+[2026-08-14][X-018] IX.4B-2 disproves vblank=false as the sole cause. CCSM
+  still shows Detect Refresh Rate enabled, so the displayed numeric 120 can be
+  ignored in favor of Compiz autodetection; the user still rejects perceived
+  refresh after vblank=true. Detect Outputs is also enabled, making the visible
+  640x480 list an inactive fallback rather than the XRandR mode: XRandR proves
+  the actual monitors are already 2560x1440@120 and 1920x1080@119.98. Remove
+  both ambiguities with the correct 0.8 core keys: detect_refresh_rate=false,
+  refresh_rate=120, detect_outputs=false, and the already proven two explicit
+  rectangles. Keep vblank=true for this next isolated test.
+  RECEIPT: IX.4B-2 screenshot, active INI, xrandr and user observation,
+  2026-08-14.
+
+[2026-08-14][X-019] IX.4B-3 disproves hot-writing all explicit core display
+  values as a sufficient refresh fix. Do not repeat refresh/output/checkbox
+  edits: the file and XRandR already prove the requested modes. The next run
+  must determine whether these renderer-affecting options require a fresh
+  Compiz process and inspect NVIDIA/GLX frame scheduling; use a bounded launch
+  with `--sm-disable` so XFCE cannot silently respawn another XSMP client.
+  Persistence, logout and reboot remain prohibited until the fresh-process
+  result is visually accepted and resource cost is remeasured.
+  RECEIPT: W-026 and direct user report "unchanged", 2026-08-14.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -492,6 +760,41 @@ as its receipt. Do not guess any of them.
     df -h /home/sd
   Never assume the workspace is empty. A prior run may have left artifacts.
 
+[U-008] Which display/profile setting caused the rejected IX.3 Compiz launch
+  to expose only a very small part of the main monitor?
+    xrandr --query; xrandr --listmonitors
+    xdpyinfo | grep -E 'dimensions:|resolution:'
+    nvidia-settings -q CurrentMetaMode -t
+    xprop -root _NET_DESKTOP_GEOMETRY _NET_DESKTOP_VIEWPORT _NET_WORKAREA
+    inspect ~/.config/compiz*, ~/.compiz*, ~/.gconf/apps/compiz* and
+            /etc/compizconfig for profile, output and active-plugin settings
+  Resolve before another launch. The relevant predicates are native X output
+  geometry, Compiz output detection/list, selected config backend/profile,
+  viewport size, active plugins and decorator command. Back up the discovered
+  profile before correcting any value; do not infer a geometry fix from the
+  emerald warnings.
+
+[U-009] Why did accepted Compiz PID 16048 become session-managed PID 18768,
+  and why does CCSM show refresh/output/vblank booleans opposite to the active
+  INI file?
+    inspect PID/PPID/session ancestry and Compiz-related process environment
+    read the current INI values again after CCSM has opened
+    query libcompizconfig's effective values without writing them
+    inspect the complete launch log around the D-Bus assertion
+  Resolve before persistence. If the D-Bus plugin caused the restart, remove
+  it from the stable baseline. If CCSM or another backend rewrote effective
+  values, establish exactly one profile/backend and verify 120 Hz plus vblank
+  in both the file and the live settings before another performance gate.
+
+[U-010] Where does Compiz 0.8.18 expose output, refresh and vblank settings to
+  compizconfig-python after IX.4B-1 removed their explicit INI lines?
+    print every setting whose name contains output, refresh, vblank or lighting
+    together with plugin, Display/Screen scope, value and default
+    print the complete current INI before writing anything else
+  Use the resulting exact setting objects for narrow writes only. Do not call
+  a broad Context.Write after changing only active_plugins: IX.4B-1 proved
+  that it can collapse the output list to the 640x480 default.
+
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
 ================================================================================
@@ -524,6 +827,104 @@ Status vocabulary, used strictly:
   M13 Wallpaper live under the new compositor, idle cost
       measured and recorded ............................... PLANNED
   M14 Autostart + one-command teardown installed .......... PLANNED
+
+[2026-08-14][M8/IX.0] Pre-swap baseline and rollback anchors DONE.
+  receipt: W-009..W-011; target process/package query and backup listing.
+  Overall M8 remains PLANNED: xfwm4 and picom are still live and compiz has
+  not yet been started.
+
+[2026-08-14][M7] U-001 answered; glibc/NVIDIA branch chosen DONE.
+  receipt: W-012; target arch, libc, GL renderer, modules and NVIDIA-SMI.
+  This supersedes the earlier M7 BLOCKED row.
+
+[2026-08-14][M8/IX.2A] Runtime picom stopped; xfwm4 left live DONE.
+  receipt: W-013; before/after target process and xfconf output.
+  Overall M8 remains PLANNED: autostart still needs masking and compiz has not
+  yet been started.
+
+[2026-08-14][M8/IX.2B] Picom autostart masked with rollback copy DONE.
+  receipt: W-014; both user overrides and the runtime state were printed.
+  This supersedes IX.2A's pending-autostart note. Overall M8 remains PLANNED:
+  compiz has not yet been started.
+
+[2026-08-14][M15] Lossless machine-readable runbook and reusable operator
+  prompt capsule .......................................... PLANNED after M14
+  requested output: formal IDs, predicates, dependency graph, state-machine
+  transitions, receipts, checkpoints, exact actions, expected observations,
+  rollback actions, troubleshooting branches, glossary and `next_action`;
+  retain MASTER.md as the human audit log rather than replacing it.
+
+[2026-08-14][M8/IX.3-A] First volatile Compiz test rejected; emergency
+  rollback proven DONE.
+  receipt: X-011 and W-015; WM identity/process output plus user observation.
+  Overall M8 is BLOCKED on U-008. Do not persist or repeat the same launch.
+
+[2026-08-14][M8/U-008] Native geometry and active Compiz profile identified
+  DONE; receipt W-016 and X-012.
+  This supersedes IX.3-A's broad U-008 block. Overall M8 remains BLOCKED on a
+  backed-up output-list correction and successful IX.3-B volatile retest.
+
+[2026-08-14][M8/IX.3B-1] Backed-up explicit output correction DONE.
+  receipt: W-017 and the exact target diff.
+  This supersedes U-008's pending-correction clause. Overall M8 remains
+  BLOCKED on a successful, visually observed IX.3B-2 timed retest.
+
+[2026-08-14][M8/IX.3B-2] Corrected dual-output geometry and timed rollback
+  DONE; receipt W-018.
+  This supersedes IX.3B-1's geometry-test block. Overall M8 remains BLOCKED on
+  X-013 appearance/performance refinement; Compiz is not yet persistent.
+
+[2026-08-14][M8/IX.3C-1] Backed-up clean plugin and 120 Hz candidate DONE.
+  receipt: W-019 and exact target diff.
+  Overall M8 remains BLOCKED on a visually accepted IX.3C-2 live trial. If
+  accepted, keep that Compiz process live for interactive refinement but do
+  not yet change the XFCE session command.
+
+[2026-08-14][M8/IX.3C-2] Refined Compiz live trial visually accepted DONE.
+  receipt: W-020; target identity/profile output and user checks.
+  This supersedes X-013's performance block. Overall M8 remains BLOCKED on a
+  stability dwell, installed TTY recovery command, persistence, and a complete
+  logout/login reproduction. Keep the accepted Compiz process live meanwhile.
+
+[2026-08-14][M16] Reversible monochrome/skeuomorphic desktop theme PLANNED
+  after M8 stability and persistence are proven.
+  requested direction: early-2000s Windows plus OS X 10.4/10.6 and the user's
+  "sorbet visualizer" reference, coordinated across emerald, XFCE/GTK,
+  xfce4-panel and cairo-dock. Identify the exact requested "Monochrome"
+  download, source, license and checksum before installing it; back up every
+  selected theme/config value and retain a one-command visual rollback.
+
+[2026-08-14][M8/IX.4A] Initial stability/performance gate REJECTED.
+  receipt: W-021 and X-014; dwell/resource output, assertion, screenshot and
+  user-observed choppiness. Overall M8 is BLOCKED on U-009; persistence and
+  reboot testing remain prohibited.
+
+[2026-08-14][M8/U-009] XSMP restart and profile divergence diagnosed DONE.
+  receipt: W-022 and X-015.
+  This supersedes IX.4A's broad U-009 block. Overall M8 remains BLOCKED on a
+  backed-up clean-list restoration without D-Bus and a new live stability
+  gate. Effects may then return only one measured plugin group at a time.
+
+[2026-08-14][M8/IX.4B-1] Clean plugin list without D-Bus DONE; output/refresh
+  preservation REJECTED.
+  receipt: W-023 and X-016. Overall M8 is BLOCKED on U-010; do not restart,
+  persist, log out or reboot while the saved output list is 640x480.
+
+[2026-08-14][M8/U-010] Active Compiz 0.8 core schema identified DONE.
+  receipt: W-024; this supersedes IX.4B-1's 640x480/reboot interpretation but
+  not its persistence prohibition. Overall M8 remains BLOCKED on X-017's
+  narrow vblank A/B test and a later controlled restart/logout gate.
+
+[2026-08-14][M8/IX.4B-2] Vblank=true A/B stability DONE; refresh result
+  REJECTED. Receipt: W-025 and X-018.
+  Overall M8 remains BLOCKED on an explicit detect-refresh/output test and a
+  later controlled restart/logout gate.
+
+[2026-08-14][M8/IX.4B-3] Explicit 120 Hz and dual-output core candidate DONE;
+  hot-apply refresh result REJECTED. Receipt: W-026 and X-019.
+  Overall M8 remains BLOCKED on a bounded fresh-process `--sm-disable` test,
+  NVIDIA/GLX scheduling evidence, recovery installation, and logout/reboot
+  reproduction. Do not repeat already disproven checkbox/profile edits.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
