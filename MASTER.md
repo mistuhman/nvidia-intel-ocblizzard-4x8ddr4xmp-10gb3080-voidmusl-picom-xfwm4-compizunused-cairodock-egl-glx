@@ -3726,3 +3726,48 @@ controls to rotate between windows."
   immutable committed file, verify its SHA-256, build, apply, observe Emerald
   PID/Compiz survival, and collect a screenshot/user verdict. The exact escape
   must be printed before apply. No target success is claimed yet.
+
+--------------------------------------------------------------------------------
+12.26 U-027 CLOSED — ACTIVE MAC4LIN SLOT ATTRIBUTED; ARTWORK MATCHES PACKAGE.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-078] The active Emerald slot after the GUI audition is definitively
+    Mac4Lin Aqua under Emerald 0.8.18's normalized configuration, not a direct
+    byte-copy of the 0.7.2 package theme.ini and not the rollback baseline.
+    Active theme.ini SHA-256 is
+    `a4331e7d1ba9a332baff8ec4cf51b1f83aff98460ac94c3b9ea0f715b48962ed`;
+    it declares creator Anirudh, description Mac4Lin Emerald Aqua, version
+    0.8.18 and engine pixmap. The manager added/reordered modern sections and
+    button mappings/fade settings and changed active_outer_alpha to 0.37, so
+    the active aggregate is `27722df...` versus package `1867314e...`.
+    File counts remain 27 active/27 packaged/37 rollback. U-027 is CLOSED.
+    RECEIPT: target active/package/baseline hashes, diff, sections and aggregate
+    output, 2026-08-14.
+
+  [W-079] Every one of the 26 active Mac4Lin PNG asset hashes in the target
+    receipt byte-matches the upstream/package payload used by W-077's composer
+    test (including 1x30 RGB active_top, RGBA corner/side/bottom pixmaps,
+    97x16/17 and 132x16 button sprite sheets, and 350x102 screenshot). Thus the
+    authored gunmetal transform was tested against the exact artwork currently
+    visible to the operator even though Emerald normalized theme.ini. Target
+    also has ImageMagick `magick`, `convert`, and `identify`, but the composer
+    intentionally needs none of them. Emerald PID 1270 and Compiz PID 1210
+    remained live; picom remained absent.
+    RECEIPT: target asset hash/dimension list plus W-077 upstream payload hash
+    list, compared 2026-08-14.
+
+  [X-045] XSettings now reports GTK theme `mac-os-x-cheetah-dark`, superseding
+    W-070/W-073's live claim that Quake-Aqua-AMOLED is active. This was a user
+    GUI selection visible in the prior screenshot, not an unexplained reset.
+    X-042 still applies: that GTK3 CSS has 135 SCSS-token lines and is not a
+    clean long-term base, although the operator currently finds the visual
+    direction useful. Quake-Aqua-AMOLED remains installed as a rollback/stage;
+    no automatic GTK switch is made during the Emerald trial.
+    RECEIPT: target U-027 runtime XSettings line, 2026-08-14.
+
+[2026-08-14][M16/U-027] Active decoration attribution DONE. Receipt:
+  W-078/W-079. The gunmetal composer consumes exactly matching packaged
+  artwork and preserves the manager-normalized active slot before apply. Next
+  gate remains the immutable-script gunmetal live trial from commit 628b709;
+  target execution and appearance are still unverified.
