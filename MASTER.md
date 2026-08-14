@@ -5279,3 +5279,31 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-SLEEP-VERIFY-1] INVALID/NO RECEIPT. Reissue a bounded
   child-shell verifier with labelled preconditions and guaranteed parent-shell
   survival; do not touch MAIN RED.
+
+--------------------------------------------------------------------------------
+12.65 SLEEP JSON EXISTS AND HASHES; PREVIEW QUALITY GATE CORRECTLY FAILS AT
+      4,277 BYTES; TERMINAL-SAFETY FIX PASSES. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-136] Sleep capture files exist atomically. Preset JSON is 1,565 bytes with
+    SHA-256 `57bdad0e6f67dcdafc9f626c2abd4a82a8791b9243706fe02555fe52ff662dbe`;
+    receipt is 256 bytes, SHA `59c9891a...`, and internally repeats the preset
+    hash. Schema, role, source aggregate, exact particle tuple and 50-key spline
+    object passed before the preview assertion. The parent shell survived the
+    intentional failure path and printed `TERMINAL_SURVIVAL=PASS`, closing
+    X-072's safety defect for this verifier pattern.
+    RECEIPT: safe child-shell verifier output, 2026-08-14.
+
+  [X-073] Sleep preview PNG is syntactically present but only 4,277 bytes, SHA
+    `9e020952...`; the >10,000-byte sanity gate rejected it. This is not grounds
+    to discard the exact JSON. WebGL was created without proven
+    `preserveDrawingBuffer`, so `canvas.toDataURL()` invoked between animation
+    frames may capture a cleared/blank backing buffer even while the displayed
+    compositor surface visibly contains the wave. Determine PNG dimensions and
+    decoded pixel distribution before deciding whether to recapture or defer
+    preview generation to the deterministic renderer.
+    RECEIPT: preview stat/hash and labelled validation failure, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-VERIFY-2] JSON provisional PASS / preview FAIL.
+  MAIN RED remains untouched. Next gate is a stdlib-only read-only PNG structural
+  and pixel-distribution probe; terminal-safe child-shell pattern mandatory.
