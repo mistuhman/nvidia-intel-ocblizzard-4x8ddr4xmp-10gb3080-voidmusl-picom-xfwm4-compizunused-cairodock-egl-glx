@@ -851,6 +851,33 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: B3-b output "SaveOnExit before  false" contradicting 11.6's
   premise 2.
 
+[2026-08-14][X-030] *** UNEXPLAINED MID-SESSION RESET WHILE CONFIGURING IN
+  CCSM. OPEN, UNDIAGNOSED, AND IT GATES PERSONALIZATION. *** While Compiz PID
+  5065 was live and the user was editing the Animations plugin through CCSM,
+  the user reports it "kinda just reset itself halfway through". The exact
+  referent of "it" is NOT established — it could be (a) Compiz itself
+  restarting, losing the live plugin state, (b) the CCSM UI reverting the
+  rows the user had just edited, or (c) Default.ini being rewritten back
+  toward an earlier content. These have different causes and different fixes,
+  and no receipt yet distinguishes them.
+  CANDIDATE CAUSES, none verified, recorded so the next session does not
+  start from zero:
+    - Compiz 0.8 crash-and-restart. If Compiz dies, whatever started it may
+      bring it back with a fresh read of Default.ini, discarding unsaved
+      in-memory state. B2-2 launched it with `--sm-disable`, so a session
+      manager restart is NOT expected; a bare crash would leave Compiz absent
+      instead. Distinguishing evidence: is the live compiz PID still 5065?
+    - CCSM writing a full profile dump that overwrites concurrent edits, the
+      same class of behaviour already proven in W-033/W-034 where CCSM
+      rewrote the file and reordered/removed plugins.
+    - An animation effect selected from a plugin that is not actually loaded
+      (U-020), causing the plugin subsystem to reinitialise.
+  RESOLVING EVIDENCE, to be captured BEFORE any further CCSM editing: gate
+  B4 below. Until then the user's decision stands and is correct — do NOT
+  re-bless Default.ini.golden, so the revert target remains the known-good
+  dcefbadd... baseline rather than a profile captured mid-fault.
+  RECEIPT: direct user report 2026-08-14, post-B3, pre-reboot.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -2129,3 +2156,39 @@ untouched by this session. New knowledge lands here and in the ledgers.
       CCSM work, which is correct behaviour but surprising if unexpected.
     - Close CCSM before logout; never tick "Save session for future logins"
       (X-029: that is the suspected origin of the WM_COMMAND relaunch record).
+
+--------------------------------------------------------------------------------
+11.10 DECISION: DO NOT RE-BLESS THE GOLDEN SNAPSHOT. User instruction,
+      2026-08-14, pre-reboot. Recorded because it is the correct call and the
+      reasoning should survive the next context reset.
+--------------------------------------------------------------------------------
+
+  The user declined to run the 11.9 re-bless step until stability work is
+  finished. This is right, and the reason is worth stating: re-blessing copies
+  the CURRENT Default.ini over Default.ini.golden, which is the target
+  `compiz-revert` restores. Doing that immediately after the X-030 mid-session
+  reset would capture a profile of unknown integrity as the recovery baseline
+  and destroy the only proven-good state in the project. The golden snapshot
+  therefore REMAINS SHA-256 dcefbadd..., and it stays there until a Compiz
+  session has been observed stable across a real login.
+  Standing rule for the personalization phase: re-bless only from a state that
+  has been (1) reached by a normal login, (2) dwelt without a reset, and
+  (3) visually accepted by the user. Never re-bless to preserve work in
+  progress; use a dated side-copy for that instead:
+    cp -a ~/.config/compiz/compizconfig/Default.ini \
+          ~/.config/compiz/compizconfig/Default.ini.wip.$(date +%s)
+
+11.11 THE REBOOT GATE, RESTATED WITH X-030 OUTSTANDING.
+  Rebooting now is the correct next move even with X-030 open, because the
+  reboot is itself the cleanest possible test: it proves whether
+  compiz-session starts Compiz at login, and it resets all in-memory state so
+  any post-reboot reset is reproducible from a known origin rather than from
+  a hand-edited live session.
+  What changes at login vs. the B2-2 test launch:
+    - launcher becomes /home/sd/.local/bin/compiz-session (W-045)
+    - `--sm-disable` is GONE, so xfce4-session owns Compiz and MAY restart it
+      (this is the W-022 XSMP behaviour, and it is a candidate explanation for
+      X-030 recurring post-reboot)
+    - `ccp` is present, so Default.ini is authoritative
+  PRE-REBOOT CHECKLIST (gate B4-pre): close CCSM, confirm the profile hash,
+  confirm the escapes exist, do NOT tick "Save session for future logins".
