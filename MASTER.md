@@ -3518,3 +3518,57 @@ controls to rotate between windows."
 [2026-08-14][M16/GTK-2-REPEAT] Read-only reproducibility VERIFIED. Receipt:
   W-069. Next action remains the previously issued GTK-3 AMOLED trial; do not
   run another Cheetah inspection.
+
+--------------------------------------------------------------------------------
+12.20 M16 GTK GATE 3 — AMOLED FORK BUILT, ACTIVATED, AND VISUALLY ACCEPTED AS
+      A WORKING STAGE; DESIGN PAUSED FOR OPERATOR INFLUENCES. Target output,
+      attached screenshot and operator judgement, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-070] The combined GTK-3 trial (run instead of the later build-only
+    variant) successfully forked the known-live `Slickness-Reborn` tree to
+    `/home/sd/.themes/Quake-Aqua-AMOLED` without touching the source. All
+    exact-count assertions passed: the fork identity changed in index.theme;
+    index, GTK3 and GTK2 named bg/base values changed from `#242424`/`#474747`
+    to true `#000000`; gradients, borders, assets and other colours were left
+    intact. The installed hashes are:
+      index.theme       12895f520156fabea55f84472159e7e88536c5f28ffbd556b2c486a5ae810fe5
+      gtk-3.0/gtk.css   8d3d1980a78c4e0912cfbae2d12911beeca8f78f698e9ecf18f42141ab30b42f
+      gtk-2.0/gtkrc     b20aa4081b3682e32726e0260ca1d952cd0e34f8c43401b8e6a4353d09864606
+      fork receipt      377ed75aad9365ccec3653c83b44125492d4de2602fc6dde4f9493ef15f4096b
+    The 2.5M fork has zero broken symlinks. XSettings then accepted
+    `/Net/ThemeName = Quake-Aqua-AMOLED`; icon theme stayed Mac-OS-X-Lion.
+    Runtime safety labels remained Compiz PID 1210, Emerald PID 1270, picom
+    absent. Rollback remains one command:
+      `xfconf-query -c xsettings -p /Net/ThemeName -s Slickness-Reborn`
+    RECEIPT: target GTK-3 AMOLED trial assertion/hash/XSettings/process output,
+    2026-08-14.
+
+  [X-043] The GTK3 realization probe constructed its window/widgets and exited
+    0 (`GTK3 widget realization: PASS`) but emitted four parser warnings named
+    only `gtk.css`, at 2:19, 6:19, 10:19 and 15:19 (“Junk at end of value for
+    color”). The receipt does NOT identify which gtk.css emitted them. This is
+    the exact four-low-line warning shape already present before M16 in W-043,
+    while the fork's asserted lines use valid named-colour declarations, so it
+    must not be blamed on the fork without a source-vs-fork comparison and an
+    inspection of `~/.config/gtk-3.0/gtk.css`. It is nonfatal but OPEN.
+    RECEIPT: target PyGObject probe stderr/exit output, 2026-08-14; historical
+    comparison W-043.
+
+  [W-071] Human visual receipt: the attached desktop screenshot shows a fresh
+    Thunar GTK3 window and Emerald Themer on true-black main surfaces with
+    readable light text, visible controls, and the existing dark Mac-style
+    Emerald titlebars. The operator judged the stage “okay” but “a little out
+    of place”. This is an acceptance of function/readability, NOT final
+    aesthetic acceptance. The operator explicitly chose the next design gate:
+    first pick a window decoration and visual influences, then continue theme
+    composition from those choices. No further donor artwork should be merged
+    before that direction is supplied.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+[2026-08-14][M16/GTK-3] Quake-Aqua-AMOLED stage 1 BUILT, ACTIVE and visually
+  FUNCTIONAL. Receipt: W-070/W-071; nonfatal parser attribution remains X-043.
+  M16 is intentionally PAUSED for the operator's decoration/influence choices.
+  Preserve the active fork and original Slickness rollback meanwhile; do not
+  compose Cheetah/Win2-7 assets or change Emerald until the operator reports
+  the chosen direction.
