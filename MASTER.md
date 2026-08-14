@@ -4331,3 +4331,59 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
 
 [2026-08-14][M16/GTK-GUNMETAL-3D-V2-TARGET-2] Machine PASS; visual gate
   BLOCKED on X-055 repair/reload. No rebuild or download is needed next.
+
+================================================================================
+12.41 M16 FINAL — DIMENSIONAL GUNMETAL DESKTOP ACCEPTED AND FROZEN; XMB BAKE
+GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
+================================================================================
+
+  [W-096] The actual low-contrast V2 is now proven end-to-end. Target verified
+    tool d422c627..., V2 CSS `8bed1729...`, 453-file aggregate
+    `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`,
+    zero new parser warnings, and successful realization. The corrected apply
+    preserves and reports rollback `Quake-Aqua-AMOLED`; XSettings is
+    Quake-Gunmetal-3D. Compiz PID 1210 and frozen Emerald PID 14379 remain live;
+    picom remains absent. The forced A/B toggle reloaded open GTK applications.
+    Current reversible artifacts are therefore:
+      GTK active/rollback  Quake-Gunmetal-3D / Quake-Aqua-AMOLED
+      GTK rollback command `/home/sd/.local/bin/gunmetal-gtk3-theme restore`
+      Emerald active       Quake-Gunmetal-Aqua, theme.ini 0bf7ab50...
+      Emerald rollback     Dark-Aqua-Hybrid-Baseline
+      Emerald rollback cmd `/home/sd/.local/bin/gunmetal-emerald-theme restore`
+    RECEIPT: target V2 repair/build/probe/apply/status output, 2026-08-14.
+
+  [W-097] Final human acceptance: “this is actually quite good, lets call it
+    here.” The attached screenshot shows the accepted result across Thunar,
+    Terminal and Emerald Themer: lower-contrast black gunmetal title/menu/
+    toolbar ramps, subtle content/sidebar depth, muted selection treatment and
+    working red/white/black traffic lights. This closes X-047/X-048/X-049/
+    X-051 as design blockers. X-043's four pre-existing user-CSS warnings stay
+    recorded but are proven unchanged by the accepted theme and are nonblocking.
+    Per operator instruction, freeze the visual stack at W-096 hashes; no more
+    M16 tuning is allowed without a new explicit request.
+    RECEIPT: direct operator verdict and attached final screenshot, 2026-08-14.
+
+[2026-08-14][M16-FINAL] AMOLED / OS X / Quake gunmetal theming COMPLETE and
+  FROZEN. Receipt: W-096/W-097. Sources and generators are committed; generated
+  themes/screenshots remain correctly outside Git. M18 icons and sound remain
+  separable pending work, but neither blocks the wallpaper.
+
+--------------------------------------------------------------------------------
+12.42 WALLPAPER HANDOFF REOPENED — ARCHITECTURE CORRECTION AND NEXT GATE.
+--------------------------------------------------------------------------------
+
+  [W-098] The operator explicitly ended M16 and requested preparation “to bake
+    the xmb wave wallpaper with compiz instead of x11.” Interpreted precisely:
+    Compiz 0.8.18 is itself running on X11 (W-049), so it cannot replace X11.
+    The correct distinction is ROOT-WINDOW delivery versus COMPOSITOR-SAFE
+    delivery: bake the XMB WebGL scene headlessly to a deterministic video,
+    then display it in an override-redirect xwinwrap/mpv window beneath normal
+    windows while Compiz remains the X11 WM/compositor (Section VIII/IX.8,
+    W-004). Do not draw naively to the root and do not re-enable picom.
+    RECEIPT: operator request plus W-049/W-004 architecture, 2026-08-14.
+
+[2026-08-14][M9-REOPEN] XMB workspace/bake work is now AUTHORIZED after M8 and
+  M16 completion. First target gate is READ-ONLY prerequisite reconciliation:
+  current Compiz identity, xwinwrap/mpv/ffmpeg/Chromium/Node availability,
+  existing xmb-wave workspace, disk, display geometry and existing wallpaper
+  processes. Only after that receipt may packages or workspace files change.
