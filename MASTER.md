@@ -525,6 +525,21 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   -q CurrentMetaMode`, `nvidia-settings -q all`, and X11 config grep output
   pasted 2026-08-14.
 
+[2026-08-14][W-028] U-011 is resolved without trusting the absent
+  `_NET_WM_PID`: `pgrep -x compiz` returned exactly one PID, 18768. Its direct
+  parent is xfce4-session PID 1142, followed by LightDM and runit ancestry,
+  confirming the W-022 XSMP/session-managed state remains live. Its actual
+  environment contains DISPLAY=:0, XDG_SESSION_TYPE=x11, the XFCE session
+  manager address and VDPAU_NVIDIA_SYNC_DISPLAY_DEVICE=DP-2, with no queried
+  `__GL_*`, `__NV_*`, `LIBGL_*` or `COMPIZ_*` override. Stdout is /dev/null and
+  stderr is the shared /home/sd/.xsession-errors. The tailed shared log still
+  contains the historical duplicate D-Bus registrations from X-015 plus later
+  unrelated GTK/Chromium messages; because those D-Bus lines have no timestamp
+  and the file is shared, the tail is not evidence that the clean current
+  plugin list re-enabled D-Bus or emitted a new fatal event.
+  RECEIPT: target U-011 unique-PID, `/proc`, ancestry, environment, fd and log
+  output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -957,6 +972,12 @@ Status vocabulary, used strictly:
   TripleBuffer value was found. Process ancestry and active-log collection
   remain BLOCKED on U-011 because the WM window omitted `_NET_WM_PID`; perform
   the narrow PID-fallback read before installing recovery or replacing the WM.
+
+[2026-08-14][M8/U-011] Process ancestry and active-log discovery DONE.
+  receipt: W-028. This supersedes the prior PARTIAL U-011 milestone. Overall
+  M8 remains BLOCKED on installing and receipting an executable TTY recovery
+  artifact before any fresh-process Compiz test; persistence remains
+  prohibited.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
