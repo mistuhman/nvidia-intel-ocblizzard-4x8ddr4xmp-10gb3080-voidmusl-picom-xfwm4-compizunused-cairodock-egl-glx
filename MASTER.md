@@ -3572,3 +3572,27 @@ controls to rotate between windows."
   Preserve the active fork and original Slickness rollback meanwhile; do not
   compose Cheetah/Win2-7 assets or change Emerald until the operator reports
   the chosen direction.
+
+--------------------------------------------------------------------------------
+12.21 M16 EMERALD-3 OPERATOR-TRANSPORT FAILURE — NO BACKUP RESULT CLAIMED.
+      Direct operator report, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-044] AGENT ERROR: the EMERALD-3 block used top-level `exit 1` guards even
+    though it was designed for direct paste into an interactive terminal. If
+    any guard fired, `exit` terminated the operator's shell and closed the
+    terminal window, exactly as the operator reports: “i cant paste that back
+    since it just closes the terminal i copy it into”. No output was retained,
+    so it is UNKNOWN which guard fired and UNKNOWN whether only a temporary
+    copy, a final baseline, or no artifact exists. Do not infer success.
+    CORRECTION FOR ALL FUTURE TARGET TRANSPORT: every multi-line paste must be
+    wrapped in a subshell `( ... )` so `exit` can terminate only that block, or
+    avoid `exit` entirely. First run a short, read-only, no-exit reconciliation
+    of the source hash and destination/temp paths. Do not retry the write block
+    until that receipt is observed.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3] Baseline-backup gate UNKNOWN/REJECTED as a receipt.
+  X-044 supersedes the issued block. Current GTK stage remains W-070; no claim
+  is made about Emerald backup state. Next action is read-only reconciliation
+  using a subshell-safe transport.
