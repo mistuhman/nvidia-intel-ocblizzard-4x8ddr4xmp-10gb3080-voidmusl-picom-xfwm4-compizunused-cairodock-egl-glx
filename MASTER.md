@@ -627,6 +627,28 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target U-014 ancestry/environment, window properties, session
   children/cache grep, full profile and WM output pasted 2026-08-14.
 
+[2026-08-14][W-036] Filtered documentation research establishes two exact
+  constraints for the next work. NVIDIA's official 595.84 OpenGL environment
+  chapter says TwinView OpenGL synchronizes to only one display and documents
+  `__GL_SYNC_DISPLAY_DEVICE`; it also explicitly identifies composite-manager
+  repaint scheduling as a case where default `sched_yield()` can delay the GL
+  process and documents `__GL_YIELD=USLEEP|NOTHING`. These are valid later
+  one-variable A/B candidates for this exact installed driver, not folklore.
+  Official Xfce launcher documentation says panel `.desktop` items are
+  application shortcuts executed when launched; therefore the observed
+  `ccsm.desktop` panel value is not evidence of automatic respawn. The
+  Compiz-Reloaded CCSM repository describes CCSM as a graphical manager for
+  libcompizconfig, not a required resident daemon. Documentation filter for
+  subsequent research: exact-version vendor/upstream code/manual first,
+  target/package receipts second, version-matched issues only as corroboration;
+  reject Compiz 0.9/Unity guidance for this 0.8.18 stack unless source-level
+  behavior is proven shared.
+  RECEIPT: NVIDIA 595.84 README Chapter 11
+  https://download.nvidia.com/XFree86/Linux-x86_64/595.84/README/openglenvvariables.html;
+  Xfce launcher docs https://docs.xfce.org/xfce/xfce4-panel/launcher; and
+  Compiz-Reloaded CCSM README https://github.com/compiz-reloaded/ccsm fetched
+  2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1205,6 +1227,14 @@ Status vocabulary, used strictly:
   bounded creator observation. Future orchestration may use Python artifacts
   rather than long shell blocks, but target execution claims still require
   pasted receipts and the one-block gate protocol.
+
+[2026-08-14][M8/U-015-R] Filtered upstream research PARTIAL/DONE for
+  candidate selection. Receipt: W-036. The panel launcher hit is demoted as a
+  respawn explanation; NVIDIA DP-2 sync selection and GL yield remain ordered
+  A/B candidates after the writer is controlled. U-015 remains BLOCKED only
+  on bounded creator observation. Research lanes must exchange claims as
+  source URL + exact version + quoted behavior + target predicate + rejection
+  reason, preventing stale guidance from entering the action lane.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
