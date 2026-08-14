@@ -508,6 +508,23 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target IX.4B-3 diff/process/profile/xrandr/resource output and user
   observation, 2026-08-14.
 
+[2026-08-14][W-027] The post-X-019 read-only scheduling sweep found the live
+  WM window still names Compiz and `pgrep -a` still reports PID 18768 with its
+  XSMP client ID; emerald, xfce4-panel and cairo-dock remain present, while
+  xfwm4 and picom remain absent. The active Default.ini SHA-256 is
+  3ac4f0329b18b0d5cbbe3331a36eadbb25507efc0b178535b715398aa8ccab7a and
+  retains the exact W-026 explicit display values. Effective NVIDIA settings
+  report SyncToVBlank=1 and AllowFlipping=1; the current RandR MetaMode retains
+  both proven rectangles with ForceCompositionPipeline and
+  ForceFullCompositionPipeline enabled. The target shell exports only
+  VDPAU_NVIDIA_SYNC_DISPLAY_DEVICE=DP-2 among queried GL/NVIDIA selectors, and
+  no TripleBuffer setting appeared in the queried effective/static output.
+  Static xorg.conf MetaMode text uses an older monitor arrangement, but the
+  effective `CurrentMetaMode` is the already proven live arrangement.
+  RECEIPT: target read-only WM/process/profile/environment, `nvidia-settings
+  -q CurrentMetaMode`, `nvidia-settings -q all`, and X11 config grep output
+  pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -795,6 +812,14 @@ as its receipt. Do not guess any of them.
   a broad Context.Write after changing only active_plugins: IX.4B-1 proved
   that it can collapse the output list to the 640x480 default.
 
+[U-011] Complete the process-ancestry and active-log part of W-027. The Compiz
+  supporting-WM window exposes no `_NET_WM_PID`, so the first collector left
+  `wm_pid` unresolved and skipped `/proc` environment, ancestry and fd-log
+  inspection even though `pgrep` reported exactly one Compiz PID, 18768.
+  Resolve read-only from the unique `pgrep -xo compiz` PID; print its full
+  ancestry, selected environment, fd 1/2 destinations and tails of any regular
+  log files. Do not infer that the old PID remains valid before re-querying it.
+
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
 ================================================================================
@@ -925,6 +950,13 @@ Status vocabulary, used strictly:
   Overall M8 remains BLOCKED on a bounded fresh-process `--sm-disable` test,
   NVIDIA/GLX scheduling evidence, recovery installation, and logout/reboot
   reproduction. Do not repeat already disproven checkbox/profile edits.
+
+[2026-08-14][M8/U-011] NVIDIA scheduling/profile read-only baseline PARTIAL.
+  receipt: W-027 and target output. SyncToVBlank and AllowFlipping are enabled,
+  the effective MetaMode/profile remain consistent, and no queried
+  TripleBuffer value was found. Process ancestry and active-log collection
+  remain BLOCKED on U-011 because the WM window omitted `_NET_WM_PID`; perform
+  the narrow PID-fallback read before installing recovery or replacing the WM.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
