@@ -379,6 +379,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   sub-gate.
   RECEIPT: target IX.2A output pasted 2026-08-14.
 
+[2026-08-14][W-014] IX.2B persistently masked both discovered picom autostart
+  names with per-user XDG entries containing `Hidden=true` and
+  `X-GNOME-Autostart-enabled=false`. The exact prior user entries are backed
+  up at /home/sd/picom-autostart-backup.1786688178. Runtime verification still
+  showed picom stopped, xfwm4 PID 1209 live, and xfwm4 internal compositing
+  false. IX.2 is complete: no old compositor remains active or enabled for
+  autostart.
+  RECEIPT: target IX.2B output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -577,6 +586,18 @@ Status vocabulary, used strictly:
   receipt: W-013; before/after target process and xfconf output.
   Overall M8 remains PLANNED: autostart still needs masking and compiz has not
   yet been started.
+
+[2026-08-14][M8/IX.2B] Picom autostart masked with rollback copy DONE.
+  receipt: W-014; both user overrides and the runtime state were printed.
+  This supersedes IX.2A's pending-autostart note. Overall M8 remains PLANNED:
+  compiz has not yet been started.
+
+[2026-08-14][M15] Lossless machine-readable runbook and reusable operator
+  prompt capsule .......................................... PLANNED after M14
+  requested output: formal IDs, predicates, dependency graph, state-machine
+  transitions, receipts, checkpoints, exact actions, expected observations,
+  rollback actions, troubleshooting branches, glossary and `next_action`;
+  retain MASTER.md as the human audit log rather than replacing it.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
