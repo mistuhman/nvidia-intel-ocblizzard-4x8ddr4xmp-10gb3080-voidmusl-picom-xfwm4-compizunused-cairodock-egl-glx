@@ -4445,3 +4445,1279 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
 [2026-08-14][M16/APPEARANCE-DIAG] Decoration DONE; GTK selection question
   BLOCKED on U-028 read-only attribution. XMB preflight remains paused until
   this user-visible regression/question is resolved.
+
+--------------------------------------------------------------------------------
+12.45 U-028 RESOLVED — XFCE XSETTINGS WAS MANUALLY MOVED TO SLICKNESS-REBORN;
+      ACCEPTED GUNMETAL ARTIFACTS REMAIN INTACT. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-101] Read-only attribution proves there is no GTK_THEME process or shell
+    override. XFCE XSettings and a live Gtk.Settings object both resolve the
+    active widget theme as `Slickness-Reborn` and icons as `Mac-OS-X-Lion`.
+    The generated Quake-Gunmetal-3D artifact remains intact at the accepted
+    aggregate `98f019d404436aba4df3fadd21e0e74a9442db85be3fb2cce14d763473f8b67a`
+    and override CSS `8bed1729975d287f2fd7da604270519916d87a9a774225e2e784fa58e0ed13ce`;
+    rollback remains Quake-Aqua-AMOLED. The accepted Emerald active/library
+    aggregates remain identical at `ee3a4f10...`; Compiz PID 1210 and Emerald
+    PID 27906 are live and picom is absent. Therefore no theme bytes, decorator,
+    WM, compositor or repair artifact was lost.
+    RECEIPT: target `xfconf-query`, Gtk.Settings probe, process-environment scan,
+    both installed theme-tool status commands and process listing, 2026-08-14.
+
+  [X-057] The current divergence is configuration state, not inability to select
+    the accepted theme: XFCE XSettings was changed from frozen
+    Quake-Gunmetal-3D to Slickness-Reborn. Separately,
+    `~/.config/gtk-3.0/settings.ini` is stale and names `Cheetah-Custom`, while
+    live GTK correctly follows XFCE's XSettings and resolves Slickness-Reborn.
+    The original `mac-os-x-cheetah-dark` still has no `index.theme` and its GTK3
+    CSS is the previously rejected unresolved source, so it is not the frozen
+    target. Event/input sounds are also still disabled and SoundThemeName is
+    the invalid `default`, independently confirming M16 sound work is pending.
+    RECEIPT: same target U-028 diagnostic, including exact XSettings,
+    Gtk.Settings, settings.ini and theme-file inventory output, 2026-08-14.
+
+  [X-058] The diagnostic's final WM-name extractor failed because its sed basic
+    regular expression used an over-escaped capture sequence, producing
+    `invalid reference \\1`. This does not invalidate WM identity: process and
+    theme-tool receipts independently show Compiz PID 1210, but future checks
+    must use `xprop -id "$(xprop -root _NET_SUPPORTING_WM_CHECK | awk '{print
+    $NF}')" _NET_WM_NAME` rather than repeating the broken sed assertion.
+    RECEIPT: target diagnostic stderr plus successful process receipts,
+    2026-08-14.
+
+[2026-08-14][M16/APPEARANCE-DIAG] U-028 CLOSED. Next bounded change is to
+  re-select the already accepted Quake-Gunmetal-3D through XFCE XSettings,
+  synchronize the user GTK3 persistence file without changing unrelated keys,
+  and verify GTK/Compiz/Emerald/picom plus exact artifact hashes. Wallpaper
+  prerequisite reconciliation remains the following gate.
+
+--------------------------------------------------------------------------------
+12.46 ACCEPTED GTK STATE RESTORED AND PERSISTENCE LAYERS SYNCHRONIZED;
+      COLD-LOGIN VERIFICATION PENDING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-102] The accepted Quake-Gunmetal-3D GTK theme is active again. Before the
+    change, the target reverified aggregate `98f019d...`, override CSS
+    `8bed1729...` and rollback Quake-Aqua-AMOLED. It backed up the stale GTK3
+    settings file to
+    `~/.config/gtk-3.0/settings.ini.pre-gunmetal.1786735797`, selected
+    Quake-Gunmetal-3D through XFCE XSettings, changed only the existing
+    `gtk-theme-name` persistence entry, and invoked the hardened apply path only
+    after XSettings already named the accepted theme. That path correctly
+    preserved Quake-Aqua-AMOLED rather than recording Slickness-Reborn.
+    RECEIPT: target RESTORE ACCEPTED GUNMETAL GTK STATE output, 2026-08-14.
+
+  [W-103] Post-change machine gates all pass in the running session:
+    xfconf/settings.ini/state assertions passed; tool status reports active
+    Quake-Gunmetal-3D with exact accepted aggregate `98f019d...`, CSS
+    `8bed1729...` and rollback Quake-Aqua-AMOLED; live Gtk.Settings resolves
+    Quake-Gunmetal-3D; `_NET_WM_NAME` is `compiz`; Emerald PID 27906 is live;
+    picom is absent; and the bounded block ended
+    `RESTORE_ACCEPTED_GUNMETAL=PASS`. The four GTK parser warnings are exactly
+    the pre-existing nonblocking warnings already frozen by X-043/W-096, not
+    newly introduced warnings.
+    RECEIPT: target persistence and stack verification output, 2026-08-14.
+
+[2026-08-14][M16/PERSISTENCE-LIVE] PASS. Configuration is now internally
+  consistent and reversible in the live session. “Rebootable” is deliberately
+  not yet claimed: next gate is one operator-initiated cold reboot, followed by
+  a read-only login receipt for XFCE/GTK/Emerald/Compiz/picom, geometry and the
+  exact accepted artifact hashes. Only that later receipt can promote this to
+  cold-login persistence and reopen the XMB prerequisite preflight.
+
+================================================================================
+SECTION XIII — FUNDAMENTAL READING EXTENSION (DIRECTIVE 12)
+appended 2026-08-14 | operator-authorized image-inspection discipline
+================================================================================
+
+12. INSPECT IMAGES VIGOROUSLY; SCALE VISUAL CONTEXT THROUGH SPECIALIZATION.
+An attached image is primary evidence, not decoration. Before proposing or
+judging any visual change, inspect the entire frame and then make deliberate
+passes over its minute parts: geometry, hierarchy, typography, contrast,
+colour, texture, edges, spacing, state, consistency, artifacts and unexpected
+objects. Use crops, zooms, metadata and image-processing tools when available;
+do not let the apparent simplicity of a full-frame preview substitute for
+close inspection. Allocate independent visual questions to specialized agents
+or analysis passes whenever the environment provides them — one bounded task
+per agent/pass, run in parallel where possible — then reconcile their precise
+observations into a greater shared image-processing context. Distinguish what
+is directly visible from what is inferred, correlate every conclusion with the
+relevant region or measurable evidence, and never invent detail hidden by
+resolution, occlusion or compression. Preserve the operator's visual report as
+a separate human receipt: machine inspection can describe pixels and spatial
+relationships, but it cannot silently replace the operator's judgement of
+legibility, depth, motion, comfort or aesthetic success.
+
+================================================================================
+SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
+================================================================================
+
+--------------------------------------------------------------------------------
+12.47 COLD-LOGIN VISUAL PERSISTENCE ACCEPTED; THREE-STATE XMB ART DIRECTION
+      PROPOSED. Human/visual receipt and operator brief 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-104] The operator rebooted, logged back into XFCE and reported “looks
+    perfect after logging back in” and “persistence works.” The attached
+    full-desktop screenshot visibly shows the accepted black gunmetal GTK and
+    Emerald treatment present across Thunar, Terminal and CCSM, with the XFCE
+    panel and Cairo-Dock also present. This is a valid human/visual cold-login
+    persistence receipt. It does not by itself re-prove process identity,
+    hashes, pinned geometry or picom absence after reboot; those machine checks
+    remain the next read-only gate before persistence is called fully audited.
+    RECEIPT: direct operator report and attached post-login screenshot
+    `image.png`, 2026-08-14.
+
+  [U-029] The requested XMB system now has three authored visual states/prebakes
+    connected conceptually to the existing Compiz Desktop Wall workflow and
+    middle-mouse workspace switching: (1) a sleep state, (2) a main red state
+    with night-light particles governed by operator settings, and (3) a
+    black-and-white night ocean/city state governed by operator preferences.
+    This supersedes any assumption that one universal loop is sufficient.
+    Unresolved architecture detail: “sleep” may mean the actual idle
+    screensaver state rather than a third workspace background, and the brief
+    does not yet identify exact workspace-to-state mapping or whether the
+    visual must transition while Wall is moving versus only after the selected
+    workspace settles. Resolve those semantics before bake parameters or
+    runtime switching are designed.
+    RECEIPT: direct operator design brief, 2026-08-14.
+
+[2026-08-14][M9/THREE-STATE-BRIEF] Visual direction RECORDED, implementation
+  BLOCKED only on U-029 state semantics and the already-required post-reboot
+  machine/preflight receipt. Preserve Compiz Wall's middle-button input; the
+  wallpaper controller must observe workspace state and must never capture or
+  replace that binding.
+
+--------------------------------------------------------------------------------
+12.48 THREE-STATE SEMANTICS RESOLVED; HYBRID WALL TRANSITION REQUIRES A LIVE
+      FEASIBILITY PROBE BEFORE RUNTIME DESIGN. Operator choices 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-105] U-029 state semantics are now explicit. “Sleep” is screensaver-only,
+    activated by idle handling rather than assigned to a normal workspace. The
+    red/main and black-and-white night-ocean-city loops are fixed by workspace:
+    each destination workspace owns its visual identity. Runtime switching must
+    preserve the operator's existing Compiz Desktop Wall middle-mouse binding;
+    the wallpaper system observes workspace/viewport state and never captures
+    that input.
+    RECEIPT: operator selections `screensaver_only` and fixed-by-workspace,
+    2026-08-14.
+
+  [U-030] The requested switch presentation is a deliberate hybrid: imagery
+    should appear spatially connected to Desktop Wall motion while also fading
+    between the source and destination XMB loops for “ultimate blending.” A
+    sticky override-redirect xwinwrap layer is not automatically proof that
+    Compiz will map independent videos onto Wall faces, and a settled
+    `_NET_DESKTOP_VIEWPORT` notification alone cannot reveal every animation
+    frame. Do not promise literal per-face motion yet. First inventory the live
+    viewport topology, active Wall settings and available Compiz event/control
+    surfaces; then prototype the least costly observable transition. Acceptable
+    implementation may be a synchronized pan/parallax plus crossfade if Compiz
+    exposes destination changes but not continuous Wall progress. Literal Wall
+    attachment is promoted only by a live visual receipt.
+    RECEIPT: operator custom transition choice plus existing W-004 delivery
+    architecture; target feasibility unverified, 2026-08-14.
+
+[2026-08-14][M9/THREE-STATE-SEMANTICS] PASS. Planned deliverables are two
+  workspace loops, one independent idle/screensaver loop and a controller that
+  preserves Compiz input ownership. Next gate remains the combined post-reboot
+  machine audit and read-only XMB/runtime/viewport preflight from 12.42, now
+  extended to collect Wall transition-control surfaces for U-030.
+
+--------------------------------------------------------------------------------
+12.49 XMB REFERENCE IMAGE INSPECTED — ONE MONOCHROME PRESET IS LEGIBLE;
+      THREE DISTINCT STYLES WERE NOT TRANSPORTED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-106] The visible reference is a strong candidate for the black-and-white
+    night-ocean state: an AMOLED-black field carries layered translucent silver
+    spline filaments, with a low left swell, central trough/cross-current and a
+    brighter rising crest toward the right. Sparse white point particles read
+    as distant night lights or spray without filling the negative space. The
+    controls must be hidden in every bake. No city silhouette is directly
+    visible in this frame; “city” remains atmosphere/direction unless the
+    operator supplies or requests an explicit skyline layer.
+    RECEIPT: operator-attached XMB control screenshot(s), visually inspected
+    full-frame and by control groups, 2026-08-14.
+
+  [W-107] Legible values in the transported monochrome reference are:
+    particles Count 2000, Opacity 0.75, Size Base 2.6, Size Var 1.5 and Flow
+    Speed 0.18; spline Re Synthetic Descriptor Motion 4.85, Re Kernel Gain
+    0.145, Re Normalize Gain 2.00, Re Kernel Phase Step 0.00, Re Index Jitter
+    0.006, Re Temporal Smooth 0.64, Fresnel Power 4.00, Fresnel Scale 0.50,
+    Opacity 1.000, Brightness 2.00 and Z Detail Scale 0.080; FFD Scale1
+    X/Y/Z 5.68/1.00/1.00, FFD Scale2 X/Y/Z 2.83/1.28/2.89, and FFD Offset
+    X/Y/Z 0.00/-0.47/0.00. The next FFD control is clipped at the bottom, so its
+    value and all controls below it are not evidence and must not be guessed.
+    RECEIPT: direct reading of the visible control labels and values,
+    2026-08-14.
+
+  [X-059] Although the operator says the attachments contain all three desired
+    XMB settings/styles, the four rendered attachments available to this agent
+    appear visually identical: each shows the same monochrome wave and the same
+    visible values. No distinct red/main or sleep preset can be extracted from
+    this receipt. This may be duplicate upload/transport rather than operator
+    intent. Do not manufacture the two missing palettes or parameter sets; ask
+    for separately identifiable references or an explicit statement that one
+    geometry/settings preset is intentionally shared and only palettes/effects
+    differ.
+    RECEIPT: side-by-side visual comparison of all four rendered attachments,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-CAPTURE-1] MONOCHROME preset PARTIAL PASS: visible values
+  and composition captured, lower clipped settings remain open. Red/main and
+  sleep references remain unreceived as distinct evidence because of X-059.
+
+--------------------------------------------------------------------------------
+12.50 ATTACHMENT ORDER MAPPED TO RUNTIME ROLES; VISIBLE GEOMETRY IS SHARED OR
+      TRANSPORT-INDISTINGUISHABLE. Operator clarification 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-108] The four-image order is now identified: image 1 is the sleep reference,
+    images 2 and 3 are duplicate references for red/main, and image 4 is the
+    work reference (the previously described black-and-white night-ocean-city
+    state). Preserve that semantic order when later preset records are named:
+    `sleep`, `main-red`, `work-monochrome`; do not mistake the four attachments
+    for four runtime states.
+    RECEIPT: direct operator clarification, 2026-08-14.
+
+  [U-031] The rendered frames and all visible slider values remain visually
+    indistinguishable across those role-labelled images. Therefore W-107 can be
+    treated as a shared visible geometry/particle baseline, but the pixels do
+    not yet evidence the role-specific palette/effect differences. The likely
+    differentiators may be controls below the clipped panel, configuration not
+    represented by these screenshots, or desired changes not yet applied.
+    Collect explicit palette/effect intent for sleep, main-red and
+    work-monochrome before freezing three deterministic preset manifests.
+    RECEIPT: operator role mapping reconciled with X-059 visual comparison,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-ROLE-MAP] PASS. Three roles are named and one shared
+  visible baseline is captured. Distinct preset manifests remain blocked on
+  U-031, not on attachment ordering.
+
+--------------------------------------------------------------------------------
+12.51 WORK-MONOCHROME REFERENCE RECEIVED DISTINCTLY — COMPOSITION AND PRIMARY
+      PARTICLE SETTINGS CAPTURED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-109] The separately labelled WORK MONOCHROME reference is visibly distinct
+    in motion geometry from the earlier duplicated transport. It uses a broad,
+    calm, horizontally continuous silver-white wave centered below mid-frame:
+    a shallow left trough rises to a smooth central-right crest and returns to
+    a shallow right trough. The bundle is layered but orderly, with long clean
+    filaments rather than the earlier turbulent crossing mesh. A pure black
+    field and sparse low-intensity points provide the requested night-ocean
+    reading and preserve substantial negative space for desktop windows. No
+    literal skyline is visible; the city quality presently comes from distant
+    light-like particles and restrained monochrome atmosphere.
+    RECEIPT: operator-attached image explicitly labelled WORK MONOCHROME,
+    full-frame and panel-by-panel visual inspection, 2026-08-14.
+
+  [W-110] Clearly legible WORK MONOCHROME particle values are Count 4000,
+    Opacity 0.37, Size Base 3.1, Size Var 0.8 and Flow Speed 0.44. The screenshot
+    also exposes a much longer Spline Controls surface than the prior frame,
+    including gradient RGB, gradient top/bottom multipliers, flow/tension/
+    damping/length/spacing/time-step, band and travel controls, perturbation,
+    wave colour/bias/height/soft-clip, per-pixel blend, reverse-engineered
+    descriptor controls, Fresnel, opacity/brightness/detail and FFD transforms.
+    Several right-panel numerals are too small in the transported rendering to
+    transcribe with audit-grade certainty. Directive 12 forbids guessing them;
+    extract their exact DOM/config values from the live source when the target
+    workspace is inventoried.
+    RECEIPT: direct reading of the left control panel and structural inspection
+    of the complete right panel, 2026-08-14.
+
+  [X-060] W-107's initial 2000/0.75/2.6/1.5/0.18 particle tuple is not the WORK
+    MONOCHROME preset. W-109/W-110 supersede that role attribution with the
+    separately labelled work reference and its distinct
+    4000/0.37/3.1/0.8/0.44 tuple. W-107 remains valid only as a transcription of
+    the earlier unidentified/duplicated frame until the operator maps it to
+    sleep or main-red with distinct evidence.
+    RECEIPT: comparison of the explicitly labelled work image against W-107,
+    2026-08-14.
+
+[2026-08-14][M9/PRESET-WORK-MONOCHROME] VISUAL PASS / MANIFEST PARTIAL. Art
+  direction and primary particle tuple are fixed. Exact spline values must come
+  from machine-readable live state rather than downscaled screenshot numerals.
+  Sleep and main-red still require separately labelled distinct references.
+
+--------------------------------------------------------------------------------
+12.52 MAIN-RED REFERENCE RECEIVED DISTINCTLY — PALETTE, COMPOSITION AND PRIMARY
+      PARTICLE SETTINGS CAPTURED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-111] MAIN RED is a distinct high-energy identity rather than a recolour of
+    work-monochrome. The background is a vertical AMOLED-to-crimson gradient:
+    near-black oxblood across the upper field, deep red through the center and
+    a saturated red lower field. A broad pale-silver/red translucent ribbon
+    crosses near mid-height, with overlapping smooth sheets, a left-side
+    crossing, a gentle central crest and a tighter right convergence. Sparse
+    particles range from pinpoints to a few large soft night-light orbs. The
+    composition leaves useful dark negative space above while making the lower
+    desktop visibly warmer and more active than work-monochrome.
+    RECEIPT: operator-attached image explicitly labelled MAIN RED, full-frame
+    and panel-by-panel visual inspection, 2026-08-14.
+
+  [W-112] Clearly legible MAIN RED particle values are Count 172, Opacity 0.41,
+    Size Base 4.8, Size Var 16.3 and Flow Speed 0.18. The gradient controls
+    visibly set Color R/G/B to 255/0/0, establishing actual red generation
+    rather than a post-bake tint. The unusually high particle size variation
+    explains the mixture of tiny stars and isolated large blurred light orbs;
+    this is an intentional night-light signature and must not be normalized to
+    the work preset. As with W-110, exact small-print spline values should be
+    extracted from the live DOM/config rather than guessed from the downscaled
+    right panel.
+    RECEIPT: direct reading of the left controls, RGB controls and rendered
+    particle distribution, 2026-08-14.
+
+  [W-113] Distinct-preset requirement is now visually proven for two normal
+    desktop roles. Work-monochrome uses calm ordered silver filaments on black
+    with 4000/0.37/3.1/0.8/0.44 particles; main-red uses broad translucent
+    sheets over a red gradient with 172/0.41/4.8/16.3/0.18 particles. A single
+    shared video plus colour filter cannot reproduce these differences. Bake
+    and manifest them independently, then blend their decoded outputs at the
+    workspace transition layer.
+    RECEIPT: comparative inspection of the separately labelled WORK MONOCHROME
+    and MAIN RED references, 2026-08-14.
+
+[2026-08-14][M9/PRESET-MAIN-RED] VISUAL PASS / MANIFEST PARTIAL. Art direction,
+  RGB generator colour and primary particle tuple are fixed. Audit-grade spline
+  values still await machine-readable extraction. Sleep remains the final
+  separately labelled visual reference required for the three-state set.
+
+--------------------------------------------------------------------------------
+12.53 SLEEP REFERENCE RECEIVED DISTINCTLY — THREE-STATE VISUAL SET COMPLETE.
+      Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-114] SLEEP is the darkest and least stimulating state. It retains a pure
+    black field and a dim smoke-grey ribbon just below mid-frame, with broad
+    interwoven sheets, a low central sag and a soft rise toward the right. Wave
+    contrast is deliberately much lower than either normal desktop state.
+    Sparse particles sit mostly below the ribbon; a few become large, heavily
+    defocused grey orbs while most remain faint points. This reads as motion
+    settling into darkness rather than a bright decorative wallpaper and is
+    appropriate for an idle screensaver, subject to later display-power timing.
+    RECEIPT: operator-attached image explicitly labelled SLEEP, full-frame and
+    panel-by-panel visual inspection, 2026-08-14.
+
+  [W-115] Clearly legible SLEEP particle values are Count 257, Opacity 0.19,
+    Size Base 2.6, Size Var 50.8 and Flow Speed 0.18. Visible generator RGB is
+    0/0/0. The extreme size variation produces rare large dim bokeh while the
+    low count and opacity keep the field restful; those values are intentional
+    identity, not noise to normalize. As with the other presets, audit-grade
+    small-print spline values must be exported from live DOM/config state.
+    RECEIPT: direct reading of the left controls, RGB controls and rendered
+    distribution, 2026-08-14.
+
+  [W-116] The three-state visual constitution is now complete and each role is
+    materially distinct:
+      sleep            black, dim smoke sheets, sparse bokeh
+                       particles 257 / 0.19 / 2.6 / 50.8 / 0.18
+      main-red         oxblood-to-crimson, pale broad sheets, night lights
+                       particles 172 / 0.41 / 4.8 / 16.3 / 0.18; RGB 255/0/0
+      work-monochrome  black, calm ordered silver filaments, distant lights
+                       particles 4000 / 0.37 / 3.1 / 0.8 / 0.44
+    Values are Count / Opacity / Size Base / Size Var / Flow Speed. These are
+    three independent deterministic manifests and bakes. Sleep belongs only to
+    idle/screensaver control; main-red and work-monochrome belong to fixed
+    Compiz workspaces and participate in the hybrid spatial/crossfade switch.
+    RECEIPT: comparative inspection of all three separately labelled references
+    plus W-105 semantics, 2026-08-14.
+
+[2026-08-14][M9/PRESET-VISUAL-CONSTITUTION] PASS. All three art directions and
+  primary particle tuples are frozen as visual targets. Remaining preset work
+  is machine extraction of every spline value from the live page, not further
+  screenshot transcription. No bake is authorized until the operator finishes
+  pre-XMB theme/desktop ideas and the read-only target preflight passes.
+
+--------------------------------------------------------------------------------
+12.54 OPERATOR CLOSES DESIGN INTAKE AND AUTHORIZES THE XMB BAKE PIPELINE.
+      Operator authorization 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-117] The operator explicitly ended pre-bake ideation with “thats it, lets
+    move on to baking.” The frozen inputs are therefore the three-state visual
+    constitution W-116, screensaver/workspace semantics W-105, and hybrid Wall
+    transition request U-030. This authorizes the M9 prerequisite reconciliation
+    and subsequent deterministic source/preset staging. It does not waive any
+    machine gate, authorize guessed slider values, or claim that a bake can run
+    before source/runtime prerequisites are verified on the target.
+    RECEIPT: direct operator authorization, 2026-08-14.
+
+[2026-08-14][M9-REOPEN-FINAL] AUTHORIZED. Next action is exactly one read-only
+  target block combining the post-reboot stack audit with XMB workspace,
+  toolchain, display/viewport, Desktop Wall, screensaver and existing wallpaper
+  process inventory. No target files or packages change until that receipt is
+  recorded.
+
+--------------------------------------------------------------------------------
+12.55 XMB PREFLIGHT 1 — STACK/TOOLS PASS; EXISTING PIPELINE DISCOVERED; BAKE
+      HARD-BLOCKED BY 95 MiB FREE SPACE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-118] Cold-login persistence now has a machine receipt in addition to
+    W-104's human/visual receipt. After boot at 19:31:23, XFCE and GTK3 both name
+    Quake-Gunmetal-3D; aggregate `98f019d...`, override CSS `8bed1729...` and
+    rollback Quake-Aqua-AMOLED match the frozen state. Active/library Emerald
+    both match `ee3a4f10...`; `_NET_WM_NAME` is `compiz`; Compiz PID 1213,
+    Emerald PID 1285, xfce4-panel, xfdesktop and cairo-dock are live; picom and
+    xfwm4 are absent. This promotes M16 persistence from visual-only to audited
+    cold-login PASS.
+    RECEIPT: target post-reboot tool status, xfconf, process and xprop output,
+    2026-08-14.
+
+  [W-119] Display/viewport topology survived the reboot: X screen 4480x1440;
+    DP-2 primary 2560x1440+0+0 at 120 Hz; DP-0 inverted
+    1920x1080+2560+197 at 119.98 Hz. EWMH reports desktop geometry
+    17920x1440, viewport 0,0, current desktop 0 and one EWMH desktop. Therefore
+    Compiz exposes four horizontal 4480-wide viewports inside one desktop,
+    resolving the base workspace count needed for fixed-role mapping. Active
+    plugin grep includes `vpswitch` and `wall`; the discovered Button2 binding
+    is `<LeftEdge><BottomEdge><BottomLeftEdge>Button2` in the profile and must
+    not be overwritten.
+    RECEIPT: target xrandr, xprop and profile grep output, 2026-08-14.
+
+  [W-120] Bake/runtime prerequisites are already unusually complete: locally
+    installed `/usr/local/bin/xwinwrap`; mpv 0.41.0; FFmpeg runtime 6.1.6 with
+    libx264, NVENC, VAAPI and QSV H.264 support; Chromium 150; Node 24.18.0; npm
+    11.16.0; Puppeteer dependencies; xdotool/wmctrl/xprop/xrandr; and DBus tools.
+    Compiz provides `libdbus.so`, `libwall.so` and `libwallpaper.so`.
+    xfce4-screensaver 4.20.2 is installed and running, mode 2 with the floaters
+    theme; X idle timeout is 300 seconds; DPMS is disabled despite 600-second
+    standby/suspend/off values. No xwinwrap/mpv/ffmpeg wallpaper process is
+    currently live.
+    RECEIPT: target executable/package/version/codec/process/screensaver output,
+    2026-08-14.
+
+  [W-121] M9 is not an empty staging task. `~/.local/share/xmb-wave/` already
+    contains a source Git checkout, `ps3xmbwave`, Puppeteer modules, bake/deploy/
+    diagnose scripts, Chromium profile, nine prior logs, a 920,914,636-byte raw
+    MKV, 482,431,993-byte loop.mp4, per-panel videos and fade variants. A second
+    likely live-custom source exists at `~/.local/share/ps3-wave-custom/` with
+    spline.js, spline-reverse.js and particles.js; the screenshots may originate
+    there, but that is not yet proven. Existing artifacts must be reconciled and
+    preserved by hash/provenance before any new staging or cleanup.
+    RECEIPT: bounded target workspace and home source inventory, 2026-08-14.
+
+  [X-061] The root filesystem is 100% full: 152 GiB total, 144 GiB used and only
+    95 MiB available. `/tmp` has 16 GiB free but is tmpfs, unsuitable as the sole
+    durable destination for multi-gigabyte three-state outputs. A deterministic
+    frame capture or encode cannot safely start with 95 MiB durable headroom.
+    This is a hard bake blocker. Do not delete anything blindly: first attribute
+    workspace sizes and identify which prior artifacts are reproducible versus
+    unique, then present an explicit cleanup/preservation plan to the operator.
+    RECEIPT: target `df -h`/`df -i` and inventoried artifact sizes,
+    2026-08-14.
+
+  [X-062] Both section-scoped awk assertions in the preflight failed with
+    `unexpected newline or end of string` because the target awk does not accept
+    the parenthesized multiline condition as authored. Geometry was still
+    proven independently by xrandr/xprop and active plugins/Button2 by grep, but
+    detailed core/Wall transition settings remain uncollected. Replace the
+    assertion with portable one-line pattern tests; never reuse this failed awk.
+    RECEIPT: target preflight stderr and surviving independent outputs,
+    2026-08-14.
+
+  [U-032] `/usr/local/bin/xwinwrap` is functional-path evidence but is not owned
+    by the Void `xwinwrap` package (`xbps-query` says not installed). Before it
+    is trusted for reproducibility, collect its hash, file metadata and help/
+    version behavior. Also collect source Git identity/status, exact existing
+    script hashes/content summaries, prior log outcomes, custom-source identity
+    and a size-ranked storage map. These read-only receipts decide whether to
+    repair/reuse the old pipeline or supersede it and what can safely be removed.
+    RECEIPT: target command/package mismatch and existing workspace inventory,
+    2026-08-14.
+
+[2026-08-14][M9-PREFLIGHT-1] PARTIAL PASS. Final Compiz/theme stack, display,
+  browser, bake codecs and idle daemon are present. M9 write gate remains CLOSED
+  on X-061 storage and U-032 provenance, plus portable Wall-setting collection
+  after X-062. Next action is one bounded read-only reconciliation; no package,
+  source, process or file change is allowed yet.
+
+--------------------------------------------------------------------------------
+12.56 XMB RECONCILIATION 1 — OLD OUTPUTS HASHED; PRIOR CAPTURE METHOD REJECTED;
+      RECEIPT PREFIX/TRACKED SOURCE STATE STILL MISSING. Target 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-122] Existing output provenance is now preserved exactly. The prior
+    deliverables are 60-second videos: full 4480x1440 HEVC/yuv420p/120
+    `loop.mp4` SHA `5db69033...` (482,431,993 bytes); DP-2 HEVC/120
+    `feec4831...` (249,783,360); DP-0 HEVC/120 `f4f56786...` (211,773,039);
+    DP-2 H.264/60 `cc48ae92...` (82,995,749); DP-0 H.264/60 `c6ab4180...`
+    (66,275,517). Two fade files are also hashed, but DP-2.fade is only 0.675
+    seconds while DP-0.fade is 47.99 seconds, so they are not a valid matched
+    pair. Raw `74515e17...` is a 920,914,636-byte 4480x1440 HEVC/yuv444p file
+    whose nominal/average rates are 1000/30000 fps and duration 63.008 seconds.
+    RECEIPT: target sha256sum/stat/ffprobe output, 2026-08-14.
+
+  [X-063] The old bake methodology is rejected for the new three-state system.
+    It captures the live X display with x11grab, then normalizes and trims,
+    rather than seeking the WebGL scene deterministically frame by frame. Logs
+    record GL initialization errors, dropped frames, invalid DTS replacement,
+    more than 1000 duplicated frames, a broken literal `142-2` trim expression,
+    interrupted runs and yuv444/NVDEC incompatibility. The one completed raw
+    capture ran around real-time and still has pathological timestamps. Preserve
+    scripts/logs as evidence, but do not reuse this capture path for new bakes.
+    RECEIPT: target script hashes/grep and nine prior bake-log outcomes,
+    2026-08-14.
+
+  [W-123] The unmanaged xwinwrap binary is now reproducibly identified:
+    `/usr/local/bin/xwinwrap`, root-owned mode 0755, 49,984 bytes, SHA-256
+    `98558e00c2ea51648456ca5e248fe56ce6a119e6f769e8415ea181937d6dc3ea`.
+    Its help exposes the required `-fdt`, `-ni`, `-b`, `-nf`, `-ov`, `-s` and
+    geometry controls and its dynamic dependencies resolve. This is sufficient
+    to gate a later bounded playback prototype, while package ownership remains
+    absent and must be documented in reproducibility output.
+    RECEIPT: target stat/hash/ldd/help output, 2026-08-14.
+
+  [W-124] Portable profile output closes X-062. Active Compiz plugins include
+    vpswitch, wall and Compiz's own screensaver plugin. Wall uses multi-monitor
+    mode 1, wraparound true, preview timeout 0.25 seconds and a very long
+    2.3-second slide duration. These timings are direct inputs to a hybrid
+    spatial/crossfade controller; a 2.3-second blend is the first faithful
+    prototype target, not an arbitrary quick dissolve.
+    RECEIPT: numbered target Default.ini lines 1-71, 2026-08-14.
+
+  [X-064] CORRECTION TO W-119: the persisted Button2 binding at profile line 59
+    belongs to `[screensaver]`, not `[wall]`. It initiates the Compiz screensaver
+    at the listed bottom-left edges; it is not evidence of the user's middle-
+    mouse Wall switch. The operator's direct report remains valid human evidence
+    that middle mouse switches Wall, but its actual binding/default must be
+    observed separately and must not be inferred from line 59. Both Compiz
+    screensaver and xfce4-screensaver are active surfaces, so sleep integration
+    must choose ownership deliberately rather than stacking a third idle path.
+    RECEIPT: numbered Default.ini section boundaries plus prior operator report,
+    2026-08-14.
+
+  [X-065] The reconciliation receipt arrived without its opening storage map,
+    source Git identity/status, source hashes and custom-source inventory. The
+    visible output begins inside a grep result. Consequently source cleanliness,
+    custom page provenance and exact preset persistence remain unverified. The
+    panel implementation shown does mutate in-memory `settings[key]` from slider
+    values; no visible receipt proves durable preset export. Collect those
+    missing facts with a much smaller read-only block before cleanup.
+    RECEIPT: boundaries of the operator-pasted reconciliation output,
+    2026-08-14.
+
+  [X-066] Free durable space fluctuated from 95 MiB to 192 MiB without a project
+    write, but remains effectively zero and still hard-blocks baking. The hashed
+    prior raw/full/panel/fade outputs total roughly 2.0 GiB and are likely cleanup
+    candidates because X-063 rejects their methodology and no wallpaper process
+    uses them. Deletion is irreversible; do not issue it until missing source
+    receipts are collected and the cleanup block lists exact hash-guarded paths.
+    RECEIPT: target final df plus W-122 sizes/process absence, 2026-08-14.
+
+[2026-08-14][M9-RECONCILE-1] PARTIAL PASS. Prior output evidence and xwinwrap
+  provenance are captured; old x11grab pipeline is rejected. Write gate stays
+  CLOSED on X-065 and X-066. Next block is compact/read-only: source Git state,
+  custom source/settings files, exact settings object names and size map only.
+
+--------------------------------------------------------------------------------
+12.57 XMB RECONCILIATION 2 — CUSTOM EDITOR IDENTIFIED; LIVE PRESETS ARE
+      EPHEMERAL; DETERMINISTIC SEEK/SEED HOOKS ABSENT. Target 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-125] The screenshots originate from a compact 3.4 MiB custom editor at
+    `~/.local/share/ps3-wave-custom/`. Its audited source hashes include index
+    `842c362b...`, spline settings `9d7d9088...`, particle settings
+    `cec2671d...`, spline `91ce844c...`, reverse spline `c50736a4...`, particles
+    `60a1761f...`, controls `eb36b9eb...` and CSS `50004713...`. Relative to the
+    xmb-wave checkout, renderer/control/CSS files are byte-identical; index,
+    spline-settings and particle-settings differ. This makes the custom copy
+    the correct visual-input source, while the tracked checkout remains useful
+    provenance and donor code rather than the authoritative preset state.
+    RECEIPT: target custom inventory/hashes and same-name cmp matrix,
+    2026-08-14.
+
+  [W-126] The custom editor's declarative defaults are now captured. Spline RGB
+    defaults are 57/133/221 with gradient 0.09/0.62 and the complete source
+    object shown in the receipt. Particle defaults are exactly
+    2000/0.75/2.6/1.5/0.18, proving W-107 was the untouched editor baseline,
+    not any of the three final role presets. The editor exposes runtime objects
+    as `window.SPLINE_SETTINGS` and `window.PARTICLE_SETTINGS`; this gives a
+    direct machine-readable export surface when each desired visual is open.
+    RECEIPT: numbered custom spline-settings.js/particles-settings.js and index
+    script order, 2026-08-14.
+
+  [X-067] The control panel has no save/export persistence. Slider/select events
+    mutate only the in-memory settings objects; reset restores a page-load copy.
+    Searches found no localStorage/sessionStorage/IndexedDB/JSON persistence.
+    Therefore screenshots are visual receipts but the full exact runtime values
+    disappear when the page/tab closes. Before baking, each final appearance
+    must be recreated or reopened and exported as JSON directly from the two
+    window settings objects. Do not substitute custom-file defaults.
+    RECEIPT: complete settings-panels.js state flow and persistence grep,
+    2026-08-14.
+
+  [X-068] Deterministic bake hooks do not yet exist. Both custom and canonical
+    entry points initialize `particlesTimeSec = Math.random() * 1000` and advance
+    spline/particle time from requestAnimationFrame deltas. Particle generation
+    may also require seeded-random review. This cannot guarantee byte-identical
+    frame sequences. The new source fork must provide a fixed seed and explicit
+    `window.__xmb.seek(t)` single-frame render API before capture begins, in
+    accordance with Section VIII; x11grab/requestAnimationFrame is forbidden by
+    X-063.
+    RECEIPT: target entry-point script flow, 2026-08-14.
+
+  [X-069] CORRECTION TO W-115: the SLEEP screenshot's tiny Size Var numeral was
+    transcribed as 50.8, but source metadata proves the slider maximum is 50
+    with step 0.1. A range input cannot emit 50.8 through this panel. The visual
+    should be treated as maxed or near-maxed, most likely 50.0, but exact value
+    remains pending JSON export. This supersedes only W-115/W-116's numeric
+    `50.8`; the sleep art direction and other legible values remain valid.
+    RECEIPT: custom PARTICLE_SETTINGS_META lines 13-18 versus screenshot,
+    2026-08-14.
+
+  [X-070] Durable free space remains 185 MiB. The old videos/raw are fully
+    hash-receipted and unused, and deleting only those outputs would recover
+    about 2.0 GiB while preserving all source, scripts, logs and configuration.
+    Because deletion is irreversible, obtain an explicit operator cleanup choice
+    before issuing a hash-guarded removal block. No source modification is safe
+    before that space gate opens.
+    RECEIPT: target final df, W-122 and X-066, 2026-08-14.
+
+  [U-033] The compact receipt again omitted its beginning, so tracked source Git
+    HEAD/status is still not visible. This no longer blocks identifying the
+    visual source because W-125 hashes the authoritative custom copy, but capture
+    provenance must eventually record the donor checkout HEAD before the custom
+    fork is staged.
+    RECEIPT: boundaries of the second pasted reconciliation output,
+    2026-08-14.
+
+[2026-08-14][M9-SOURCE-IDENTITY] PASS for visual-source attribution; FAIL for
+  deterministic readiness. Write gate remains CLOSED on X-070 operator cleanup
+  choice. After space is recovered: preserve custom source, export three exact
+  live presets, then author seek/seed hooks and a direct frame-to-encoder bake.
+
+--------------------------------------------------------------------------------
+12.58 OPERATOR AUTHORIZES HASH-GUARDED OLD XMB OUTPUT CLEANUP AND ALTERNATE
+      FILESYSTEM DISCOVERY. Operator authorization 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-127] The operator explicitly authorizes clearing “old xmb junk” and using
+    another filesystem if necessary. Available candidates reported by the
+    operator are a 2 TB Sabrent external USB HDD and another NVMe partition with
+    approximately 30 GB free. This authorizes deletion only of the eight
+    rejected, already hashed XMB raw/full/panel/fade video artifacts in W-122;
+    source, custom editor, node modules, scripts, logs, Chromium profile and
+    settings remain preserved. The deletion must preverify every exact SHA-256,
+    record a local removal manifest, abort before removing anything on any hash
+    mismatch, then report recovered space and read-only mount inventory.
+    RECEIPT: direct operator cleanup/storage instruction, 2026-08-14.
+
+[2026-08-14][M9-STORAGE-CLEANUP-AUTH] AUTHORIZED with bounded scope. No broad
+  wildcard cleanup and no external/NVMe writes are authorized yet. Next block
+  removes only eight named hash-matched obsolete outputs and discovers mounted
+  filesystems; its receipt determines the durable bake root.
+
+--------------------------------------------------------------------------------
+12.59 HASH-GUARDED CLEANUP PASS; NVME BAKE FILESYSTEM SELECTED.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-128] All eight obsolete XMB outputs matched their recorded SHA-256 before
+    deletion. Exactly 2,021,655,367 bytes (1.883 GiB) were removed; no wildcard
+    was used. The immutable local removal manifest is
+    `~/.local/share/xmb-wave/OLD-OUTPUTS-REMOVED-20260814.sha256`, SHA-256
+    `6a5383df128e722df7a5c724173038247897707bc78f63e5dae9ae470b32d709`.
+    Postconditions prove every named path absent and source, custom editor,
+    scripts, logs, bake directory and node_modules preserved. Root free space
+    increased from 184 MiB to 2.1 GiB. `OLD_XMB_OUTPUT_CLEANUP=PASS`.
+    RECEIPT: target hash checks, byte total, removals, manifest hash, preserved
+    path assertions and df output, 2026-08-14.
+
+  [W-129] `/mnt/games` is the preferred durable bake filesystem: mounted rw,
+    noatime from `/dev/nvme0n1p2`, ext4, 656 GiB total with 109 GiB available.
+    It is materially faster and safer for capture/encode intermediates than the
+    unmounted 1.8 TiB NTFS Sabrent `/dev/sda1`, and avoids refilling the 99%-used
+    root partition. The external HDD remains an optional later archive only;
+    do not mount or write it for the bake. Stage working data under a new bounded
+    `/mnt/games/xmb-wave-bake/` root while runtime launchers/manifests remain
+    small enough for the user's home directory.
+    RECEIPT: target lsblk/findmnt/df inventory, 2026-08-14.
+
+[2026-08-14][M9-STORAGE-GATE] PASS. Cleanup scope and preservation verified;
+  durable bake root selected with 109 GiB headroom. Next gate is to author and
+  install a self-checking staging/preset-export tool that copies—never edits—the
+  authoritative custom editor into the NVMe bake root, records source hashes,
+  and adds durable three-role JSON capture before deterministic renderer work.
+
+--------------------------------------------------------------------------------
+12.60 AUDITED NVME STAGER AND THREE-ROLE PRESET CAPTURE SERVICE AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-130] New repository tool `scripts/xmb-stage` implements the next bounded
+    gate without touching the operator's custom editor. `stage` requires
+    `/mnt/games` to be a mount with at least 20 GiB free, verifies all ten
+    authoritative custom code/style files against W-125 hashes, copies only
+    those bytes into a fresh atomic `/mnt/games/xmb-wave-bake/editor`, records a
+    source receipt/aggregate, and creates presets/previews/logs/out directories.
+    It refuses an existing destination or any source mismatch. `serve` binds
+    only 127.0.0.1:8765 and adds three explicit save buttons. Each captures the
+    complete in-memory `window.SPLINE_SETTINGS` and `window.PARTICLE_SETTINGS`
+    plus a canvas-only PNG preview through a constrained API; roles are limited
+    to sleep, main-red and work-monochrome, settings are type/completeness
+    checked, and JSON/PNG are atomically written with hash receipts. `status`
+    reports all hashes. Tool SHA-256 is
+    `0679ebd8d77f560f1212a16b858b8d4fd2a9f68d72d15bcb07013722df9c6dde`.
+    RECEIPT: sandbox source review, Python compile, Node syntax check of embedded
+    capture JavaScript, CLI help and sha256sum, 2026-08-14.
+
+  [W-131] The staging tool deliberately does not yet add deterministic rendering
+    or bake output. This separation prevents two failure classes from being
+    conflated: first preserve exact operator-selected settings with matching
+    previews; only after three JSON receipts visually match W-109/W-111/W-114
+    may a seed/seek renderer consume them. The existing editor remains the
+    visual tuning surface, and captured manifests—not screenshots or defaults—
+    become the bake inputs.
+    RECEIPT: bounded tool scope and X-067/X-068 dependency order, 2026-08-14.
+
+[2026-08-14][M9-PRESET-CAPTURE-TOOL] AUTHORED and syntax-verified in sandbox,
+  unexecuted on target. Next gate: immutable download/hash, atomic NVMe stage,
+  local service health check and source-preservation assertions. Then the
+  operator recreates and saves one role at a time for visual/hash acceptance.
+
+--------------------------------------------------------------------------------
+12.61 NVME PRESET CAPTURE STAGE PASSES; BLUE PAGE IS VERIFIED SOURCE DEFAULT,
+      NOT A RECOVERED ROLE. Target/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-132] Target installation and staging pass every machine gate. Installed
+    `~/.local/bin/xmb-stage` matches tool SHA `0679ebd8...`; the fresh atomic
+    root is `/mnt/games/xmb-wave-bake`; staged editor aggregate is
+    `b363b0b16b36590972e899bd7bf14ded4dad888e52c8afa98a295638889efe03`;
+    source receipt SHA is `6a8a8e2d...`; all three preset/preview slots begin
+    MISSING as required; and the original editor's index/spline/particle hashes
+    remain unchanged. Local capture server PID 6483 answers healthy on
+    127.0.0.1:8765 with all roles null. `XMB_PRESET_STAGE=PASS`.
+    RECEIPT: target install/stage/status/hash/health output, 2026-08-14.
+
+  [X-071] The operator correctly reports the opened blue XMB as “random” and
+    unfamiliar. It is not one of the three approved visuals: it is the audited
+    custom editor's page-load default (W-126: RGB 57/133/221 and particle tuple
+    2000/0.75/2.6/1.5/0.18), and its particle positions are newly randomized by
+    Math.random (X-068). The stage intentionally copied source defaults because
+    X-067 proved that prior slider changes were never persisted. Do not ask the
+    operator to accept or bake this blue scene and do not mislabel it as a
+    failed source copy.
+    RECEIPT: attached staged-editor screenshot, operator report and exact W-126
+    defaults, 2026-08-14.
+
+  [U-034] Exact role recovery now depends on whether the original configured
+    sleep/main-red/work-monochrome tabs remain open and unrefreshed. If they do,
+    their in-memory settings objects can be posted directly to the healthy
+    capture API, preserving every value and PNG without manual transcription.
+    If they do not, the presets must be recreated from screenshots/intent and
+    saved with the new controls; source defaults cannot recover them.
+    RECEIPT: X-067 ephemeral state model and current operator report,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-CAPTURE-STAGE] TARGET PASS. No role captured yet. Gate is
+  U-034: determine whether exact in-memory originals still exist before any
+  retuning or deterministic renderer work.
+
+--------------------------------------------------------------------------------
+12.62 ALL THREE ORIGINAL PRESET TABS REMAIN LIVE; EXACT MEMORY RECOVERY PATH
+      SELECTED. Operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-133] The operator confirms all three original configured pages remain open
+    in unrefreshed browser tabs. Their `window.SPLINE_SETTINGS` and
+    `window.PARTICLE_SETTINGS` objects therefore remain the highest-fidelity
+    preset source, superseding screenshot transcription for numeric values.
+    Capture roles one at a time, starting with sleep, by posting cloned objects
+    and the canvas PNG directly to the already healthy local API. Do not reload,
+    close, reset or retune any original tab before its receipt passes.
+    RECEIPT: direct operator answer `all_open`, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MEMORY-RECOVERY] AUTHORIZED. Next gate is SLEEP only;
+  verify its JSON/PNG hashes and primary tuple before touching MAIN RED.
+
+--------------------------------------------------------------------------------
+12.63 SLEEP LIVE MEMORY SUBMITTED TO CAPTURE API; FILE RECEIPT PENDING.
+      Target/browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-134] The original unrefreshed SLEEP tab exposes exactly 50 spline keys and
+    the particle object `count=257, opacity=0.19, sizeBase=2.6, sizeVar=50,
+    flowSpeed=0.18`. The cross-origin POST to the local capture API returned HTTP
+    200 after the browser's Local Network Access prompt was allowed, and the
+    console ended `SLEEP_PRESET_SUBMITTED`. This is exact live-object evidence,
+    not screenshot transcription.
+    RECEIPT: browser developer-console table, key count, HTTP status and submit
+    completion, 2026-08-14.
+
+  [W-135] X-069 is resolved: SLEEP Size Var is exactly 50, consistent with the
+    source slider maximum. This value supersedes W-115/W-116's impossible 50.8
+    transcription. The final primary SLEEP tuple is therefore
+    `257 / 0.19 / 2.6 / 50 / 0.18`.
+    RECEIPT: live `window.PARTICLE_SETTINGS` console table, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-SUBMIT] HTTP PASS. Before touching MAIN RED, next
+  gate must verify the atomically written sleep JSON/PNG, exact tuple, 50 spline
+  keys, source aggregate and receipt hashes from the filesystem.
+
+--------------------------------------------------------------------------------
+12.64 SLEEP FILE VERIFIER TRANSPORT FAILURE — INTERACTIVE `set -e` CLOSED THE
+      OPERATOR'S TERMINAL. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-072] The issued sleep filesystem verifier began with `set -euo pipefail`
+    directly in the operator's interactive shell. A failing precondition or
+    assertion therefore exited that login shell, and the terminal emulator
+    closed with it, hiding the decisive error. This is a transport/safety bug in
+    the verifier, not evidence that the sleep capture failed. Never enable
+    errexit directly in an operator's interactive shell again. Run strict
+    verification inside a child `bash` used as an `if` condition so any failure
+    is printed and the parent terminal remains open.
+    RECEIPT: direct operator report “that just closes the terminal i paste it
+    into,” 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-VERIFY-1] INVALID/NO RECEIPT. Reissue a bounded
+  child-shell verifier with labelled preconditions and guaranteed parent-shell
+  survival; do not touch MAIN RED.
+
+--------------------------------------------------------------------------------
+12.65 SLEEP JSON EXISTS AND HASHES; PREVIEW QUALITY GATE CORRECTLY FAILS AT
+      4,277 BYTES; TERMINAL-SAFETY FIX PASSES. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-136] Sleep capture files exist atomically. Preset JSON is 1,565 bytes with
+    SHA-256 `57bdad0e6f67dcdafc9f626c2abd4a82a8791b9243706fe02555fe52ff662dbe`;
+    receipt is 256 bytes, SHA `59c9891a...`, and internally repeats the preset
+    hash. Schema, role, source aggregate, exact particle tuple and 50-key spline
+    object passed before the preview assertion. The parent shell survived the
+    intentional failure path and printed `TERMINAL_SURVIVAL=PASS`, closing
+    X-072's safety defect for this verifier pattern.
+    RECEIPT: safe child-shell verifier output, 2026-08-14.
+
+  [X-073] Sleep preview PNG is syntactically present but only 4,277 bytes, SHA
+    `9e020952...`; the >10,000-byte sanity gate rejected it. This is not grounds
+    to discard the exact JSON. WebGL was created without proven
+    `preserveDrawingBuffer`, so `canvas.toDataURL()` invoked between animation
+    frames may capture a cleared/blank backing buffer even while the displayed
+    compositor surface visibly contains the wave. Determine PNG dimensions and
+    decoded pixel distribution before deciding whether to recapture or defer
+    preview generation to the deterministic renderer.
+    RECEIPT: preview stat/hash and labelled validation failure, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-VERIFY-2] JSON provisional PASS / preview FAIL.
+  MAIN RED remains untouched. Next gate is a stdlib-only read-only PNG structural
+  and pixel-distribution probe; terminal-safe child-shell pattern mandatory.
+
+--------------------------------------------------------------------------------
+12.66 SLEEP PREVIEW PROVEN BLANK; EXACT JSON PROMOTED; VISUAL PREVIEW DEFERRED
+      TO DETERMINISTIC RENDERER. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-137] The sleep PNG probe decoded the entire image without external tools:
+    valid non-interlaced RGBA8, 1565x505, 790,325 fully opaque pixels, but zero
+    pixels above RGB 3, average RGB 0 and maximum channel 0. It is exactly black,
+    not merely highly compressible sleep art. The content gate correctly printed
+    `PREVIEW_CONTENT=BLANK`; the parent terminal again survived.
+    RECEIPT: target stdlib PNG chunk/decompression/unfilter/pixel probe,
+    2026-08-14.
+
+  [X-074] `canvas.toDataURL()` cannot serve as visual evidence for this live
+    WebGL page because the context does not preserve its drawing buffer between
+    compositor presentation and asynchronous console capture. This affects the
+    preview channel only, not the cloned in-memory JSON posted in the same
+    request. Treat capture-service PNGs from original tabs as placeholders and
+    replace them after explicit deterministic rendering. Do not relax pixel
+    validation or claim a blank PNG matches a role.
+    RECEIPT: X-073 plus W-137 exact blank-pixel evidence and source context
+    creation options, 2026-08-14.
+
+  [W-138] Sleep preset JSON is promoted to exact manifest PASS despite preview
+    deferral: SHA `57bdad0e...`, schema 1, role sleep, source aggregate
+    `b363b0b1...`, 50 spline values and live particle tuple
+    `257/0.19/2.6/50/0.18`. Its human visual target remains W-114's labelled
+    screenshot. A generated preview becomes mandatory at the later seek/seed
+    renderer gate before any full sleep video is encoded.
+    RECEIPT: W-134/W-136 exact live object and filesystem validation separated
+    from X-074 preview mechanism failure, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP] JSON PASS / deterministic preview PENDING. Proceed
+  to MAIN RED live-memory JSON capture; preserve its original tab and apply the
+  same strict distinction between settings receipt and blank placeholder PNG.
+
+--------------------------------------------------------------------------------
+12.67 MAIN-RED CAPTURE TRANSPORT FAILURE — JAVASCRIPT WAS PASTED INTO BASH,
+      NOT THE BROWSER CONSOLE. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-075] No main-red submission occurred. The operator pasted the browser-only
+    JavaScript at a `[sd@66 ~]$` Bash prompt, producing syntax/command errors.
+    This did not alter preset files or the live original tab. The instruction
+    was insufficiently transport-safe after several terminal blocks. Reissue
+    with explicit physical navigation before the block: leave Terminal, select
+    the original MAIN RED browser tab, press F12, select Console, confirm the
+    prompt begins `>>` rather than `[sd@66 ~]$`, then paste JavaScript. Never
+    label browser code as a generic copy block without that distinction.
+    RECEIPT: target Bash error stream and visible shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-1] INVALID/NO-OP. Main-red original tab
+  remains the input; repeat only in browser Developer Tools Console.
+
+--------------------------------------------------------------------------------
+12.68 MAIN-RED LIVE OBJECT VERIFIED; POST BLOCKED ON LOCAL NETWORK PERMISSION.
+      Browser/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-139] The original MAIN RED tab is confirmed correct before transport: 50
+    spline keys, generator RGB 255/0/0, and exact particle tuple
+    `172/0.41/4.8/16.3/0.18`. The attached full-frame screenshot independently
+    matches W-111's red gradient, broad pale crossing sheets and sparse varied
+    night-light particles. This closes numeric uncertainty for the primary
+    tuple but does not yet prove a filesystem manifest.
+    RECEIPT: browser console table/RGB/key count and attached labelled visual,
+    2026-08-14.
+
+  [X-076] The main-red fetch has not yet produced HTTP 200 or
+    `MAIN_RED_PRESET_SUBMITTED`. Firefox reports Local Network Access permission
+    required for the GitHub Pages origin to contact 127.0.0.1:8765; unlike the
+    sleep receipt, no `prompt_allow` or completion follows in the pasted output.
+    Do not rerun, reload or close the tab yet. The operator must allow the
+    browser's local-network prompt and wait for the pending promise; if no prompt
+    is visible, a controlled resubmission after permission is allowed.
+    RECEIPT: browser console network diagnostic and missing completion marker,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-2] LIVE SETTINGS PASS / transport
+  PENDING. No shell verification and no work-monochrome capture until HTTP 200
+  or completion is observed.
+
+--------------------------------------------------------------------------------
+12.69 ZEN/FIREFOX DENIES GITHUB-PAGES-TO-LOOPBACK POST; DOWNLOAD FALLBACK
+      REQUIRED. Browser/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-077] The original tabs run in Zen's Firefox engine, not Chromium. The
+    attached Developer Tools screenshot shows MAIN RED's correct live values,
+    but the fetch ends `MAIN_RED_PRESET_SUBMIT_FAILED TypeError: NetworkError
+    when attempting to fetch resource`; Local Network Access reports
+    `prompt action: prompt_deny`. No API file receipt may be inferred. Stop
+    retrying cross-origin loopback from GitHub Pages. Use a same-page Blob
+    download of exact cloned JSON, then hash/validate/move it from Downloads in
+    a terminal-safe child shell.
+    RECEIPT: attached Zen UI/console screenshot and direct operator statement,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-3] API transport REJECTED by browser
+  policy. Live tab remains valid. Next gate is browser-local JSON download only;
+  no loopback request and no preview claim.
+
+--------------------------------------------------------------------------------
+12.70 MAIN-RED LIVE JSON DOWNLOADED LOCALLY FROM ZEN; FILE IMPORT PENDING.
+      Browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-140] The browser-local Blob fallback succeeds without loopback access. Zen
+    reports exact main-red tuple `172/0.41/4.8/16.3/0.18`, 50 spline keys,
+    generator RGB 255/0/0, downloaded payload size 1,535 bytes and completion
+    marker `MAIN_RED_JSON_DOWNLOADED`. The preceding network-denial lines belong
+    to X-077's failed fetch and do not invalidate the later same-page download.
+    RECEIPT: Zen Developer Tools Console output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-DOWNLOAD] BROWSER PASS. Next gate is a
+  terminal-safe child-shell import: locate the downloaded file, validate schema/
+  role/source/50 keys/tuple/RGB, canonicalize atomically into the NVMe preset
+  directory and emit hashes. No preview is expected at this gate per X-074.
+
+--------------------------------------------------------------------------------
+12.71 MAIN-RED EXACT MANIFEST IMPORTED AND VERIFIED ON NVME.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-141] MAIN RED now has an audit-grade filesystem manifest. Zen download
+    `/home/sd/Downloads/xmb-main-red-live.json` is 1,535 bytes, SHA-256
+    `6d585ffe...`; validated/canonical preset is
+    `/mnt/games/xmb-wave-bake/presets/main-red.json`, SHA-256
+    `af0d75e4c102f29fe4b7c53314ec93b7ddda1ee92b62e8b508f46bcd7db0998b`;
+    import receipt SHA is `d78436b...`. Schema, role, staged-source aggregate,
+    50 spline keys, RGB 255/0/0 and particle tuple
+    `172/0.41/4.8/16.3/0.18` all pass. Child-shell and parent-terminal survival
+    pass.
+    RECEIPT: target safe import, canonicalization, hashes and assertions,
+    2026-08-14.
+
+  [W-142] Exact main-red spline values are frozen by W-141's canonical JSON;
+    decisive identity values include flowSpeed 1.2, gradient 0/0.45, spacing
+    617, timeStep 2.8, bandAmplitude 0.218, secondary frequency/amplitude
+    16/0.026, perturbation/scale 0.1/0.037, wave height/soft clip 0.5/0.255,
+    reverse blend/seed/motion 0.45/1337/0.65, temporal smooth 0.84, Fresnel
+    1.75/0.5, brightness 0.83, z detail 0.25, and the exact FFD transforms
+    retained in the manifest. The JSON hash, not this prose subset, is the
+    authoritative complete preset.
+    RECEIPT: target sorted 50-key spline output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED] JSON PASS / deterministic preview PENDING.
+  Proceed to WORK MONOCHROME using the proven same-page Blob download path; do
+  not retry Zen loopback fetch.
+
+--------------------------------------------------------------------------------
+12.72 WORK-MONOCHROME DOWNLOAD TRANSPORT FAILURE — BROWSER JAVASCRIPT AGAIN
+      PASTED INTO BASH. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-078] No work-monochrome download occurred. Immediately after the terminal
+    import workflow, the operator pasted the next browser-only JavaScript at the
+    `[sd@66 ~]$` prompt, producing only Bash errors. This is again a no-op with
+    respect to browser state and preset files. Repeating code immediately is not
+    transport-safe. Require an explicit navigation handshake with no code:
+    operator selects the original WORK MONOCHROME Zen tab, opens F12 Console,
+    confirms the visible prompt, and replies `WORK CONSOLE READY`; only then
+    issue the Blob-download JavaScript.
+    RECEIPT: target Bash error stream and shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-1] INVALID/NO-OP. Await browser-console
+  readiness handshake; do not send another code block in this response.
+
+--------------------------------------------------------------------------------
+12.73 WORK-MONOCHROME ZEN CONSOLE READINESS HANDSHAKE PASSES.
+      Operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-143] The operator confirms `WORK CONSOLE READY` after the explicit
+    navigation handshake. The next copy block is therefore browser JavaScript
+    for the original work-monochrome tab, not a shell command.
+    RECEIPT: direct operator readiness confirmation, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-2] TRANSPORT READY. Issue the same-page
+  Blob download now; no loopback fetch.
+
+--------------------------------------------------------------------------------
+12.74 WORK CONSOLE HANDSHAKE PROVED UNRELIABLE; THIRD JAVASCRIPT-TO-BASH
+      NO-OP. User receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-079] Despite the readiness handshake, the work-monochrome JavaScript again
+    arrived at `[sd@66 ~]$` and produced only Bash errors. No download or preset
+    write occurred. The interaction method, not the operator's preset, is now
+    the repeated failure. Stop asking the operator to transport raw code by
+    choosing a destination. Instead issue a terminal-safe block whose sole job
+    is to place audited JavaScript into the X11 clipboard; after its receipt,
+    instruct the operator to switch to Zen Console and press Ctrl+V/Enter. This
+    makes the transport context explicit and removes the response-code paste
+    ambiguity.
+    RECEIPT: third Bash error stream and visible shell prompt, 2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD-3] INVALID/NO-OP. Next gate is clipboard
+  preparation from Terminal only; it must not submit or change browser state.
+
+--------------------------------------------------------------------------------
+12.75 WORK-MONOCHROME LIVE JSON DOWNLOADED; PRIMARY SCREENSHOT NUMERALS
+      CORRECTED BY EXACT OBJECT STATE. Browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-144] The original WORK MONOCHROME Zen tab successfully produced a
+    same-page Blob download. Live object evidence is 50 spline keys, generator
+    RGB 255/255/255, exact particle tuple `4000/0.37/3.1/0/0.04`, downloaded
+    payload size 1,568 bytes and completion marker
+    `WORK_MONOCHROME_JSON_DOWNLOADED`. The earlier accidental terminal paste was
+    a no-op; this later Console output is the successful receipt.
+    RECEIPT: Zen Developer Tools Console table/key/RGB/byte/completion output and
+    operator clarification, 2026-08-14.
+
+  [X-080] CORRECTION TO W-110/W-113/W-116: the downscaled WORK screenshot was
+    misread as Size Var 0.8 and Flow Speed 0.44. Exact live-object values are
+    Size Var 0 and Flow Speed 0.04. The final primary work tuple is therefore
+    `4000 / 0.37 / 3.1 / 0 / 0.04`. This correction reinforces Directive 12's
+    rule that small rendered numerals cannot outrank machine-readable state.
+    RECEIPT: W-144 live `window.PARTICLE_SETTINGS` console table,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-DOWNLOAD] BROWSER PASS. Next gate is terminal-safe
+  import/validation/canonicalization from Downloads; deterministic preview still
+  pending per X-074.
+
+--------------------------------------------------------------------------------
+12.76 LONG HEREDOC IMPORT CORRUPTED BY BRACKETED-PASTE PREFIX; SHORT IMPORT
+      SUBCOMMAND AUTHORED. Target failure + sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-081] The long work import block arrived with a literal bracketed-paste
+    prefix `^[[200~` before `if`, so Bash treated the heredoc as input to an
+    unknown command. The later `then`/`else` fragments ran independently and
+    printed misleading PASS/FAIL text, but the Python importer never executed.
+    No work preset filesystem success may be claimed. Long inline programs are
+    now a demonstrated transport hazard on this terminal; stop issuing them.
+    RECEIPT: target prompt/transcript including `command not found` and orphaned
+    shell syntax errors, 2026-08-14.
+
+  [W-145] `scripts/xmb-stage` now owns Zen-download import as the short command
+    `xmb-stage import-download ROLE`. It locates the newest role-named download,
+    validates schema/role/staged-editor aggregate, exact role-specific particle
+    tuple, exactly 50 finite spline values and required RGB, canonicalizes JSON
+    atomically, refuses a conflicting destination, writes a hash receipt and
+    prints every exact spline value. Updated tool SHA-256 is
+    `81d4ae1353b4da22d3adb540b000d501941c1d0bce5f2a4ab6b9692dd7ed6612`.
+    Python compilation, CLI help and a synthetic 50-key work-monochrome import
+    pass in the sandbox. Target execution is not claimed.
+    RECEIPT: sandbox compile/help/hash and isolated synthetic import output,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-WORK-IMPORT-TOOL] AUTHORED. Next target block must be
+  short: immutable updated-tool download/hash/install followed by one import
+  subcommand. No interactive `set -e`, heredoc or inline Python.
+
+--------------------------------------------------------------------------------
+12.77 WORK-MONOCHROME EXACT MANIFEST IMPORTED AND VERIFIED ON NVME.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-146] The updated short importer installed and executed successfully. Zen
+    download is 1,568 bytes, SHA-256 `d9f4ff85...`; canonical preset is
+    `/mnt/games/xmb-wave-bake/presets/work-monochrome.json`, SHA-256
+    `a3efb5063867d7de93974c451f3bda006d06ab118aa5cec33f61d72a58fdf730`;
+    receipt SHA is `827c878b...`. Schema, role, staged-source aggregate, 50
+    spline keys, RGB 255/255/255 and exact particle tuple
+    `4000/0.37/3.1/0/0.04` pass. `WORK_MONOCHROME_PRESET_IMPORT=PASS`.
+    RECEIPT: target updated-tool hash gate and short importer output,
+    2026-08-14.
+
+  [W-147] Exact work spline identity is frozen by W-146's canonical JSON;
+    decisive values include flowSpeed 1.2, gradient 0/0.92, spacing 407.658,
+    band 0.2 with secondary 7/0.025, perturbation 0.172 at scale 0.3, white RGB,
+    opacity 0.2, brightness 2, Fresnel 8/2, reverse seed 13347, blend 0.3,
+    normalize 2, jitter 0.5, temporal smooth 0.98, zero wave height, soft clip
+    0.05 and exact FFD transforms in the manifest. The JSON hash remains the
+    authoritative complete record.
+    RECEIPT: target sorted 50-key spline output, 2026-08-14.
+
+[2026-08-14][M9-PRESET-MANIFESTS] THREE ROLE JSON INPUTS COMPLETE: sleep
+  `57bdad0e...`, main-red `af0d75e4...`, work-monochrome `a3efb506...`.
+  Screenshot-derived numeric ambiguities are superseded. Next gate is a seeded,
+  explicit-clock deterministic renderer producing one real nonblank preview per
+  manifest; no full-duration encode before preview A/B acceptance.
+
+--------------------------------------------------------------------------------
+12.78 SEEDED EXPLICIT-CLOCK THREE-ROLE PREVIEW RENDERER AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-148] New `scripts/xmb-render-previews.mjs` is the first deterministic
+    renderer gate. It refuses any of the three manifests unless their exact
+    W-138/W-141/W-146 hashes match, launches the installed Chromium through the
+    existing Puppeteer dependency, fixes viewport 4480x1440 and device scale 1,
+    replaces Math.random with fixed-seed mulberry32 before source execution,
+    replaces performance.now/requestAnimationFrame with an explicit clock,
+    applies one manifest before the first frame, resets the particle seed, and
+    advances every 60 Hz simulation step from t=0 through t=5 in one renderer
+    call so temporal smoothing remains deterministic. It hides all control UI,
+    calls gl.finish/readPixels, rejects wrong dimensions or blank/nearly-black
+    framebuffers, captures a compositor PNG, repeats every role in a fresh page
+    and requires byte-identical PNG hashes across both passes. Only then does it
+    publish canonical previews and a receipt. It does not encode video.
+    Script SHA-256 is
+    `7314b3ee7fadc307929adea74f167b3be384b986e0e63e74b205e2e5b3f7522e`.
+    RECEIPT: source review, Node syntax check, invariant grep and sha256sum in
+    sandbox, 2026-08-14.
+
+  [U-035] Target GPU/WebGL behavior remains a live gate. The driver requests
+    Chromium's previously allowed ANGLE/default path, records actual WebGL
+    vendor/renderer/version and reads pixels directly. Sandbox has no target X/
+    GPU and cannot claim rendering. If target ANGLE fails, adjust only from its
+    exact Chromium error; do not fall back silently to the rejected x11grab
+    method. Preview visual acceptance remains separate from deterministic/hash
+    acceptance.
+    RECEIPT: environment boundary plus prior Chromium GL logs, 2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEW-TOOL] AUTHORED/SYNTAX PASS, target
+  unexecuted. Next target block is one short immutable download/hash/install and
+  execution. It may take time but writes only under the NVMe bake root; no WM,
+  source manifest or original editor change.
+
+--------------------------------------------------------------------------------
+12.79 THREE SEEDED PREVIEWS PASS BYTE-DETERMINISM AND NONBLANK FRAMEBUFFER
+      GATES; HUMAN VISUAL GATE PENDING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-149] The deterministic preview driver passes end to end at 4480x1440,
+    60 simulation Hz, t=5 seconds. Each role rendered in two fresh pages with
+    byte-identical PNG hashes: sleep `a06ddda6...` (357,196 bytes), main-red
+    `b9caa66b...` (215,511), work-monochrome `21118e3b...` (324,667). Receipt
+    `/mnt/games/xmb-wave-bake/previews-deterministic/PREVIEW-RECEIPT.json` hashes
+    `a310fbf8...`; terminal ended `XMB_DETERMINISTIC_PREVIEWS=PASS`. This proves
+    fixed input/seed/clock output determinism on the current target Chromium.
+    RECEIPT: target two-pass renderer output and receipt hash, 2026-08-14.
+
+  [W-150] Direct WebGL framebuffer metrics prove real content, closing X-074 for
+    generated previews: sleep 648,517 nonblack pixels, max 171, average 2.965;
+    main-red 5,770,240, max 255, average 25.055; work 5,980,800, max 255,
+    average 119.046. All canvases are exact 4480x1440. Reported WebGL strings are
+    generic WebKit/WebGL Chromium values, so they prove WebGL2 execution but not
+    a specific GPU; performance/hardware ownership remains unclaimed.
+    RECEIPT: target gl.readPixels metrics and context strings, 2026-08-14.
+
+  [U-036] Work-monochrome's 92.7% nonblack coverage and average channel 119 are
+    much brighter than sleep/main-red and potentially conflict with W-109's
+    AMOLED-black visual target. Metrics alone cannot decide whether this is the
+    intended white-gradient ocean frame or a mismatch. Before full encode,
+    present a labelled contact sheet and full-resolution previews for operator
+    judgement. Determinism PASS does not imply aesthetic PASS.
+    RECEIPT: W-149/W-150 quantitative comparison against W-109 visual receipt,
+    2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEWS] MACHINE PASS / HUMAN VISUAL PENDING.
+  Next action creates one contact sheet from the three canonical PNGs and opens
+  it; no manifest, renderer or video changes.
+
+--------------------------------------------------------------------------------
+12.80 THREE-PRESET CONTACT SHEET GENERATED AND VISUALLY ACCEPTED.
+      Target/human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-151] The three canonical deterministic previews were scaled uniformly and
+    stacked in role order (sleep, main-red, work-monochrome) into
+    `/mnt/games/xmb-wave-bake/previews-deterministic/contact-sheet.png`, SHA-256
+    `f121894a3137c96165c549ffc8a7f5c1acc1e7a2468dbfb0a4e34da1f39876cf`.
+    Ristretto opened it successfully; its four GTK warnings are the unchanged
+    X-043 theme warnings and an icon-theme pixbuf warning, not image decode
+    failure. The operator reports “has three pictures of each, good,” accepting
+    all three generated roles as matching the intended set and closing U-036's
+    brightness concern by human judgement.
+    RECEIPT: target ffmpeg/hash/xdg-open output and direct operator verdict,
+    2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEWS-FINAL] MACHINE PASS / HUMAN PASS.
+  Full video bake is now authorized from the exact manifests, fixed seed and
+  explicit 60 Hz clock. Preserve a 2.3-second seamless blend aligned with the
+  live Compiz Wall slide duration; encode one role at a time on /mnt/games and
+  verify before runtime deployment.
+
+--------------------------------------------------------------------------------
+12.81 ONE-ROLE DETERMINISTIC FRAME-PIPE/SEAMLESS-LOOP BAKER AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-152] New `scripts/xmb-bake-video.mjs ROLE` extends the accepted preview
+    method without reverting to x11grab. It hash-gates one exact preset, uses the
+    same fixed seed/explicit performance.now/requestAnimationFrame clock and
+    4480x1440 viewport, advances and screenshots every 60 Hz simulation frame,
+    and streams PNGs directly over stdin to FFmpeg h264_nvenc—no frame files and
+    no live desktop capture. It captures 3,738 frames / 62.3 seconds. A second
+    bounded encode constructs a mathematically continuous 60-second loop by
+    playing source 2.3..60 then blending source 60..62.3 into source 0..2.3;
+    the output ends at source time 2.3, exactly where the next loop starts. The
+    2.3-second blend matches live Wall slide duration W-124. It refuses existing
+    output, partial files use valid .mp4 suffixes, and final gates require exact
+    dimensions, 60/1 average frame rate and 60±0.05-second duration before a
+    hash/probe receipt and PASS marker. Master is retained until visual review.
+    Script SHA-256 is
+    `ed065c83e2edf03fe09f135473b361aa506adc5f532ea031a4d02d13ab5fef3a`.
+    RECEIPT: sandbox Node syntax check, source/invariant review and sha256sum,
+    2026-08-14.
+
+  [U-037] Full target performance, NVENC option acceptance and seamless filter
+    behavior remain unverified; sandbox lacks FFmpeg/GPU. Bake exactly one role
+    first (main-red), preserve progress/error log and stop on any failure. Do not
+    batch all roles until main-red passes ffprobe and human loop inspection.
+    RECEIPT: environment boundary and one-role tool design, 2026-08-14.
+
+[2026-08-14][M11-VIDEO-BAKER] AUTHORED/SYNTAX PASS, target unexecuted. Next
+  target action is immutable tool install and MAIN RED only. This is expected to
+  be a long foreground render; no reboot, WM change or source modification.
