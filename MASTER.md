@@ -2975,3 +2975,165 @@ controls to rotate between windows."
     Resolve by enabling scale + scalefilter + text, binding Scale toggle to a
     single key or hot corner, entering Scale and typing. One-line predicate:
     does a filter text box appear and do windows disappear as you type?
+
+--------------------------------------------------------------------------------
+12.8 SOUND CHAIN: DIAGNOSED FROM TARGET OUTPUT. IT IS NOT BROKEN — IT WAS
+     NEVER SET UP. Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-054] EVERY LINK IN THE R-17 CHAIN IS ABSENT OR OFF. Exact findings:
+      libcanberra-0.30_15          PRESENT
+      libcanberra-gtk3-0.30_15     PRESENT
+      *** NO canberra-gtk-module for GTK2, and NO `canberra-gtk-play`
+          binary: `bash: canberra-gtk-play: command not found`, exit 127.
+          On Void these live in the -tools/-utils split; the executable is
+          what every XFCE troubleshooting guide uses to test, so it must be
+          installed before anything can be verified.
+      /Net/EnableEventSounds          false      <- off
+      /Net/EnableInputFeedbackSounds  false      <- off
+      /Net/SoundThemeName             default    <- names a theme that does
+          not exist on disk
+      /usr/share/sounds/ contains ONLY `alsa` and `speech-dispatcher` —
+          i.e. NO sound theme is installed at all. There is no `freedesktop`
+          directory, so even if the switches were on there would be nothing
+          to play.
+      GTK_MODULES is UNSET (env grep returned nothing), so canberra-gtk-module
+          is not loaded into any GTK app.
+    CONCLUSION: nothing is misconfigured or damaged — the feature has simply
+    never been enabled. Four independent things must all be added. This is a
+    clean greenfield install, which is the easy case.
+    RECEIPT: target sound-probe block output pasted 2026-08-14.
+
+  [X-040] `SoundThemeName = default` IS A DANGLING REFERENCE. /usr/share/sounds
+    has no `default` directory. Any guide that says "set it to default" is
+    assuming sound-theme-freedesktop ships an alias; on this box that alias
+    does not exist. The value must name a real directory under
+    /usr/share/sounds/ (or ~/.local/share/sounds/). Do not leave it as
+    `default` and expect silence to be a bug.
+    RECEIPT: `ls /usr/share/sounds/` -> `alsa  speech-dispatcher`.
+
+  [U-024] Which Void packages supply canberra-gtk-play, the GTK2 module and a
+    base theme? Candidate names to check, read-only:
+      xbps-query -Rs canberra
+      xbps-query -Rs sound-theme
+    Expect something like libcanberra-utils / libcanberra-gtk-module /
+    sound-theme-freedesktop. Do NOT install blind; print the search first.
+    NOTE: a custom theme in ~/.local/share/sounds/<name>/ needs no root and no
+    package at all — that is the preferred route for the user's bespoke
+    Quake-style set (R-18).
+
+--------------------------------------------------------------------------------
+12.9 THE AESTHETIC TARGET AND THE THEME SHORTLIST. User brief, 2026-08-14:
+     "quake live style, sleek, black, like mac os X but amoled black and the
+     10.4-10.6 aesthetic with metal and glossyness".
+--------------------------------------------------------------------------------
+
+  DESIGN READING OF THE BRIEF. Four separable attributes, because they are
+  satisfied by different layers and must not be conflated:
+    (a) AMOLED BLACK  -> true #000000 backgrounds. This is a COLOUR decision,
+        editable in GTK CSS, and it is the attribute most themes get wrong by
+        shipping #2b2b2b "dark grey".
+    (b) BRUSHED METAL + GLOSS -> pixmap/gradient artwork, the OS X 10.4-10.6
+        signature. Requires the GTK2 pixmap engine and, for titlebars, an
+        emerald or xfwm4 theme with gradient/pixmap assets.
+    (c) AQUA GLASS CONTROLS -> the glossy pill buttons and scrollbars of
+        10.4-10.6, explicitly "Aqua elements that were abandoned in later OS X
+        releases".
+    (d) QUAKE LIVE -> flat, high-contrast, cold neutral greys with a single
+        saturated accent, sharp corners, condensed type. This pulls AGAINST
+        (b)/(c) skeuomorphism; the two are reconciled by using Quake for the
+        ACCENT COLOUR and typography, and OS X for the SURFACE TREATMENT.
+
+  [R-19] *** BEST SINGLE STARTING POINT: JoseskVolpe/OS-X-Leopard-Dark. ***
+    A fork of B00merang-Project/OS-X-Leopard that already does the hard part —
+    dark-mode Aqua. Self-described: "OS X Leopard dark mode theme based on
+    Aqua elements that were abandoned in later OS X releases". GPL v3, last
+    commit "Fix GTK-3.0 colors" 2022-01-20, 94 commits. Ships gtk-2.0,
+    gtk-3.0, gtk-3.20, metacity-1, cinnamon, gnome-shell, unity, index.theme.
+    REQUIREMENTS IT STATES: GTK+ 3.20 or above, and *** Murrine AND Pixmap
+    theme engines *** — the pixmap engine is exactly what carries the brushed
+    metal, and it must be installed or GTK2 apps fall back to flat grey.
+    CAVEATS, stated by the author and NOT to be glossed: "This modification
+    was made on and targeted to KDE Plasma, other desktop environments might
+    work aswell"; gnome-shell partially broken; Unity unmodified. It ships NO
+    xfwm4 directory and NO emerald theme — decoration must come from
+    elsewhere (see R-21). It is 38 commits BEHIND its upstream parent, so
+    upstream B00merang OS-X-Leopard may have fixes this fork lacks.
+    SOURCE: github.com/JoseskVolpe/OS-X-Leopard-Dark, fetched 2026-08-14.
+
+  [R-20] OTHER CANDIDATES IN THE SAME FAMILY, ranked by fit to the brief:
+      B00merang-Project/OS-X-Leopard   64 stars, the light-mode parent; the
+        canonical Aqua/10.5 widget set, updated 2023-06-21. Best reference for
+        correct Aqua geometry even if the dark fork is used as the base.
+      B00merang-Project/Mac-OS-X-Cheetah  53 stars, "Mac OS theme with the
+        Aqua design guidelines" — the 10.0 pinstripe/gel look; more extreme
+        skeuomorphism, useful as a parts donor for glossy widgets.
+      B00merang-Project/macOS-Dark     327 stars, tagged `xfce-theme`; modern
+        Sierra-era dark. NOT 10.4-10.6 aesthetic (flat, no gloss) but it is
+        the best-maintained dark macOS GTK base and explicitly XFCE-tagged.
+      JoseskVolpe/X-Vulpus-DarkRed     "A foxy red dark theme with glass and
+        OSX-style effects", tagged `glassyness` — direct evidence the same
+        author has already solved dark + glass, and a candidate parts donor
+        for the accent-colour variant.
+    SOURCE: github topics gtk2-theme / skeuomorphic / apple-theme, and each
+    repo's own description, 2026-08-14.
+
+  [R-21] *** THE GLOSS/AERO LESSON FROM THE WINDOWS SIDE — AND THE ONLY
+    SHORTLISTED REPO THAT SHIPS AN XFWM4 THEME PLUS A PICOM CONFIG. ***
+      xRUS47x/Aero-Glass-XFCE4 — "A GTK/XFCE theme that brings the visual
+        style of Windows 7 Aero to Linux XFCE", 195 commits, tested on Linux
+        Mint 22.2 with XFCE 4.18 AND 4.20. Ships gtk-3.0/ AND xfwm4/ AND a
+        picom.conf AND `xfce-color-switching-tool.sh` for recolouring borders
+        and panel. *** THIS IS THE MOST DIRECTLY REUSABLE ARTEFACT FOUND: its
+        xfwm4 theme is the structural template for a glossy titlebar, and its
+        colour-switching script is the mechanism for pushing everything to
+        #000000 AMOLED. *** Note its picom.conf is for the picom blur path —
+        IRRELEVANT AND UNUSABLE HERE, because X-008/W-042 keep picom off and
+        Compiz does the compositing. Take the theme, discard the picom.conf.
+      x35gaming/ReVista — Vista GTK2/3/4 + xfwm4 + light/dark switch script.
+        The author reports it as "more hours and swearing than I'd like to
+        admit... remaking an existing theme into a coherent GTK2/3/4 light and
+        dark theme", which is an honest signal of the real effort involved in
+        a coherent multi-toolkit dark theme.
+      dubsteptwo/xfseven — ARCHIVED. Author's own verdict: "Xfce isn't the
+        best DE for this kind of look and feel anyway IMO". Useful only for
+        its pointers: X-Aero xfwm4 theme by PaChu, B00merang Windows-7 icons.
+      matthewmx86/Redmond97 — Win9x, wrong era, but notable for shipping a
+        THEME GENERATOR SCRIPT that compiles the theme from custom colours.
+        That generator pattern is the right architecture for an AMOLED
+        recolour and is worth imitating.
+    SOURCE: each repo README, fetched/searched 2026-08-14.
+
+  [R-22] EMERALD DECORATION CANDIDATES (the target already runs emerald as its
+    decorator, W-049, so a .emerald file is directly usable):
+      "Glossy Emerald Theme" gnome-look 1002959 — based on Kimmik's BLACK
+        emerald theme, "modified to fit with glossy themes", uses the PIXMAP
+        engine. Black + glossy + pixmap is a three-for-three match on the
+        brief. File: 75623-glossy.emerald.
+      "mac os X snow leopard" xfce-look 1003287 — 116426-Mac os X snow
+        leopard.emerald, "the closest I could be from mac os x snow leopard".
+      "Leopard look Emerald Theme" xfce-look 1004483 — companion to the
+        "Leopard look" GTK theme.
+      "MacOs Title Bar BLue" gnome-look 1004466.
+    Emerald themes import via `emerald-theme-manager` or by dropping the
+    .emerald file. NOTE X-009/W-047: emerald on this box already emits GTK CSS
+    parse warnings and has a documented history of ignoring themes; if a theme
+    renders wrong, gtk-window-decorator is the fallback per IX.4.
+    SOURCE: gnome-look.org/p/1002959, xfce-look.org/p/1003287, /p/1004483,
+    gnome-look.org/p/1004466.
+
+  [U-025] Are the Murrine and Pixmap GTK2 engines installed on this Void box?
+    R-19 makes them a hard requirement for the Leopard themes; without pixmap
+    there is NO brushed metal and NO gloss, just flat colour. Read-only:
+      xbps-query -l | grep -Ei 'murrine|pixmap|gtk-engine'
+      ls /usr/lib/gtk-2.0/2.10.0/engines/
+    Also confirm GTK2 is present at all, since the Aqua widget work lives in
+    gtk-2.0/ and many modern boxes are GTK3-only.
+
+  [U-026] What themes does the user ALREADY have? They stated "i already have
+    some themes that we can work off too" — inventory them before downloading
+    anything, since an installed theme with correct pixmap assets is worth
+    more than a fresh clone. Read-only:
+      ls -la ~/.themes/ /usr/share/themes/ 2>/dev/null
+      ls -la ~/.emerald/themes/ 2>/dev/null
+      ls -la ~/.icons/ /usr/share/icons/ 2>/dev/null | head -40
