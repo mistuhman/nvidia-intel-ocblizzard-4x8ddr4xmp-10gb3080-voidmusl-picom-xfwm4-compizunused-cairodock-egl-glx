@@ -5721,3 +5721,822 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M11-VIDEO-BAKER] AUTHORED/SYNTAX PASS, target unexecuted. Next
   target action is immutable tool install and MAIN RED only. This is expected to
   be a long foreground render; no reboot, WM change or source modification.
+
+--------------------------------------------------------------------------------
+12.82 MAIN-RED BAKE FAILED AT ENCODER OPEN: NVENC H.264 IS WIDTH-CAPPED AT 4096.
+      Target receipt 2026-08-14. Superseding baker authored and simulated.
+--------------------------------------------------------------------------------
+
+  [X-082] The first real bake of main-red failed after one frame. The tool
+    installed and hash-gated correctly (`ed065c83...`), the preset matched
+    `af0d75e4...`, seed 1481458227, the canvas came up at exactly 4480x1440 and
+    the renderer began `rendering 3738 frames (62.3s @ 60)`. Encoding then died
+    immediately: `[h264_nvenc] Width 4480 exceeds 4096`, `No capable devices
+    found`, `Error while opening encoder`, `Nothing was written into output
+    file`. ROOT CAUSE: NVENC's H.264 hardware block on Ampere (RTX 3080, 7th-gen
+    NVENC) is limited to 4096x4096; the 4480-wide X screen exceeds it by 384px.
+    This is a silicon limit, not a driver, permission, option or preset fault.
+    Re-running the identical command can never succeed.
+    RECEIPT: target bake log `main-red-video-bake.log`, terminal output ending
+    `MAIN_RED_BAKE_COMMAND_STATUS=1`, 2026-08-14.
+
+  [X-083] W-152's preflight `if (!encoderList.includes('h264_nvenc'))` is a
+    proven-insufficient gate and must not be reused in this form. `ffmpeg
+    -encoders` listed `h264_nvenc` (it is compiled in), so the check PASSED and
+    the run proceeded to waste a browser launch and a full frame render before
+    failing. ENCODER PRESENCE IS NOT ENCODER CAPABILITY AT A GIVEN GEOMETRY.
+    Any future encoder gate must attempt a real encode at the real frame size.
+    RECEIPT: W-152 source line 214 versus the X-082 target failure, 2026-08-14.
+
+  [X-084] The failure was reported to the operator as `Error: write EPIPE ... at
+    WriteWrap.onWriteComplete`, which names the Node symptom and hides the
+    ffmpeg cause. When the encoder died its stdin closed, and the unguarded
+    `child.stdin.write`/`once(stdin,'drain')` path raised a stream error that
+    replaced the real diagnostic. A frame-pipe encoder must absorb EPIPE and
+    report the encoder's own exit status instead.
+    RECEIPT: target stack trace immediately following the NVENC error,
+    2026-08-14.
+
+  [W-153] Superseding `scripts/xmb-bake-video.mjs` (SHA-256
+    `f4c2d95e8fb6d2eca4ee52ecb9c48dad9264f8604bb5f582dbdd2392e8f8534a`) fixes
+    X-082/083/084 and changes nothing else. The determinism contract of W-148/
+    W-152 is byte-for-byte intact: same seed 1481458227, same explicit
+    performance.now/rAF clock, same 4480x1440 viewport, same preset hash gate,
+    same 3,738-frame capture, same 2.3-second W-124-aligned blend, same final
+    dimension/frame-rate/duration assertions. Changes are confined to encoder
+    selection and error reporting: (a) default encoder is now `hevc_nvenc`,
+    whose NVENC limit is 8192x8192 and which is the codec the prior W-122
+    deliverables already used at this exact geometry; (b) before Chromium
+    launches, the chosen encoder must survive a real two-frame 4480x1440 encode
+    probe, so an incapable encoder now costs ~1 second instead of a full render;
+    (c) `h264_nvenc` is retained as a named candidate carrying its 4096x4096
+    limit purely so an operator who requests it gets the true explanation; (d)
+    no automatic software fallback — if hardware is incapable the tool refuses
+    and names `XMB_ENCODER=libx265`/`libx264` as an explicit operator choice,
+    because a silent switch to a 4480x1440 software HEVC encode would change
+    bake duration by orders of magnitude without consent; (e) EPIPE is absorbed
+    and the encoder's exit code is reported; (f) stale `.partial` files from a
+    crashed run are removed rather than permanently blocking retry, while
+    completed outputs are still never overwritten; (g) progress lines now carry
+    fps and ETA.
+    RECEIPT: sandbox `node --check` PASS; encoder-selection executed against a
+    mock ffmpeg reproducing the exact X-082 stderr — h264_nvenc correctly
+    REFUSED with its limit, hevc_nvenc PASS, libx265 PASS on explicit request,
+    and a simulated driver-level `No capable devices found` on hevc_nvenc also
+    correctly refused rather than silently downgraded; EPIPE regression test now
+    yields `frame encoder exited early: code=234` instead of `write EPIPE`;
+    full end-to-end run under mock puppeteer/ffmpeg/ffprobe reached
+    `MAIN_RED_VIDEO_BAKE=PASS` and wrote master, loop and receipt; overwrite
+    guard, stale-partial retry and preset-tamper rejection each verified.
+    2026-08-14.
+
+  [U-038] Real target NVENC HEVC acceptance at 4480x1440 is still unproven by
+    execution. It is strongly indicated — W-122 records prior completed
+    4480x1440 HEVC files on this same GPU — but indication is not a receipt.
+    The encoder probe added in W-153 resolves this in about one second at the
+    start of the next run, before any long render is committed. If the probe
+    prints `encoder-probe hevc_nvenc: FAIL`, capture its exact ffmpeg stderr and
+    decide software encoding explicitly; do not retry blindly.
+    RECEIPT: W-122 prior HEVC artifact provenance versus absence of a direct
+    hevc_nvenc encode receipt on this target, 2026-08-14.
+
+  [U-039] Bake wall-clock time is unmeasured. X-082 died too early to sample the
+    frame rate, so the only datum is that frame 1 completed 0.1s after render
+    start, which excludes encode steady state. 3,738 screenshot round-trips at
+    4480x1440 may be slow. W-153's progress line now prints observed fps and
+    ETA, so the first minute of the next run answers this. Note that the master
+    file is retained and the run is resumable only by full restart.
+    RECEIPT: target progress line `frame=1/3738 elapsed=0.1s`, 2026-08-14.
+
+[2026-08-14][M11-VIDEO-BAKER-V2] AUTHORED/SIMULATED, target unexecuted.
+  Supersedes M11's install instruction: the tool at `ed065c83...` is defective on
+  this hardware and must not be re-run. Next target action is one immutable
+  download/hash/install of `f4c2d95e...` followed by main-red only. Watch the
+  `encoder-probe` line first — it is the new fast gate — then the fps/ETA on the
+  progress lines. Storage note: X-061's root filesystem was 100% full, which is
+  why the bake root lives on `/mnt/games`; confirm free space there before a
+  multi-gigabyte master is written.
+
+--------------------------------------------------------------------------------
+12.83 NVENC HEVC ACCEPTED AT 4480x1440; BAKE RUNS AT 7.5 fps AND WAS INTERRUPTED
+      AT FRAME 1381. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-154] X-082 is CLOSED and U-038 is RESOLVED. The superseding baker
+    `f4c2d95e...` installed by hash and the new fast gate printed
+    `encoder-probe hevc_nvenc: PASS`, proving NVENC HEVC accepts a real
+    4480x1440 encode on this RTX 3080 — the exact geometry h264_nvenc refused.
+    The stale zero-byte partial left by the X-082 crash was auto-removed,
+    confirming the W-153 retry path. Preset `af0d75e4...`, seed 1481458227 and
+    canvas 4480x1440 all re-verified. `/mnt/games` has 109 GiB free (84% used),
+    so X-061's storage blocker does not apply to the bake root.
+    RECEIPT: target run to frame 1381 of 3738, log
+    `main-red-video-bake-v2.log`, 2026-08-14.
+
+  [W-155] Throughput is 7.5 frames/second, steady from frame 61 to frame 1381
+    with no drift (7.08 rising to 7.51 and holding), i.e. ~133 ms per frame.
+    Full bake projects to 498 seconds — 8.3 minutes, not hours. The operator
+    interrupted at frame 1381 (Ctrl-C, status 130) with roughly 5 minutes
+    remaining, so no output was produced. This is not a hang or a stall; it is
+    a stable rate that simply had not finished.
+    RECEIPT: target progress lines and `MAIN_RED_BAKE_COMMAND_STATUS=130`,
+    2026-08-14.
+
+  [X-085] "I don't see any XMB wave" during a bake is EXPECTED BEHAVIOUR and
+    must not be treated as a defect. The bake is headless by design (Directive 2
+    and Section 8.3): Chromium renders offscreen and streams PNGs to FFmpeg over
+    a pipe. Nothing is drawn to the X display, no window is mapped and the
+    wallpaper is not touched at any point. The visual acceptance of the wave
+    already happened at W-151 (contact sheet, operator verdict "has three
+    pictures of each, good"). Live desktop display is a SEPARATE later stage
+    (xwinwrap/mpv, Section IX). Any future run must state this before the bake
+    so a silent screen is not mistaken for a failure.
+    RECEIPT: W-152/W-153 design, absence of any display code path in the baker,
+    and the operator's report during a successful run, 2026-08-14.
+
+  [U-040] The 7.5 fps rate is not yet attributed. Reported WebGL strings are the
+    masked `WebKit`/`WebKit WebGL` values, which per W-150 prove WebGL2 executed
+    but say nothing about hardware, so U-004 (does headless Chromium get real
+    GPU acceleration here) remains genuinely open. Two candidate causes: a
+    software rasterizer doing the scene, or PNG encode/transfer of a
+    4480x1440x4 = 25.8 MB framebuffer per frame dominating. These have opposite
+    fixes and must not be guessed between.
+    RECEIPT: masked strings in the target setup line versus W-150, 2026-08-14.
+
+  [W-156] New read-only `scripts/xmb-bake-profile.mjs` (SHA-256
+    `3dc36280a6adb6b9913e5db94983a412735a8273498f1a998111978bc13c510b`) resolves
+    U-040/U-004 in about ten seconds. It reuses the identical seed/clock/viewport
+    setup, then reads `WEBGL_debug_renderer_info` UNMASKED_VENDOR/RENDERER,
+    cross-checks Chromium's own `chrome://gpu` rows (required because X-005
+    proved GL flags can be silently ignored), prints a SOFTWARE/hardware verdict,
+    and medians the per-stage cost of scene render+gl.finish, PNG screenshot,
+    PNG with `optimizeForSpeed`, and a readPixels round-trip. It projects each
+    to the full 3738-frame bake and names the bottleneck. It encodes nothing,
+    writes nothing under `out/` and cannot disturb a bake.
+    RECEIPT: sandbox `node --check` PASS plus three executed mock-harness cases —
+    hardware (verdict "hardware-backed", 493s projection matching the observed
+    ~500s, bottleneck PNG CAPTURE), SwiftShader (verdict "SOFTWARE RASTERIZER
+    (no GPU)"), and a Puppeteer lacking `optimizeForSpeed` (degrades to
+    "unsupported by this puppeteer" instead of throwing). 2026-08-14.
+
+  [U-041] If the profiler names PNG capture as the bottleneck, `optimizeForSpeed`
+    is the candidate remedy, but it changes PNG compression only, not pixels.
+    Determinism must be re-proven by the W-148 two-pass byte-identical method
+    before it is adopted for a real bake; a faster bake that breaks reproducible
+    output is a regression, not an optimization.
+    RECEIPT: W-148 determinism contract versus untested capture flag, 2026-08-14.
+
+[2026-08-14][M11-BAKE-RUN-1] INTERRUPTED BY OPERATOR AT FRAME 1381/3738, no
+  output written. Encoder question is settled (W-154). Two open items: attribute
+  the 7.5 fps (W-156 profiler) and then simply let the ~8.3-minute bake finish.
+  Nothing about the tool is known to be wrong. Do not re-litigate the encoder.
+
+--------------------------------------------------------------------------------
+12.84 U-004 CLOSED: HEADLESS CHROMIUM IS ON THE RTX 3080. BOTTLENECK IS PNG
+      CAPTURE, NOT RENDERING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-157] U-004 and U-040 are RESOLVED. Unmasked WebGL identity on the target is
+    vendor `Google Inc. (NVIDIA Corporation)` and renderer
+    `ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL 4.5.0)`
+    with MAX_TEXTURE_SIZE 32768. Headless Chromium IS hardware-accelerated on the
+    3080 through ANGLE's OpenGL backend. The masked `WebKit`/`WebKit WebGL`
+    strings recorded in W-150 and in every bake log are Chromium privacy masking
+    and are NOT evidence of software rendering. No SwiftShader, no llvmpipe.
+    RECEIPT: target `xmb-bake-profile main-red`, log `bake-profile.log`,
+    2026-08-14.
+
+  [W-158] The 7.5 fps of W-155 is attributed and it is NOT the GPU. Median
+    per-stage cost at 4480x1440: scene render + gl.finish 2.0 ms; readPixels
+    round-trip 9.0 ms; PNG screenshot 113.0 ms. Rendering is 1.7% of frame time.
+    The bake is bound by PNG encode/transfer of the 25.8 MB framebuffer, exactly
+    the second hypothesis in U-040. Projections: current path 430 s (7.2 min),
+    theoretical floor if capture were free 7 s. Nothing about the scene, the
+    preset, the GPU or NVENC is slow.
+    RECEIPT: target profiler per-stage medians and projections, 2026-08-14.
+
+  [X-086] AGENT ERROR IN W-156, NOT A TARGET FAULT. The profiler printed
+    `content check: 0/6452 sampled pixels non-black` and `WARNING: first frame
+    sampled entirely black`. This is a false alarm caused by my own probe
+    ordering: the profiler calls `page.screenshot()` BEFORE `gl.readPixels()`,
+    and the compositor swap during capture clears the drawing buffer when
+    `preserveDrawingBuffer` is false, so readPixels sampled an already-cleared
+    buffer. W-148's accepted preview renderer reads pixels BEFORE capturing and
+    correctly reported millions of non-black pixels. Decisive counter-evidence
+    from the profiler's own output: the captured PNG is 236,999 bytes, and
+    W-149's accepted non-blank main-red preview was 215,511 bytes, whereas a
+    genuinely black 4480x1440 PNG compresses to roughly 5-15 KB. A 237 KB PNG
+    cannot be a black frame. The scene is rendering correctly.
+    CONSEQUENCE: the black warning must be IGNORED for this run, the ordering
+    must be fixed before the profiler is trusted for blankness, and the BAKER IS
+    UNAFFECTED because it never calls readPixels — it only screenshots.
+    RECEIPT: profiler source order versus W-148 order, and the 236,999-byte PNG
+    against W-149's 215,511-byte accepted preview, 2026-08-14.
+
+  [X-087] SECOND AGENT ERROR IN W-156: the `chrome://gpu` cross-check printed
+    `WebGL2:: NOT FOUND` for all five rows. Two defects — headless Chromium does
+    not populate that page's innerText the way the scraper assumed, and the
+    label was concatenated twice in the fallback string. The check produced zero
+    information. It is harmless because WEBGL_debug_renderer_info answered the
+    question directly and more authoritatively, but the row must not be cited as
+    evidence of anything, in either direction.
+    RECEIPT: target profiler output rows versus scraper source, 2026-08-14.
+
+  [U-042] `optimizeForSpeed` halves capture to 58.0 ms (projecting 224 s / 3.7
+    min) but produced a LARGER 598,332-byte PNG versus 236,999 — consistent with
+    trading compression ratio for encode speed. Pixels should be identical since
+    only the PNG encoder settings change, but per U-041 this is unproven here and
+    a faster bake that breaks W-148 byte-determinism is a regression. It is
+    therefore NOT used for the first real bake. Resolve later with a two-pass
+    byte-identical comparison against the default path; the honest saving at
+    stake is about 3.5 minutes on a one-time job.
+    RECEIPT: target profiler fast-path timing and byte sizes, 2026-08-14.
+
+  [W-159] Baking concurrently with desktop idle/sleep is SAFE FOR OUTPUT
+    CORRECTNESS by construction, independent of what Compiz does. The baker
+    overrides `performance.now` and `requestAnimationFrame` with an explicit
+    counter and seeds `Math.random`, so frame content is a pure function of frame
+    index and preset (W-148/W-152). Wall-clock delay, screen blanking, the Compiz
+    screensaver plugin or xfce4-screensaver cannot alter a single pixel; they can
+    only change how long the run takes by competing for the GPU. The bake is
+    headless and never maps a window (X-085), so it neither triggers nor
+    suppresses idle. Two real hazards remain and they are about the PROCESS, not
+    the pixels: a foreground job dies with its terminal, and DPMS/lock behaviour
+    is a Section-XI live surface. Run it detached under setsid+nohup and it
+    survives terminal close, logout and lock.
+    RECEIPT: baker determinism source (explicit clock/seed, no display path)
+    plus W-120 idle/DPMS inventory and X-064 dual-screensaver note, 2026-08-14.
+
+[2026-08-14][M11-PROFILE] COMPLETE. GPU question closed (W-157), rate explained
+  (W-158), two agent-side probe bugs recorded (X-086/X-087), no tool defect
+  found. Baker `f4c2d95e...` is unchanged and cleared to run to completion at
+  ~7.2 minutes. Next action is the full main-red bake, detached.
+
+--------------------------------------------------------------------------------
+12.85 MAIN-RED MASTER RENDERED COMPLETE: 3738/3738 FRAMES IN 495.8 s.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-160] The main-red master is COMPLETE and is the first real video artifact
+    this project has produced by the deterministic method. All 3,738 frames
+    rendered without a single error, retry or dropped frame, ending
+    `progress frame=3738/3738 t=62.3s elapsed=495.8s fps=7.54 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/main-red/main-red.master-62.3s.mp4`, SHA-256
+    `16325f7613c1f3fe9c0610702d85c546d79d20cb4400e4e81bf5a9dd50ed911d`, encoded
+    h264-free via hevc_nvenc at 4480x1440. The detached setsid/nohup invocation
+    of W-159 worked: the run survived independent of the operator's terminal.
+    RECEIPT: target `main-red-bake-final.log` progress tail and master hash line,
+    2026-08-14.
+
+  [W-161] Throughput was flat across the entire run — 7.38 fps at frame 61,
+    7.59 at frame 1201, 7.55 at frame 3001, 7.54 at completion. No thermal
+    decay, no memory-pressure slowdown, no leak over 8+ minutes of continuous
+    4480x1440 capture. Observed 495.8 s versus W-158's 430 s projection is a
+    15.3% overshoot, explained by the profiler having sampled only 20 frames and
+    excluded NVENC submission cost per frame; the projection method is sound and
+    should simply be treated as a lower bound in future.
+    RECEIPT: target progress lines at frames 61/1201/3001/3738, 2026-08-14.
+
+  [W-162] X-086 is now doubly closed by the artifact itself. A 62.3-second
+    4480x1440 HEVC master would not be produced from an all-black scene at any
+    plausible bitrate, confirming the profiler's black-frame WARNING was the
+    agent-side readPixels-ordering artifact and never a rendering fault. The
+    baker's capture path was correct throughout.
+    RECEIPT: completed master hash/size versus X-086 analysis, 2026-08-14.
+
+  [U-043] The second pass — the seamless-loop encode — had not yet reported when
+    the operator sampled the log. It re-encodes 3,600 frames (3,462 straight plus
+    138 crossfaded over the 2.3-second W-124 Wall-aligned blend) through
+    `blend`/`concat`, then asserts exact 4480x1440 dimensions, 60/1 average frame
+    rate and 60+/-0.05 s duration before writing BAKE-RECEIPT.json and printing
+    `MAIN_RED_VIDEO_BAKE=PASS`. This pass is filter-bound rather than capture-
+    bound and is expected to be far shorter than the master render. Confirm by
+    the PASS marker and the loop hash, not by elapsed time.
+    RECEIPT: W-153 baker source second-pass gates, 2026-08-14.
+
+[2026-08-14][M11-MASTER-MAIN-RED] MASTER COMPLETE, LOOP PASS PENDING. First
+  deterministic video artifact of the project. Await
+  `MAIN_RED_VIDEO_BAKE=PASS`; then human loop inspection before the remaining
+  two roles are baked, per U-037's one-role-first rule.
+
+--------------------------------------------------------------------------------
+12.86 MAIN-RED SEAMLESS LOOP COMPLETE AND VISUALLY ACCEPTED. M11 CLOSED.
+      Target + human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-163] `MAIN_RED_VIDEO_BAKE=PASS`. The full two-pass bake completed and every
+    machine gate held. Deliverables in
+    `/mnt/games/xmb-wave-bake/out/main-red/`:
+      loop    `main-red.loop-60s.mp4`     156,659,080 bytes, SHA-256
+              `1f8de512f9f30a331a00d0ef73e2f306e566ec9aa9efbcde71019bd915755573`
+      master  `main-red.master-62.3s.mp4` 209,122,085 bytes, SHA-256
+              `16325f7613c1f3fe9c0610702d85c546d79d20cb4400e4e81bf5a9dd50ed911d`
+      receipt `BAKE-RECEIPT.json`         1,727 bytes, SHA-256
+              `3ff9afd6104a3dc64a28b817a3d2713f305303327b08abbfdc4f8e49f82cfe87`
+    The loop only exists because the tool's own assertions passed first: exact
+    4480x1440 dimensions, `60/1` average frame rate and 60+/-0.05 s duration.
+    U-043 is CLOSED. Loop bitrate is ~20.9 Mbit/s.
+    RECEIPT: target log tail, `ls -la` sizes and printed hashes, 2026-08-14.
+
+  [W-164] Independent playback verification on the target: mpv reports
+    `Video --vid=1 (hevc 4480x1440 60 fps)` and `VO: [gpu-next] 4480x1440
+    yuv420p`, playing to 00:00:17 of 00:01:00 before a clean operator quit. This
+    confirms the container/codec/geometry/pixel-format are all readable by the
+    intended runtime player, not merely by ffprobe. The 60-second duration is
+    confirmed by a third independent tool.
+    RECEIPT: target mpv stream banner and position line, 2026-08-14.
+
+  [W-165] HUMAN VISUAL ACCEPTANCE — distinct from the machine receipts above and
+    labelled as such per the interaction protocol. Operator verdict: "looks
+    good". The submitted screenshot shows the main-red XMB wave filling the
+    4480x1440 X screen: multi-strand specular crest across the horizontal
+    midline, deep red vertical gradient below, AMOLED-black falloff above,
+    scattered particle sparkle, and no visible seam, tear or banding. The frame
+    is consistent with the W-151 contact sheet the operator previously accepted.
+    This closes the M11 aesthetic gate for main-red.
+    RECEIPT: operator statement plus attached mpv screenshot, 2026-08-14.
+
+  [W-166] The deterministic method is quantitatively better than the rejected
+    x11grab pipeline it replaced (X-063). The new 60-second 4480x1440 loop is
+    156,659,080 bytes against the old `loop.mp4` at 482,431,993 bytes (W-122) —
+    67.5% smaller for the same duration and geometry, with none of the old
+    path's dropped frames, duplicated frames, invalid DTS or pathological
+    timestamps. Deterministic seeking beat real-time capture on both size and
+    correctness.
+    RECEIPT: W-163 size versus W-122 recorded size, 2026-08-14.
+
+  [U-044] Loop seam quality is accepted on a 17-second partial viewing, which
+    did NOT reach the 60-second wrap point. The 2.3-second crossfade is
+    mathematically constructed and the duration gate passed, but no human has
+    yet observed the actual 59->0 transition. Confirm during normal desktop use,
+    or deliberately with `mpv --loop-file=inf --start=55`. This is a low-risk
+    open item, not a blocker.
+    RECEIPT: mpv position `00:00:17 / 00:01:00` at quit, 2026-08-14.
+
+[2026-08-14][M11-MAIN-RED] COMPLETE — MACHINE PASS + HUMAN PASS. First role
+  fully baked by the deterministic headless method, closing the loop opened by
+  Directive 2. U-037's one-role-first rule is satisfied; `sleep` and
+  `work-monochrome` are now authorized to bake back to back at ~9 minutes each.
+  Runtime deployment (xwinwrap/mpv, Section IX) remains a separate later stage.
+
+--------------------------------------------------------------------------------
+12.87 SLEEP MASTER RENDERED COMPLETE AT REDUCED THROUGHPUT.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-167] The `sleep` master is COMPLETE: all 3,738 frames, ending
+    `progress frame=3738/3738 t=62.3s elapsed=591.0s fps=6.32 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/sleep/sleep.master-62.3s.mp4`, SHA-256
+    `f82914597a2009003939fc83b0f8c981565e1ad522013fad9929c04520e462cb`. The
+    chained back-to-back invocation behaved as designed; `work-monochrome` is
+    gated behind `&&` and follows only on sleep's success.
+    RECEIPT: target `roles-sleep-work.log` tail and master hash line,
+    2026-08-14.
+
+  [X-088] Throughput regression, cause NOT established — recorded as an
+    observation, not a diagnosis. Sleep rendered at 6.32 fps / 591.0 s against
+    main-red's 7.54 fps / 495.8 s (W-160): 19.2% slower, +95.2 s. This is
+    counter-intuitive and must not be hand-waved: per W-150 sleep is by far the
+    DARKER scene (648,517 non-black pixels versus main-red's 5,770,240), so if
+    the bake were purely PNG-bound as W-158 concluded, sleep should have been
+    FASTER, not slower. Candidate explanations, none yet evidenced: (a) GPU or
+    NVENC thermal/clock behaviour after main-red's immediately preceding 8-minute
+    run plus the loop pass; (b) sleep's particle/spline settings costing more
+    scene time despite producing fewer lit pixels; (c) desktop contention during
+    the run; (d) PNG size not tracking non-black pixel count in the way assumed.
+    The deliverable is unaffected — frame content is a pure function of frame
+    index (W-159), so timing cannot alter output — and this is therefore a
+    performance curiosity, NOT a correctness defect. Do not "fix" it blind.
+    RECEIPT: W-160 versus W-167 elapsed/fps, cross-checked against W-150 pixel
+    counts, 2026-08-14.
+
+  [U-045] The cheap decisive test for X-088, if it is ever worth the time, is to
+    re-run `xmb-bake-profile sleep` from cold and compare its per-stage medians
+    against the main-red profile in W-158 (render 2.0 ms, PNG 113.0 ms). If PNG
+    time is unchanged and scene render has grown, cause (b) holds; if PNG time
+    itself has grown for a darker scene, cause (d) holds and W-158's model needs
+    revision. This is optional: it changes no artifact and blocks nothing.
+    RECEIPT: W-156 profiler capability versus X-088 open question, 2026-08-14.
+
+[2026-08-14][M11-SLEEP-MASTER] MASTER COMPLETE, LOOP PASS PENDING, then
+  work-monochrome follows automatically. Await two `..._VIDEO_BAKE=PASS`
+  markers. X-088 throughput variance is logged and explicitly does not gate
+  anything.
+
+--------------------------------------------------------------------------------
+12.88 SLEEP LOOP COMPLETE; X-088 RESOLVED BY FILE-SIZE EVIDENCE — THE FAULT WAS
+      IN W-158's PROXY, NOT THE MACHINE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-168] The `sleep` role is COMPLETE. Deliverables in
+    `/mnt/games/xmb-wave-bake/out/sleep/`: `sleep.loop-60s.mp4` 177,038,151
+    bytes, `sleep.master-62.3s.mp4` 248,971,835 bytes, `BAKE-RECEIPT.json`
+    1,712 bytes. The loop exists only because the tool's dimension, 60/1 frame
+    rate and 60+/-0.05 s duration assertions passed, and the `&&` chain then
+    advanced to `work-monochrome` as designed. Two of three roles are now baked.
+    RECEIPT: target `ls -la /mnt/games/xmb-wave-bake/out/*/`, 2026-08-14.
+
+  [W-169] X-088 IS RESOLVED, and the error was mine. Sleep's master is 248,971,835
+    bytes against main-red's 209,122,085 — 19.1% LARGER — while sleep rendered
+    19.2% SLOWER (591.0 s versus 495.8 s). That agreement to within 0.1 point is
+    the receipt: per-frame cost tracks ENCODED DATA VOLUME, so a bulkier frame
+    stream costs proportionally more time. W-158's core finding survives intact
+    (capture/encode dominates at ~113 ms of ~133 ms per frame). What was wrong
+    was the PROXY I used to predict that cost: I treated W-150's non-black PIXEL
+    COUNT as a stand-in for PNG size. It is not. PNG cost tracks ENTROPY — fine
+    gradients, dither and particle noise — not brightness. Sleep has 8.9x fewer
+    lit pixels than main-red yet compresses WORSE, because a dim, finely graded
+    field is higher-entropy than a bright smooth one. Candidate (d) of X-088
+    holds; (a) thermal, (b) scene-render cost and (c) contention are all refuted
+    below.
+    RECEIPT: W-160/W-167 elapsed times against W-163/W-168 file sizes,
+    2026-08-14.
+
+  [W-170] Thermal decay and desktop contention are affirmatively RULED OUT as
+    causes of the sleep slowdown. `work-monochrome` is rendering at 7.19 fps
+    while running THIRD — after roughly 20 minutes of continuous GPU load from
+    main-red and sleep — which is faster than sleep's 6.32 fps and close to
+    main-red's cold-start 7.54 fps. A thermal or cumulative-contention
+    explanation predicts monotonic decay across the sequence; the observed order
+    7.54 / 6.32 / 7.19 is non-monotonic and therefore incompatible with it.
+    Per-role content, not elapsed session time, sets the rate.
+    RECEIPT: target progress lines for role 3 at frames 541-661, 2026-08-14.
+
+  [U-046] SUPERSEDES U-045's framing. The profiler re-run is no longer the
+    decisive test for X-088, because file sizes already answered it at zero cost.
+    If per-role bake time is ever to be PREDICTED rather than observed, the
+    correct proxy is mean encoded bytes per frame from a short sample, not pixel
+    brightness. Recording this so no future run repeats the brightness
+    assumption. No action required; nothing is blocked.
+    RECEIPT: W-169 size/time correlation versus U-045's proposed method,
+    2026-08-14.
+
+[2026-08-14][M11-SLEEP] COMPLETE (machine). Human visual gate still open for
+  sleep and work-monochrome; only main-red has W-165 acceptance. X-088 closed by
+  W-169/W-170 with an agent-side model correction. Await
+  `WORK_MONOCHROME_VIDEO_BAKE=PASS`, then review both new loops together.
+
+--------------------------------------------------------------------------------
+12.89 WORK-MONOCHROME MASTER COMPLETE; ALL THREE MASTERS RENDERED.
+      W-169 PROMOTED TO A QUANTITATIVE LAW WITH A PRE-REGISTERED PREDICTION.
+      Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-171] The `work-monochrome` master is COMPLETE, ending
+    `progress frame=3738/3738 t=62.3s elapsed=533.3s fps=7.01 eta=0s`. Output is
+    `/mnt/games/xmb-wave-bake/out/work-monochrome/work-monochrome.master-62.3s.mp4`,
+    SHA-256
+    `e03613299cf9c15fe2c677fb1cf49cc09b49246e230a35aa5efa117e08ae9dcc`.
+    ALL THREE ROLE MASTERS ARE NOW RENDERED — main-red 495.8 s, sleep 591.0 s,
+    work-monochrome 533.3 s — with zero errors, zero dropped frames and zero
+    retries across 11,214 deterministic frames total.
+    RECEIPT: target `roles-sleep-work.log` tail and master hash, 2026-08-14.
+
+  [W-172] W-169's qualitative finding is now QUANTITATIVE and predictive. Bake
+    throughput expressed as encoded bytes per second of wall clock is nearly
+    constant across roles: main-red 209,122,085 B / 495.8 s = 421,787 B/s;
+    sleep 248,971,835 B / 591.0 s = 421,272 B/s. Those agree to 0.12%, which is
+    far too tight to be coincidence across two scenes of very different
+    appearance. The bake is bound by encoded-data throughput at a fixed rate of
+    ~421.5 kB/s, and per-role time differences are fully explained by per-role
+    compressed size. Sleep was not "slow"; it was bulkier.
+    RECEIPT: W-160/W-163 and W-167/W-168 time and size pairs, 2026-08-14.
+
+  [U-047] PRE-REGISTERED PREDICTION, recorded BEFORE the file size was observed,
+    so that W-172 is falsifiable rather than fitted after the fact. Given
+    work-monochrome's 533.3 s at the measured ~421.5 kB/s, its master must be
+    approximately 224,800,000 bytes (~214.4 MB), bracketed 215-225 MB. If the
+    observed size falls in that band the throughput law is confirmed on an
+    unseen third case. If it lands materially outside — in particular below
+    main-red's 199.4 MB or above sleep's 237.4 MB — W-172 is WRONG and must be
+    superseded, not rescued. Resolve with `ls -la` when the loop pass finishes.
+    RECEIPT: arithmetic from W-172 constants against W-171 elapsed time, entered
+    before observation, 2026-08-14.
+
+  [W-173] Cumulative-load explanations are now refuted twice over. Across the
+    full sequence the rates were 7.54, 6.32 and 7.01 fps, and the third role ran
+    FASTER than the second despite following roughly 28 minutes of continuous
+    GPU work. The GPU sustained approximately 45 minutes of unbroken 4480x1440
+    capture and NVENC encoding without throttling, memory growth or rate decay.
+    RECEIPT: W-160, W-167 and W-171 rates in execution order, 2026-08-14.
+
+[2026-08-14][M11-WORK-MASTER] ALL THREE MASTERS COMPLETE; work-monochrome loop
+  pass pending. Machine gates have held on every role. The outstanding gate is
+  HUMAN: only main-red carries visual acceptance (W-165); sleep and
+  work-monochrome are unreviewed. U-044 (the 59->0 seam) also remains unobserved
+  on every role.
+
+--------------------------------------------------------------------------------
+12.90 ALL THREE ROLES COMPLETE. U-047 PREDICTION FAILED — W-172 IS FALSIFIED AND
+      IS SUPERSEDED HERE. Target + human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-174] `WORK_MONOCHROME_VIDEO_BAKE=PASS`. The third and final role is
+    complete: `work-monochrome.loop-60s.mp4` 240,799,621 bytes,
+    `work-monochrome.master-62.3s.mp4` 250,255,810 bytes SHA-256
+    `e03613299cf9c15fe2c677fb1cf49cc09b49246e230a35aa5efa117e08ae9dcc`,
+    `BAKE-RECEIPT.json` 1,762 bytes SHA-256
+    `9052327b22da767302378f97fead83470ef9dca594f142130463b620ac6d2268`.
+    ALL THREE ROLES ARE NOW BAKED with every machine gate passed. The chained
+    `&&` invocation completed both remaining roles unattended.
+    RECEIPT: target log tail and `ls -la` of the work-monochrome output
+    directory, 2026-08-14.
+
+  [X-089] W-172 IS FALSIFIED AND MUST NOT BE CITED. This supersedes W-172 per
+    Directive 7; the row stands as history and this row overturns it. U-047
+    pre-registered that work-monochrome's master would be ~224,800,000 bytes
+    within a 215-225 MB band. Observed: 250,255,810 bytes / 238.7 MB — a miss of
+    +24.3 MB, +11.3%, clearly OUTSIDE the declared band. The three measured
+    throughputs are 421,787, 421,272 and 469,259 B/s, an 11.4% spread, not the
+    0.12% constant W-172 asserted. The correct reading is that the earlier
+    agreement between exactly two roles was a coincidence I over-fitted into a
+    law on n=2. Bake time is NOT a fixed function of encoded bytes. The honest
+    residual finding is only the weaker one already established in W-169: capture
+    and encode dominate frame cost, and per-role time varies with scene content
+    in a way this project has NOT successfully modelled and does not need to.
+    LESSON: two points do not make a law; a pre-registered prediction is what
+    exposed this, and pre-registration should be retained for any future
+    performance claim.
+    RECEIPT: U-047's pre-observation arithmetic against the observed file size,
+    2026-08-14.
+
+  [W-175] A genuine content finding survives the falsification, stated with its
+    limits. Loop-to-master size ratios are main-red 0.749, sleep 0.711 and
+    work-monochrome 0.962. Work-monochrome's 60-second loop is 96.2% the size of
+    its 62.3-second master, whereas the other two compress to roughly three
+    quarters. This is consistent with W-150's measurement that work-monochrome is
+    by far the busiest frame (5,980,800 non-black pixels, average channel 119)
+    and therefore the least compressible. This is a descriptive observation about
+    these three artifacts, NOT a predictive rule — X-089 is exactly the error of
+    promoting such an observation prematurely.
+    RECEIPT: W-163, W-168 and W-174 file sizes against W-150 metrics,
+    2026-08-14.
+
+  [W-176] HUMAN VISUAL ACCEPTANCE for `sleep`, and U-044 IS CLOSED. The operator
+    played the sleep loop twice: once from the start reaching 00:00:19, and once
+    with `--start=55` reaching 00:00:57 of 00:01:00, which lands directly on the
+    59->0 wrap. Verdict: "perfect. sleep. and red, both work." This is the first
+    direct human observation of the seamless-loop transition on any role, and it
+    reports no visible seam, jump or discontinuity. The 2.3-second crossfade
+    aligned to Wall's slide duration (W-124) is therefore visually validated, not
+    merely arithmetically asserted. mpv again reported `hevc 4480x1440 60 fps`
+    via `gpu-next`.
+    RECEIPT: operator statement plus mpv position lines 00:00:19 and 00:00:57,
+    2026-08-14.
+
+[2026-08-14][M11-ALL-ROLES] COMPLETE. Three deterministic 60-second 4480x1440
+  HEVC loops exist with full hash receipts; main-red and sleep carry human
+  acceptance and the loop seam is confirmed by eye. Remaining M11 gate is human
+  review of work-monochrome only. W-172 is dead (X-089); do not reuse it.
+
+--------------------------------------------------------------------------------
+12.91 M11 CLOSED — ALL THREE ROLES MACHINE-PASSED AND HUMAN-ACCEPTED.
+      THE HEADLESS BAKE OF DIRECTIVE 2 IS DELIVERED. Target + human 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-177] HUMAN VISUAL ACCEPTANCE for `work-monochrome`, the final role.
+    Operator verdict: "yup, looks perfect". Reviewed in two passes — once with
+    `--start=55` reaching 00:00:58, and once wrapping through to 00:00:01, i.e.
+    the operator watched the 59->0 transition ACROSS the loop point rather than
+    merely up to it. No seam, jump or discontinuity reported. mpv again reported
+    `hevc 4480x1440 60 fps` via `gpu-next`. U-036's long-standing concern that
+    work-monochrome's brightness might conflict with the AMOLED target is now
+    closed by moving-image human judgement, superseding the still-frame
+    acceptance of W-151.
+    RECEIPT: operator statement plus mpv position lines 00:00:58 and 00:00:01,
+    2026-08-14.
+
+  [W-178] M11 IS COMPLETE. Three deterministic 60-second 4480x1440 HEVC loops
+    exist on NVMe, each with master, loop and JSON receipt, each machine-gated
+    on exact dimensions / 60/1 frame rate / 60+/-0.05 s duration, and each
+    human-accepted in motion:
+      main-red        loop 156,659,080 B  SHA `1f8de512...`  (W-163/W-165)
+      sleep           loop 177,038,151 B  SHA not yet hashed in ledger (W-168/W-176)
+      work-monochrome loop 240,799,621 B  SHA not yet hashed in ledger (W-174/W-177)
+    Totals: 11,214 frames rendered across three roles, ~1,620 s of render, zero
+    errors, zero dropped frames, zero retries, zero manual intervention after
+    each command was issued. This closes the objective set in Directive 2 and
+    Section IV: a web artifact converted to video by a parameterized,
+    deterministic, unattended pipeline — no OBS, no screen recording, no human
+    in the hot path. Section VIII's design is now executed fact.
+    RECEIPT: W-163, W-168, W-174 machine receipts with W-165, W-176, W-177 human
+    receipts, 2026-08-14.
+
+  [U-048] Two loop SHA-256 values were printed by the tool into
+    `roles-sleep-work.log` but only the work-monochrome receipt hash was pasted
+    into this session; the sleep and work-monochrome LOOP hashes are therefore
+    recorded here by size only, not by digest. This is a completeness gap in the
+    ledger, not a defect in the artifacts — each file's hash is inside its own
+    `BAKE-RECEIPT.json`. Close it cheaply with:
+      grep -h '^loop:' /mnt/games/xmb-wave-bake/logs/roles-sleep-work.log
+    Do not re-bake for this.
+    RECEIPT: session transcript contains `ls` sizes but not the loop hash lines
+    for roles 2 and 3, 2026-08-14.
+
+  [X-090] DEPLOYMENT IS BLOCKED ON AN UNRESOLVED INPUT, and must not be
+    improvised. Section IX.8's runtime command contains the literal placeholder
+    `--hwdec=<from U-006>`, and U-006 — which VAAPI/VDPAU decode paths exist on
+    this box — has never been answered; it appears exactly twice in this file,
+    at its own definition and inside that placeholder. Guessing the flag risks
+    W-005's failure mode: software decoding a 4480x1440 60 fps stream
+    continuously, which measured 40-60% CPU on third-party hardware versus 6-11%
+    hardware-decoded. Note also that W-005's advice to bake at a low frame rate
+    was NOT followed — these loops are 60 fps by design, aligned to the 120 Hz
+    panel — so the decode path matters MORE here, not less. Resolve U-006 with a
+    bounded read-only probe before any xwinwrap step.
+    RECEIPT: IX.8 placeholder text and the two-occurrence grep for U-006,
+    2026-08-14.
+
+[2026-08-14][M11-FINAL] CLOSED, MACHINE + HUMAN, ALL THREE ROLES. Next milestone
+  is Section IX.8 runtime deployment, gated on U-006 (X-090). First action is a
+  read-only decode probe — `vainfo` plus an mpv `--hwdec=auto` trial against an
+  existing loop — which changes no file, touches no WM and needs no escape. The
+  xwinwrap step that follows DOES touch the live desktop and must state the
+  `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'` kill switch before it runs.
+
+--------------------------------------------------------------------------------
+12.92 U-006 RESOLVED: HEVC HARDWARE DECODE IS AVAILABLE VIA NVDEC/CUVID AND
+      VULKAN. X-090 CLEARED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-179] U-006 IS RESOLVED and the answer is better than Section IX assumed.
+    mpv's own decoder enumeration on the real 60-second sleep loop reports
+    `hevc_cuvid (hevc) - Nvidia CUVID HEVC decoder` present, and the decoder
+    advertises pixel formats `vaapi vdpau cuda vulkan yuv420p`. mpv is built
+    with `vaapi vaapi-drm vaapi-x11 vdpau vulkan` features enabled. With
+    `--hwdec=auto` and `--vo=gpu-next` the negotiated path was Vulkan:
+    `Looking at hwdec hevc-vulkan`, `Loading hwdec driver 'vulkan'`,
+    `Requesting pixfmt 'vulkan' from decoder`. Hardware HEVC decode of the baked
+    4480x1440 loop is therefore available on this box, and W-005's expensive
+    software-decode failure mode is avoidable. X-090 is CLEARED; the IX.8
+    placeholder `--hwdec=<from U-006>` can now be filled from measurement rather
+    than guess.
+    RECEIPT: target `mpv --hwdec=auto -v` decoder/hwdec lines against the
+    existing `sleep.loop-60s.mp4`, 2026-08-14.
+
+  [W-180] The availability of `hevc_cuvid` is independent confirmation of W-012's
+    glibc/proprietary-NVIDIA finding, from a completely different tool. CUVID is
+    an NVIDIA proprietary-driver interface and cannot exist on the nouveau path
+    that X-001 feared. X-001's contingency branch is therefore doubly refuted for
+    this machine, and W-012's "the 3080's NVDEC is usable" consequence is now
+    demonstrated on a real file rather than inferred from a driver version
+    string.
+    RECEIPT: W-179 decoder list versus X-001's nouveau contingency and W-012's
+    driver receipt, 2026-08-14.
+
+  [X-091] `vainfo` and `vdpauinfo` are NOT INSTALLED (`command not found`),
+    despite mpv being compiled with vaapi and vdpau support. Absence of these
+    diagnostic binaries says nothing about the presence of the underlying
+    decode paths — mpv's own enumeration is the authoritative source here and it
+    lists both `vaapi` and `vdpau` among supported pixel formats. Do not install
+    packages merely to satisfy a diagnostic; do not read the missing tools as a
+    missing capability. If Intel-iGPU VAAPI ever needs to be compared against
+    NVDEC, `libva-utils` provides `vainfo`, but that comparison is not required
+    for deployment.
+    RECEIPT: target `command not found` for both tools alongside mpv's enabled
+    feature list, 2026-08-14.
+
+  [U-049] Which hardware path to PIN for the wallpaper is still an open choice,
+    deliberately not decided here. `--hwdec=auto` negotiated Vulkan, but three
+    plausible pins exist: `auto` (portable, re-negotiates), `nvdec` (explicit
+    NVIDIA, keeps decode off the render path most predictably), or `vulkan`
+    (what auto actually chose). The decisive datum is not the name but the idle
+    CPU/GPU cost measured while the wallpaper is actually running, per IX.8's
+    requirement to write both numbers into the ledger and compare against
+    W-005's 6-11% band. Measure before pinning; a 60 fps 4480x1440 continuous
+    stream is the most expensive wallpaper this project could have chosen and
+    the number matters.
+    RECEIPT: W-179 negotiated path versus IX.8's unmeasured cost requirement,
+    2026-08-14.
+
+[2026-08-14][M12-DECODE-PROBE] U-006 CLOSED, X-090 CLEARED, deployment
+  unblocked. Next action is the first LIVE-DESKTOP step of this milestone: a
+  single foreground xwinwrap+mpv trial on one monitor rectangle, run in the
+  foreground so Ctrl-C is itself the escape, with the kill switch stated before
+  it runs. It must not be autostarted until idle cost is measured (U-049).
+
+--------------------------------------------------------------------------------
+12.93 FIRST LIVE WALLPAPER ATTEMPT FAILED: XWINWRAP EXITED IMMEDIATELY, NOTHING
+      RENDERED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-092] The first xwinwrap+mpv trial FAILED. xwinwrap printed
+    `xwinwrap: window type - override` and then RETURNED TO THE SHELL PROMPT
+    immediately instead of blocking for the lifetime of the child. The operator
+    saw nothing on DP-2. This is a process failure, not merely an invisible
+    window: a foreground xwinwrap that has returned is no longer holding a
+    window open at all.
+    RECEIPT: target terminal showing prompt returned directly after the
+    `window type - override` line, plus "saw nothing", 2026-08-14.
+
+  [W-181] Corroborating instrumentation proves no decode ever occurred, and also
+    invalidates the cost measurement taken alongside it.
+    `nvidia-smi` reported `utilization.decoder = 0 %` with GPU 37% and 1403 MiB
+    used, and `top` showed 85.2% idle with no mpv row. A running 4480x1440 HEVC
+    wallpaper cannot show 0% decoder utilisation. Therefore those numbers are
+    BASELINE DESKTOP IDLE, not wallpaper cost, and must NOT be compared against
+    W-005's 6-11% band or recorded as the IX.8 measurement. U-049 remains fully
+    open; no cost datum was obtained.
+    RECEIPT: target nvidia-smi/top output captured during the failed attempt,
+    2026-08-14.
+
+  [W-182] Flag syntax is EXONERATED as the cause. Every option used —
+    `-g -ov -ni -b -nf -un -fdt -argb` — is documented in the mmhobi7 fork's
+    own README, which is the fork W-003 identified as the packaged upstream and
+    which W-123 confirmed is the installed binary's help surface. The failure is
+    therefore behavioural, not a rejected-argument error. Two structural
+    differences from upstream's own working mpv example are candidate causes and
+    are NOT yet distinguished: upstream drives mpv with `-fs` (full screen)
+    rather than `-g` geometry, and its example omits `-argb`, `-un` and `-ni`
+    while adding `-s -st -sp`. A third candidate is Compiz itself refusing or
+    immediately unmapping an override-redirect desktop-type window.
+    RECEIPT: mmhobi7/xwinwrap README usage block fetched 2026-08-14 against the
+    exact command run.
+  Upstream reference example, recorded verbatim for future runs:
+    nice xwinwrap -b -s -fs -st -sp -nf -ov -fdt -- mpv -wid WID --really-quiet
+      --framedrop=vo --no-audio --panscan="1.0" /path/to/your/video
+
+  [U-050] The decisive next test must separate THREE hypotheses that X-092
+    cannot distinguish, and must do so without `--really-quiet`, which suppressed
+    every diagnostic mpv would have printed:
+      (a) xwinwrap creates and immediately destroys/exits — visible by checking
+          whether any xwinwrap/mpv process survives one second after launch;
+      (b) the window exists but Compiz never composites it — visible in
+          `wmctrl -l -G` / `xwininfo -root -children` even when nothing is drawn;
+      (c) mpv fails to attach to WID or to initialise gpu-next/Vulkan on that
+          window — visible only once `--really-quiet` is removed and stderr is
+          captured.
+    Run the trial in the BACKGROUND with output redirected to a log, then probe
+    processes and the X window tree, then read the log. Never diagnose this with
+    a foreground `--really-quiet` invocation again.
+    RECEIPT: X-092's information-free output versus the three candidate causes,
+    2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-1] FAILED, cause unknown, nothing changed on disk or
+  in the WM. The artifacts are unaffected; this is purely a delivery-mechanism
+  problem. Next action is one instrumented, logged, background trial that
+  distinguishes U-050 (a)/(b)/(c). Kill switch remains
+  `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'`.
+
+--------------------------------------------------------------------------------
+12.94 ROOT CAUSE FOUND: mpv CRASHES IN hevc-vulkan HWDEC INIT. XWINWRAP AND
+      COMPIZ ARE EXONERATED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-183] U-050 is RESOLVED and the answer is hypothesis (c), not (a) or (b).
+    Removing `--really-quiet` produced a decisive trace. mpv got FURTHER than
+    X-092 suggested: libplacebo enumerated Vulkan surface formats and picked
+    `VK_FORMAT_B8G8R8A8_UNORM + VK_COLOR_SPACE_SRGB_NONLINEAR_KHR`; it detected
+    `Assuming 119.997589 FPS for display sync`; it reached
+    `[cplayer] Starting playback...`. The final line is
+    `[vd] Requesting pixfmt 'vulkan' from decoder.` and there is NO `Exiting...`
+    line, which for mpv indicates abnormal termination rather than clean exit.
+    Death occurs inside hardware-decoder initialisation, AFTER window setup and
+    after playback start.
+    RECEIPT: target `/tmp/xww.log` tail from the instrumented background trial,
+    2026-08-14.
+
+  [W-184] XWINWRAP IS EXONERATED, superseding the natural reading of X-092. The
+    window was genuinely created: mpv could not have queried the display and
+    reported a 119.997589 Hz sync rate, nor configured a Vulkan swapchain
+    surface, without a real X drawable supplied through `-wid WID`. xwinwrap
+    exited immediately only BECAUSE its child died immediately — it is designed
+    to terminate with its child. The `-g/-ov/-ni/-b/-nf/-un/-fdt/-argb` flag set
+    is therefore not implicated, and neither is Compiz compositing policy. The
+    delivery mechanism was never the problem.
+    RECEIPT: W-183 log lines showing display sync and surface configuration
+    before the crash, 2026-08-14.
+
+  [X-093] THE FAULT IS MINE, IN THE FLAG I ADDED. The three successful playbacks
+    that produced human acceptance (W-164, W-176, W-177) all ran plain
+    `mpv --loop-file=inf --no-audio FILE`, whose banner reported
+    `VO: [gpu-next] 4480x1440 yuv420p` — i.e. software decode, with hwdec never
+    requested. Both failed wallpaper attempts added `--hwdec=auto`, which
+    selected `hevc-vulkan`, and that is the ONLY material new variable between
+    the working and failing invocations. Section IX.8 never specified Vulkan;
+    U-049 explicitly left the pin undecided and I nonetheless shipped `auto`
+    into a live-desktop trial. Consequence: `--hwdec=auto` must be treated as
+    UNSAFE on this target until a specific decoder is proven, because `auto` is
+    free to re-select the crashing hevc-vulkan path at any time.
+    RECEIPT: W-164/W-176/W-177 mpv banners versus the two failed commands and
+    W-183's crash point, 2026-08-14.
+
+  [U-051] Which hardware decoder actually survives here is now the single open
+    question, and W-179's enumeration is explicitly NOT sufficient evidence —
+    it proved `hevc_cuvid` is COMPILED IN, while W-183 proves compiled-in does
+    not imply working. This is the same class of error as X-083, where
+    `ffmpeg -encoders` listing `h264_nvenc` did not mean it could encode
+    4480x1440. Candidates in priority order: `nvdec` (the CUVID path, native to
+    this proprietary driver), `vaapi`, `no` (software, already proven working
+    three times). Each must be tested WITHOUT xwinwrap first, in a plain
+    windowed mpv, because that isolates the decoder from the delivery mechanism.
+    Only a decoder that survives a plain window may then be combined with
+    xwinwrap.
+    RECEIPT: W-179 enumeration versus W-183 runtime crash, and the X-083
+    precedent, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-2] ROOT CAUSE IDENTIFIED. No artifact, WM, package or
+  file was changed by either failed attempt. Next action tests decoders in a
+  PLAIN mpv window with no xwinwrap, one flag at a time, and records which
+  survive; then the surviving decoder is combined with the already-exonerated
+  xwinwrap invocation.
