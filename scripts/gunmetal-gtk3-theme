@@ -735,10 +735,16 @@ def probe(theme: str, baseline: str) -> None:
 def apply(theme: str, state_file: Path) -> None:
     current = get_xsetting()
     state_file.parent.mkdir(parents=True, exist_ok=True)
-    state_file.write_text(current + "\n")
+    if current == theme and state_file.is_file():
+        previous = state_file.read_text().strip()
+        print(f"Preserved existing rollback while rebuilding active theme: {previous}")
+    else:
+        state_file.write_text(current + "\n")
+        previous = current
+        print(f"Previous GTK theme recorded: {previous}")
     set_xsetting(theme)
-    print(f"Previous GTK theme recorded: {current}")
     print(f"Active GTK theme: {get_xsetting()}")
+    print(f"Rollback target: {previous}")
     print(f"Rollback: {Path(__file__).resolve()} restore")
 
 

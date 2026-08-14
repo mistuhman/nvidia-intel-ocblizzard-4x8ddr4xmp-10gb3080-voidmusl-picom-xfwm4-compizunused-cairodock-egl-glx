@@ -4245,3 +4245,19 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   differential probe, apply and human screenshot comparison. V1 remains
   recoverable as the automatic `.pre-rebuild.*` output and GTK rollback remains
   Quake-Aqua-AMOLED.
+
+--------------------------------------------------------------------------------
+12.38 V2 PRE-TARGET ROLLBACK-STATE HARDENING. Sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-094] Pre-target review caught that re-applying V2 while
+    Quake-Gunmetal-3D is already active would overwrite the saved
+    Quake-Aqua-AMOLED rollback with the current theme name. The script now
+    preserves an existing rollback state whenever current == requested theme;
+    a genuinely different current theme still becomes the new rollback.
+    Synthetic two-case matrix passes (`ROLLBACK_STATE_MATRIX=PASS`). Build
+    output remains byte-identical to W-093 because this changes apply logic
+    only. Final V2 script SHA-256 is
+    `72592afcd2af314657115cbc596c8bf3f8642ee158dfcf64c3b1b5f4bc02eea3`.
+    RECEIPT: sandbox state-file matrix, compile and unchanged build hashes,
+    2026-08-14.
