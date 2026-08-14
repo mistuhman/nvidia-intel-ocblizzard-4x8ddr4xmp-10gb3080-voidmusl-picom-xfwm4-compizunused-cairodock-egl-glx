@@ -4741,3 +4741,47 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   direction and primary particle tuple are fixed. Exact spline values must come
   from machine-readable live state rather than downscaled screenshot numerals.
   Sleep and main-red still require separately labelled distinct references.
+
+--------------------------------------------------------------------------------
+12.52 MAIN-RED REFERENCE RECEIVED DISTINCTLY — PALETTE, COMPOSITION AND PRIMARY
+      PARTICLE SETTINGS CAPTURED. Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-111] MAIN RED is a distinct high-energy identity rather than a recolour of
+    work-monochrome. The background is a vertical AMOLED-to-crimson gradient:
+    near-black oxblood across the upper field, deep red through the center and
+    a saturated red lower field. A broad pale-silver/red translucent ribbon
+    crosses near mid-height, with overlapping smooth sheets, a left-side
+    crossing, a gentle central crest and a tighter right convergence. Sparse
+    particles range from pinpoints to a few large soft night-light orbs. The
+    composition leaves useful dark negative space above while making the lower
+    desktop visibly warmer and more active than work-monochrome.
+    RECEIPT: operator-attached image explicitly labelled MAIN RED, full-frame
+    and panel-by-panel visual inspection, 2026-08-14.
+
+  [W-112] Clearly legible MAIN RED particle values are Count 172, Opacity 0.41,
+    Size Base 4.8, Size Var 16.3 and Flow Speed 0.18. The gradient controls
+    visibly set Color R/G/B to 255/0/0, establishing actual red generation
+    rather than a post-bake tint. The unusually high particle size variation
+    explains the mixture of tiny stars and isolated large blurred light orbs;
+    this is an intentional night-light signature and must not be normalized to
+    the work preset. As with W-110, exact small-print spline values should be
+    extracted from the live DOM/config rather than guessed from the downscaled
+    right panel.
+    RECEIPT: direct reading of the left controls, RGB controls and rendered
+    particle distribution, 2026-08-14.
+
+  [W-113] Distinct-preset requirement is now visually proven for two normal
+    desktop roles. Work-monochrome uses calm ordered silver filaments on black
+    with 4000/0.37/3.1/0.8/0.44 particles; main-red uses broad translucent
+    sheets over a red gradient with 172/0.41/4.8/16.3/0.18 particles. A single
+    shared video plus colour filter cannot reproduce these differences. Bake
+    and manifest them independently, then blend their decoded outputs at the
+    workspace transition layer.
+    RECEIPT: comparative inspection of the separately labelled WORK MONOCHROME
+    and MAIN RED references, 2026-08-14.
+
+[2026-08-14][M9/PRESET-MAIN-RED] VISUAL PASS / MANIFEST PARTIAL. Art direction,
+  RGB generator colour and primary particle tuple are fixed. Audit-grade spline
+  values still await machine-readable extraction. Sleep remains the final
+  separately labelled visual reference required for the three-state set.
