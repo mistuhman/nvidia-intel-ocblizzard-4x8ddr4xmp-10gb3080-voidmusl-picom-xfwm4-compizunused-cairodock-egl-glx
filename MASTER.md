@@ -5630,3 +5630,38 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   unexecuted. Next target block is one short immutable download/hash/install and
   execution. It may take time but writes only under the NVMe bake root; no WM,
   source manifest or original editor change.
+
+--------------------------------------------------------------------------------
+12.79 THREE SEEDED PREVIEWS PASS BYTE-DETERMINISM AND NONBLANK FRAMEBUFFER
+      GATES; HUMAN VISUAL GATE PENDING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-149] The deterministic preview driver passes end to end at 4480x1440,
+    60 simulation Hz, t=5 seconds. Each role rendered in two fresh pages with
+    byte-identical PNG hashes: sleep `a06ddda6...` (357,196 bytes), main-red
+    `b9caa66b...` (215,511), work-monochrome `21118e3b...` (324,667). Receipt
+    `/mnt/games/xmb-wave-bake/previews-deterministic/PREVIEW-RECEIPT.json` hashes
+    `a310fbf8...`; terminal ended `XMB_DETERMINISTIC_PREVIEWS=PASS`. This proves
+    fixed input/seed/clock output determinism on the current target Chromium.
+    RECEIPT: target two-pass renderer output and receipt hash, 2026-08-14.
+
+  [W-150] Direct WebGL framebuffer metrics prove real content, closing X-074 for
+    generated previews: sleep 648,517 nonblack pixels, max 171, average 2.965;
+    main-red 5,770,240, max 255, average 25.055; work 5,980,800, max 255,
+    average 119.046. All canvases are exact 4480x1440. Reported WebGL strings are
+    generic WebKit/WebGL Chromium values, so they prove WebGL2 execution but not
+    a specific GPU; performance/hardware ownership remains unclaimed.
+    RECEIPT: target gl.readPixels metrics and context strings, 2026-08-14.
+
+  [U-036] Work-monochrome's 92.7% nonblack coverage and average channel 119 are
+    much brighter than sleep/main-red and potentially conflict with W-109's
+    AMOLED-black visual target. Metrics alone cannot decide whether this is the
+    intended white-gradient ocean frame or a mismatch. Before full encode,
+    present a labelled contact sheet and full-resolution previews for operator
+    judgement. Determinism PASS does not imply aesthetic PASS.
+    RECEIPT: W-149/W-150 quantitative comparison against W-109 visual receipt,
+    2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEWS] MACHINE PASS / HUMAN VISUAL PENDING.
+  Next action creates one contact sheet from the three canonical PNGs and opens
+  it; no manifest, renderer or video changes.
