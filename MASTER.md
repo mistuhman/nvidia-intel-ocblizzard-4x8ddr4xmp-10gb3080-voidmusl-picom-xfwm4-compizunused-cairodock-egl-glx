@@ -4414,3 +4414,34 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
 [2026-08-14][M16/DECO-RESTORE] BLOCKED on one bounded re-apply of the frozen
   Quake-Gunmetal-Aqua artifact and process/hash verification. XMB M9 preflight
   waits until the accepted decoration is restored; GTK needs no further work.
+
+--------------------------------------------------------------------------------
+12.44 ACCIDENTAL MAC4LIN DECORATION REGRESSION CLOSED; NEW APPEARANCE/GTK
+      SELECTION QUESTION OPEN. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-100] X-056 is closed. The accepted Quake-Gunmetal-Aqua library theme.ini
+    verified at `0bf7ab50...`, re-apply preserved the accidental active slot at
+    `/home/sd/.emerald/theme.pre-gunmetal.1786734721`, and active/library
+    aggregates now both equal `ee3a4f10...`. Emerald restarted as PID 27906;
+    Compiz remains PID 1210; picom remains absent. GTK remained the accepted
+    Quake-Gunmetal-3D. The frozen M16 state is restored exactly.
+    RECEIPT: target RESTORE ACCEPTED GUNMETAL DECORATION output, 2026-08-14.
+
+  [U-028] The operator reports that after changing away from OS X Cheetah Dark
+    in Appearance, “it wont come back for the gtk theming things.” The referent
+    is ambiguous: the theme may be absent from the Appearance list, selectable
+    but visually ineffective, or overridden for already-running GTK apps.
+    Existing facts constrain diagnosis: Cheetah's directory existed but had no
+    index.theme (W-064), its GTK3 CSS contains unresolved SCSS (X-042), and the
+    current accepted XSettings theme is Quake-Gunmetal-3D (W-096/W-100).
+    Resolve read-only before changing anything: print XSettings and GtkSettings
+    effective names, GTK_THEME overrides in shell/app environments, Cheetah
+    directory/hash/index state, user GTK settings files, and running Appearance
+    process. Do not infer that frozen GTK should be reverted until the operator
+    clarifies the intended visual end state.
+    RECEIPT: direct operator report, 2026-08-14.
+
+[2026-08-14][M16/APPEARANCE-DIAG] Decoration DONE; GTK selection question
+  BLOCKED on U-028 read-only attribution. XMB preflight remains paused until
+  this user-visible regression/question is resolved.
