@@ -4851,3 +4851,87 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   toolchain, display/viewport, Desktop Wall, screensaver and existing wallpaper
   process inventory. No target files or packages change until that receipt is
   recorded.
+
+--------------------------------------------------------------------------------
+12.55 XMB PREFLIGHT 1 — STACK/TOOLS PASS; EXISTING PIPELINE DISCOVERED; BAKE
+      HARD-BLOCKED BY 95 MiB FREE SPACE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-118] Cold-login persistence now has a machine receipt in addition to
+    W-104's human/visual receipt. After boot at 19:31:23, XFCE and GTK3 both name
+    Quake-Gunmetal-3D; aggregate `98f019d...`, override CSS `8bed1729...` and
+    rollback Quake-Aqua-AMOLED match the frozen state. Active/library Emerald
+    both match `ee3a4f10...`; `_NET_WM_NAME` is `compiz`; Compiz PID 1213,
+    Emerald PID 1285, xfce4-panel, xfdesktop and cairo-dock are live; picom and
+    xfwm4 are absent. This promotes M16 persistence from visual-only to audited
+    cold-login PASS.
+    RECEIPT: target post-reboot tool status, xfconf, process and xprop output,
+    2026-08-14.
+
+  [W-119] Display/viewport topology survived the reboot: X screen 4480x1440;
+    DP-2 primary 2560x1440+0+0 at 120 Hz; DP-0 inverted
+    1920x1080+2560+197 at 119.98 Hz. EWMH reports desktop geometry
+    17920x1440, viewport 0,0, current desktop 0 and one EWMH desktop. Therefore
+    Compiz exposes four horizontal 4480-wide viewports inside one desktop,
+    resolving the base workspace count needed for fixed-role mapping. Active
+    plugin grep includes `vpswitch` and `wall`; the discovered Button2 binding
+    is `<LeftEdge><BottomEdge><BottomLeftEdge>Button2` in the profile and must
+    not be overwritten.
+    RECEIPT: target xrandr, xprop and profile grep output, 2026-08-14.
+
+  [W-120] Bake/runtime prerequisites are already unusually complete: locally
+    installed `/usr/local/bin/xwinwrap`; mpv 0.41.0; FFmpeg runtime 6.1.6 with
+    libx264, NVENC, VAAPI and QSV H.264 support; Chromium 150; Node 24.18.0; npm
+    11.16.0; Puppeteer dependencies; xdotool/wmctrl/xprop/xrandr; and DBus tools.
+    Compiz provides `libdbus.so`, `libwall.so` and `libwallpaper.so`.
+    xfce4-screensaver 4.20.2 is installed and running, mode 2 with the floaters
+    theme; X idle timeout is 300 seconds; DPMS is disabled despite 600-second
+    standby/suspend/off values. No xwinwrap/mpv/ffmpeg wallpaper process is
+    currently live.
+    RECEIPT: target executable/package/version/codec/process/screensaver output,
+    2026-08-14.
+
+  [W-121] M9 is not an empty staging task. `~/.local/share/xmb-wave/` already
+    contains a source Git checkout, `ps3xmbwave`, Puppeteer modules, bake/deploy/
+    diagnose scripts, Chromium profile, nine prior logs, a 920,914,636-byte raw
+    MKV, 482,431,993-byte loop.mp4, per-panel videos and fade variants. A second
+    likely live-custom source exists at `~/.local/share/ps3-wave-custom/` with
+    spline.js, spline-reverse.js and particles.js; the screenshots may originate
+    there, but that is not yet proven. Existing artifacts must be reconciled and
+    preserved by hash/provenance before any new staging or cleanup.
+    RECEIPT: bounded target workspace and home source inventory, 2026-08-14.
+
+  [X-061] The root filesystem is 100% full: 152 GiB total, 144 GiB used and only
+    95 MiB available. `/tmp` has 16 GiB free but is tmpfs, unsuitable as the sole
+    durable destination for multi-gigabyte three-state outputs. A deterministic
+    frame capture or encode cannot safely start with 95 MiB durable headroom.
+    This is a hard bake blocker. Do not delete anything blindly: first attribute
+    workspace sizes and identify which prior artifacts are reproducible versus
+    unique, then present an explicit cleanup/preservation plan to the operator.
+    RECEIPT: target `df -h`/`df -i` and inventoried artifact sizes,
+    2026-08-14.
+
+  [X-062] Both section-scoped awk assertions in the preflight failed with
+    `unexpected newline or end of string` because the target awk does not accept
+    the parenthesized multiline condition as authored. Geometry was still
+    proven independently by xrandr/xprop and active plugins/Button2 by grep, but
+    detailed core/Wall transition settings remain uncollected. Replace the
+    assertion with portable one-line pattern tests; never reuse this failed awk.
+    RECEIPT: target preflight stderr and surviving independent outputs,
+    2026-08-14.
+
+  [U-032] `/usr/local/bin/xwinwrap` is functional-path evidence but is not owned
+    by the Void `xwinwrap` package (`xbps-query` says not installed). Before it
+    is trusted for reproducibility, collect its hash, file metadata and help/
+    version behavior. Also collect source Git identity/status, exact existing
+    script hashes/content summaries, prior log outcomes, custom-source identity
+    and a size-ranked storage map. These read-only receipts decide whether to
+    repair/reuse the old pipeline or supersede it and what can safely be removed.
+    RECEIPT: target command/package mismatch and existing workspace inventory,
+    2026-08-14.
+
+[2026-08-14][M9-PREFLIGHT-1] PARTIAL PASS. Final Compiz/theme stack, display,
+  browser, bake codecs and idle daemon are present. M9 write gate remains CLOSED
+  on X-061 storage and U-032 provenance, plus portable Wall-setting collection
+  after X-062. Next action is one bounded read-only reconciliation; no package,
+  source, process or file change is allowed yet.
