@@ -130,19 +130,19 @@ def vertical_material(
 
 
 def menubar_pixel(x, y, w, h):
-    return vertical_material(x, y, w, h, top=36, middle=10, bottom=4, rim=74, grain=3)
+    return vertical_material(x, y, w, h, top=28, middle=9, bottom=4, rim=52, grain=2)
 
 
 def toolbar_pixel(x, y, w, h):
-    return vertical_material(x, y, w, h, top=31, middle=8, bottom=3, rim=61, grain=4)
+    return vertical_material(x, y, w, h, top=24, middle=7, bottom=3, rim=46, grain=3)
 
 
 def statusbar_pixel(x, y, w, h):
-    return vertical_material(x, y, w, h, top=8, middle=3, bottom=18, rim=37, grain=2)
+    return vertical_material(x, y, w, h, top=7, middle=3, bottom=13, rim=26, grain=2)
 
 
 def headerbar_pixel(x, y, w, h):
-    return vertical_material(x, y, w, h, top=39, middle=9, bottom=3, rim=76, grain=3)
+    return vertical_material(x, y, w, h, top=30, middle=8, bottom=3, rim=54, grain=2)
 
 
 def content_pixel(x, y, w, h):
@@ -154,10 +154,10 @@ def content_pixel(x, y, w, h):
 
 
 def sidebar_pixel(x, y, w, h):
-    edge = 10 * (1 - x / max(1, w - 1))
+    edge = 6 * (1 - x / max(1, w - 1))
     value = 3 + edge + noise(x // 3, y // 2, 2)
     if x == w - 1:
-        value = 32
+        value = 20
     elif x == w - 2:
         value = 0
     return gray(value, 255)
@@ -167,13 +167,13 @@ def button_pixel_factory(state: str):
     def pixel(x, y, w, h):
         distance = min(x, y, w - 1 - x, h - 1 - y)
         if state == "hover":
-            top, middle, bottom, rim = 54, 20, 7, 92
+            top, middle, bottom, rim = 39, 16, 6, 62
         elif state == "active":
-            top, middle, bottom, rim = 7, 20, 38, 2
+            top, middle, bottom, rim = 6, 15, 28, 2
         elif state == "disabled":
-            top, middle, bottom, rim = 20, 8, 4, 34
+            top, middle, bottom, rim = 16, 7, 4, 25
         else:
-            top, middle, bottom, rim = 39, 13, 4, 68
+            top, middle, bottom, rim = 30, 11, 4, 48
         base = vertical_material(
             x, y, w, h, top=top, middle=middle, bottom=bottom, rim=rim, grain=2
         )
@@ -190,25 +190,25 @@ def button_pixel_factory(state: str):
 def entry_pixel(x, y, w, h):
     edge = min(x, y, w - 1 - x, h - 1 - y)
     if edge == 0:
-        return gray(55)
+        return gray(35)
     if edge == 1:
         return gray(2)
     if y < 5:
         return gray(1 + y)
     if y > h - 5:
-        return gray(20 - (h - 1 - y) * 4)
+        return gray(13 - (h - 1 - y) * 3)
     return gray(3 + noise(x // 4, y // 3, 1))
 
 
 def selection_pixel(x, y, w, h):
-    if x < 3:
-        return (164, 15, 23, 255)
-    return vertical_material(x, y, w, h, top=58, middle=24, bottom=8, rim=86, grain=2)
+    if x < 2:
+        return (100, 12, 18, 255)
+    return vertical_material(x, y, w, h, top=32, middle=16, bottom=6, rim=48, grain=2)
 
 
 def trough_v_pixel(x, y, w, h):
     if x in (0, w - 1):
-        return gray(31)
+        return gray(20)
     if x in (1, w - 2):
         return gray(1)
     return gray(4 + noise(x, y // 4, 2))
@@ -216,7 +216,7 @@ def trough_v_pixel(x, y, w, h):
 
 def trough_h_pixel(x, y, w, h):
     if y in (0, h - 1):
-        return gray(31)
+        return gray(20)
     if y in (1, h - 2):
         return gray(1)
     return gray(4 + noise(x // 4, y, 2))
@@ -227,10 +227,10 @@ def thumb_v_pixel(x, y, w, h):
     if edge == 0:
         return gray(2)
     if edge == 1:
-        return gray(62)
+        return gray(40)
     value = 17 + (w // 2 - abs(x - w // 2)) * 2 + noise(x, y // 3, 2)
     if y in (0, h - 1):
-        value = 69
+        value = 46
     return gray(value)
 
 
@@ -239,10 +239,10 @@ def thumb_h_pixel(x, y, w, h):
     if edge == 0:
         return gray(2)
     if edge == 1:
-        return gray(62)
+        return gray(40)
     value = 17 + (h // 2 - abs(y - h // 2)) * 2 + noise(x // 3, y, 2)
     if x in (0, w - 1):
-        value = 69
+        value = 46
     return gray(value)
 
 
@@ -298,9 +298,9 @@ menubar,
   background-color: #070707;
   background-image: url("gunmetal3d/menubar.png");
   background-size: 100% 100%;
-  border-top: 1px solid rgba(255,255,255,0.22);
-  border-bottom: 1px solid #242424;
-  box-shadow: inset 0 1px rgba(255,255,255,0.16), inset 0 -2px #010101;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  border-bottom: 1px solid #181818;
+  box-shadow: inset 0 1px rgba(255,255,255,0.08), inset 0 -2px #010101;
 }
 menubar > menuitem,
 .menubar > menuitem {
@@ -312,8 +312,8 @@ menubar > menuitem:hover,
 .menubar > menuitem:hover {
   background-image: url("gunmetal3d/button-hover.png");
   background-size: 100% 100%;
-  border-color: #5a5a5a #111111 #020202 #4a4a4a;
-  box-shadow: inset 0 1px rgba(255,255,255,0.28);
+  border-color: #3d3d3d #0d0d0d #020202 #303030;
+  box-shadow: inset 0 1px rgba(255,255,255,0.16);
 }
 
 /* Toolbars are raised shelves, visibly below but materially joined to menus. */
@@ -326,17 +326,17 @@ window.thunar.background > grid.horizontal > toolbar.horizontal {
   background-color: #050505;
   background-image: url("gunmetal3d/toolbar.png");
   background-size: 100% 100%;
-  border-top: 1px solid #3c3c3c;
+  border-top: 1px solid #2b2b2b;
   border-bottom: 2px solid #020202;
-  box-shadow: inset 0 1px rgba(255,255,255,0.13), inset 0 -1px #292929;
+  box-shadow: inset 0 1px rgba(255,255,255,0.07), inset 0 -1px #1c1c1c;
 }
 headerbar,
 .titlebar:not(decoration) {
   background-image: url("gunmetal3d/headerbar.png");
   background-size: 100% 100%;
-  border-top: 1px solid #4a4a4a;
+  border-top: 1px solid #343434;
   border-bottom: 2px solid #020202;
-  box-shadow: inset 0 1px rgba(255,255,255,0.14);
+  box-shadow: inset 0 1px rgba(255,255,255,0.05);
 }
 
 /* Raised controls use real generated caps, not flat colors. */
@@ -350,10 +350,10 @@ toolbar button,
   background-image: url("gunmetal3d/button-normal.png");
   background-size: 100% 100%;
   border: 1px solid #030303;
-  border-top-color: #4a4a4a;
-  border-left-color: #343434;
+  border-top-color: #343434;
+  border-left-color: #282828;
   border-radius: 4px;
-  box-shadow: inset 0 1px rgba(255,255,255,0.16), 0 1px #000000;
+  box-shadow: inset 0 1px rgba(255,255,255,0.09), 0 1px #000000;
   color: #ececec;
 }
 button:hover,
@@ -362,8 +362,8 @@ toolbar button:hover,
 .primary-toolbar button:hover {
   background-image: url("gunmetal3d/button-hover.png");
   background-size: 100% 100%;
-  border-top-color: #777777;
-  box-shadow: inset 0 1px rgba(255,255,255,0.30), 0 1px 2px #000000;
+  border-top-color: #4c4c4c;
+  box-shadow: inset 0 1px rgba(255,255,255,0.17), 0 1px 2px #000000;
 }
 button:active,
 button:checked,
@@ -389,17 +389,17 @@ window.thunar entry {
   background-color: #020202;
   background-image: url("gunmetal3d/entry-well.png");
   background-size: 100% 100%;
-  border: 1px solid #353535;
+  border: 1px solid #242424;
   border-top-color: #000000;
   border-left-color: #080808;
   border-radius: 3px;
-  box-shadow: inset 0 2px 4px #000000, inset 0 -1px rgba(255,255,255,0.13);
+  box-shadow: inset 0 2px 4px #000000, inset 0 -1px rgba(255,255,255,0.07);
   color: #eeeeee;
 }
 entry:focus,
 window.thunar entry:focus {
-  border-color: #777777 #333333 #222222 #555555;
-  box-shadow: inset 0 2px 4px #000000, 0 0 3px rgba(255,255,255,0.20);
+  border-color: #4b4b4b #242424 #191919 #3a3a3a;
+  box-shadow: inset 0 2px 4px #000000, 0 0 3px rgba(255,255,255,0.11);
 }
 
 /* Recessed application wells. */
@@ -418,10 +418,10 @@ window.thunar treeview {
 scrolledwindow.frame,
 frame,
 window.thunar scrolledwindow {
-  border: 1px solid #2f2f2f;
+  border: 1px solid #202020;
   border-top-color: #000000;
   border-left-color: #050505;
-  box-shadow: inset 0 2px 5px #000000, inset 0 -1px #242424;
+  box-shadow: inset 0 2px 5px #000000, inset 0 -1px #181818;
 }
 .sidebar,
 placessidebar,
@@ -431,8 +431,8 @@ window.thunar .sidebar {
   background-color: #050505;
   background-image: url("gunmetal3d/sidebar-well.png");
   background-repeat: repeat;
-  border-right: 1px solid #343434;
-  box-shadow: inset -2px 0 4px #000000, inset 1px 0 rgba(255,255,255,0.08);
+  border-right: 1px solid #222222;
+  box-shadow: inset -2px 0 4px #000000, inset 1px 0 rgba(255,255,255,0.04);
 }
 row:selected,
 treeview.view:selected,
@@ -442,8 +442,8 @@ window.thunar .view:selected {
   background-color: #202020;
   background-image: url("gunmetal3d/selected-plate.png");
   background-size: 100% 100%;
-  border-left: 3px solid #a40f17;
-  box-shadow: inset 0 1px rgba(255,255,255,0.22), inset 0 -1px #020202;
+  border-left: 2px solid #640c12;
+  box-shadow: inset 0 1px rgba(255,255,255,0.12), inset 0 -1px #020202;
   color: #ffffff;
 }
 
@@ -455,30 +455,30 @@ popover.background,
   background-color: #060606;
   background-image: url("gunmetal3d/sidebar-well.png");
   background-repeat: repeat;
-  border: 1px solid #4b4b4b;
+  border: 1px solid #343434;
   border-bottom-color: #050505;
   border-right-color: #080808;
-  box-shadow: inset 0 1px rgba(255,255,255,0.14), 0 5px 14px rgba(0,0,0,0.80);
+  box-shadow: inset 0 1px rgba(255,255,255,0.08), 0 5px 14px rgba(0,0,0,0.80);
 }
 menu menuitem:hover,
 .menu menuitem:hover,
 modelbutton:hover {
   background-image: url("gunmetal3d/selected-plate.png");
   background-size: 100% 100%;
-  border-left: 3px solid #a40f17;
+  border-left: 2px solid #640c12;
 }
 
 /* Metallic scroll hardware. */
 scrollbar.vertical trough {
   background-image: url("gunmetal3d/scroll-trough-v.png");
   background-size: 100% 100%;
-  border: 1px solid #262626;
+  border: 1px solid #1a1a1a;
   box-shadow: inset 1px 0 3px #000000;
 }
 scrollbar.horizontal trough {
   background-image: url("gunmetal3d/scroll-trough-h.png");
   background-size: 100% 100%;
-  border: 1px solid #262626;
+  border: 1px solid #1a1a1a;
   box-shadow: inset 0 1px 3px #000000;
 }
 scrollbar.vertical slider {
@@ -487,7 +487,7 @@ scrollbar.vertical slider {
   background-image: url("gunmetal3d/scroll-thumb-v.png");
   background-size: 100% 100%;
   border: 1px solid #050505;
-  border-left-color: #565656;
+  border-left-color: #3b3b3b;
   border-radius: 3px;
 }
 scrollbar.horizontal slider {
@@ -496,7 +496,7 @@ scrollbar.horizontal slider {
   background-image: url("gunmetal3d/scroll-thumb-h.png");
   background-size: 100% 100%;
   border: 1px solid #050505;
-  border-top-color: #565656;
+  border-top-color: #3b3b3b;
   border-radius: 3px;
 }
 
@@ -505,16 +505,16 @@ statusbar,
 window.thunar statusbar {
   background-image: url("gunmetal3d/statusbar.png");
   background-size: 100% 100%;
-  border-top: 1px solid #363636;
-  box-shadow: inset 0 1px rgba(255,255,255,0.08);
+  border-top: 1px solid #242424;
+  box-shadow: inset 0 1px rgba(255,255,255,0.05);
   color: #bdbdbd;
 }
 
 paned > separator {
   min-width: 3px;
   min-height: 3px;
-  background-image: linear-gradient(to right, #010101, #4b4b4b, #080808);
-  box-shadow: inset 1px 0 rgba(255,255,255,0.08);
+  background-image: linear-gradient(to right, #010101, #303030, #080808);
+  box-shadow: inset 1px 0 rgba(255,255,255,0.04);
 }
 
 /* Terminal glyph canvas is deliberately quiet; its chrome carries the depth. */

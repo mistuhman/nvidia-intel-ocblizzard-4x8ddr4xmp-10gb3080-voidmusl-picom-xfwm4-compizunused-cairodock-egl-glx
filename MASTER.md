@@ -4213,3 +4213,35 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   Receipt: W-091/X-051. Author a deterministic low-contrast V2 from the same
   composer, verify generated hashes changed only by the intended tonal update,
   then rebuild/probe/apply with V1 automatically preserved by --force.
+
+--------------------------------------------------------------------------------
+12.37 LOW-CONTRAST GUNMETAL GTK3 V2 AUTHORED AND DETERMINISM-TESTED.
+      Sandbox receipt 2026-08-14; target V2 unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-092] `scripts/gunmetal-gtk3-theme` V2 compresses contrast without removing
+    dimensional semantics, exactly as X-051 requires. Changes lower menubar/
+    toolbar/header/status reflective peaks, grain amplitude, button/entry rims,
+    sidebar edge, selected-plate ramp, scrollbar hardware and CSS highlight/
+    border/shadow alphas; red selection edges narrow from 3px bright red to 2px
+    muted oxblood. Content remains AMOLED and textured, every raised/recessed
+    cue remains, Emerald code/assets remain untouched. V2 script SHA-256 is
+    `631b4f7c461693471b6709dc88d6e2a93c4add0a2bd728ff487f53ad54f1f5c3`.
+    RECEIPT: exact source diff and generated preview inspection, 2026-08-14.
+
+  [W-093] Two fresh V2 builds recursively diff byte-identical
+    (`V2_DETERMINISTIC=PASS`). Sandbox aggregate is
+    `d3c3a67b9eafcbb0c7c59572d33f57242b6fb5a2ae71a74c6c9a3ac11a7a3ba8`;
+    override CSS `8bed1729975d287f2fd7da604270519916d87a9a774225e2e784fa58e0ed13ce`;
+    preview `92fa73713ccfdc9597ec4d1502272b9ff38c8f4f55e9e2b8cc98aecc4c6a436a`.
+    Key changed asset hashes: menubar 561d4087..., toolbar 55dd0050...,
+    selected plate b45b2d46..., sidebar 150e9f6e.... Compilation passes. The
+    target --force path will preserve V1 before rebuilding; differential parser
+    probe still gates activation. Target V2 appearance is not claimed.
+    RECEIPT: two-build recursive diff, compile, hashes and preview, 2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V2] Low-contrast calibration AUTHORED.
+  Receipt: W-092/W-093. Next target gate: immutable V2 download, --force build,
+  differential probe, apply and human screenshot comparison. V1 remains
+  recoverable as the automatic `.pre-rebuild.*` output and GTK rollback remains
+  Quake-Aqua-AMOLED.
