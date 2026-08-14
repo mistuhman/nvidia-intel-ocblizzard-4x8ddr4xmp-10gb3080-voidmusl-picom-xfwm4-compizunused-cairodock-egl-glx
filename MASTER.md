@@ -4065,3 +4065,35 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   sidebar/content depth, selection plate and scrollbar against 12.28. If depth
   is insufficient, author the dedicated composer; do not return to malformed
   Cheetah CSS.
+
+--------------------------------------------------------------------------------
+12.32 GRAPHICAL GTK3 A/B PARTIAL ACCEPTANCE — ASSETS LOAD, DEPTH/BLENDING DO
+      NOT YET MEET THE CONSTITUTION. Screenshot/operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-087] The post-switch screenshot proves Slickness/Quake graphical assets
+    now render: Thunar has a distinct menubar, toolbar/path-entry treatment,
+    selected Places row, scrollbar and status strip; Emerald Themer and
+    Terminal also remain readable under Quake-Aqua-AMOLED. The operator says
+    “thats goods”, accepting this route over malformed Cheetah as the functional
+    GTK3 base. Machine state remains W-086. This is a base acceptance, not a
+    final M16 visual pass.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+  [X-049] The same human receipt rejects the existing asset strength: “most
+    design is relatively flat. and the menu bar needs to blend with the window
+    deco.” In the screenshot, Emerald's accepted top frame has a reflective
+    black/gunmetal ramp, but GTK's menubar and toolbar read as thin, nearly
+    uniform black bands with weak edge hierarchy. Existing pixmaps load, so
+    this is no longer a missing-asset/parser problem; it is an artwork and
+    selector-strength problem. X-047 remains active at a narrower scope.
+    Required correction: retain the working Slickness selectors, replace/tune
+    their referenced assets with a deeper common gunmetal ramp and add explicit
+    Thunar/Terminal layer cues. Do not return to Cheetah or alter Emerald.
+    RECEIPT: attached screenshot and direct operator verdict, 2026-08-14.
+
+[2026-08-14][M16/GTK-GRAPHICS-A-B-HUMAN] Existing graphical base PARTIALLY
+  ACCEPTED. Receipt: W-087/X-049. Trigger 12.28.3's fallback: author the
+  deterministic `gunmetal-gtk3-theme` composer from Quake-Aqua-AMOLED, with a
+  stronger menubar-to-Emerald blend and raised/recessed graphics. Decoration
+  stays frozen at W-085.
