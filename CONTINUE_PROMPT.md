@@ -1,187 +1,135 @@
-# Continuation prompt — stabilize smooth Compiz, then configure animations
+# Continuation prompt — theme the working Compiz desktop (M16 + M18)
 
-You are continuing a live, reversible desktop migration in the Git repository
+You are continuing a live, reversible desktop project in the Git repository
 `mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx`.
+
+**The window-manager migration is DONE.** Do not redo it. Your job is theming,
+icons, and sound — the aesthetic layer on top of a desktop that already works.
 
 ## Mandatory initialization
 
-1. This Arena session is fixed to branch `arena/019fff13-nvidia-intel-ocblizzard-4x8ddr`. Do not switch, create, or push another branch.
-2. Read `README.md` first, then read `MASTER.md` completely from top to bottom before proposing any target command.
-3. Treat `MASTER.md` as the canonical append-only audit log. Add dated receipt-backed rows only to Section VI ledgers and Section VII milestones. Never rewrite, remove, reformat, or silently correct an old row; supersede it.
-4. Check `git status`, recent commits, and PR #3, “MASTER.md: record smooth Compiz scheduler fix.” Commit and push each verified receipt step to the fixed branch.
-5. Do not merge PR #3 unless the user explicitly requests it. This continuation prompt was updated only because the user explicitly authorized it after opening PR #3.
-6. Do not copy MASTER into chat. Refer to IDs such as W-040/X-027/M8 and retain only the capsule below.
+1. This Arena session is fixed to whatever `arena/...` branch it opens on. Do not
+   switch, create, or push another branch.
+2. Read `README.md`, then read `MASTER.md` **completely**, before proposing any
+   target command. Sections XI and XII are the live edge; Sections I–II are the
+   frozen constitution.
+3. `MASTER.md` is an append-only audit log. Add dated, receipt-backed rows to the
+   Section VI ledgers (W-/X-/U-) and Section VII/XI/XII milestones. **Never**
+   rewrite, delete, reformat, or silently correct a prior row — supersede it with
+   a new row that cites the evidence which overturned it.
+4. Do not copy MASTER into chat. Refer to IDs (W-049, X-041, M18) and keep only
+   the capsule below in working memory.
+5. Commit and push each verified receipt to the fixed branch as you go.
 
 ## Interaction protocol — non-negotiable
 
-- The sandbox cannot operate the user’s Void X server/GPU. Author commands; the user runs them and pastes complete output through the returned prompt.
-- Give exactly ONE copy-paste target block at a time, then wait.
-- Before issuing the next target block, append the prior receipt to MASTER Section VI/VII, run `git diff --check`, commit, and push.
-- Never fabricate process, file, performance, or visual success. A user visual report is a receipt, but it is distinct from process/file evidence.
-- Every WM/compositor-changing block must begin with the exact TTY escape command: `/home/sd/.local/bin/xfce-wm-recover`.
-- Keep the logged-in Ctrl+Alt+F2 recovery TTY available.
-- Resolve one measured variable per block. Prefer compact Python orchestration over long shell logic when useful; shell remains the copy-paste transport and emergency surface.
-- Never run picom with Compiz. The user rejected picom.
-- Keep CCSM closed or reversibly suspended during machine-authored baseline/stability tests; it is a proven profile writer (W-033/W-034/W-038/W-040).
-- Keep screenshots, videos, themes, and baked artifacts outside Git. Record only findings, paths, versions, and checksums in MASTER.
-- No wallpaper tuning before M8 is stable/persistent. No screen recording ever; the later XMB bake is deterministic seek-driven rendering only.
+- **The sandbox is not the target.** It has no X server, no GPU, no Compiz. You
+  author commands; the user runs them on their Void box and pastes the output.
+- Give **exactly ONE copy-paste block at a time**, then wait for output.
+- Before issuing the next block: append the prior receipt to MASTER, commit, push.
+- **Never fabricate** process, file, or visual success. A user's visual report is
+  a valid receipt but is distinct from file/process evidence — label which you have.
+- Any block that can change the WM must state the escape first:
+  `/home/sd/.local/bin/xfce-wm-recover`  (TTY: Ctrl+Alt+F2 → `xfwm4 --replace &`).
+- Verify your own checks. A wrong verification command produced a false alarm
+  once already (X-032); prefer section-scoped, labelled assertions.
 
-## Immediate objective
+## Current state — all target-verified, do not re-litigate
 
-Get the already-proven smooth Compiz Reloaded 0.8.18 configuration live, stable, and persistence-safe under XFCE with Emerald, xfce4-panel, and cairo-dock. Then work interactively with the user to configure animations in small reversible groups, recording every accepted profile diff and resource/visual receipt.
+- **Compiz Reloaded 0.8.18 is the login WM.** Cold boot → `xfce4-session` runs
+  `/home/sd/.local/bin/compiz-session` → `env __GL_YIELD=USLEEP compiz --replace ccp`.
+  Verified `_NET_WM_NAME = "compiz"` (W-049).
+- **Smoothness is solved** by `__GL_YIELD=USLEEP` (W-040). Do not experiment with it.
+- **Geometry is pinned and self-healing.** `/home/sd/.local/bin/compiz-profile-repair`
+  runs at every login and enforces exactly 7 `[core]` keys, incl.
+  `s0_outputs = 2560x1440+0+0;1920x1080+2560+197;` and `s0_refresh_rate = 120`
+  (W-048, option C). It touches nothing else, so CCSM edits survive.
+- **Escapes exist:** `compiz-revert` (restore golden + restart),
+  `compiz-revert --xfwm4` (bail to xfwm4), `xfce-wm-recover`.
+  Golden snapshot: `~/.local/share/compiz-guard/Default.ini.golden`, 7/7 keys.
+- **picom is masked and must stay off** (X-008/W-042). Compiz composites.
+- Live processes after login: compiz 1210, emerald 1270, xfce4-panel 1251,
+  xfdesktop 1272, cairo-dock 1306.
 
-Only after M8 survives a keep-live dwell, logout/login, and reboot may M16 theming begin. Only after M8/M16 may M9–M14 deliver the deterministic XMB video wallpaper. M15 remains the final machine-readable state-machine/prompt capsule.
+### Hardware
+Void x86_64, glibc 2.41, NVIDIA proprietary 595.84, RTX 3080, OpenGL 4.6.
+DP-2 primary `2560x1440+0+0 @120`; DP-0 right/**inverted** `1920x1080+2560+197`;
+X screen `4480x1440`. The asymmetry matters — see X-039.
 
-## Proven target facts
+## Standing rules learned the hard way
 
-- Void x86_64, glibc 2.41; proprietary NVIDIA 595.84; RTX 3080; OpenGL 4.6; direct rendering.
-- Compiz Reloaded/core/plugins/CCSM/Emerald 0.8.18 installed.
-- cairo-dock 3.4.1 plus plugins installed and runs with `-o`; xfce4-panel survives bounded trials.
-- DP-2 primary: `2560x1440+0+0 @ 120.00`; DP-0 right/inverted: `1920x1080+2560+197 @ 119.98`; X screen `4480x1440`.
-- NVIDIA ForceCompositionPipeline and ForceFullCompositionPipeline are enabled for both outputs. NVIDIA SyncToVBlank=1 and AllowFlipping=1.
-- Picom is stopped and both XDG autostarts are masked. xfwm4 internal compositing is false.
-- Persistent XFCE Client0 still names `xfwm4`; Compiz is not logout/reboot persistent yet.
-- Original session backups: `/home/sd/xfce4-session.xml.bak.1786687627` and `/home/sd/wm-command.bak`.
-- Picom rollback directory: `/home/sd/picom-autostart-backup.1786688178`.
+- **CCSM rewrites the whole profile** from its own state (W-046). It is safe to
+  use *because* of the repair hook, but never snapshot the profile while CCSM is
+  running (X-035), and never leave CCSM open at logout (X-028/X-029).
+- **Never tick "Save session for future logins."** That is the suspected origin of
+  the `[WM_COMMAND] (1) "ccsm"` relaunch record cleared in W-050.
+- **Never enable Detect Outputs or Detect Refresh Rate** in CCSM. They discard the
+  pinned geometry and reproduce X-011 (cropped display) / X-013 (choppy).
+- Avoid `reflex`, `blur`, `mblur`, `bench`, `showmouse`, `mousepoll` (X-013).
+- Add GPU-visible plugins **one at a time**, re-judging smoothness after each.
+- Keep themes, screenshots and binaries **out of Git**. Record paths, versions and
+  checksums in MASTER only.
 
-## Proven recovery artifact
+## Immediate objectives, in order
 
-Executable: `/home/sd/.local/bin/xfce-wm-recover`
+### M16 — AMOLED / OS X 10.4–10.6 theming (12.9, 12.11)
+Brief: *"quake live style, sleek, black, like mac os X but amoled black and the
+10.4-10.6 aesthetic with metal and glossyness."* Four separable attributes:
+AMOLED `#000000` (colour), brushed metal + gloss (pixmap artwork), Aqua glass
+controls (widget geometry), Quake (accent + typography). Quake fights Aqua —
+reconcile by using Quake for **accent/type** and OS X for **surface**.
 
-SHA-256: `3f9402d2731d560fecae27a899b8f36c78b1c3a2527bda4a9fb2bdd354e19c24`
+**Compose from what the user already owns** (W-056) — do not clone from scratch:
+`~/.themes/` holds `Skeuo-Dark-Leopard`, `mac-os-x-cheetah-dark`,
+`OS-X-Cheetah-grey`, `ReVista-dark`, `ReVista-main`, `Win2-7(Pixmap)`,
+`Slickness-Reborn`, `OmNu-Ice`.
+Engines confirmed present (W-055): `libpixmap.so`, `libmurrine.so`, GTK2 + GTK3.
 
-It was syntax/self-check verified in W-029 and destructively proven in W-030/W-040. It restores persistent Client0 to xfwm4 when xfconf is reachable, kills Compiz/Emerald, starts `xfwm4 --replace`, and verifies xfwm4-live/Compiz-absent.
+Method: **fork** a theme (never edit in place), grep the CSS for the greys it
+actually ships (`#2b2b2b`/`#303030`/`#383838` are the usual culprits), drive
+backgrounds to `#000000`, and take glossy pixmap assets from `Win2-7(Pixmap)`.
 
-Emergency TTY command:
+**Blocker to clear first:** `~/.emerald/themes/` **does not exist** (X-041), yet
+emerald is the live decorator — so current titlebars belong to no inventoried
+theme. `mkdir -p ~/.emerald/themes && emerald-theme-manager &`. Candidates in
+R-22 (notably the black+glossy pixmap "Glossy Emerald Theme"). Fallback if
+emerald misbehaves (X-009/W-047): `gtk-window-decorator`.
 
-```sh
-/home/sd/.local/bin/xfce-wm-recover
-```
+### M18 — icons (12.13)
+(a) Swap the **Zen browser** icon for the **OS X Safari compass**.
+(b) Fix missing/wrong icons for **Thunar, xfce4-terminal** and other system apps.
+(c) Keep the set coherent with the 10.4–10.6 era.
+**Do (b) before (a)** — the fallback chain may itself resolve some wrong icons.
+Root cause is almost always an incomplete theme with no `Inherits=` chain in
+`index.theme`; prefer fixing inheritance + `gtk-update-icon-cache` over
+hand-placing files. Never edit under `/usr/share` (xbps overwrites on update) —
+use `~/.icons/` and `~/.local/share/applications/`.
 
-## Smoothness solution — proven and accepted
+### Sound (12.7, 12.8, 12.12) — independent, can run in parallel
+`libcanberra-utils` and `sound-theme-freedesktop` are **installed** (W-058).
+Four things still required, none done: `EnableEventSounds=true`,
+`EnableInputFeedbackSounds=true`, `SoundThemeName=freedesktop` (**not** `default`
+— X-040, that directory does not exist), and `canberra-gtk-module` in
+`GTK_MODULES`. Decisive test: `canberra-gtk-play -i bell`.
+Honest limits: Compiz has **no** audio subsystem (R-16), and canberra hooks GTK
+widget events only — cube/Scale/animations will **never** make sound. The stock
+freedesktop theme lacks most UI events (R-18); a Quake-style set means authoring
+a custom theme in `~/.local/share/sounds/<name>/` (no root needed).
+`ocean-sound-theme` is available as a fuller alternative.
 
-W-040 is the key result. A sole fresh process launched as:
+## Cube / switcher work, if the user returns to it
 
-```sh
-env __GL_YIELD=USLEEP compiz --replace --sm-disable
-```
+`scalefilter` (type-to-filter Scale) is the keyboard Mission Control (R-12) —
+bind Scale as a **toggle or hot corner**, never a hold-chord, or the binding eats
+the keystrokes (R-13). Scale and Expo **cannot** be merged in 0.8 (R-14).
+One switcher owns Alt+Tab (R-5). **One big cube across both monitors requires
+collapsing `s0_outputs` to a single rectangle** (X-038) — which conflicts with the
+enforced geometry and looks bad on these mismatched panels (X-039); per-output
+cubes are the recommended default. All plugins are installed (W-051).
 
-The process environment verified `__GL_YIELD=USLEEP`; it owned `_NET_SUPPORTING_WM_CHECK`; Emerald, panel, and dock survived. The user reported: **“IT WORKS, SMOOTH!”**
-
-W-040 resource snapshots:
-
-- Initial: Compiz 7.5% CPU, 162212 KiB RSS; GPU 23%, 890 MiB, 55.07 W.
-- End: Compiz 5.4% CPU, 164036 KiB RSS; GPU 38%, 901 MiB, 29.92 W.
-- Log: known no-XI2 and Emerald GTK/Wnck warnings only; no fatal Compiz event.
-
-Official NVIDIA 595.84 documentation supports this result: default `sched_yield()` can schedule an OpenGL composite manager out for too long while moving/repainting windows; `__GL_YIELD=USLEEP` is the documented workaround. See W-036.
-
-Do not repeat VBlank checkbox, refresh-rate, output-list, broad `Context.Write()`, or fresh-process-without-USLEEP experiments. They were rejected in W-025/X-018, W-026/X-019, X-016, and W-030/X-020.
-
-## Accepted profile baseline
-
-Active path: `/home/sd/.config/compiz/compizconfig/Default.ini`
-
-Exact accepted guard created before the smooth trial:
-
-`/home/sd/.config/compiz/compizconfig/Default.ini.pre-gl-yield-usleep.1786692457`
-
-Required SHA-256:
-
-`dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c`
-
-Exact content:
-
-```ini
-[core]
-as_active_plugins = core;ccp;move;resize;place;decoration;text;winrules;workarounds;grid;svg;regex;imgjpeg;png;animation;animationaddon;fade;switcher;
-s0_detect_refresh_rate = false
-s0_refresh_rate = 120
-s0_detect_outputs = false
-s0_outputs = 2560x1440+0+0;1920x1080+2560+197;
-s0_sync_to_vblank = true
-s0_lighting = true
-as_texture_filter = 0
-```
-
-## Critical CCSM/profile behavior
-
-CCSM is a proven transient writer, not a harmless resident GUI:
-
-- It reordered the active plugin list, removed `ccp`, sometimes added `wobbly`, and rewrote the profile during trials (W-031/W-033/W-034/W-038/W-040).
-- It can return about 12 seconds after termination. Its historical launcher remains unidentified; do not invent a cause.
-- At W-040, CCSM PID 15146 appeared during the smooth trial and the post-trial profile became SHA-256 `61eff706add069d4aaf1bdff6c80943215c4e3419579867cb79c9bcea8c1b1c5`.
-- Because CCSM was live, the automatic profile guard correctly refused to overwrite the file. X-027 therefore remains the current file-state gate.
-- The good guard above remains intact and has the required `dcefbadd...` checksum.
-
-For the immediate keep-live launch, if exactly one CCSM process exists, reversibly `SIGSTOP` that exact `/usr/bin/python3 /usr/bin/ccsm` PID before restoring the good guard. A stopped writer remains present so its delayed launcher should regard it as alive, but it cannot rewrite. Record its PID and exact resume command `kill -CONT PID`. Never kill generic Python processes.
-
-## Exact live handoff state — verify; do not trust stale PIDs
-
-The last fully executed target block was W-040’s bounded smooth trial. It automatically recovered to xfwm4 PID 15573, but that PID may now be stale. At that receipt:
-
-- Compiz and Emerald were absent after recovery.
-- xfce4-panel PID 1252 and cairo-dock PID 1301 survived.
-- Picom was absent.
-- CCSM PID 15146 existed during/end of trial and may now be stale.
-- Active Default.ini had mutated to SHA-256 `61eff706...` and was not restored because CCSM was live.
-- The subsequent “keep-live smooth Compiz” block was authored in chat but **was not run before PR #3 was requested**. Never claim it passed.
-
-## Exact continuation sequence
-
-1. Report that README and MASTER were read completely. Restate the gate in no more than five lines. Check clean Git state and PR #3.
-2. Issue one concise read-only target block only. Reverify:
-   - current WM name and xfwm4/Compiz/Emerald/picom/panel/dock processes;
-   - exact CCSM PID(s), command lines, and states;
-   - active profile checksum/content;
-   - good guard checksum;
-   - recovery artifact checksum and `--check` result.
-3. Append/commit/push that receipt before the next target block.
-4. If runtime is safe xfwm4, good guard is `dcefbadd...`, and exactly one CCSM writer exists:
-   - begin with `/home/sd/.local/bin/xfce-wm-recover` as the stated TTY escape;
-   - `SIGSTOP` only the exact CCSM PID and verify state `T`;
-   - back up the mutated active profile outside Git;
-   - restore the exact good guard;
-   - launch `nohup env __GL_YIELD=USLEEP compiz --replace --sm-disable ... &`;
-   - after 8–15 seconds verify sole Compiz PID/WM ownership, environment, Emerald/panel/dock survival, CCSM still stopped, profile checksum unchanged, logs, and resources;
-   - leave Compiz live if all gates pass. Otherwise invoke the recovery artifact automatically.
-5. If CCSM is absent, do not fabricate a PID. Restore the guard only while xfwm4 owns the screen, then use a bounded low-resource monitor during the keep-live launch; if exact CCSM appears, stop it immediately and verify whether the profile changed before proceeding.
-6. Ask the user to confirm smoothness once more in the keep-live session. Log the user observation separately from process receipts.
-7. Dwell the accepted live process. Only then prepare persistence:
-   - make the USLEEP environment part of the persistent Compiz launcher, preferably a small self-checking target script rather than relying on an interactive shell export;
-   - preserve a one-command inverse;
-   - clear stale session cache per X-010;
-   - set Client0 to the wrapper/Compiz command;
-   - test logout/login first, then reboot;
-   - recover from TTY on any failure.
-8. After keep-live/persistence is stable, configure animations collaboratively:
-   - one plugin/effect group at a time;
-   - back up the exact accepted profile first;
-   - avoid D-Bus and the rejected heavy all-at-once stack;
-   - capture exact before/after INI diff, process stability, resources, and user visual acceptance;
-   - ensure `ccp`, explicit display values, and USLEEP launcher remain intact;
-   - keep an immediate per-group rollback.
-9. Only after M8 logout/login and reboot are DONE: M16 reversible theme work, then M9–M14 deterministic XMB bake/wallpaper, then M15.
-
-## Failures not to repeat
-
-- X-011: manual output detection with no output list caused a tiny/cropped desktop.
-- X-015: water/wobbly/mblur/blur/cube/rotate/cubeaddon/cubemodel/gears/3d/bench plus D-Bus caused choppiness, duplicate D-Bus registrations, assertion, and respawn.
-- X-016: broad libcompizconfig `Context.Write()` collapsed important settings.
-- W-025/X-018: VBlank-only hot change did not improve refresh.
-- W-026/X-019: explicit 120 Hz/output hot writes did not improve refresh.
-- W-030/X-020: fresh `--sm-disable` without USLEEP remained visually poor.
-- X-021/X-027: launching/exiting with an uncontrolled CCSM writer collapses or rewrites the profile.
-- Do not assume visible CCSM checkbox state is authoritative; use file/process receipts.
-
-## Git/PR state
-
-- Fixed branch: `arena/019fff13-nvidia-intel-ocblizzard-4x8ddr`
-- HEAD before this prompt update: `922b7df` (`MASTER.md: accept smooth NVIDIA Compiz scheduler`). Verify actual HEAD after initialization.
-- Open PR: #3, “MASTER.md: record smooth Compiz scheduler fix.”
-- Base: `main`; head: fixed Arena branch.
-- PR #2 is already merged and is historical.
-- Tracked files: `README.md`, append-only `MASTER.md`, and `CONTINUE_PROMPT.md`.
-- Push only the fixed Arena branch.
-
-Begin the new chat by reading README then all of MASTER, checking Git/PR state, reporting the current gate in at most five lines, and issuing only the first read-only target verification block.
+## Open questions carried forward
+X-030 (mid-session reset, cause narrowed to CCSM-side), X-036 (`/usr/lib` vs
+`/usr/lib64` compiz dirs), X-037 (`hsize` unset — cube renders flat until = 4),
+X-041 (no emerald themes dir), U-017, U-022 (which sound events actually fire),
+U-023 (does scalefilter work here), plus three uncollected human checks:
+smoothness re-confirm, titlebars present, panel behaviour on workspace switch.
