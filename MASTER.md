@@ -5890,3 +5890,84 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   output written. Encoder question is settled (W-154). Two open items: attribute
   the 7.5 fps (W-156 profiler) and then simply let the ~8.3-minute bake finish.
   Nothing about the tool is known to be wrong. Do not re-litigate the encoder.
+
+--------------------------------------------------------------------------------
+12.84 U-004 CLOSED: HEADLESS CHROMIUM IS ON THE RTX 3080. BOTTLENECK IS PNG
+      CAPTURE, NOT RENDERING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-157] U-004 and U-040 are RESOLVED. Unmasked WebGL identity on the target is
+    vendor `Google Inc. (NVIDIA Corporation)` and renderer
+    `ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL 4.5.0)`
+    with MAX_TEXTURE_SIZE 32768. Headless Chromium IS hardware-accelerated on the
+    3080 through ANGLE's OpenGL backend. The masked `WebKit`/`WebKit WebGL`
+    strings recorded in W-150 and in every bake log are Chromium privacy masking
+    and are NOT evidence of software rendering. No SwiftShader, no llvmpipe.
+    RECEIPT: target `xmb-bake-profile main-red`, log `bake-profile.log`,
+    2026-08-14.
+
+  [W-158] The 7.5 fps of W-155 is attributed and it is NOT the GPU. Median
+    per-stage cost at 4480x1440: scene render + gl.finish 2.0 ms; readPixels
+    round-trip 9.0 ms; PNG screenshot 113.0 ms. Rendering is 1.7% of frame time.
+    The bake is bound by PNG encode/transfer of the 25.8 MB framebuffer, exactly
+    the second hypothesis in U-040. Projections: current path 430 s (7.2 min),
+    theoretical floor if capture were free 7 s. Nothing about the scene, the
+    preset, the GPU or NVENC is slow.
+    RECEIPT: target profiler per-stage medians and projections, 2026-08-14.
+
+  [X-086] AGENT ERROR IN W-156, NOT A TARGET FAULT. The profiler printed
+    `content check: 0/6452 sampled pixels non-black` and `WARNING: first frame
+    sampled entirely black`. This is a false alarm caused by my own probe
+    ordering: the profiler calls `page.screenshot()` BEFORE `gl.readPixels()`,
+    and the compositor swap during capture clears the drawing buffer when
+    `preserveDrawingBuffer` is false, so readPixels sampled an already-cleared
+    buffer. W-148's accepted preview renderer reads pixels BEFORE capturing and
+    correctly reported millions of non-black pixels. Decisive counter-evidence
+    from the profiler's own output: the captured PNG is 236,999 bytes, and
+    W-149's accepted non-blank main-red preview was 215,511 bytes, whereas a
+    genuinely black 4480x1440 PNG compresses to roughly 5-15 KB. A 237 KB PNG
+    cannot be a black frame. The scene is rendering correctly.
+    CONSEQUENCE: the black warning must be IGNORED for this run, the ordering
+    must be fixed before the profiler is trusted for blankness, and the BAKER IS
+    UNAFFECTED because it never calls readPixels — it only screenshots.
+    RECEIPT: profiler source order versus W-148 order, and the 236,999-byte PNG
+    against W-149's 215,511-byte accepted preview, 2026-08-14.
+
+  [X-087] SECOND AGENT ERROR IN W-156: the `chrome://gpu` cross-check printed
+    `WebGL2:: NOT FOUND` for all five rows. Two defects — headless Chromium does
+    not populate that page's innerText the way the scraper assumed, and the
+    label was concatenated twice in the fallback string. The check produced zero
+    information. It is harmless because WEBGL_debug_renderer_info answered the
+    question directly and more authoritatively, but the row must not be cited as
+    evidence of anything, in either direction.
+    RECEIPT: target profiler output rows versus scraper source, 2026-08-14.
+
+  [U-042] `optimizeForSpeed` halves capture to 58.0 ms (projecting 224 s / 3.7
+    min) but produced a LARGER 598,332-byte PNG versus 236,999 — consistent with
+    trading compression ratio for encode speed. Pixels should be identical since
+    only the PNG encoder settings change, but per U-041 this is unproven here and
+    a faster bake that breaks W-148 byte-determinism is a regression. It is
+    therefore NOT used for the first real bake. Resolve later with a two-pass
+    byte-identical comparison against the default path; the honest saving at
+    stake is about 3.5 minutes on a one-time job.
+    RECEIPT: target profiler fast-path timing and byte sizes, 2026-08-14.
+
+  [W-159] Baking concurrently with desktop idle/sleep is SAFE FOR OUTPUT
+    CORRECTNESS by construction, independent of what Compiz does. The baker
+    overrides `performance.now` and `requestAnimationFrame` with an explicit
+    counter and seeds `Math.random`, so frame content is a pure function of frame
+    index and preset (W-148/W-152). Wall-clock delay, screen blanking, the Compiz
+    screensaver plugin or xfce4-screensaver cannot alter a single pixel; they can
+    only change how long the run takes by competing for the GPU. The bake is
+    headless and never maps a window (X-085), so it neither triggers nor
+    suppresses idle. Two real hazards remain and they are about the PROCESS, not
+    the pixels: a foreground job dies with its terminal, and DPMS/lock behaviour
+    is a Section-XI live surface. Run it detached under setsid+nohup and it
+    survives terminal close, logout and lock.
+    RECEIPT: baker determinism source (explicit clock/seed, no display path)
+    plus W-120 idle/DPMS inventory and X-064 dual-screensaver note, 2026-08-14.
+
+[2026-08-14][M11-PROFILE] COMPLETE. GPU question closed (W-157), rate explained
+  (W-158), two agent-side probe bugs recorded (X-086/X-087), no tool defect
+  found. Baker `f4c2d95e...` is unchanged and cleared to run to completion at
+  ~7.2 minutes. Next action is the full main-red bake, detached.
