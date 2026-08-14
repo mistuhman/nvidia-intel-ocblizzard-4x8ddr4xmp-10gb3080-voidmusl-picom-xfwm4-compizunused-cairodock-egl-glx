@@ -4785,3 +4785,49 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   RGB generator colour and primary particle tuple are fixed. Audit-grade spline
   values still await machine-readable extraction. Sleep remains the final
   separately labelled visual reference required for the three-state set.
+
+--------------------------------------------------------------------------------
+12.53 SLEEP REFERENCE RECEIVED DISTINCTLY — THREE-STATE VISUAL SET COMPLETE.
+      Visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-114] SLEEP is the darkest and least stimulating state. It retains a pure
+    black field and a dim smoke-grey ribbon just below mid-frame, with broad
+    interwoven sheets, a low central sag and a soft rise toward the right. Wave
+    contrast is deliberately much lower than either normal desktop state.
+    Sparse particles sit mostly below the ribbon; a few become large, heavily
+    defocused grey orbs while most remain faint points. This reads as motion
+    settling into darkness rather than a bright decorative wallpaper and is
+    appropriate for an idle screensaver, subject to later display-power timing.
+    RECEIPT: operator-attached image explicitly labelled SLEEP, full-frame and
+    panel-by-panel visual inspection, 2026-08-14.
+
+  [W-115] Clearly legible SLEEP particle values are Count 257, Opacity 0.19,
+    Size Base 2.6, Size Var 50.8 and Flow Speed 0.18. Visible generator RGB is
+    0/0/0. The extreme size variation produces rare large dim bokeh while the
+    low count and opacity keep the field restful; those values are intentional
+    identity, not noise to normalize. As with the other presets, audit-grade
+    small-print spline values must be exported from live DOM/config state.
+    RECEIPT: direct reading of the left controls, RGB controls and rendered
+    distribution, 2026-08-14.
+
+  [W-116] The three-state visual constitution is now complete and each role is
+    materially distinct:
+      sleep            black, dim smoke sheets, sparse bokeh
+                       particles 257 / 0.19 / 2.6 / 50.8 / 0.18
+      main-red         oxblood-to-crimson, pale broad sheets, night lights
+                       particles 172 / 0.41 / 4.8 / 16.3 / 0.18; RGB 255/0/0
+      work-monochrome  black, calm ordered silver filaments, distant lights
+                       particles 4000 / 0.37 / 3.1 / 0.8 / 0.44
+    Values are Count / Opacity / Size Base / Size Var / Flow Speed. These are
+    three independent deterministic manifests and bakes. Sleep belongs only to
+    idle/screensaver control; main-red and work-monochrome belong to fixed
+    Compiz workspaces and participate in the hybrid spatial/crossfade switch.
+    RECEIPT: comparative inspection of all three separately labelled references
+    plus W-105 semantics, 2026-08-14.
+
+[2026-08-14][M9/PRESET-VISUAL-CONSTITUTION] PASS. All three art directions and
+  primary particle tuples are frozen as visual targets. Remaining preset work
+  is machine extraction of every spline value from the live page, not further
+  screenshot transcription. No bake is authorized until the operator finishes
+  pre-XMB theme/desktop ideas and the read-only target preflight passes.
