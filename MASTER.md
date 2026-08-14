@@ -5235,3 +5235,27 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-14][M9-PRESET-MEMORY-RECOVERY] AUTHORIZED. Next gate is SLEEP only;
   verify its JSON/PNG hashes and primary tuple before touching MAIN RED.
+
+--------------------------------------------------------------------------------
+12.63 SLEEP LIVE MEMORY SUBMITTED TO CAPTURE API; FILE RECEIPT PENDING.
+      Target/browser receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-134] The original unrefreshed SLEEP tab exposes exactly 50 spline keys and
+    the particle object `count=257, opacity=0.19, sizeBase=2.6, sizeVar=50,
+    flowSpeed=0.18`. The cross-origin POST to the local capture API returned HTTP
+    200 after the browser's Local Network Access prompt was allowed, and the
+    console ended `SLEEP_PRESET_SUBMITTED`. This is exact live-object evidence,
+    not screenshot transcription.
+    RECEIPT: browser developer-console table, key count, HTTP status and submit
+    completion, 2026-08-14.
+
+  [W-135] X-069 is resolved: SLEEP Size Var is exactly 50, consistent with the
+    source slider maximum. This value supersedes W-115/W-116's impossible 50.8
+    transcription. The final primary SLEEP tuple is therefore
+    `257 / 0.19 / 2.6 / 50 / 0.18`.
+    RECEIPT: live `window.PARTICLE_SETTINGS` console table, 2026-08-14.
+
+[2026-08-14][M9-PRESET-SLEEP-SUBMIT] HTTP PASS. Before touching MAIN RED, next
+  gate must verify the atomically written sleep JSON/PNG, exact tuple, 50 spline
+  keys, source aggregate and receipt hashes from the filesystem.
