@@ -1370,6 +1370,16 @@ Status vocabulary, used strictly:
   environment, preserving the candidate, and testing one reversible animation
   group before any persistence work.
 
+[2026-08-14][M8/PERSIST-0] Reboot safety reprioritized; Compiz persistence
+  remains NOT RUN. The user is pausing work and requests a reboot-safe handoff.
+  W-041 proves the current persistent Client0 still names xfwm4 and live Compiz
+  uses `--sm-disable`; therefore the evidence-backed fallback remains xfwm4,
+  not persistent Compiz. Do not claim Compiz will return after reboot until the
+  scheduler environment/profile gate, guarded launcher, logout/login test and
+  reboot receipt are completed in that order. No target persistence setting
+  was changed at this milestone.
+  RECEIPT: W-041 and direct user pause/reboot-safety instruction, 2026-08-14.
+
 [2026-08-14][M17] Operator iteration/PR weight stages TRACKED.
   User reports current stage 362 with maximum/PR target about 405, describes
   later lightweight cutting from 175 toward 115, and directs: do not open a
