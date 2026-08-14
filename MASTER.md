@@ -5389,3 +5389,23 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-2] LIVE SETTINGS PASS / transport
   PENDING. No shell verification and no work-monochrome capture until HTTP 200
   or completion is observed.
+
+--------------------------------------------------------------------------------
+12.69 ZEN/FIREFOX DENIES GITHUB-PAGES-TO-LOOPBACK POST; DOWNLOAD FALLBACK
+      REQUIRED. Browser/visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-077] The original tabs run in Zen's Firefox engine, not Chromium. The
+    attached Developer Tools screenshot shows MAIN RED's correct live values,
+    but the fetch ends `MAIN_RED_PRESET_SUBMIT_FAILED TypeError: NetworkError
+    when attempting to fetch resource`; Local Network Access reports
+    `prompt action: prompt_deny`. No API file receipt may be inferred. Stop
+    retrying cross-origin loopback from GitHub Pages. Use a same-page Blob
+    download of exact cloned JSON, then hash/validate/move it from Downloads in
+    a terminal-safe child shell.
+    RECEIPT: attached Zen UI/console screenshot and direct operator statement,
+    2026-08-14.
+
+[2026-08-14][M9-PRESET-MAIN-RED-SUBMIT-3] API transport REJECTED by browser
+  policy. Live tab remains valid. Next gate is browser-local JSON download only;
+  no loopback request and no preview claim.
