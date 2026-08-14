@@ -3771,3 +3771,42 @@ controls to rotate between windows."
   artwork and preserves the manager-normalized active slot before apply. Next
   gate remains the immutable-script gunmetal live trial from commit 628b709;
   target execution and appearance are still unverified.
+
+--------------------------------------------------------------------------------
+12.27 M16 GUNMETAL LIVE TRIAL NO-OP — AGENT TRANSCRIBED THE WRONG EXPECTED
+      HASH; CURRENT SCREENSHOT IS PRE-GUNMETAL. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-046] AGENT ERROR: the live-trial transport carried an incorrect expected
+    SHA-256. The downloaded immutable commit file correctly hashed
+    `4754874f6cb867c5271b550cb2d760584a2260cc5fe07da5b8ee5c8e8bdfc8b2`,
+    exactly matching repository W-076, but the pasted guard expected the
+    mistyped suffix `...b8ee6bee5c5bbe84e`. The guard therefore printed FAIL
+    and the subshell returned status 1 BEFORE mkdir/copy/build/apply. Safety
+    behavior passed: terminal remained open and no gunmetal file, theme build,
+    active-slot copy or Emerald restart occurred. Consequently the attached
+    screenshot is definitively the pre-gunmetal state (Mac4Lin Aqua active
+    decoration plus mac-os-x-cheetah-dark GTK), and must not be used to judge
+    W-076's generated design. Correct only the expected hash; do not weaken or
+    remove verification.
+    RECEIPT: target download/hash/failure/status output and screenshot,
+    2026-08-14.
+
+  [W-080] Human visual rejection of the CURRENT combined surface is specific:
+    “most elements are stripped of their previous theming, there needs to be
+    details and graphics.” The screenshot shows the light/silver pre-gunmetal
+    Mac4Lin frame over a largely flat black Thunar toolbar/content surface,
+    confirming the layer-discontinuity requested in W-075 has not yet been
+    solved. This is a valid visual receipt against the current Cheetah GTK +
+    stock Mac4Lin combination, not against the unexecuted gunmetal composer.
+    X-042 supplies a strong technical suspect for the stripped GTK detail:
+    Cheetah GTK3 has 135 unresolved SCSS-token lines and can stop parsing
+    before later asset rules. Causality remains to be tested after the
+    decoration trial; do not flatten more GTK colours in response.
+    RECEIPT: attached screenshot and direct operator report, 2026-08-14.
+
+[2026-08-14][M16/GUNMETAL-TARGET-1] Target trial NO-OP/REJECTED by X-046 hash
+  typo. Composer remains AUTHORED only. Next gate: repeat immutable download
+  with W-076's exact actual hash, build/apply the decoration, and judge it
+  separately. Then restore detailed GTK graphics from a clean parsed base;
+  current flatness W-080 must not be mistaken for AMOLED success.
