@@ -5688,3 +5688,36 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   explicit 60 Hz clock. Preserve a 2.3-second seamless blend aligned with the
   live Compiz Wall slide duration; encode one role at a time on /mnt/games and
   verify before runtime deployment.
+
+--------------------------------------------------------------------------------
+12.81 ONE-ROLE DETERMINISTIC FRAME-PIPE/SEAMLESS-LOOP BAKER AUTHORED.
+      Sandbox receipt 2026-08-14; target unexecuted.
+--------------------------------------------------------------------------------
+
+  [W-152] New `scripts/xmb-bake-video.mjs ROLE` extends the accepted preview
+    method without reverting to x11grab. It hash-gates one exact preset, uses the
+    same fixed seed/explicit performance.now/requestAnimationFrame clock and
+    4480x1440 viewport, advances and screenshots every 60 Hz simulation frame,
+    and streams PNGs directly over stdin to FFmpeg h264_nvenc—no frame files and
+    no live desktop capture. It captures 3,738 frames / 62.3 seconds. A second
+    bounded encode constructs a mathematically continuous 60-second loop by
+    playing source 2.3..60 then blending source 60..62.3 into source 0..2.3;
+    the output ends at source time 2.3, exactly where the next loop starts. The
+    2.3-second blend matches live Wall slide duration W-124. It refuses existing
+    output, partial files use valid .mp4 suffixes, and final gates require exact
+    dimensions, 60/1 average frame rate and 60±0.05-second duration before a
+    hash/probe receipt and PASS marker. Master is retained until visual review.
+    Script SHA-256 is
+    `ed065c83e2edf03fe09f135473b361aa506adc5f532ea031a4d02d13ab5fef3a`.
+    RECEIPT: sandbox Node syntax check, source/invariant review and sha256sum,
+    2026-08-14.
+
+  [U-037] Full target performance, NVENC option acceptance and seamless filter
+    behavior remain unverified; sandbox lacks FFmpeg/GPU. Bake exactly one role
+    first (main-red), preserve progress/error log and stop on any failure. Do not
+    batch all roles until main-red passes ffprobe and human loop inspection.
+    RECEIPT: environment boundary and one-role tool design, 2026-08-14.
+
+[2026-08-14][M11-VIDEO-BAKER] AUTHORED/SYNTAX PASS, target unexecuted. Next
+  target action is immutable tool install and MAIN RED only. This is expected to
+  be a long foreground render; no reboot, WM change or source modification.
