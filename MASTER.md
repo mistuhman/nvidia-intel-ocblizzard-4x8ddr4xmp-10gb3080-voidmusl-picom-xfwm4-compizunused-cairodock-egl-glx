@@ -4180,3 +4180,36 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
 
 [2026-08-14][M16/GTK-GUNMETAL-3D-TARGET-1] NO-OP/UNEXECUTED. Receipt: X-050.
   Next action unchanged: run the c489b9b live-trial block.
+
+--------------------------------------------------------------------------------
+12.36 GUNMETAL GTK3 TARGET V1 PASSED MACHINE GATE, PARTIAL HUMAN PASS — DEPTH
+      WORKS BUT CONTRAST IS TOO ABRUPT. Target/user receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-091] The immutable GTK3 composer verified at SHA-256 61cf4376..., built
+    and activated successfully on target. Output is 453 files, aggregate
+    `3b8877b565042a171a4a08eedb565427a8f2326a72672253e636024276f45625`,
+    override CSS exactly matches W-089 at `4a0e36a5...`. Differential probe is
+    decisive: baseline and candidate each emit only the identical four
+    pre-existing low-line X-043 warnings; candidate introduces ZERO new parser
+    warnings and both Gtk realizations pass. XSettings now names
+    Quake-Gunmetal-3D, rollback records Quake-Aqua-AMOLED, Compiz remains PID
+    1210, accepted Emerald PID 14379 remains, and picom is absent.
+    RECEIPT: target download/build/probe/apply/status output, 2026-08-14.
+
+  [X-051] Human verdict is “semi successful, make the contrast less jarring.”
+    The screenshot confirms added depth and a materially joined menubar/
+    toolbar, but the brightest rims, selected-row plate, red selection edge,
+    sidebar divider and inset outlines jump too sharply from the #000 content
+    well. This is a tonal-calibration rejection, not a return to flatness.
+    Required V2 correction: compress the gunmetal ramp, lower white-rim alpha,
+    darken selected plates and sidebar edges, mute red to oxblood, soften entry/
+    button borders, and retain all four depth cues. Do not remove textures,
+    wells or bevel semantics and do not touch the accepted Emerald layer.
+    RECEIPT: attached post-V1 screenshot and direct operator verdict,
+    2026-08-14.
+
+[2026-08-14][M16/GTK-GUNMETAL-3D-V1] Machine PASS / human PARTIAL.
+  Receipt: W-091/X-051. Author a deterministic low-contrast V2 from the same
+  composer, verify generated hashes changed only by the intended tonal update,
+  then rebuild/probe/apply with V1 automatically preserved by --force.
