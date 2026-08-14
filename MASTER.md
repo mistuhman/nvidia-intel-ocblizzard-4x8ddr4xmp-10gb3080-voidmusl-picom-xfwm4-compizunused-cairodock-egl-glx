@@ -5665,3 +5665,26 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-14][M10-DETERMINISTIC-PREVIEWS] MACHINE PASS / HUMAN VISUAL PENDING.
   Next action creates one contact sheet from the three canonical PNGs and opens
   it; no manifest, renderer or video changes.
+
+--------------------------------------------------------------------------------
+12.80 THREE-PRESET CONTACT SHEET GENERATED AND VISUALLY ACCEPTED.
+      Target/human receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-151] The three canonical deterministic previews were scaled uniformly and
+    stacked in role order (sleep, main-red, work-monochrome) into
+    `/mnt/games/xmb-wave-bake/previews-deterministic/contact-sheet.png`, SHA-256
+    `f121894a3137c96165c549ffc8a7f5c1acc1e7a2468dbfb0a4e34da1f39876cf`.
+    Ristretto opened it successfully; its four GTK warnings are the unchanged
+    X-043 theme warnings and an icon-theme pixbuf warning, not image decode
+    failure. The operator reports “has three pictures of each, good,” accepting
+    all three generated roles as matching the intended set and closing U-036's
+    brightness concern by human judgement.
+    RECEIPT: target ffmpeg/hash/xdg-open output and direct operator verdict,
+    2026-08-14.
+
+[2026-08-14][M10-DETERMINISTIC-PREVIEWS-FINAL] MACHINE PASS / HUMAN PASS.
+  Full video bake is now authorized from the exact manifests, fixed seed and
+  explicit 60 Hz clock. Preserve a 2.3-second seamless blend aligned with the
+  live Compiz Wall slide duration; encode one role at a time on /mnt/games and
+  verify before runtime deployment.
