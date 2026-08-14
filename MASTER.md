@@ -3596,3 +3596,32 @@ controls to rotate between windows."
   X-044 supersedes the issued block. Current GTK stage remains W-070; no claim
   is made about Emerald backup state. Next action is read-only reconciliation
   using a subshell-safe transport.
+
+--------------------------------------------------------------------------------
+12.22 M16 EMERALD GATE 3 — CUSTOM ACTIVE DECORATION BASELINE PRESERVED.
+      Target output pasted 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-072] The operator re-ran EMERALD-3 and every guard passed, resolving the
+    unknown state left by X-044. The active custom Emerald theme.ini still
+    matched W-061 exactly at SHA-256
+    `9c8283ab6b4e6fe941102f3151224f5d214ddcb9bd2bdf01b3966625cb893fa6`.
+    It was copied byte-for-byte into the user theme library at
+    `/home/sd/.emerald/themes/Dark-Aqua-Hybrid-Baseline`. Source and copy
+    aggregate manifests both equal
+    `7bc2e8ff5bcf2a456dc8fae5a9ba8cd7e86e742cef12d253084b99a9358d68d1`;
+    the registered baseline contains 37 files, zero broken symlinks, and
+    retains creator `sd-rice`, description `Dark Aqua Hybrid Legacy - Snow
+    Leopard Graphite`, version 0.8.18 and engine legacy. The active source hash
+    remained unchanged after registration; Emerald PID 1270 and Compiz PID
+    1210 remained live. The exact GUI rollback after any decoration trial is
+    to select `Dark-Aqua-Hybrid-Baseline` in Emerald Themer; the WM recovery
+    escape remains `/home/sd/.local/bin/xfce-wm-recover`.
+    RECEIPT: target EMERALD-3 byte comparison, aggregate hashes, metadata,
+    process labels and active post-check, 2026-08-14.
+
+[2026-08-14][M16/EMERALD-3] Decoration rollback baseline VERIFIED and gate
+  DONE. Receipt: W-072. This supersedes only X-044's UNKNOWN artifact state;
+  X-044's transport lesson remains binding. The operator may now audition
+  Emerald decorations manually and report names/screenshots without risking
+  loss of the custom baseline. Quake-Aqua-AMOLED GTK stage 1 remains active.
