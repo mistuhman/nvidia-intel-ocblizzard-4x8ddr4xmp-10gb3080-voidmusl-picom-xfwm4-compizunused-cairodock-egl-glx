@@ -6122,3 +6122,56 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   work-monochrome follows automatically. Await two `..._VIDEO_BAKE=PASS`
   markers. X-088 throughput variance is logged and explicitly does not gate
   anything.
+
+--------------------------------------------------------------------------------
+12.88 SLEEP LOOP COMPLETE; X-088 RESOLVED BY FILE-SIZE EVIDENCE — THE FAULT WAS
+      IN W-158's PROXY, NOT THE MACHINE. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-168] The `sleep` role is COMPLETE. Deliverables in
+    `/mnt/games/xmb-wave-bake/out/sleep/`: `sleep.loop-60s.mp4` 177,038,151
+    bytes, `sleep.master-62.3s.mp4` 248,971,835 bytes, `BAKE-RECEIPT.json`
+    1,712 bytes. The loop exists only because the tool's dimension, 60/1 frame
+    rate and 60+/-0.05 s duration assertions passed, and the `&&` chain then
+    advanced to `work-monochrome` as designed. Two of three roles are now baked.
+    RECEIPT: target `ls -la /mnt/games/xmb-wave-bake/out/*/`, 2026-08-14.
+
+  [W-169] X-088 IS RESOLVED, and the error was mine. Sleep's master is 248,971,835
+    bytes against main-red's 209,122,085 — 19.1% LARGER — while sleep rendered
+    19.2% SLOWER (591.0 s versus 495.8 s). That agreement to within 0.1 point is
+    the receipt: per-frame cost tracks ENCODED DATA VOLUME, so a bulkier frame
+    stream costs proportionally more time. W-158's core finding survives intact
+    (capture/encode dominates at ~113 ms of ~133 ms per frame). What was wrong
+    was the PROXY I used to predict that cost: I treated W-150's non-black PIXEL
+    COUNT as a stand-in for PNG size. It is not. PNG cost tracks ENTROPY — fine
+    gradients, dither and particle noise — not brightness. Sleep has 8.9x fewer
+    lit pixels than main-red yet compresses WORSE, because a dim, finely graded
+    field is higher-entropy than a bright smooth one. Candidate (d) of X-088
+    holds; (a) thermal, (b) scene-render cost and (c) contention are all refuted
+    below.
+    RECEIPT: W-160/W-167 elapsed times against W-163/W-168 file sizes,
+    2026-08-14.
+
+  [W-170] Thermal decay and desktop contention are affirmatively RULED OUT as
+    causes of the sleep slowdown. `work-monochrome` is rendering at 7.19 fps
+    while running THIRD — after roughly 20 minutes of continuous GPU load from
+    main-red and sleep — which is faster than sleep's 6.32 fps and close to
+    main-red's cold-start 7.54 fps. A thermal or cumulative-contention
+    explanation predicts monotonic decay across the sequence; the observed order
+    7.54 / 6.32 / 7.19 is non-monotonic and therefore incompatible with it.
+    Per-role content, not elapsed session time, sets the rate.
+    RECEIPT: target progress lines for role 3 at frames 541-661, 2026-08-14.
+
+  [U-046] SUPERSEDES U-045's framing. The profiler re-run is no longer the
+    decisive test for X-088, because file sizes already answered it at zero cost.
+    If per-role bake time is ever to be PREDICTED rather than observed, the
+    correct proxy is mean encoded bytes per frame from a short sample, not pixel
+    brightness. Recording this so no future run repeats the brightness
+    assumption. No action required; nothing is blocked.
+    RECEIPT: W-169 size/time correlation versus U-045's proposed method,
+    2026-08-14.
+
+[2026-08-14][M11-SLEEP] COMPLETE (machine). Human visual gate still open for
+  sleep and work-monochrome; only main-red has W-165 acceptance. X-088 closed by
+  W-169/W-170 with an agent-side model correction. Await
+  `WORK_MONOCHROME_VIDEO_BAKE=PASS`, then review both new loops together.
