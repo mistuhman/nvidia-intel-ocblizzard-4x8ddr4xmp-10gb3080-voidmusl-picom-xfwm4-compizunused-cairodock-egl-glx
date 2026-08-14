@@ -2368,3 +2368,98 @@ untouched by this session. New knowledge lands here and in the ledgers.
   before Compiz reads the file. Option (A) is still worth doing so the two
   agree rather than fight, but it is no longer load-bearing. The user may now
   use CCSM freely, which was the stated goal.
+
+--------------------------------------------------------------------------------
+11.15 B5 RECEIPT — OPTION (C) INSTALLED ON TARGET AND PROVEN ON THE REAL
+      DAMAGED PROFILE. Pasted 2026-08-14T16:25Z. Includes TWO agent errors,
+      recorded per Directive 5 because both were caught by the user asking
+      "how can I know?" rather than by the agent.
+--------------------------------------------------------------------------------
+
+  [W-048] THE REPAIR RAN CORRECTLY ON THE REAL FAULT. Against the live
+    damaged profile e4369dd..., `--check` reported exactly the 7 missing keys
+    and wrote nothing (md5 unchanged). The real run backed up to
+    Default.ini.pre-repair.1786724725, restored all 7, and produced active
+    SHA-256 a9c157ad7e31f86c18ae544463780802e0a23d50a14a69cff7b11451a4685357.
+    Second run reported "OK, all 7 enforced keys already correct" — idempotent
+    on target, not just in sandbox.
+    *** THE STRONGEST EVIDENCE IN THIS BLOCK: the repaired file retained the
+    user's CCSM plugin work verbatim — [animationaddon] s0_beam_life=0.600000,
+    s0_beam_color=#ffffffff and [wobbly] s0_friction=5.900000,
+    s0_grid_resolution=33, s0_focus_effect=1, s0_map_effect=1 — while the
+    [core] display block was rebuilt. Sandbox test T4 (section isolation) is
+    therefore CONFIRMED ON THE TARGET with real data. The tool does exactly
+    what 11.14 claims: owns 7 core keys, touches nothing else, and does not
+    disturb as_active_plugins.
+    Launcher hardened: compiz-session now runs compiz-profile-repair (output
+    appended to /tmp/compiz-repair.log, `|| true`) then execs
+    `env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp`. `sh -n` passed.
+    Inverse: cp -a /home/sd/.local/bin/compiz-session.bak.1786724725 over it.
+    RECEIPT: target B5 block output pasted 2026-08-14, sections a-e verbatim.
+
+  [X-032] AGENT ERROR 1 — A VERIFICATION COMMAND THAT PRODUCED A FALSE ALARM.
+    B5-e printed "s0_ keys present: 13 (expect 7)" and the user correctly
+    challenged it. The FILE was right; the CHECK was wrong. The grep
+    `grep -cE '^s0_|^as_texture_filter'` scanned the WHOLE file, but the
+    profile now has three sections. Breakdown proven by awk over the exact
+    target content: [core] 7 (the enforced keys), [animationaddon] 2
+    (s0_beam_life, s0_beam_color), [wobbly] 4 (s0_friction,
+    s0_grid_resolution, s0_focus_effect, s0_map_effect). 7+2+4 = 13.
+    THE CORRECT CHECK, section-scoped, and the one to use from now on:
+      awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' \
+        ~/.config/compiz/compizconfig/Default.ini | grep -cE \
+        '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) '
+    User ran it on target: returned 7. GATE PASSED.
+    LESSON, generalisable: once CCSM starts writing plugin sections, ANY
+    whole-file grep for `s0_` is meaningless. All future profile assertions
+    must be section-scoped.
+    RECEIPT: user-run awk|grep -c output "7", pasted 2026-08-14.
+
+  [X-033] AGENT ERROR 2 — UNRESOLVED HASH MISMATCH, HONESTLY UNCLOSED.
+    The installed compiz-profile-repair hashed
+    c7495361c9d51b41887d5f1ccb370ced7a4d61cc8ab58bbec58cd2db8222978b on
+    target, NOT the sandbox-tested
+    4bac9046e18bcd9e238dbb5fc71fa7c07f76235696c593461ec24ce1f0659221.
+    Investigated: removing the one comment line dropped from the paste gives
+    7459384c..., and additionally adding the trailing space the paste
+    introduced on the "already correct" print line gives d3d2c278... —
+    NEITHER equals the target hash. A residual whitespace difference remains
+    UNEXPLAINED. Do not claim byte-identity.
+    WHAT WAS DONE INSTEAD: the target's exact byte sequence was reconstructed
+    and the full 7-case matrix re-run against it — T1 restore, T2 idempotency,
+    T3 no-op on good file, T4 decoy-section preservation, T4b core correction,
+    T5 [core] synthesis, T7 --check-never-writes — 7 passed, 0 failed. Python
+    comment/string whitespace does not alter behaviour, and the target's own
+    live output (7 keys found, backup written, "already correct" on rerun,
+    plugin sections preserved) independently corroborates correct operation.
+    STATUS: BEHAVIOUR VERIFIED, BYTE-IDENTITY UNVERIFIED. The canonical source
+    of truth is the repo file scripts/compiz-profile-repair (4bac9046...); if
+    byte-identity is ever required, install by copying that file rather than
+    by pasting a heredoc through a terminal.
+    RECEIPT: sandbox diff/hash reconstruction and 7/7 re-run, 2026-08-14.
+
+11.16 REBOOT CLEARED. Final pre-reboot state, all values target-observed:
+    active profile   a9c157ad... with 7/7 enforced keys in [core] (X-032 check)
+    s0_outputs       2560x1440+0+0;1920x1080+2560+197;
+    s0_refresh_rate  120
+    Client0_Command  /home/sd/.local/bin/compiz-session
+    SaveOnExit       false
+    ccsm             not running        picom  absent
+    escapes present  compiz-session, compiz-profile-repair, compiz-revert,
+                     xfce-wm-recover  (all 4 executable)
+  POST-REBOOT EVIDENCE TO CAPTURE (this is the B6 gate):
+    cat /tmp/compiz-repair.log
+    pgrep -x compiz; ps -o lstart=,cmd= -p $(pgrep -x compiz|head -1)
+    xprop -id "$(xprop -root -notype _NET_SUPPORTING_WM_CHECK|awk '{print $NF}')" \
+      -notype _NET_WM_NAME
+    sha256sum ~/.config/compiz/compizconfig/Default.ini
+    ls -la ~/.cache/sessions/            # <- ANSWERS U-019
+    pgrep -f /usr/bin/ccsm; pgrep -x picom; pgrep -x emerald
+  Plus three human judgements: smoothness, titlebars present, panel behaviour
+  on workspace switch.
+
+[2026-08-14][M8/B5] Option (C) repair-on-login INSTALLED and PROVEN against
+  the real damaged profile. Receipt: W-048, 11.15. Two agent errors recorded
+  (X-032 false-alarm check, X-033 unexplained hash delta). X-031's reboot
+  blocker is CLEARED by target-verified 7/7 section-scoped key count. M8 now
+  awaits only the reboot gate itself.
