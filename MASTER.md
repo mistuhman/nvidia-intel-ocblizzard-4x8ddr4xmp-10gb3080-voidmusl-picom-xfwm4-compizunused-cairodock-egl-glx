@@ -663,6 +663,17 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target Python precondition, 12-second process-event trace, final
   process/profile receipt and trace checksum pasted 2026-08-14.
 
+[2026-08-14][W-038] The second no-writer restoration again installed exact
+  W-032 SHA-256 dcefbadd... and kept both hash and mtime unchanged for eleven
+  one-second samples. At second 12, exact CCSM returned as PID 12047; Compiz
+  and picom remained absent and xfwm4 PID 16448 remained. The immediate final
+  profile was still byte-identical, so this receipt proves a delayed CCSM
+  launcher independently of a profile write and explains why W-037's exactly
+  12-second trace ended too early. Backup of the pre-restore reordered profile
+  is Default.ini.pre-final-writer-clear.1786692255, SHA-256 110c892a....
+  RECEIPT: target Python restoration and per-second dwell output pasted
+  2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -917,6 +928,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   reversibly; generic Python kills remain prohibited.
   RECEIPT: W-034.
 
+[2026-08-14][X-026] W-037's conclusion that the active writer was cleared
+  is superseded: its 12.0-second trace terminated just before the delayed CCSM
+  return now observed at dwell second 12. Future creator tracing must exceed
+  12 seconds and retain a compact pre-exec event ring rather than flooding the
+  receipt with unrelated short-lived polling processes. Do not restore or
+  launch Compiz again until that longer trace captures the creator or a
+  reversible exact-command suppression is installed.
+  RECEIPT: W-038.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -1047,6 +1067,12 @@ as its receipt. Do not guess any of them.
   priority: upstream code/manuals and distro package files first; issue/forum
   reports only when version-matched and corroborated. Reject generic Compiz
   0.9/Ubuntu guidance and claims that do not distinguish ccp from CCSM.
+
+[U-016] Capture the delayed CCSM creator over at least 20 seconds. Terminate
+  only the exact current CCSM process, scan new PIDs at high frequency, retain
+  a bounded ring of non-noise exec events, and snapshot the new CCSM ancestry
+  immediately. Explicitly suppress the known PID-1297 `pgrep` flood from the
+  report without killing it. Preserve the profile unchanged during tracing.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -1256,6 +1282,11 @@ Status vocabulary, used strictly:
   restoring W-032 and proving a no-CCSM hash dwell, then resuming the ordered
   NVIDIA A/B tests. Python is accepted for target orchestration; shell remains
   only the one-block transport/escape surface.
+
+[2026-08-14][M8/WRITER-2] Twenty-second stable-profile dwell FAILED at
+  second 12 due to delayed CCSM return. Receipt: W-038/X-026. Overall M8 is
+  BLOCKED on U-016's extended compact creator trace; W-032 content is currently
+  intact but must be considered writable while CCSM PID 12047 exists.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
