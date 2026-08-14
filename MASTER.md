@@ -758,6 +758,53 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target B2-1e verbatim cat of both files and B2-1f status sweep,
   pasted 2026-08-14.
 
+[2026-08-14][W-043] *** B2-2 IS THE FIRST KEEP-LIVE COMPIZ WITH A FROZEN
+  PROFILE. THE X-027 WRITER LOOP IS BROKEN. *** All preconditions passed:
+  guard dcefbadd... verified on disk, recovery artifact still SHA-256
+  3f9402d2..., no compiz, no picom. CCSM WAS NOT RUNNING at block start —
+  it had already exited on its own after the B2-1 read, so nothing was
+  signalled. Session cache tarballed to
+  /home/sd/.cache/sessions-backup.1786722561.tar.gz (48831 bytes) and cleared;
+  the `ccsm` WM_COMMAND record is GONE (`grep -rIl ccsm` empty). The fat
+  09f0c6c7 profile was preserved as Default.ini.pre-b2-2.1786722561 and the
+  dcefbadd guard installed and hash-verified as active.
+  Compiz launched as sole PID 5065 via `compiz --replace --sm-disable` with
+  `__GL_YIELD=USLEEP` confirmed present in /proc/5065/environ (count 1).
+  Over a 60-second dwell sampled at 15s intervals: PID 5065 unchanged at all
+  four samples, ccsm ABSENT at all four, picom ABSENT at all four, and
+  Default.ini SHA-256 still dcefbadd6fe3... at all four. This is the first
+  time in the project that the profile hash has survived a live Compiz
+  session — every prior attempt (W-034, W-040) saw CCSM return and rewrite it.
+  Survivors: xfce4-panel 1259, xfdesktop 1272, cairo-dock 1305 all retained
+  their pre-swap PIDs, and emerald respawned as decorator PID 5078. Log
+  contains ONLY the four already-known benign warnings: `No XI2 extension`,
+  four emerald `gtk.css` colour-parse errors, and `wnck_set_client_type`
+  CRITICAL. No fatal error. Log: /tmp/compiz-b2-2.1786722561.log.
+  The active guard profile's exact plugin list is now recorded verbatim:
+    core;ccp;move;resize;place;decoration;text;winrules;workarounds;grid;
+    svg;regex;imgjpeg;png;animation;animationaddon;fade;switcher;
+  with s0_detect_refresh_rate=false, s0_refresh_rate=120,
+  s0_detect_outputs=false, s0_outputs=2560x1440+0+0;1920x1080+2560+197;,
+  s0_sync_to_vblank=true, s0_lighting=true, as_texture_filter=0.
+  RECEIPT: target B2-2 block output pasted 2026-08-14, blocks a-g verbatim.
+
+[2026-08-14][W-044] Two harmless script defects in B2-2, corrected here so the
+  next block does not repeat them:
+  (a) `xprop -root _NET_WM_NAME` prints "not found" — the root window does not
+      carry that property. The WM identity probe must dereference
+      `_NET_SUPPORTING_WM_CHECK` first. Correct one-liner:
+        xprop -id "$(xprop -root -notype _NET_SUPPORTING_WM_CHECK \
+          | awk '{print $NF}')" -notype _NET_WM_NAME
+      The B2-2 dwell's WM column is therefore VOID as evidence; WM ownership
+      is nevertheless established by the live compiz PID plus emerald
+      respawning as its decorator and xfwm4 not reappearing.
+  (b) `rm -f ~/.cache/sessions/*` cannot remove the subdirectory
+      `thumbs-66:0`, leaving 1 entry. Harmless — it is an xfdesktop thumbnail
+      cache, not session state, and the ccsm grep confirms no restart record
+      survived. Use `rm -rf` only if a full clear is ever actually required.
+  RECEIPT: target B2-2 output lines "WM now _NET_WM_NAME: not found." and
+  "rm: cannot remove '/home/sd/.cache/sessions/thumbs-66:0': Is a directory".
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -1885,3 +1932,43 @@ untouched by this session. New knowledge lands here and in the ledgers.
   U-014, U-015 and U-016. New blocker recorded as X-028 (do not open CCSM /
   do not leave it open at logout). Overall M8 now BLOCKED only on B2-2's
   cache clear + guard restoration, then the B3 keep-live dwell.
+
+--------------------------------------------------------------------------------
+11.5 B2-2 RECEIPT — COMPIZ LIVE, PROFILE FROZEN. Pasted 2026-08-14T15:49Z.
+     Ledger rows: W-043 (result), W-044 (two script defects, corrected).
+--------------------------------------------------------------------------------
+
+  Compiz PID 5065, `__GL_YIELD=USLEEP` verified in its own /proc environ,
+  sole WM, decorator emerald 5078, panel/xfdesktop/cairo-dock all retained
+  their pre-swap PIDs. Four dwell samples over 60s: PID stable, ccsm absent,
+  picom absent, Default.ini SHA-256 dcefbadd... UNCHANGED. No fatal log line.
+
+  WHY THE HASH HELD, AND WHY THAT RETIRES X-027. CCSM was not running when
+  B2-2 started — it had exited on its own after B2-1 — so nothing was killed.
+  The session cache that would have re-launched it at next login is now a
+  tarball, and the live cache no longer contains the string `ccsm`. The writer
+  is not suppressed by force; it is simply not being started. That is the
+  difference between this attempt and W-034/W-040.
+
+11.6 THE PIVOT: CCSM IS NO LONGER THE ENEMY.
+  Every prior session treated a CCSM write as a fault, because the baseline
+  was unproven and CCSM kept destroying it mid-experiment. The user's goal is
+  now explicitly to REBOOT INTO COMPIZ AND CONFIGURE IT THROUGH CCSM. So the
+  objective inverts: CCSM writes become intentional, and the engineering
+  problem becomes making those writes SURVIVABLE rather than preventing them.
+  Three things make that true, and they are what gate B3 installs:
+    1. A REVERT PATH. A named known-good snapshot plus a one-word restore
+       command, so any CCSM change that breaks the desktop is undone from a
+       TTY without archaeology.
+    2. SaveOnExit OFF. This structurally kills X-028: if the session is never
+       saved, xfwm4 can never write another `[WM_COMMAND] (1) "ccsm"` record,
+       so the self-perpetuating relaunch loop cannot re-arm no matter how
+       often CCSM is opened. It also stops a live Compiz from being recorded
+       into the cache, which is the other half of the same hazard.
+    3. A LAUNCH WRAPPER that owns the environment. `__GL_YIELD=USLEEP` is the
+       single accepted smoothness fix (W-040, W-043) and it must be applied
+       by whatever starts Compiz at login, not typed by hand.
+  THE TWO SETTINGS THE USER MUST NOT TOUCH IN CCSM: "Detect Outputs" and
+  "Detect Refresh Rate" must stay OFF. Turning either on discards
+  s0_outputs / s0_refresh_rate and reproduces X-011 (tiny cropped display) or
+  X-013 (choppy refresh). Everything else in CCSM is fair game.
