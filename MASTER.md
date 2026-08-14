@@ -496,6 +496,18 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target IX.4B-2 diff/process/geometry/resource output and user
   observation, 2026-08-14.
 
+[2026-08-14][W-026] IX.4B-3 installed the complete explicit Compiz 0.8 core
+  display candidate without changing plugins: detect_refresh_rate=false,
+  refresh_rate=120, detect_outputs=false, the two proven output rectangles,
+  and sync_to_vblank=true. PID 18768 and WM ownership remained stable; XRandR
+  independently confirmed DP-2 2560x1440@120.00 and inverted DP-0
+  1920x1080@119.98. Snapshot: 7.1% Compiz CPU, 253220 KiB RSS, 44% GPU,
+  934 MiB GPU memory and 29.01 W. The profile/geometry side is now explicit
+  and internally consistent, but the user still perceives no refresh
+  improvement.
+  RECEIPT: target IX.4B-3 diff/process/profile/xrandr/resource output and user
+  observation, 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -678,6 +690,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   rectangles. Keep vblank=true for this next isolated test.
   RECEIPT: IX.4B-2 screenshot, active INI, xrandr and user observation,
   2026-08-14.
+
+[2026-08-14][X-019] IX.4B-3 disproves hot-writing all explicit core display
+  values as a sufficient refresh fix. Do not repeat refresh/output/checkbox
+  edits: the file and XRandR already prove the requested modes. The next run
+  must determine whether these renderer-affecting options require a fresh
+  Compiz process and inspect NVIDIA/GLX frame scheduling; use a bounded launch
+  with `--sm-disable` so XFCE cannot silently respawn another XSMP client.
+  Persistence, logout and reboot remain prohibited until the fresh-process
+  result is visually accepted and resource cost is remeasured.
+  RECEIPT: W-026 and direct user report "unchanged", 2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -897,6 +919,12 @@ Status vocabulary, used strictly:
   REJECTED. Receipt: W-025 and X-018.
   Overall M8 remains BLOCKED on an explicit detect-refresh/output test and a
   later controlled restart/logout gate.
+
+[2026-08-14][M8/IX.4B-3] Explicit 120 Hz and dual-output core candidate DONE;
+  hot-apply refresh result REJECTED. Receipt: W-026 and X-019.
+  Overall M8 remains BLOCKED on a bounded fresh-process `--sm-disable` test,
+  NVIDIA/GLX scheduling evidence, recovery installation, and logout/reboot
+  reproduction. Do not repeat already disproven checkbox/profile edits.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
