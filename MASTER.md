@@ -2463,3 +2463,65 @@ untouched by this session. New knowledge lands here and in the ledgers.
   (X-032 false-alarm check, X-033 unexplained hash delta). X-031's reboot
   blocker is CLEARED by target-verified 7/7 section-scoped key count. M8 now
   awaits only the reboot gate itself.
+
+================================================================================
+11.17 *** THE REBOOT GATE IS PASSED. COMPIZ NOW STARTS AT LOGIN AND SURVIVES
+      IT. *** Target output pasted 2026-08-14T16:32Z, first boot after B5.
+      This is the completion receipt for M8 / Section IX.
+================================================================================
+
+  [W-049] LOGIN-STARTED COMPIZ, PROVEN ON A COLD BOOT. Every predicate of the
+    11.16 gate returned the wanted value:
+      /tmp/compiz-repair.log  ->  "repair: OK, all 7 enforced keys already
+        correct"  — the login hook RAN, found the profile intact, and
+        correctly wrote nothing. Option (C) is live and idempotent in the real
+        login path, not just under manual invocation.
+      compiz PID 1210, `Fri Aug 14 16:32:19 2026`, cmdline
+        `/usr/bin/compiz --replace ccp`  — a LOW, boot-band PID started by
+        xfce4-session via compiz-session. Contrast every previous Compiz in
+        this file, which was a high PID launched by hand from a terminal.
+        Note it carries `ccp` and NOT `--sm-disable`, exactly as designed.
+      _NET_SUPPORTING_WM_CHECK -> _NET_WM_NAME = "compiz"  — Compiz owns the
+        screen from login, using the W-044-corrected probe.
+      Default.ini SHA-256 a9c157ad7e31f86c18ae544463780802e0a23d50a14a69cff
+        7b11451a4685357 — BYTE-IDENTICAL to the pre-reboot value in 11.16.
+        The profile survived a full shutdown/boot cycle unchanged.
+      emerald present (see X-034 for the PID-attribution caveat); picom and
+        ccsm both absent at login.
+    RECEIPT: target post-reboot block output pasted 2026-08-14, verbatim.
+
+  [W-050] *** U-019 IS ANSWERED, AND THE ANSWER IS THE GOOD ONE. *** After a
+    real logout/shutdown/login cycle, `ls -la ~/.cache/sessions/` shows ONLY
+    `.`, `..` and the unrelated `thumbs-66:0` directory (mtime Jul 26, an
+    xfdesktop thumbnail cache). NO xfwm4-*.state file was recreated, and
+    therefore no `[WM_COMMAND] (1) "ccsm"` record exists. The directory mtime
+    is 15:49 — the moment of the B2-2 clear — meaning nothing has written to
+    it since.
+    CONCLUSION: with SaveOnExit=false, a normal logout does NOT write session
+    state, so the X-028/X-029 CCSM relaunch loop cannot re-arm by itself. The
+    W-041 record was a one-off artifact of some past explicit session save,
+    exactly as X-029 hypothesis (a) supposed. U-019 is CLOSED.
+    RESIDUAL RISK, unchanged and still real: ticking "Save session for future
+    logins" in the logout dialog would write a fresh state file and, if a CCSM
+    window were open, re-create the record. Do not tick it.
+    RECEIPT: target `ls -la ~/.cache/sessions/` after reboot, 2026-08-14.
+
+  [X-034] MINOR — AMBIGUOUS PID ATTRIBUTION IN THE PASTED OUTPUT. The three
+    chained greps `pgrep -f /usr/bin/ccsm; pgrep -x picom; pgrep -x emerald`
+    produced exactly one line, `1270`, with no labels. Two of the three
+    returned nothing. Interpretation: 1270 is emerald (the expected decorator,
+    consistent with W-043's emerald-follows-compiz behaviour) and both ccsm
+    and picom are absent. This is INFERENCE, not a receipt — the output does
+    not itself say which command owns 1270. Next block must use labelled
+    checks. Do not record "ccsm absent" as proven until labelled.
+    RECEIPT: target output line "1270" following the three-command chain.
+
+[2026-08-14][M8/B6] *** MILESTONE M8 COMPLETE: COMPIZ IS THE LOGIN WINDOW
+  MANAGER ON A FRESH BOOT, WITH A SELF-HEALING PROFILE. *** Receipt: W-049,
+  W-050, 11.17. Compiz PID 1210 started by xfce4-session at 16:32:19 owns the
+  screen; the repair hook ran and found the profile already correct; the
+  profile hash survived the reboot byte-identical; the session cache stayed
+  empty. X-031 CLEARED. U-019 CLOSED by W-050. Section IX (THE SWAP) is
+  functionally complete pending only the IX.7 human checks (decorations,
+  animations, cairo-dock GL) and the golden re-bless. Section VIII (wallpaper)
+  remains GATED per Directive 10 until the user declares the desktop ready.
