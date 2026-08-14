@@ -6353,3 +6353,64 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   existing loop — which changes no file, touches no WM and needs no escape. The
   xwinwrap step that follows DOES touch the live desktop and must state the
   `pkill xwinwrap; pkill -f 'mpv .*xmb-wave'` kill switch before it runs.
+
+--------------------------------------------------------------------------------
+12.92 U-006 RESOLVED: HEVC HARDWARE DECODE IS AVAILABLE VIA NVDEC/CUVID AND
+      VULKAN. X-090 CLEARED. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-179] U-006 IS RESOLVED and the answer is better than Section IX assumed.
+    mpv's own decoder enumeration on the real 60-second sleep loop reports
+    `hevc_cuvid (hevc) - Nvidia CUVID HEVC decoder` present, and the decoder
+    advertises pixel formats `vaapi vdpau cuda vulkan yuv420p`. mpv is built
+    with `vaapi vaapi-drm vaapi-x11 vdpau vulkan` features enabled. With
+    `--hwdec=auto` and `--vo=gpu-next` the negotiated path was Vulkan:
+    `Looking at hwdec hevc-vulkan`, `Loading hwdec driver 'vulkan'`,
+    `Requesting pixfmt 'vulkan' from decoder`. Hardware HEVC decode of the baked
+    4480x1440 loop is therefore available on this box, and W-005's expensive
+    software-decode failure mode is avoidable. X-090 is CLEARED; the IX.8
+    placeholder `--hwdec=<from U-006>` can now be filled from measurement rather
+    than guess.
+    RECEIPT: target `mpv --hwdec=auto -v` decoder/hwdec lines against the
+    existing `sleep.loop-60s.mp4`, 2026-08-14.
+
+  [W-180] The availability of `hevc_cuvid` is independent confirmation of W-012's
+    glibc/proprietary-NVIDIA finding, from a completely different tool. CUVID is
+    an NVIDIA proprietary-driver interface and cannot exist on the nouveau path
+    that X-001 feared. X-001's contingency branch is therefore doubly refuted for
+    this machine, and W-012's "the 3080's NVDEC is usable" consequence is now
+    demonstrated on a real file rather than inferred from a driver version
+    string.
+    RECEIPT: W-179 decoder list versus X-001's nouveau contingency and W-012's
+    driver receipt, 2026-08-14.
+
+  [X-091] `vainfo` and `vdpauinfo` are NOT INSTALLED (`command not found`),
+    despite mpv being compiled with vaapi and vdpau support. Absence of these
+    diagnostic binaries says nothing about the presence of the underlying
+    decode paths — mpv's own enumeration is the authoritative source here and it
+    lists both `vaapi` and `vdpau` among supported pixel formats. Do not install
+    packages merely to satisfy a diagnostic; do not read the missing tools as a
+    missing capability. If Intel-iGPU VAAPI ever needs to be compared against
+    NVDEC, `libva-utils` provides `vainfo`, but that comparison is not required
+    for deployment.
+    RECEIPT: target `command not found` for both tools alongside mpv's enabled
+    feature list, 2026-08-14.
+
+  [U-049] Which hardware path to PIN for the wallpaper is still an open choice,
+    deliberately not decided here. `--hwdec=auto` negotiated Vulkan, but three
+    plausible pins exist: `auto` (portable, re-negotiates), `nvdec` (explicit
+    NVIDIA, keeps decode off the render path most predictably), or `vulkan`
+    (what auto actually chose). The decisive datum is not the name but the idle
+    CPU/GPU cost measured while the wallpaper is actually running, per IX.8's
+    requirement to write both numbers into the ledger and compare against
+    W-005's 6-11% band. Measure before pinning; a 60 fps 4480x1440 continuous
+    stream is the most expensive wallpaper this project could have chosen and
+    the number matters.
+    RECEIPT: W-179 negotiated path versus IX.8's unmeasured cost requirement,
+    2026-08-14.
+
+[2026-08-14][M12-DECODE-PROBE] U-006 CLOSED, X-090 CLEARED, deployment
+  unblocked. Next action is the first LIVE-DESKTOP step of this milestone: a
+  single foreground xwinwrap+mpv trial on one monitor rectangle, run in the
+  foreground so Ctrl-C is itself the escape, with the kill switch stated before
+  it runs. It must not be autostarted until idle cost is measured (U-049).
