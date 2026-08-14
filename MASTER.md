@@ -508,6 +508,196 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target IX.4B-3 diff/process/profile/xrandr/resource output and user
   observation, 2026-08-14.
 
+[2026-08-14][W-027] The post-X-019 read-only scheduling sweep found the live
+  WM window still names Compiz and `pgrep -a` still reports PID 18768 with its
+  XSMP client ID; emerald, xfce4-panel and cairo-dock remain present, while
+  xfwm4 and picom remain absent. The active Default.ini SHA-256 is
+  3ac4f0329b18b0d5cbbe3331a36eadbb25507efc0b178535b715398aa8ccab7a and
+  retains the exact W-026 explicit display values. Effective NVIDIA settings
+  report SyncToVBlank=1 and AllowFlipping=1; the current RandR MetaMode retains
+  both proven rectangles with ForceCompositionPipeline and
+  ForceFullCompositionPipeline enabled. The target shell exports only
+  VDPAU_NVIDIA_SYNC_DISPLAY_DEVICE=DP-2 among queried GL/NVIDIA selectors, and
+  no TripleBuffer setting appeared in the queried effective/static output.
+  Static xorg.conf MetaMode text uses an older monitor arrangement, but the
+  effective `CurrentMetaMode` is the already proven live arrangement.
+  RECEIPT: target read-only WM/process/profile/environment, `nvidia-settings
+  -q CurrentMetaMode`, `nvidia-settings -q all`, and X11 config grep output
+  pasted 2026-08-14.
+
+[2026-08-14][W-028] U-011 is resolved without trusting the absent
+  `_NET_WM_PID`: `pgrep -x compiz` returned exactly one PID, 18768. Its direct
+  parent is xfce4-session PID 1142, followed by LightDM and runit ancestry,
+  confirming the W-022 XSMP/session-managed state remains live. Its actual
+  environment contains DISPLAY=:0, XDG_SESSION_TYPE=x11, the XFCE session
+  manager address and VDPAU_NVIDIA_SYNC_DISPLAY_DEVICE=DP-2, with no queried
+  `__GL_*`, `__NV_*`, `LIBGL_*` or `COMPIZ_*` override. Stdout is /dev/null and
+  stderr is the shared /home/sd/.xsession-errors. The tailed shared log still
+  contains the historical duplicate D-Bus registrations from X-015 plus later
+  unrelated GTK/Chromium messages; because those D-Bus lines have no timestamp
+  and the file is shared, the tail is not evidence that the clean current
+  plugin list re-enabled D-Bus or emitted a new fatal event.
+  RECEIPT: target U-011 unique-PID, `/proc`, ancestry, environment, fd and log
+  output pasted 2026-08-14.
+
+[2026-08-14][W-029] The target now has an executable recovery artifact at
+  /home/sd/.local/bin/xfce-wm-recover (1896 bytes, mode 0755, SHA-256
+  3f9402d2731d560fecae27a899b8f36c78b1c3a2527bda4a9fb2bdd354e19c24).
+  `sh -n` passed and its non-destructive `--check` returned 0 after finding
+  pkill, nohup, xfwm4, xprop and pgrep, reaching DISPLAY=:0.0, observing the
+  current supporting-WM window, and confirming persistent Client0 still names
+  xfwm4. Normal invocation stops Compiz/Emerald, starts `xfwm4 --replace`, and
+  verifies xfwm4-live/Compiz-absent; it has not yet been destructively invoked.
+  Installation rollback is `rm -f /home/sd/.local/bin/xfce-wm-recover`.
+  RECEIPT: target artifact listing, checksum, syntax check, `--check` output
+  and printed rollback pasted 2026-08-14.
+
+[2026-08-14][W-030] X-019's bounded fresh-process requirement was executed:
+  sole Compiz PID 15827 ran as `compiz --replace --sm-disable`, owned the WM,
+  and retained emerald, xfce4-panel and cairo-dock with picom absent. The log
+  reported only the known no-XI2 warning. Initial/end snapshots were 9.1/10.6%
+  CPU, 149428/150408 KiB RSS, 48/38% GPU, 868 MiB GPU memory and 29.33/29.01 W.
+  Automatic invocation of /home/sd/.local/bin/xfce-wm-recover then restored
+  xfwm4 PID 16448 as WM with Compiz/Emerald absent and panel/dock surviving.
+  The user reports refresh is poor under the fresh Compiz process but perfect
+  on both displays immediately after xfwm4 recovery. Thus renderer hot-reload
+  was not the cause, while the recovery artifact is now destructively proven.
+  RECEIPT: target fresh-process identity/resources/log, automatic recovery
+  output and direct before/after visual observation pasted 2026-08-14.
+
+[2026-08-14][W-031] U-012 confirms the fresh trial/exit collapsed the active
+  profile from the pre-trial 3ac4f032... state to an 89-byte file containing
+  only `[core]`, the six-plugin list
+  `core;ccp;move;resize;place;decoration;`, and refresh_rate=120. The active
+  SHA-256 is a572585c451b757282b77bb77e32a997e25374d45011692a9f6110a94ba033df.
+  It no longer contains detect-refresh, detect-outputs, output rectangles,
+  vblank, lighting, texture filtering, or the accepted animation/utility
+  plugin list. Timestamped backups remain readable, including
+  pre-explicit-display SHA-256 89d1eaa7... with the accepted clean plugin list
+  and pre-refresh SHA-256 58a514db... with the proven output rectangles.
+  Current runtime is safely xfwm4 PID 16448 with no Compiz or picom.
+  RECEIPT: target U-012 file inventory, checksums, complete current core
+  section, backup diffs and key comparison pasted 2026-08-14.
+
+[2026-08-14][W-032] The collapsed profile was preserved at
+  /home/sd/.config/compiz/compizconfig/Default.ini.collapsed.1786691513 with
+  its matching 89-byte SHA-256 a572585c.... While xfwm4 PID 16448 owned the
+  screen and Compiz/picom were absent, an atomic replacement installed a
+  351-byte, 10-line minimal baseline with the complete accepted clean plugin
+  list and all W-026 core display values. Every exact line and line count
+  validated; restored SHA-256 is
+  dcefbadd6fe348807abc71303975dfd3e83d2a4ec7758e624b1f0bf65748426c.
+  Exact rollback is `cp -a Default.ini.collapsed.1786691513 Default.ini`.
+  RECEIPT: target corrected precondition, backup, full file, checksum and
+  exact-value validation output pasted 2026-08-14.
+
+[2026-08-14][W-033] U-013 found one surviving configuration writer
+  candidate while xfwm4 owned the screen and Compiz/picom were absent: CCSM
+  PID 5483, `/usr/bin/python3 /usr/bin/ccsm`, orphaned under PID 1 since
+  06:56:08. Between W-032 and the guarded A/B precheck, Default.ini was
+  rewritten at 07:12:35 from 351 to 347 bytes. All explicit display/vblank/
+  lighting/texture values survived; the only diff reordered active plugins
+  and removed `ccp`, producing SHA-256 110c892a.... Neither fuser, lsof nor
+  `/proc` found an open descriptor because the writer had closed the file by
+  inspection time. CCSM is therefore the sole observed live writer candidate,
+  not yet a proven cause until it is stopped and the restored hash dwells.
+  RECEIPT: target U-013 full file/diff, process list, descriptor search and
+  timestamps pasted 2026-08-14.
+
+[2026-08-14][W-034] Stopping exact CCSM PID 5483, backing up its reordered
+  profile to Default.ini.ccsm-reordered.1786691729 (SHA-256 110c892a...), and
+  restoring W-032 SHA-256 dcefbadd... initially succeeded. During the 15-second
+  dwell, CCSM reappeared as PID 3132 and Default.ini changed at 07:15:41 to
+  SHA-256 eae6553c2567ac7d1fb8bc9519cad3c301561f471823cf8b329c492063af391f.
+  This temporal reproduction promotes CCSM from candidate to proven profile
+  writer. Runtime remained safely xfwm4 with panel/dock and no Compiz/picom.
+  RECEIPT: target exact-process termination, restored hash/mtime, dwell
+  hash/mtime, respawned PID and runtime output pasted 2026-08-14.
+
+[2026-08-14][W-035] U-014 found respawned CCSM PID 3132 is orphaned under
+  runit PID 1, has the desktop's XFCE/X11 D-Bus and SESSION_MANAGER environment,
+  but neither of its two X windows exposes SM_CLIENT_ID. It is not a direct
+  child of xfce4-session PID 1142. No `ccsm` reference was found in the saved
+  session files or autostart directories; the sole grep hit is
+  `ccsm.desktop` in xfce4-panel.xml, which proves a panel item exists but does
+  not by itself prove a restart mechanism. After respawn, Default.ini SHA-256
+  eae6553c... retains all explicit core display values but omits `ccp` and adds
+  `wobbly` to the reordered plugin list. Runtime remains safe xfwm4 without
+  Compiz/picom. U-014 therefore narrows but does not identify the launcher.
+  RECEIPT: target U-014 ancestry/environment, window properties, session
+  children/cache grep, full profile and WM output pasted 2026-08-14.
+
+[2026-08-14][W-036] Filtered documentation research establishes two exact
+  constraints for the next work. NVIDIA's official 595.84 OpenGL environment
+  chapter says TwinView OpenGL synchronizes to only one display and documents
+  `__GL_SYNC_DISPLAY_DEVICE`; it also explicitly identifies composite-manager
+  repaint scheduling as a case where default `sched_yield()` can delay the GL
+  process and documents `__GL_YIELD=USLEEP|NOTHING`. These are valid later
+  one-variable A/B candidates for this exact installed driver, not folklore.
+  Official Xfce launcher documentation says panel `.desktop` items are
+  application shortcuts executed when launched; therefore the observed
+  `ccsm.desktop` panel value is not evidence of automatic respawn. The
+  Compiz-Reloaded CCSM repository describes CCSM as a graphical manager for
+  libcompizconfig, not a required resident daemon. Documentation filter for
+  subsequent research: exact-version vendor/upstream code/manual first,
+  target/package receipts second, version-matched issues only as corroboration;
+  reject Compiz 0.9/Unity guidance for this 0.8.18 stack unless source-level
+  behavior is proven shared.
+  RECEIPT: NVIDIA 595.84 README Chapter 11
+  https://download.nvidia.com/XFree86/Linux-x86_64/595.84/README/openglenvvariables.html;
+  Xfce launcher docs https://docs.xfce.org/xfce/xfce4-panel/launcher; and
+  Compiz-Reloaded CCSM README https://github.com/compiz-reloaded/ccsm fetched
+  2026-08-14.
+
+[2026-08-14][W-037] The bounded Python creator trace terminated exact CCSM
+  PID 3132 and polled new `/proc` PIDs every 5 ms for 12 seconds. No replacement
+  CCSM or creator event appeared; final exact CCSM set was empty, xfwm4 PID
+  16448 remained, and Compiz/picom remained absent. The 347-byte profile stayed
+  byte-identical at SHA-256 110c892a... throughout. Trace receipt is
+  /tmp/ccsm-spawn-trace.1786692167.json, 39434 bytes, SHA-256
+  7d11bcbf0ee3164859eea5c852e48310d4775b84d95930df02d3fdb4b2c8479f.
+  Therefore X-025's restart was not continuously reproducible: the first CCSM
+  instance produced one replacement, but terminating that replacement cleared
+  the active writer. The historical launcher remains unidentified and must not
+  be invented, but it no longer blocks a guarded restoration/dwell.
+  RECEIPT: target Python precondition, 12-second process-event trace, final
+  process/profile receipt and trace checksum pasted 2026-08-14.
+
+[2026-08-14][W-038] The second no-writer restoration again installed exact
+  W-032 SHA-256 dcefbadd... and kept both hash and mtime unchanged for eleven
+  one-second samples. At second 12, exact CCSM returned as PID 12047; Compiz
+  and picom remained absent and xfwm4 PID 16448 remained. The immediate final
+  profile was still byte-identical, so this receipt proves a delayed CCSM
+  launcher independently of a profile write and explains why W-037's exactly
+  12-second trace ended too early. Backup of the pre-restore reordered profile
+  is Default.ini.pre-final-writer-clear.1786692255, SHA-256 110c892a....
+  RECEIPT: target Python restoration and per-second dwell output pasted
+  2026-08-14.
+
+[2026-08-14][W-039] The extended U-016 trace safely no-op stopped because
+  exact CCSM was already absent before it began. At that receipt, xfwm4 PID
+  16448 remained, Compiz/picom were absent, and Default.ini still matched the
+  exact W-032 SHA-256 dcefbadd... with unchanged mtime
+  1786692255360694340. No signal or file write occurred. Combined with W-038,
+  this shows PID 12047 subsequently exited without another observed writer;
+  the current guarded profile/runtime are suitable for the pending bounded
+  NVIDIA A/B test, although the historical delayed launcher remains unknown.
+  RECEIPT: target U-016 precondition and STOP output pasted 2026-08-14.
+
+[2026-08-14][W-040] The first NVIDIA scheduler A/B launched sole Compiz PID
+  15040 with verified `__GL_YIELD=USLEEP` and `--sm-disable`; it owned the WM
+  while emerald, panel and cairo-dock survived. The user explicitly reports
+  the result "IT WORKS, SMOOTH!", promoting USLEEP as the accepted smoothness
+  fix. Initial/end snapshots were 7.5/5.4% CPU, 162212/164036 KiB RSS,
+  23/38% GPU, 890/901 MiB and 55.07/29.92 W. Log had only known XI2/Emerald
+  warnings. Automatic recovery restored xfwm4 PID 15573 and removed Compiz/
+  Emerald. During the trial CCSM reappeared as PID 15146 and rewrote the
+  profile to SHA-256 61eff706..., preventing automatic guard restoration;
+  the exact good guard remains Default.ini.pre-gl-yield-usleep.1786692457 at
+  SHA-256 dcefbadd....
+  RECEIPT: target A/B environment/process/resource/log/recovery output and
+  direct user smoothness acceptance pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -701,6 +891,85 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   result is visually accepted and resource cost is remeasured.
   RECEIPT: W-026 and direct user report "unchanged", 2026-08-14.
 
+[2026-08-14][X-020] The clean fresh `--sm-disable` Compiz process is visually
+  rejected, disproving stale renderer initialization as the sufficient cause
+  of X-019. Additionally, Default.ini changed unexpectedly during the bounded
+  launch/exit: SHA-256 was
+  3ac4f0329b18b0d5cbbe3331a36eadbb25507efc0b178535b715398aa8ccab7a before
+  and a572585c451b757282b77bb77e32a997e25374d45011692a9f6110a94ba033df
+  afterward, despite the test issuing no explicit profile write. Do not assume
+  the desired display/plugin values survived and do not relaunch Compiz until
+  the exact mutation is diffed against the timestamped backups. Current safe
+  runtime is xfwm4 without picom; the user's wallpaper-behaviour concern is
+  deferred behind M8 per Directive 10 rather than tuned under the wrong WM.
+  RECEIPT: W-030, before/after target SHA-256 output and user observation,
+  2026-08-14.
+
+[2026-08-14][X-021] The post-trial active Default.ini is launch-unsafe and
+  must not be treated as W-026: it lost the explicit output list and most
+  plugins/settings, exactly matching the user's concern that Compiz settings
+  are not surviving. The evidence establishes that collapse occurred during
+  the fresh launch/exit interval but does not yet identify whether startup,
+  ccp shutdown, or another writer caused it. Restore an atomically written,
+  backed-up minimal W-026 baseline while xfwm4 owns the screen, verify every
+  line and checksum, and only then begin one-variable renderer A/B trials.
+  RECEIPT: W-031 and X-020.
+
+[2026-08-14][X-022] The first atomic-restoration block made no change: its
+  safety gate observed xfwm4 PID 16448 and supporting-WM window 0x1600032 but
+  parsed the WM name as UNRESOLVED because the sed capture was over-escaped.
+  It stopped before backing up or writing Default.ini, exactly as designed.
+  Supersede only the parser with a literal `xprop` match for `= "Xfwm4"` and
+  repeat the same safe restoration; do not weaken the no-Compiz/no-picom gate.
+  RECEIPT: target restoration precondition and STOP output pasted 2026-08-14.
+
+[2026-08-14][X-023] The first `__GL_SYNC_DISPLAY_DEVICE=DP-2` A/B test did
+  not launch and therefore produced no visual result. Its safety gate found
+  xfwm4 still owning the screen with no reported Compiz/picom, but Default.ini
+  had drifted from W-032 SHA-256 dcefbadd... to
+  110c892aeeb99adee2d31b04ff2eb4d460a9fbb5dee9d433fb3f11cac9becba7 while
+  Compiz was absent. The block stopped before creating its profile guard,
+  arming recovery, or changing the WM. A non-Compiz writer or unobserved
+  configuration process is therefore now evidence-backed; identify the exact
+  diff and likely live writer before restoring again.
+  RECEIPT: target A/B precondition and STOP output pasted 2026-08-14.
+
+[2026-08-14][X-024] Do not leave CCSM open during machine-authored profile
+  restoration or renderer tests. PID 5483 survived independently of Compiz
+  and the only observed off-baseline rewrite occurred while it was live,
+  removing the `ccp` backend plugin and reordering the list. Stop exactly that
+  CCSM command, restore the guarded baseline, and require a timed hash dwell
+  before launching Compiz. This is a bounded causal test; do not kill generic
+  Python processes.
+  RECEIPT: W-033.
+
+[2026-08-14][X-025] A single TERM is insufficient to stand down CCSM: PID
+  5483 exited cleanly but `/usr/bin/python3 /usr/bin/ccsm` respawned as PID
+  3132 within the dwell and rewrote the profile. Do not race it with repeated
+  profile writes or launch Compiz while it remains restart-managed. Inspect
+  PID 3132 ancestry/session environment, XSMP window properties and XFCE saved
+  session/cache references to identify and disable the exact restart source
+  reversibly; generic Python kills remain prohibited.
+  RECEIPT: W-034.
+
+[2026-08-14][X-026] W-037's conclusion that the active writer was cleared
+  is superseded: its 12.0-second trace terminated just before the delayed CCSM
+  return now observed at dwell second 12. Future creator tracing must exceed
+  12 seconds and retain a compact pre-exec event ring rather than flooding the
+  receipt with unrelated short-lived polling processes. Do not restore or
+  launch Compiz again until that longer trace captures the creator or a
+  reversible exact-command suppression is installed.
+  RECEIPT: W-038.
+
+[2026-08-14][X-027] Smoothness is solved but the current on-disk profile is
+  not accepted: delayed CCSM PID 15146 appeared during the successful trial,
+  rewrote Default.ini, and caused PROFILE GUARD FAIL. Before keeping Compiz
+  live, suspend the exact CCSM writer reversibly, preserve the mutated file,
+  restore the dcefbadd... guard, then launch with only the accepted
+  `__GL_YIELD=USLEEP`. Do not open CCSM while the machine-authored baseline is
+  being stabilized.
+  RECEIPT: W-040.
+
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
 TARGET, paste the output, and promote the row into 6.A or 6.B with the output
@@ -794,6 +1063,49 @@ as its receipt. Do not guess any of them.
   Use the resulting exact setting objects for narrow writes only. Do not call
   a broad Context.Write after changing only active_plugins: IX.4B-1 proved
   that it can collapse the output list to the 640x480 default.
+
+[U-011] Complete the process-ancestry and active-log part of W-027. The Compiz
+  supporting-WM window exposes no `_NET_WM_PID`, so the first collector left
+  `wm_pid` unresolved and skipped `/proc` environment, ancestry and fd-log
+  inspection even though `pgrep` reported exactly one Compiz PID, 18768.
+  Resolve read-only from the unique `pgrep -xo compiz` PID; print its full
+  ancestry, selected environment, fd 1/2 destinations and tails of any regular
+  log files. Do not infer that the old PID remains valid before re-querying it.
+
+[U-012] What exactly did the bounded fresh Compiz process rewrite in
+  Default.ini? While safely on xfwm4, list checksums/timestamps for the active
+  profile and all `Default.ini.pre-*` backups, print the complete current
+  plugin/display truth, and diff the active file against the recent explicit-
+  display, vblank and clean backups. Resolve this before any NVIDIA A/B test;
+  a 640x480/default-list regression must not be carried into another launch.
+
+[U-013] What changed W-032 while Compiz was absent, and which process can
+  still write the profile? While remaining on xfwm4, print the complete active
+  file and diff it against the W-032 guard candidate, query ccsm and other
+  Compiz/config processes, and inspect open-file ownership with available
+  `fuser`/`lsof` tools. Do not kill or write yet; one read-only receipt must
+  identify whether CCSM or another process survived before the next guarded
+  restoration.
+
+[U-014] What respawned CCSM as PID 3132? Read its PPID/ancestry, session
+  environment and any SM_CLIENT_ID/WM_COMMAND properties, then search XFCE
+  session cache and autostart entries for the exact CCSM command. This is
+  read-only. The next action must disable only the proven restart source with
+  a written inverse before restoring the profile again.
+
+[U-015] Which documented mechanism can relaunch orphaned CCSM without an
+  SM_CLIENT_ID, and how should Compiz Reloaded 0.8.18 settings be controlled
+  without racing CCSM? Resolve through filtered upstream/XFCE/Compiz sources
+  plus one bounded target observation of the actual process creator. Source
+  priority: upstream code/manuals and distro package files first; issue/forum
+  reports only when version-matched and corroborated. Reject generic Compiz
+  0.9/Ubuntu guidance and claims that do not distinguish ccp from CCSM.
+
+[U-016] Capture the delayed CCSM creator over at least 20 seconds. Terminate
+  only the exact current CCSM process, scan new PIDs at high frequency, retain
+  a bounded ring of non-noise exec events, and snapshot the new CCSM ancestry
+  immediately. Explicitly suppress the known PID-1297 `pgrep` flood from the
+  report without killing it. Preserve the profile unchanged during tracing.
 
 ================================================================================
 SECTION VII — MILESTONES (append a dated row per gate; never edit a prior row)
@@ -925,6 +1237,107 @@ Status vocabulary, used strictly:
   Overall M8 remains BLOCKED on a bounded fresh-process `--sm-disable` test,
   NVIDIA/GLX scheduling evidence, recovery installation, and logout/reboot
   reproduction. Do not repeat already disproven checkbox/profile edits.
+
+[2026-08-14][M8/U-011] NVIDIA scheduling/profile read-only baseline PARTIAL.
+  receipt: W-027 and target output. SyncToVBlank and AllowFlipping are enabled,
+  the effective MetaMode/profile remain consistent, and no queried
+  TripleBuffer value was found. Process ancestry and active-log collection
+  remain BLOCKED on U-011 because the WM window omitted `_NET_WM_PID`; perform
+  the narrow PID-fallback read before installing recovery or replacing the WM.
+
+[2026-08-14][M8/U-011] Process ancestry and active-log discovery DONE.
+  receipt: W-028. This supersedes the prior PARTIAL U-011 milestone. Overall
+  M8 remains BLOCKED on installing and receipting an executable TTY recovery
+  artifact before any fresh-process Compiz test; persistence remains
+  prohibited.
+
+[2026-08-14][M8/RECOVERY-1] Executable TTY recovery artifact INSTALLED and
+  non-destructively verified. Receipt: W-029. This clears the recovery-artifact
+  prerequisite for X-019's bounded fresh-process test. Overall M8 remains
+  BLOCKED on that visual/resource test and later persistence reproduction.
+
+[2026-08-14][M8/IX.4B-4] Fresh non-XSMP Compiz test REJECTED; automatic
+  recovery PROVEN. Receipt: W-030 and X-020. Overall M8 remains BLOCKED on
+  U-012 profile-mutation forensics, then one-variable NVIDIA/GLX A/B tests.
+  Theming and wallpaper refinement remain gated until Compiz is smooth and
+  stable; current runtime is safe xfwm4 without picom.
+
+[2026-08-14][M8/U-012] Profile-mutation forensics DONE; active profile
+  collapse CONFIRMED. Receipt: W-031 and X-021. This supersedes the U-012
+  block, but overall M8 remains BLOCKED on a receipt-backed atomic restoration
+  of the exact clean plugin/display baseline before any renderer A/B test.
+
+[2026-08-14][M8/RESTORE-1] Atomic profile restoration NO-OP/REJECTED.
+  Receipt: X-022. Safety behavior passed, but the WM-name parser rejected the
+  valid xfwm4 state before any file change. Overall M8 remains BLOCKED on the
+  corrected literal-match restoration.
+
+[2026-08-14][M8/RESTORE-2] Minimal clean plugin/display baseline restored
+  DONE. Receipt: W-032. This supersedes RESTORE-1/X-022 and clears X-021's
+  launch-unsafe file state. Overall M8 remains BLOCKED on one-variable bounded
+  NVIDIA/GLX A/B trials, beginning with the missing OpenGL sync-display
+  selector while preserving/restoring this exact profile around every run.
+
+[2026-08-14][M8/GL-A1] DP-2 OpenGL sync-display A/B NO-OP/REJECTED.
+  Receipt: X-023. The guard correctly prevented launch after profile drift.
+  Overall M8 remains BLOCKED on U-013 writer identification; no conclusion
+  about `__GL_SYNC_DISPLAY_DEVICE` is permitted from this no-op.
+
+[2026-08-14][M8/U-013] Live profile-writer candidate identified DONE.
+  Receipt: W-033/X-024. Overall M8 remains BLOCKED on stopping only CCSM,
+  restoring W-032 and proving a timed byte-identical dwell before resuming the
+  DP-2 OpenGL sync-display A/B test.
+
+[2026-08-14][M8/WRITER-1] CCSM profile-writer causality PROVEN; stand-down
+  FAILED due to respawn. Receipt: W-034/X-025. Overall M8 remains BLOCKED on
+  U-014 exact restart-source identification and reversible suppression before
+  restoring or launching Compiz.
+
+[2026-08-14][M8/U-014] CCSM respawn-source inspection PARTIAL.
+  Receipt: W-035. XSMP saved-session restart is not supported by the observed
+  parent/window/cache evidence, while the panel item is not causal proof.
+  Overall M8 remains BLOCKED on U-015 filtered documentation research and one
+  bounded creator observation. Future orchestration may use Python artifacts
+  rather than long shell blocks, but target execution claims still require
+  pasted receipts and the one-block gate protocol.
+
+[2026-08-14][M8/U-015-R] Filtered upstream research PARTIAL/DONE for
+  candidate selection. Receipt: W-036. The panel launcher hit is demoted as a
+  respawn explanation; NVIDIA DP-2 sync selection and GL yield remain ordered
+  A/B candidates after the writer is controlled. U-015 remains BLOCKED only
+  on bounded creator observation. Research lanes must exchange claims as
+  source URL + exact version + quoted behavior + target predicate + rejection
+  reason, preventing stale guidance from entering the action lane.
+
+[2026-08-14][M8/U-015-T] Bounded CCSM creator observation DONE with no
+  second respawn. Receipt: W-037. This supersedes X-025 as a current blocker,
+  while preserving the historical unknown. Overall M8 is now BLOCKED only on
+  restoring W-032 and proving a no-CCSM hash dwell, then resuming the ordered
+  NVIDIA A/B tests. Python is accepted for target orchestration; shell remains
+  only the one-block transport/escape surface.
+
+[2026-08-14][M8/WRITER-2] Twenty-second stable-profile dwell FAILED at
+  second 12 due to delayed CCSM return. Receipt: W-038/X-026. Overall M8 is
+  BLOCKED on U-016's extended compact creator trace; W-032 content is currently
+  intact but must be considered writable while CCSM PID 12047 exists.
+
+[2026-08-14][M8/U-016] Extended creator trace NO-OP but current writer gate
+  CLEARED by precondition. Receipt: W-039. To conserve the remaining operator
+  iteration budget, do not repeat writer tracing unless CCSM reappears; resume
+  the already approved one-variable DP-2 sync-display trial with automatic
+  recovery and byte-for-byte profile guard.
+
+[2026-08-14][M8/GL-A2] NVIDIA `__GL_YIELD=USLEEP` smoothness trial ACCEPTED;
+  automatic xfwm4 rollback DONE. Receipt: W-040. Overall M8 remains BLOCKED
+  only on X-027 writer suspension/profile restoration and a keep-live Compiz
+  dwell before persistence.
+
+[2026-08-14][M17] Operator iteration/PR weight stages TRACKED.
+  User reports current stage 362 with maximum/PR target about 405, describes
+  later lightweight cutting from 175 toward 115, and directs: do not open a
+  pull request and do not edit CONTINUE_PROMPT.md until the user explicitly
+  declares the PR target reached and requests pull/merge. Local receipt commits
+  and pushes to the fixed Arena branch continue at each verified gate.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
