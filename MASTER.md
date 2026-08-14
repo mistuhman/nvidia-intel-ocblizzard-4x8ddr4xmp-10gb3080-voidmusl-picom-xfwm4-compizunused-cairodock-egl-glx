@@ -2726,3 +2726,102 @@ controls to rotate between windows."
     BEFORE judging whether the cube works. Set it in CCSM > General Options >
     Desktop Size (CCSM is authoritative while running, W-046).
     RECEIPT: empty grep for s0_hsize/s0_vsize in the active profile.
+
+--------------------------------------------------------------------------------
+12.4 WHY "ONE BIG CUBE" FAILED — ROOT CAUSE FOUND, AND IT IS A DIRECT
+     CONSEQUENCE OF OUR OWN W-018 GEOMETRY FIX. Research pass 2, 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [R-8] *** THE CUBE'S SHAPE IS DECIDED BY COMPIZ'S OUTPUT LIST, NOT BY THE
+    "MULTI OUTPUT MODE" DROPDOWN ALONE. *** Compiz's own multihead design doc
+    distinguishes "bigscreen" (one CompScreen, one output) from "multiscreen"
+    (one CompScreen per head) and states that for full-viewport animations
+    "You want to use fullscreenOutput whenever you are doing animations that
+    affect the entire viewport, like cube rotations, expo and more."
+    The Ubuntu community wiki states the observable consequence plainly:
+      TwinView          -> "one large screen shared between two monitors ...
+                            in Compiz-Fusion, it makes the cube appear as one
+                            large octagon"
+      Separate X screen -> "each monitor has its own cube, controlled
+                            separately"
+    SOURCE: wiki.compiz.org/Development/Multihead;
+    help.ubuntu.com/community/NvidiaMultiMonitors.
+
+  [X-038] *** ROOT CAUSE OF THE USER'S FAILURE: our profile pins TWO output
+    rectangles, so Compiz is in multiscreen-style output mode and CANNOT make
+    one big cube, whatever Multi Output Mode is set to. *** The active guard
+    contains, by our own deliberate W-017/W-018 fix:
+      s0_detect_outputs = false
+      s0_outputs = 2560x1440+0+0;1920x1080+2560+197;
+    The documented method for forcing one big output is the exact inverse of
+    that line: "disable the Detect Outputs checkbox, select the 640x480+0+0
+    entry and click Edit ... change this to 3840x1080+0+0. Compiz should now
+    treat your multi-monitor setup as ONE BIG OUTPUT." i.e. ONE rectangle
+    covering everything, not two.
+    SOURCE: askubuntu 73573 (the accepted, +550-bounty answer).
+    THIS IS THE CONFLICT: X-031/X-011 forbid touching the outputs list because
+    the two-rectangle form is what fixed the cropped-display disaster and is
+    enforced at every login by compiz-profile-repair. The user cannot have
+    both the two-rectangle correctness AND a single spanning cube without
+    changing the enforced line.
+
+  [X-039] AND THE ASYMMETRIC-MONITOR LIMITATION MAKES ONE BIG OUTPUT A BAD
+    TRADE ON THIS SPECIFIC HARDWARE. The same accepted answer warns: "both
+    displays need to have the same (vertical) resolution for this to make
+    sense (else you'd end up with cut off content on the smaller screen or
+    dead space on the bigger one)." The target's heads are
+    DP-2 2560x1440 and DP-0 1920x1080 INVERTED at +2560+197 (W-016) — mismatched
+    in BOTH axes and vertically offset by 197px. A single 4480x1440+0+0 output
+    would therefore put ~360px of dead band on DP-0 and misalign the cube face
+    against the physical panel. A LinuxMint user with the same class of
+    mismatch (1600x900 + 1920x1080 on an NVIDIA card) reports exactly this:
+    "When I enable Compiz, the cube looks very strange, because the content of
+    both monitors stick together on each side of the cube."
+    SOURCE: askubuntu 73573; forums.linuxmint.com 350198.
+    CONCLUSION: on THIS hardware, one-big-cube is achievable but visually
+    compromised. Per-output cubes are the better default. Do not present
+    one-big-cube as a simple settings toggle; it is a geometry trade.
+
+  [R-9] SEPARATE X SCREENS WOULD GIVE TRUE INDEPENDENT CUBES BUT IS REJECTED
+    HERE. Multiple forum threads confirm the "Separate X screen" route yields
+    one cube per monitor, but it also means windows CANNOT be dragged between
+    monitors and some applications only run on one screen. That is a large
+    regression against a working TwinView desktop and is out of proportion to
+    a cosmetic effect. NOT RECOMMENDED; recorded so it is not re-proposed.
+    SOURCE: ubuntuforums 784314 summary; superuser 144867;
+    help.ubuntu.com/community/NvidiaMultiMonitors.
+
+  [R-10] XINERAMA MUST STAY OFF. NVIDIA's driver warns "The Composite and
+    Xinerama extensions are both enabled, which is an unsupported
+    configuration ... may behave strangely", and Arch forum guidance is
+    explicit: with TwinView "You should not be using Xinerama." Compositing —
+    the entire basis of this project — requires Composite, so Xinerama is
+    permanently off the table. Some old cube-on-dualhead advice recommends
+    toggling Xinerama; REJECT that advice for this stack.
+    SOURCE: forums.gentoo.org 1042646 (NVIDIA log warning verbatim);
+    bbs.archlinux.org 140278.
+
+  [R-11] USEFUL CORRECTION TO 12.2's BINDING PLAN: the canonical free-rotate
+    binding is Ctrl+Alt+Button1, and edge-flip behaviours (Edge Flip Move,
+    Edge Flip Pointer, Edge Flip DnD, with Flip Timeout) are separate opt-in
+    Rotate Cube options. Unfold is Ctrl+Alt+Down. Also confirmed: cubeaddon
+    supplies Cylinder/Sphere deformation, reflections and proper cube caps,
+    and Transparent Cube has "Transparency Only on Mouse Rotate" — a good
+    pairing with 3D Windows' "3D Only on mouse rotate".
+    SOURCE: compiz-fusion wiki Plugins/Cube, fetched in full 2026-08-14.
+
+12.5 REVISED RECOMMENDATION (supersedes 12.2's silent assumption that Multi
+     Output Mode alone would deliver a spanning cube).
+  DEFAULT, RECOMMENDED: keep the two pinned rectangles and run the cube in
+  per-output mode. Desktop Cube > General > Multi Output Mode =
+  "One cube per output" (wording varies by build). Each monitor gets its own
+  correctly-proportioned cube; geometry stays X-031-safe; nothing in the
+  enforced key set changes. This is the option that does not fight the
+  hardware.
+  OPTIONAL EXPERIMENT, reversible, only if the user insists on one spanning
+  cube: temporarily collapse the outputs list to a single rectangle
+  4480x1440+0+0 and set Multi Output Mode to the single/"one big cube" choice.
+  This REQUIRES editing an enforced key, so it must be done by changing
+  compiz-profile-repair's ENFORCE table (not by hand-editing Default.ini,
+  which the login hook would revert). Expect the X-039 dead band on DP-0.
+  Revert = restore the two-rectangle value in the same table.
