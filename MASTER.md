@@ -3642,3 +3642,43 @@ controls to rotate between windows."
 [2026-08-14][M16/EMERALD-3-RECONCILE] Post-backup state VERIFIED. Receipt:
   W-073. No additional write is needed before the operator's manual decoration
   audition and influence selection.
+
+--------------------------------------------------------------------------------
+12.24 M16 DECORATION DIRECTION SELECTED — MAC4LIN AQUA AS THE SHAPE LANGUAGE,
+      REWORKED AS DEEP BLACK GUNMETAL. Visual/operator receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-074] Human design selection is now explicit. In the attached desktop
+    screenshot Emerald Themer 0.8.18 is open on Edit Themes with Name
+    `Mac4Lin_Aqua` and pixmap engine selected; its rounded Mac-style frame and
+    traffic-light button geometry are visible on the manager and Appearance
+    windows. The operator's verdict is “this window deco looks good”, making
+    Mac4Lin_Aqua the accepted decoration SHAPE/ASSET baseline. This is a visual
+    receipt, not yet file evidence that the active slot byte-matches the
+    packaged Mac4Lin_Aqua directory.
+    RECEIPT: attached screenshots and direct operator report, 2026-08-14.
+
+  [W-075] The requested integration brief is now specific enough to implement:
+    retain the Mac4Lin Aqua geometry, but change the frame/titlebar surface to
+    very deep black gunmetal with reflective highlights and a transparency
+    gradient; remove chromatic decoration except for black, white and red
+    window buttons; and make the titlebar blend with the true-black Thunar/
+    GTK3 surfaces instead of appearing as a separate light-grey cap. “Black,
+    white, red” is the final decoration palette constraint; metal/reflection/
+    transparency are surface treatments, not additional accent colours.
+    RECEIPT: direct operator description accompanying the screenshots,
+    2026-08-14.
+
+  [U-027] Which exact bytes now occupy the active Emerald slot after the GUI
+    audition? The screenshot identifies the editor/name visually but not the
+    active file hash or whether Emerald Themer copied a packaged theme, a
+    modified in-memory theme, or the library baseline. Resolve read-only before
+    editing: hash active theme.ini and all active pixmaps, compare against
+    packaged Mac4Lin_Aqua and the W-072 baseline, and print the active engine/
+    metadata. Never edit `/usr/share/emerald/themes/Mac4Lin_Aqua` in place.
+
+[2026-08-14][M16/DECO-DESIGN] Decoration direction SELECTED visually.
+  Receipt: W-074/W-075. Next gate is U-027 read-only active-slot attribution;
+  after it, fork Mac4Lin_Aqua into the user library and perform one reversible
+  gunmetal visual trial. GTK stage remains Quake-Aqua-AMOLED; baseline rollback
+  remains Dark-Aqua-Hybrid-Baseline.
