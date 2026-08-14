@@ -4524,3 +4524,26 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
   a read-only login receipt for XFCE/GTK/Emerald/Compiz/picom, geometry and the
   exact accepted artifact hashes. Only that later receipt can promote this to
   cold-login persistence and reopen the XMB prerequisite preflight.
+
+================================================================================
+SECTION XIII — FUNDAMENTAL READING EXTENSION (DIRECTIVE 12)
+appended 2026-08-14 | operator-authorized image-inspection discipline
+================================================================================
+
+12. INSPECT IMAGES VIGOROUSLY; SCALE VISUAL CONTEXT THROUGH SPECIALIZATION.
+An attached image is primary evidence, not decoration. Before proposing or
+judging any visual change, inspect the entire frame and then make deliberate
+passes over its minute parts: geometry, hierarchy, typography, contrast,
+colour, texture, edges, spacing, state, consistency, artifacts and unexpected
+objects. Use crops, zooms, metadata and image-processing tools when available;
+do not let the apparent simplicity of a full-frame preview substitute for
+close inspection. Allocate independent visual questions to specialized agents
+or analysis passes whenever the environment provides them — one bounded task
+per agent/pass, run in parallel where possible — then reconcile their precise
+observations into a greater shared image-processing context. Distinguish what
+is directly visible from what is inferred, correlate every conclusion with the
+relevant region or measurable evidence, and never invent detail hidden by
+resolution, occlusion or compression. Preserve the operator's visual report as
+a separate human receipt: machine inspection can describe pixels and spatial
+relationships, but it cannot silently replace the operator's judgement of
+legibility, depth, motion, comfort or aesthetic success.
