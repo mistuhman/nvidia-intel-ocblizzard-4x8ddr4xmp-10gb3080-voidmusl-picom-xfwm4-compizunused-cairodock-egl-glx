@@ -4142,3 +4142,23 @@ visual acceptance of M18. It supplements, never alters, Sections I-II.
   warnings, process/XSettings receipt, then Thunar+Terminal screenshot and
   explicit human depth/blending judgement. Rollback restores the recorded
   Quake-Aqua-AMOLED setting; decoration remains W-085-frozen.
+
+--------------------------------------------------------------------------------
+12.34 PRE-TARGET PROBE CORRECTION — NORMALIZE VOLATILE GTK WARNING PREFIXES.
+      Sandbox self-review/test 2026-08-14; no target attempt occurred.
+--------------------------------------------------------------------------------
+
+  [W-090] Pre-issuance review found the first W-088 differential probe compared
+    complete GTK warning lines, whose PID/timestamp prefixes necessarily differ
+    between baseline and candidate subprocesses. That would have produced a
+    false “new warning” result even for identical X-043 parser messages. The
+    canonical script now normalizes each line to the stable substring beginning
+    `Theme parsing error` before Counter subtraction. A synthetic pair with
+    different PID/timestamps and identical parser location/message compares
+    equal (`WARNING_NORMALIZATION=PASS`). Python compilation and two recursive
+    deterministic builds still pass; generated aggregate/CSS/preview hashes
+    remain W-089 values because the change affects probe logic only. New script
+    SHA-256 is recorded by the commit receipt below; W-088's earlier script hash
+    is superseded before any target download.
+    RECEIPT: sandbox normalization unit assertion, compile, two-build diff and
+    unchanged generated hashes, 2026-08-14.

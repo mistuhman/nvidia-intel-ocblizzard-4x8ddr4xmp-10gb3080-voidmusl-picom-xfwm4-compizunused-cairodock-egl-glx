@@ -706,11 +706,13 @@ def probe(theme: str, baseline: str) -> None:
             env=environment,
             check=False,
         )
-        warnings = [
-            line.strip()
-            for line in result.stderr.splitlines()
-            if "Theme parsing error" in line
-        ]
+        warnings = []
+        for line in result.stderr.splitlines():
+            marker = "Theme parsing error"
+            if marker in line:
+                # PID/timestamp prefixes differ between the two subprocesses;
+                # compare only the stable parser location/message payload.
+                warnings.append(marker + line.split(marker, 1)[1].strip())
         print(f"{name}: exit={result.returncode}, parser_warnings={len(warnings)}")
         for line in warnings:
             print(f"  {line}")
