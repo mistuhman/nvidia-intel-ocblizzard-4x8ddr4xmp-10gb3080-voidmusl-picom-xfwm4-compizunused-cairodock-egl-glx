@@ -565,6 +565,20 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target fresh-process identity/resources/log, automatic recovery
   output and direct before/after visual observation pasted 2026-08-14.
 
+[2026-08-14][W-031] U-012 confirms the fresh trial/exit collapsed the active
+  profile from the pre-trial 3ac4f032... state to an 89-byte file containing
+  only `[core]`, the six-plugin list
+  `core;ccp;move;resize;place;decoration;`, and refresh_rate=120. The active
+  SHA-256 is a572585c451b757282b77bb77e32a997e25374d45011692a9f6110a94ba033df.
+  It no longer contains detect-refresh, detect-outputs, output rectangles,
+  vblank, lighting, texture filtering, or the accepted animation/utility
+  plugin list. Timestamped backups remain readable, including
+  pre-explicit-display SHA-256 89d1eaa7... with the accepted clean plugin list
+  and pre-refresh SHA-256 58a514db... with the proven output rectangles.
+  Current runtime is safely xfwm4 PID 16448 with no Compiz or picom.
+  RECEIPT: target U-012 file inventory, checksums, complete current core
+  section, backup diffs and key comparison pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -771,6 +785,16 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   deferred behind M8 per Directive 10 rather than tuned under the wrong WM.
   RECEIPT: W-030, before/after target SHA-256 output and user observation,
   2026-08-14.
+
+[2026-08-14][X-021] The post-trial active Default.ini is launch-unsafe and
+  must not be treated as W-026: it lost the explicit output list and most
+  plugins/settings, exactly matching the user's concern that Compiz settings
+  are not surviving. The evidence establishes that collapse occurred during
+  the fresh launch/exit interval but does not yet identify whether startup,
+  ccp shutdown, or another writer caused it. Restore an atomically written,
+  backed-up minimal W-026 baseline while xfwm4 owns the screen, verify every
+  line and checksum, and only then begin one-variable renderer A/B trials.
+  RECEIPT: W-031 and X-020.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -1035,6 +1059,11 @@ Status vocabulary, used strictly:
   U-012 profile-mutation forensics, then one-variable NVIDIA/GLX A/B tests.
   Theming and wallpaper refinement remain gated until Compiz is smooth and
   stable; current runtime is safe xfwm4 without picom.
+
+[2026-08-14][M8/U-012] Profile-mutation forensics DONE; active profile
+  collapse CONFIRMED. Receipt: W-031 and X-021. This supersedes the U-012
+  block, but overall M8 remains BLOCKED on a receipt-backed atomic restoration
+  of the exact clean plugin/display baseline before any renderer A/B test.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
