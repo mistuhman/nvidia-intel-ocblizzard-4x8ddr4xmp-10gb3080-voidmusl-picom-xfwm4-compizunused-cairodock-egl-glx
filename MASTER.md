@@ -591,6 +591,19 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target corrected precondition, backup, full file, checksum and
   exact-value validation output pasted 2026-08-14.
 
+[2026-08-14][W-033] U-013 found one surviving configuration writer
+  candidate while xfwm4 owned the screen and Compiz/picom were absent: CCSM
+  PID 5483, `/usr/bin/python3 /usr/bin/ccsm`, orphaned under PID 1 since
+  06:56:08. Between W-032 and the guarded A/B precheck, Default.ini was
+  rewritten at 07:12:35 from 351 to 347 bytes. All explicit display/vblank/
+  lighting/texture values survived; the only diff reordered active plugins
+  and removed `ccp`, producing SHA-256 110c892a.... Neither fuser, lsof nor
+  `/proc` found an open descriptor because the writer had closed the file by
+  inspection time. CCSM is therefore the sole observed live writer candidate,
+  not yet a proven cause until it is stopped and the restored hash dwells.
+  RECEIPT: target U-013 full file/diff, process list, descriptor search and
+  timestamps pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -826,6 +839,15 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   configuration process is therefore now evidence-backed; identify the exact
   diff and likely live writer before restoring again.
   RECEIPT: target A/B precondition and STOP output pasted 2026-08-14.
+
+[2026-08-14][X-024] Do not leave CCSM open during machine-authored profile
+  restoration or renderer tests. PID 5483 survived independently of Compiz
+  and the only observed off-baseline rewrite occurred while it was live,
+  removing the `ccp` backend plugin and reordering the list. Stop exactly that
+  CCSM command, restore the guarded baseline, and require a timed hash dwell
+  before launching Compiz. This is a bounded causal test; do not kill generic
+  Python processes.
+  RECEIPT: W-033.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -1119,6 +1141,11 @@ Status vocabulary, used strictly:
   Receipt: X-023. The guard correctly prevented launch after profile drift.
   Overall M8 remains BLOCKED on U-013 writer identification; no conclusion
   about `__GL_SYNC_DISPLAY_DEVICE` is permitted from this no-op.
+
+[2026-08-14][M8/U-013] Live profile-writer candidate identified DONE.
+  Receipt: W-033/X-024. Overall M8 remains BLOCKED on stopping only CCSM,
+  restoring W-032 and proving a timed byte-identical dwell before resuming the
+  DP-2 OpenGL sync-display A/B test.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
