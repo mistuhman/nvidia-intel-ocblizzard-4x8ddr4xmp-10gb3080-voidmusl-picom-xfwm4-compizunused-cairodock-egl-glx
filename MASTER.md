@@ -362,6 +362,14 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   no WM replacement had been attempted when they were captured.
   RECEIPT: target `ls -la` and process output pasted 2026-08-14.
 
+[2026-08-14][W-012] U-001 is resolved: the target is Void x86_64 with GNU
+  libc 2.41, not musl. Direct rendering is active on the proprietary NVIDIA
+  stack: GeForce RTX 3080, OpenGL 4.6.0 NVIDIA 595.84, with nvidia_uvm,
+  nvidia_drm, nvidia_modeset and nvidia loaded; no nouveau module was
+  reported. NVIDIA-SMI also reports driver 595.84. Therefore X-001 does not
+  apply to this target and the project takes the glibc/NVIDIA branch.
+  RECEIPT: target U-001 output pasted 2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -551,6 +559,10 @@ Status vocabulary, used strictly:
   receipt: W-009..W-011; target process/package query and backup listing.
   Overall M8 remains PLANNED: xfwm4 and picom are still live and compiz has
   not yet been started.
+
+[2026-08-14][M7] U-001 answered; glibc/NVIDIA branch chosen DONE.
+  receipt: W-012; target arch, libc, GL renderer, modules and NVIDIA-SMI.
+  This supersedes the earlier M7 BLOCKED row.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
