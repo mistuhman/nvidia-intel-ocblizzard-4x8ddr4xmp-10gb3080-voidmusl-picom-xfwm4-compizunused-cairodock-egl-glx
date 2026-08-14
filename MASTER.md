@@ -4490,3 +4490,37 @@ GATE REOPENED BY THE OPERATOR. Target/human receipt 2026-08-14.
   synchronize the user GTK3 persistence file without changing unrelated keys,
   and verify GTK/Compiz/Emerald/picom plus exact artifact hashes. Wallpaper
   prerequisite reconciliation remains the following gate.
+
+--------------------------------------------------------------------------------
+12.46 ACCEPTED GTK STATE RESTORED AND PERSISTENCE LAYERS SYNCHRONIZED;
+      COLD-LOGIN VERIFICATION PENDING. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-102] The accepted Quake-Gunmetal-3D GTK theme is active again. Before the
+    change, the target reverified aggregate `98f019d...`, override CSS
+    `8bed1729...` and rollback Quake-Aqua-AMOLED. It backed up the stale GTK3
+    settings file to
+    `~/.config/gtk-3.0/settings.ini.pre-gunmetal.1786735797`, selected
+    Quake-Gunmetal-3D through XFCE XSettings, changed only the existing
+    `gtk-theme-name` persistence entry, and invoked the hardened apply path only
+    after XSettings already named the accepted theme. That path correctly
+    preserved Quake-Aqua-AMOLED rather than recording Slickness-Reborn.
+    RECEIPT: target RESTORE ACCEPTED GUNMETAL GTK STATE output, 2026-08-14.
+
+  [W-103] Post-change machine gates all pass in the running session:
+    xfconf/settings.ini/state assertions passed; tool status reports active
+    Quake-Gunmetal-3D with exact accepted aggregate `98f019d...`, CSS
+    `8bed1729...` and rollback Quake-Aqua-AMOLED; live Gtk.Settings resolves
+    Quake-Gunmetal-3D; `_NET_WM_NAME` is `compiz`; Emerald PID 27906 is live;
+    picom is absent; and the bounded block ended
+    `RESTORE_ACCEPTED_GUNMETAL=PASS`. The four GTK parser warnings are exactly
+    the pre-existing nonblocking warnings already frozen by X-043/W-096, not
+    newly introduced warnings.
+    RECEIPT: target persistence and stack verification output, 2026-08-14.
+
+[2026-08-14][M16/PERSISTENCE-LIVE] PASS. Configuration is now internally
+  consistent and reversible in the live session. “Rebootable” is deliberately
+  not yet claimed: next gate is one operator-initiated cold reboot, followed by
+  a read-only login receipt for XFCE/GTK/Emerald/Compiz/picom, geometry and the
+  exact accepted artifact hashes. Only that later receipt can promote this to
+  cold-login persistence and reopen the XMB prerequisite preflight.
