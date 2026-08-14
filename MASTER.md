@@ -5816,3 +5816,77 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   progress lines. Storage note: X-061's root filesystem was 100% full, which is
   why the bake root lives on `/mnt/games`; confirm free space there before a
   multi-gigabyte master is written.
+
+--------------------------------------------------------------------------------
+12.83 NVENC HEVC ACCEPTED AT 4480x1440; BAKE RUNS AT 7.5 fps AND WAS INTERRUPTED
+      AT FRAME 1381. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-154] X-082 is CLOSED and U-038 is RESOLVED. The superseding baker
+    `f4c2d95e...` installed by hash and the new fast gate printed
+    `encoder-probe hevc_nvenc: PASS`, proving NVENC HEVC accepts a real
+    4480x1440 encode on this RTX 3080 — the exact geometry h264_nvenc refused.
+    The stale zero-byte partial left by the X-082 crash was auto-removed,
+    confirming the W-153 retry path. Preset `af0d75e4...`, seed 1481458227 and
+    canvas 4480x1440 all re-verified. `/mnt/games` has 109 GiB free (84% used),
+    so X-061's storage blocker does not apply to the bake root.
+    RECEIPT: target run to frame 1381 of 3738, log
+    `main-red-video-bake-v2.log`, 2026-08-14.
+
+  [W-155] Throughput is 7.5 frames/second, steady from frame 61 to frame 1381
+    with no drift (7.08 rising to 7.51 and holding), i.e. ~133 ms per frame.
+    Full bake projects to 498 seconds — 8.3 minutes, not hours. The operator
+    interrupted at frame 1381 (Ctrl-C, status 130) with roughly 5 minutes
+    remaining, so no output was produced. This is not a hang or a stall; it is
+    a stable rate that simply had not finished.
+    RECEIPT: target progress lines and `MAIN_RED_BAKE_COMMAND_STATUS=130`,
+    2026-08-14.
+
+  [X-085] "I don't see any XMB wave" during a bake is EXPECTED BEHAVIOUR and
+    must not be treated as a defect. The bake is headless by design (Directive 2
+    and Section 8.3): Chromium renders offscreen and streams PNGs to FFmpeg over
+    a pipe. Nothing is drawn to the X display, no window is mapped and the
+    wallpaper is not touched at any point. The visual acceptance of the wave
+    already happened at W-151 (contact sheet, operator verdict "has three
+    pictures of each, good"). Live desktop display is a SEPARATE later stage
+    (xwinwrap/mpv, Section IX). Any future run must state this before the bake
+    so a silent screen is not mistaken for a failure.
+    RECEIPT: W-152/W-153 design, absence of any display code path in the baker,
+    and the operator's report during a successful run, 2026-08-14.
+
+  [U-040] The 7.5 fps rate is not yet attributed. Reported WebGL strings are the
+    masked `WebKit`/`WebKit WebGL` values, which per W-150 prove WebGL2 executed
+    but say nothing about hardware, so U-004 (does headless Chromium get real
+    GPU acceleration here) remains genuinely open. Two candidate causes: a
+    software rasterizer doing the scene, or PNG encode/transfer of a
+    4480x1440x4 = 25.8 MB framebuffer per frame dominating. These have opposite
+    fixes and must not be guessed between.
+    RECEIPT: masked strings in the target setup line versus W-150, 2026-08-14.
+
+  [W-156] New read-only `scripts/xmb-bake-profile.mjs` (SHA-256
+    `3dc36280a6adb6b9913e5db94983a412735a8273498f1a998111978bc13c510b`) resolves
+    U-040/U-004 in about ten seconds. It reuses the identical seed/clock/viewport
+    setup, then reads `WEBGL_debug_renderer_info` UNMASKED_VENDOR/RENDERER,
+    cross-checks Chromium's own `chrome://gpu` rows (required because X-005
+    proved GL flags can be silently ignored), prints a SOFTWARE/hardware verdict,
+    and medians the per-stage cost of scene render+gl.finish, PNG screenshot,
+    PNG with `optimizeForSpeed`, and a readPixels round-trip. It projects each
+    to the full 3738-frame bake and names the bottleneck. It encodes nothing,
+    writes nothing under `out/` and cannot disturb a bake.
+    RECEIPT: sandbox `node --check` PASS plus three executed mock-harness cases —
+    hardware (verdict "hardware-backed", 493s projection matching the observed
+    ~500s, bottleneck PNG CAPTURE), SwiftShader (verdict "SOFTWARE RASTERIZER
+    (no GPU)"), and a Puppeteer lacking `optimizeForSpeed` (degrades to
+    "unsupported by this puppeteer" instead of throwing). 2026-08-14.
+
+  [U-041] If the profiler names PNG capture as the bottleneck, `optimizeForSpeed`
+    is the candidate remedy, but it changes PNG compression only, not pixels.
+    Determinism must be re-proven by the W-148 two-pass byte-identical method
+    before it is adopted for a real bake; a faster bake that breaks reproducible
+    output is a regression, not an optimization.
+    RECEIPT: W-148 determinism contract versus untested capture flag, 2026-08-14.
+
+[2026-08-14][M11-BAKE-RUN-1] INTERRUPTED BY OPERATOR AT FRAME 1381/3738, no
+  output written. Encoder question is settled (W-154). Two open items: attribute
+  the 7.5 fps (W-156 profiler) and then simply let the ~8.3-minute bake finish.
+  Nothing about the tool is known to be wrong. Do not re-litigate the encoder.
