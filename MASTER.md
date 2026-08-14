@@ -472,6 +472,21 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   RECEIPT: target IX.4B-1 context/file/process output and user observation,
   2026-08-14.
 
+[2026-08-14][W-024] CORRECTION/SUPERSESSION for parts of X-015 and X-016:
+  U-010 shows the active Compiz 0.8 core schema is `[core] s0_*`, not the old
+  `[opengl]/[composite] as_*` lines previously treated as live truth. The
+  current profile explicitly has refresh_rate=120, sync_to_vblank=false,
+  lighting=true and fast texture filtering. Therefore the CCSM boolean drawing
+  was not inverted; it represented the live core values, while the earlier
+  `as_*` values were ineffective. Detect Outputs is enabled in the screenshot,
+  so its displayed 640x480 fallback list is inactive; live X geometry remains
+  the complete 4480x1440 screen with both correct monitor rectangles. The
+  plugin-cleanup profile is not proven reboot-safe yet, but it did not recreate
+  X-011's manual-detection-with-missing-list fault. The remaining measured
+  candidate for poor refresh is vblank being explicitly false.
+  RECEIPT: complete active INI, CCSM screenshot and xrandr output in U-010,
+  2026-08-14.
+
 --- 6.B WHAT DOES NOT WORK / HARD BLOCKERS --------------------------------------
 
 [2026-08-14][X-001] *** CRITICAL, READ BEFORE PLANNING ANYTHING ELSE ***
@@ -634,6 +649,14 @@ Format: [DATE] [ID] claim -- receipt. Append only. Supersede, never delete.
   then perform a controlled restart rather than another broad Context write.
   RECEIPT: IX.4B-1 empty truth grep, screenshot and user observation,
   2026-08-14.
+
+[2026-08-14][X-017] After W-024 corrects the schema interpretation, the clean
+  profile's remaining rejected property is poor perceived refresh with
+  `s0_refresh_rate = 120` but `s0_sync_to_vblank = false`. Perform one narrow,
+  backed-up A/B change to vblank=true without changing plugins, outputs,
+  lighting or texture filtering. Accept only if PID/WM stability remains and
+  the user observes smoother motion; otherwise restore false.
+  RECEIPT: U-010 active INI and direct user observation, 2026-08-14.
 
 --- 6.C UNVERIFIED — CLAIMS WITH THEIR RESOLVING COMMAND (Directive 8) ----------
 Each row is a question the sandbox physically cannot answer. Run these ON THE
@@ -843,6 +866,11 @@ Status vocabulary, used strictly:
   preservation REJECTED.
   receipt: W-023 and X-016. Overall M8 is BLOCKED on U-010; do not restart,
   persist, log out or reboot while the saved output list is 640x480.
+
+[2026-08-14][M8/U-010] Active Compiz 0.8 core schema identified DONE.
+  receipt: W-024; this supersedes IX.4B-1's 640x480/reboot interpretation but
+  not its persistence prohibition. Overall M8 remains BLOCKED on X-017's
+  narrow vblank A/B test and a later controlled restart/logout gate.
 
 ================================================================================
 SECTION VIII — THE BAKE (Agent F). Design only; nothing here has been run.
