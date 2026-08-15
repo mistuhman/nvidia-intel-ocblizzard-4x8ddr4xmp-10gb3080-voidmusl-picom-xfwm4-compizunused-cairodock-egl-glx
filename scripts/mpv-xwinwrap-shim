@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# mpv-xwinwrap-shim — bridge between xwinwrap's exact "WID" replacement and mpv 0.41.0+ --wid=value requirement
+# xwinwrap only replaces an argument that is exactly "WID", while mpv 0.41.0 rejects "--wid WID" (space) and wants "--wid=WID" (=).
+# Usage: xwinwrap ... -- mpv-xwinwrap-shim WID --loop-file=inf ... video.mp4
+# The shim receives WID as $1 (already replaced by xwinwrap to integer), then converts to --wid=INTEGER for mpv.
+set -euo pipefail
+if [ $# -lt 2 ]; then
+  echo "mpv-xwinwrap-shim: usage: $0 WID mpv-args... video" >&2
+  exit 2
+fi
+WID="$1"
+shift
+if [ "$WID" = "WID" ]; then
+  echo "mpv-xwinwrap-shim: WID not replaced by xwinwrap (still literal WID)" >&2
+  exit 2
+fi
+exec mpv --wid="$WID" "$@"

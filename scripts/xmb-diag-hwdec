@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# xmb-diag-hwdec — reproduce mpv hwdec selector crash on HEVC loop
+# Usage: xmb-diag-hwdec [video]
+# Default video: /mnt/games/xmb-wave-bake/out/main-red/main-red.loop-60s.mp4
+set -uo pipefail
+VIDEO="${1:-/mnt/games/xmb-wave-bake/out/main-red/main-red.loop-60s.mp4}"
+if [ ! -f "$VIDEO" ]; then
+  echo "missing video: $VIDEO" >&2
+  exit 2
+fi
+echo "video: $VIDEO"
+echo "mpv: $(mpv --version 2>/dev/null | head -n1)"
+echo "nvidia: $(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null || echo unknown)"
+echo "vo: gpu-next forced, frames=60, no-audio"
+echo ""
+printf "%-8s %-6s %s\n" "HWDEC" "RC" "RESULT"
+printf "%-8s %-6s %s\n" "------" "----" "------"
+for H in no nvdec vaapi auto vulkan nvdec-copy cuda cuda-copy; do
+  printf '%-8s ' "$H"
+  set +e
+  timeout 25 mpv --hwdec="$H" --no-audio --frames=60 --vo=gpu-next --really-quiet "$VIDEO" >/dev/null 2>&1
+  rc=$?
+  set -e
+  if [ $rc -eq 0 ]; then
+    echo "OK (rc=0)"
+  elif [ $rc -eq 124 ]; then
+    echo "TIMEOUT (rc=124) — hung, not crashed"
+  elif [ $rc -eq 139 ] || [ $rc -eq 134 ]; then
+    echo "CRASH (rc=$rc) — segfault/abort"
+  else
+    echo "FAILED (rc=$rc)"
+  fi
+done
+echo ""
+echo "Expected on this target (RTX 3080, 595.84, 4480x1440 HEVC):"
+echo "  no     OK  — software fallback, always works"
+echo "  nvdec  OK  — CUVID/NVDEC, preferred for wallpaper"
+echo "  vaapi  OK  — VAAPI wrapper over NVDEC, also works"
+echo "  auto   CRASH — negotiates hevc-vulkan which segfaults in this mpv build"
+echo ""
+echo "If auto crashes, NEVER use --hwdec=auto for wallpaper. Pin to nvdec."
+echo "XMB_DIAG_HWDEC=PASS if the four canonical probes match no/nvdec/vaapi OK and auto CRASH."
