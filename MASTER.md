@@ -7424,3 +7424,47 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-7] ROOT CAUSE ISOLATED TO GRUB CMDLINE INJECTION
   (X-109). Awaiting grep receipts to author the one-shot reversal.
+
+--------------------------------------------------------------------------------
+12.111 FULL DAMAGE MAP TRANSCRIBED (AGENT V PHOTO ANALYSIS) — CONTRADICTORY
+      EARLY-LOAD + SELF-BLACKLIST. ONE-SHOT REVERSAL BLOCK FIX-1 ISSUED.
+--------------------------------------------------------------------------------
+
+  [W-210] AGENT V VERBATIM TRANSCRIPT of operator photo (all four surfaces):
+    /etc/default/grub:3:GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.pre=nvidia_drm
+      modules-load=nvidia-drm loglevel=7 nvidia-drm.modeset=1 intel_pstate=active"
+    /etc/dracut.conf.d/nvidia.conf:1:add_drivers+=" nvidia nvidia_modeset
+      nvidia_uvm nvidia_drm "
+    /etc/modprobe.d/nvidia.conf:1:options nvidia-drm modeset=1  (pre-existing
+      style — LEAVE)
+    /etc/modprobe.d/nvidia-blacklist.conf:1 blacklist nouveau (standard);
+      lines 2-5 blacklist nvidia / nvidia_drm / nvidia_uvm / nvidia_modeset
+      (SELF-BLACKLIST of own driver — prior agent damage layer 2)
+    Also confirmed: /etc/X11/xorg.conf exists + xorg.conf.d 20-nvidia*.conf;
+    runsvdir/default includes lightdm + nvidia-persistenced. Sandbox note:
+    phone uploads not present on disk; vision transcription is the bridge.
+    RECEIPT: operator photo, transcription 2026-08-15.
+
+  [X-110] CONTRADICTION STACK (extends X-109): GRUB early-loads nvidia_drm
+    with modeset=1 in dracut initramfs (console killed pre-switch-root) WHILE
+    modprobe.d blacklists entire nvidia stack (normal autoload also broken).
+    Both boot paths sabotaged; explains black under every normal boot.
+    RECEIPT: W-210, 2026-08-15.
+
+  [W-211] BLOCK FIX-1 AUTHORED (unexecuted), backups first, minimal deltas:
+    1. cp grub -> /etc/default/grub.bak.x109; sed strips ONLY
+       rd.driver.pre=nvidia_drm, modules-load=nvidia-drm, nvidia-drm.modeset=1;
+       expected residue "loglevel=7 intel_pstate=active"; verify sed -n 3p gate.
+    2. cp blacklist -> /root/nvblk.bak.x109; sed -i 2,5d keeps only
+       blacklist nouveau; cat gate.
+    3. mv dracut nvidia.conf -> /root/dracut-nv.bak.x109 (no initramfs regen
+       needed: embedded-but-unreferenced drivers inert once cmdline clean).
+    4. mount proc/sys guards; grub-mkconfig -o /boot/grub/grub.cfg; sync;
+       sysrq b reboot (PID1 sh cannot clean-reboot).
+    Untouched by design: /etc/modprobe.d/nvidia.conf, xorg.conf(.d), services.
+    Expected: normal tkg-bore boot -> visible console -> lightdm.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-8] FIX-1 ISSUED. Awaiting one-word receipt:
+  lightdm | console-but-no-lightdm | black. After lightdm: resume 12.108
+  ladder (failsafe check, compiz-revert, Compiz verify).
