@@ -7468,3 +7468,32 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-15][M12-RECOVERY-8] FIX-1 ISSUED. Awaiting one-word receipt:
   lightdm | console-but-no-lightdm | black. After lightdm: resume 12.108
   ladder (failsafe check, compiz-revert, Compiz verify).
+
+--------------------------------------------------------------------------------
+12.112 FIX-1 INSUFFICIENT — INITRAMFS STILL EMBEDS NVIDIA, UDEV COLDPLUG LOADS
+      IT WITHOUT ANY CMDLINE. REGEN REQUIRED (FIX-2).
+--------------------------------------------------------------------------------
+
+  [X-111] Operator: FIX-1 all gates passed, normal boot still BLACK. W-211
+    assumption FALSIFIED: "embedded-but-unreferenced drivers inert once
+    cmdline clean" is wrong. dracut initramfs (built while
+    /etc/dracut.conf.d/nvidia.conf add_drivers was active) physically contains
+    nvidia modules, and dracut's internal udev coldplugs drivers for detected
+    PCI hardware — RTX 3080 present → nvidia_drm loads pre-switch-root with
+    no cmdline reference. Cross-proof: prior R3 boot logged udev's attempt
+    ("Module nvidia is blacklisted" / dracut modprobe ERROR), i.e. only the
+    module_blacklist= param stopped it. On-disk modprobe.d blacklist never
+    entered the image (no rebuild after it was written). Same presence≠inert
+    error class as X-083/X-100.
+    RECEIPT: operator report black + FIX-1 gates passed, 2026-08-15.
+
+  [W-212] BLOCK FIX-2 AUTHORED (unexecuted): rescue boot (blacklist +
+    init=/bin/sh), remount rw, mount proc/sys/devtmpfs, ls /boot to confirm
+    image name (expected initramfs-6.10.35-tkg-bore.img), evidence gate
+    lsinitrd | grep -c nvidia (nonzero), dracut -f <img> 6.10.35-tkg-bore,
+    post-gate grep -c = 0, tail lightdm.log from black boot + grep grub.cfg
+    cmdline as cross-receipts, sync + sysrq-b. Then normal boot test.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-9] FIX-2 (initramfs regen) ISSUED. Awaiting
+  lsinitrd before/after counts + boot verdict.
