@@ -7528,3 +7528,27 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-10] FIX-3 ISSUED. Awaiting .ko count + verdict
   (lightdm | console-no-lightdm | black).
+
+  [W-214] AGENT V TRANSCRIPT (FIX-3 photo): dracut -f 6.10.35-tkg-bore
+    SUCCEEDED (tmp moved into place); lsinitrd plain nvidia count 549 -> 543.
+    Delta of exactly 6 = the nvidia .ko set (nvidia, -drm, -modeset, -uvm,
+    -peermem, +1) — consistent with omit_drivers WORKING and residue being
+    inert GSP firmware refs. Plain-count gate cannot distinguish; .ko gate
+    pending. Second dracut invocation errored realpath
+    /lib/modules-6.10.35-tkg-bore missing + dracut[F] Cannot find module
+    directory — contradicts first success, suspected kver-arg typo, must be
+    settled by ls /lib/modules (if tree truly missing, that alone would
+    black X later). Rescue shield held again ("Module nvidia is blacklisted").
+    /boot inventory: tkg-bore 6.10.35 + 6.10.39 pairs, stock 6.10.35_1,
+    6.10.36_1, 6.10.39_1, 6.10.40_1, 6.10.41_1, 6.12.52_1.
+    RECEIPT: operator photo + "543 from 550" note, 2026-08-15.
+
+  [W-215] BLOCK V-1 ISSUED (verify-only): (1) lsinitrd | grep nvidia |
+    grep -c ko — PASS=0; (2) ls /lib/modules — must contain 6.10.35-tkg-bore;
+    (3) sed -n 3p /etc/default/grub — rd.driver.blacklist present;
+    (4) grep -c rd.driver.blacklist /boot/grub/grub.cfg — PASS>0 else
+    grub-mkconfig. Then sync + sysrq b, normal boot of vmlinuz-6.10.35-tkg-bore.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-11] FIX-3 LIKELY EFFECTIVE (delta-6 module set),
+  V-1 gates issued before boot test. Awaiting 4 gate values + verdict.
