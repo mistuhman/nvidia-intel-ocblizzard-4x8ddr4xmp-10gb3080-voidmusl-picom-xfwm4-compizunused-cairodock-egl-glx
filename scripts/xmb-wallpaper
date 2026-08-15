@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# xmb-wallpaper — safe XMB video wallpaper launcher for Compiz + xwinwrap + mpv
+# Fixes: mpv 0.41.0 --wid=value via shim, auto segfault, sticky spanning, nvdec-copy hardware
+set -euo pipefail
+ROLE="${1:-main-red}"
+MODE="${2:-background}"
+ROOT="${XMB_BAKE_ROOT:-/mnt/games/xmb-wave-bake}"
+VIDEO="${XMB_VIDEO:-$ROOT/out/$ROLE/$ROLE.loop-60s.mp4}"
+HWDEC_FORCE="${XMB_HWDEC:-}"
+ALLOW_AUTO="${XMB_ALLOW_AUTO:-0}"
+VERBOSE="${XMB_MPV_VERBOSE:-0}"
+SHIM="${XMB_SHIM:-$HOME/.local/bin/mpv-xwinwrap-shim}"
+case "$ROLE" in sleep|main-red|work-monochrome) ;; *) echo "usage: $0 [sleep|main-red|work-monochrome] [foreground|background]" >&2; exit 2;; esac
+[ -f "$VIDEO" ] || { echo "missing video $VIDEO" >&2; ls -lh "$ROOT/out/$ROLE/" >&2; exit 2; }
+command -v mpv >/dev/null || { echo "mpv not installed" >&2; exit 2; }
+command -v xwinwrap >/dev/null || { echo "xwinwrap not installed" >&2; exit 2; }
+[ -x "$SHIM" ] || { echo "shim missing at $SHIM — install scripts/mpv-xwinwrap-shim to ~/.local/bin/" >&2; exit 2; }
+# Upstream safe set + sticky for Compiz Wall 4 viewports (17920x1440). -fs fullscreen covers 4480x1440 X screen; -g explicit fallback.
+# User report "did not wrap to both screens" — sticky + explicit geometry needed.
+XWW_COMMON=(-b -s -fs -st -sp -nf -ov -fdt)
+[ "${XMB_USE_GEOMETRY:-0}" = "1" ] && XWW_COMMON=(-b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt)
+choose_hwdec(){
+  if [ -n "$HWDEC_FORCE" ]; then echo "$HWDEC_FORCE"; return; fi
+  # nvdec fails under gpu-next Vulkan (Could not create device). Only -copy variants work per W-195 verbose table.
+  local candidates=("nvdec-copy" "vaapi" "vaapi-copy" "cuda-copy" "no")
+  [ "$ALLOW_AUTO" = "1" ] && candidates+=("auto")
+  for H in "${candidates[@]}"; do
+    if timeout 8 mpv --hwdec="$H" --vo=gpu-next --no-audio --frames=5 --really-quiet "$VIDEO" >/dev/null 2>&1; then
+      echo "$H"; return
+    fi
+  done
+  echo "no"
+}
+HWDEC="$(choose_hwdec)"
+echo "xmb-wallpaper: role=$ROLE video=$VIDEO hwdec=$HWDEC mode=$MODE xww=${XWW_COMMON[*]} shim=$SHIM verbose=$VERBOSE"
+[ "$VERBOSE" = "1" ] && Q=() || Q=(--really-quiet)
+MPV_BASE_ARGS=(--loop-file=inf --no-audio --no-osc --no-osd-bar --no-input-default-bindings --panscan=1.0 --vo=gpu-next --hwdec="$HWDEC" --framedrop=vo "${Q[@]}" "$VIDEO")
+launch_bg(){
+  local log="/tmp/xmb-wallpaper-$ROLE.log"
+  echo "launch $log xww=${XWW_COMMON[*]}"
+  pkill -f "xwinwrap.*$ROLE" 2>/dev/null || true
+  pkill -f "mpv.*$ROLE.loop" 2>/dev/null || true
+  sleep 0.5
+  nohup xwinwrap "${XWW_COMMON[@]}" -- "$SHIM" WID "${MPV_BASE_ARGS[@]}" >"$log" 2>&1 &
+  local pid=$!
+  sleep 2
+  if kill -0 "$pid" 2>/dev/null; then
+    pgrep -a -f "xwinwrap|mpv.*$ROLE" || true
+    nvidia-smi --query-gpu=utilization.decoder --format=csv,noheader 2>/dev/null || true
+    echo "XMB_WALLPAPER_LAUNCH=PASS hwdec=$HWDEC pid=$pid log=$log"
+    return 0
+  else
+    echo "xwinwrap died, log:"
+    tail -n 200 "$log" || true
+    return 1
+  fi
+}
+launch_fg(){
+  echo "foreground xww=${XWW_COMMON[*]}"
+  exec xwinwrap "${XWW_COMMON[@]}" -- "$SHIM" WID "${MPV_BASE_ARGS[@]}"
+}
+case "$MODE" in fg|f|foreground) launch_fg;; *) launch_bg;; esac
