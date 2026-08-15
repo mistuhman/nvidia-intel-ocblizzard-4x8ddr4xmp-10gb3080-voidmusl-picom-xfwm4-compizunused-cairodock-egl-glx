@@ -7552,3 +7552,35 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-11] FIX-3 LIKELY EFFECTIVE (delta-6 module set),
   V-1 gates issued before boot test. Awaiting 4 gate values + verdict.
+
+--------------------------------------------------------------------------------
+12.114 FIX-3 EFFECTIVE — BOOT SURVIVES INITRAMFS, FAILURE MOVED UP TO X START
+      (MONITOR POWERS OFF). KERNEL NAME ERRATUM 6.10->6.18.
+--------------------------------------------------------------------------------
+
+  [X-113] ERRATUM: kernel is 6.18.35-tkg-bore, NOT 6.10.35 — Agent V photo
+    transcription misread 1 vs 8 in console font across W-208..W-215 (and the
+    /boot stock list is likewise 6.18.x/6.12.x era). Operator's dracut runs
+    hit the correct image (counts moved 550->549->543), so FIX-2/FIX-3
+    substance unaffected. All prior 6.10.35 references read as 6.18.35.
+    RECEIPT: operator "6.10.35 tkg bore doesnt exist... i regularly boot
+    6.18.35", 2026-08-15.
+
+  [W-216] FIX-3 VERDICT: normal 6.18.35-tkg-bore boot now shows FULL kernel
+    loading text (console survives DRM/initramfs stage — early-load poison
+    NEUTRALIZED), then monitor POWERS OFF later = lightdm/X start applying a
+    modeset the displays reject. Failure class moved from boot-level (X-106)
+    back to X-level. Suspects: static /etc/X11/xorg.conf stale MetaMode
+    (older monitor arrangement, see ledger ~line 522 note) + 20-nvidia*.conf
+    drop-ins. Unlike X-106 boots, Xorg.0.log/lightdm logs NOW EXIST.
+    RECEIPT: operator report 2026-08-15.
+
+  [W-217] BLOCK X-1 ISSUED: (1) after monitor-off, try Ctrl+Alt+F2 — gettys
+    tty1-6 enabled and console no longer early-grabbed; login sd if prompt.
+    (2) From TTY (or rescue init=/bin/sh + remount rw): grep EE/fatal/no
+    screens Xorg.0.log tail 15; tail x-0.log; dmesg nvidia/drm tail 15;
+    grep -n MetaMode /etc/X11/xorg.conf. Candidate endgame: mv xorg.conf
+    aside (backup) for X auto-detect — pending receipts.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-12] INITRAMFS LAYER CLOSED. X-LAYER FORENSICS ISSUED.
