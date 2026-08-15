@@ -7324,3 +7324,22 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-15][M12-RECOVERY-4] BOOT-LEVEL RECOVERY IN PROGRESS. Awaiting Block R1
   receipts (console visible? runsvdir contents? lightdm/Xorg log tails?).
   12.108 Block 1 (failsafe revert) remains queued for AFTER a desktop returns.
+
+  [X-107] `single nomodeset` on tkg-bore STILL black after kernel text flash.
+    Diagnosis refined: nomodeset only gates in-tree KMS (i915/nouveau);
+    proprietary nvidia-drm ignores it (its modeset is a module option), so
+    console dies when nvidia modules load from initramfs regardless. The
+    single-user shell is likely RUNNING but invisible.
+    RECEIPT: operator report 2026-08-15.
+
+  [W-206] BLOCK R2 AUTHORED (unexecuted), three prongs:
+    (0) check BOTH monitors — console may land on DP-0 (asymmetry X-039).
+    (A) boot STOCK Void kernel + `single` — lacks nvidia modules, which is
+        precisely why its console survives; recovery-only, not daily boot.
+    (B) tkg-bore + `single nomodeset module_blacklist=nvidia,nvidia_drm,
+        nvidia_modeset,nvidia_uvm` — keep bore, forbid nvidia load.
+    Last resort: `init=/bin/sh` on stock kernel. Fact lines unchanged (W-205).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-5] R2 ISSUED. Awaiting: which prong yielded a prompt
+  + log tails. No writes to target besides remount,rw until logs are read.
