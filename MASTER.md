@@ -7386,3 +7386,41 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-6] CONSOLE PROVEN ALIVE, SHELL ATTACH FAILED (X-108).
   R3 (init=/bin/sh) issued. Still zero writes to target beyond remount,rw.
+
+--------------------------------------------------------------------------------
+12.110 ROOT CAUSE FOUND — GRUB CMDLINE POISONED WITH EARLY NVIDIA_DRM LOAD
+      (rd.driver.pre=nvidia_drm modules-load=nvidia-drm) BY PRIOR AGENT.
+--------------------------------------------------------------------------------
+
+  [W-208] R3 PASS — init=/bin/sh gave bash-5.3# PID-1 shell, remount rw OK.
+    Facts from photo receipt:
+    - /etc/runit/runsvdir/default: NetworkManager agetty-tty1..tty6 bluetoothd
+      chronyd current dbus libvirtd lightdm nvidia-persistenced ... — lightdm
+      enabled, gettys intact. Services NOT the damage.
+    - /etc/X11/xorg.conf.d: 20-nvidia-anti-tear.conf, 20-nvidia.conf (suspects
+      #2, unexamined).
+    - dmesg: kernel cmdline contains rd.driver.pre=nvidia_drm
+      modules-load=nvidia-drm (more cut off at screen edge) — NOT typed by
+      operator, baked into grub.cfg. dracut initramfs in use.
+    - This boot: "Module nvidia is blacklisted" + "dracut: modprobe: ERROR:
+      could not insert 'nvidia_drm': Operation not permitted" — our
+      module_blacklist held, console survived. Controlled A/B: early
+      nvidia_drm blocked = console lives; loaded = black at switch-root.
+    RECEIPT: operator photo, 2026-08-15.
+
+  [X-109] ROOT CAUSE (boot-level black screen X-106): prior low-performing
+    agent injected early-KMS nvidia_drm load into GRUB kernel cmdline
+    (rd.driver.pre + modules-load) during LM Studio flatpak juggling. nvidia
+    DRM takes console at initramfs stage, paints nothing, no VT, lightdm
+    invisible/never composited. Full injected param list pending grep of
+    /etc/default/grub. Fix path: backup + strip params + grub-mkconfig +
+    conditional dracut conf.d clean, NOTHING else.
+    RECEIPT: W-208 photo, 2026-08-15.
+
+  [W-209] FACT BLOCK 2 ISSUED (unexecuted): grep -n nvidia /etc/default/grub;
+    grep -rn nvidia /etc/dracut.conf.d /etc/modprobe.d; tail -15
+    /var/log/lightdm/lightdm.log. Then single reversal block with backups.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-7] ROOT CAUSE ISOLATED TO GRUB CMDLINE INJECTION
+  (X-109). Awaiting grep receipts to author the one-shot reversal.
