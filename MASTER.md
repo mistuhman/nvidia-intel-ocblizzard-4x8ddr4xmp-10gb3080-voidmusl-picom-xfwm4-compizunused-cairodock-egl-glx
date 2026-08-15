@@ -7259,3 +7259,29 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   [X-105] Black screen persists after golden restore — failsafe still compiz. Bore must boot.
   See prior entry, duplicated after rebase recovery.
 
+
+--------------------------------------------------------------------------------
+12.108 NEW SESSION (PHONE) — PR WEIGHT CEILING 405, RECOVERY BLOCK 1 AUTHORED.
+--------------------------------------------------------------------------------
+
+  [U-061] Operator opens fresh session from phone, directs: get Compiz working,
+    PR weight limit is 405 (SUPERSEDES the <465 figure in CONTINUE_PROMPT §5),
+    remind operator of bench/weight standing every few chats, deploy agents per
+    Directive 4 to research and problem-solve while keeping PR lean. Tiny lines
+    only (X-104 phone constraint) remain in force.
+    RECEIPT: operator message 2026-08-15, session branch
+    arena/01a004a9-nvidia-intel-ocblizzard-4x8ddr.
+
+  [W-203] RECOVERY BLOCK 1 AUTHORED (sandbox, unexecuted on target) per
+    M12-RECOVERY-2 plan: TTY (Alt+SysRq+R unraw if VT switch blocked, X-104),
+    kill xwinwrap/mpv/xmb-wall/xfconfd, restore failsafe
+    ~/xfce4-session.xml.bak.1786722899 -> xfce-perchannel-xml/xfce4-session.xml,
+    rm -rf ~/.cache/sessions/* (X-010 no-op guard), reboot bore. Expected
+    xfwm4 desktop (W-015 safe, picom masked W-042). Block 2 planned as single
+    line compiz-revert from live desktop with xfce-wm-recover escape armed —
+    NO ConfigParser writes ever again (X-103).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-3] BLOCK 1 (failsafe revert to xfwm4) ISSUED TO
+  OPERATOR. Awaiting one-word receipt: desktop | black. Agents A/B (mp4 fork)
+  parked at zero weight until WM restored; Agent C (compiz-revert) queued.
