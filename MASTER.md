@@ -7285,3 +7285,42 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-15][M12-RECOVERY-3] BLOCK 1 (failsafe revert to xfwm4) ISSUED TO
   OPERATOR. Awaiting one-word receipt: desktop | black. Agents A/B (mp4 fork)
   parked at zero weight until WM restored; Agent C (compiz-revert) queued.
+
+--------------------------------------------------------------------------------
+12.109 BOOT-LEVEL FAILURE SUPERSEDES X-105 — NO LIGHTDM, NO TTY, CONSOLE DARK
+      AFTER DRM MODULE FLASH. RUNIT SINGLE-MODE RECOVERY AUTHORED.
+--------------------------------------------------------------------------------
+
+  [X-106] NEW FAILURE CLASS, deeper than X-105. Operator reports tkg-bore boot
+    now flashes black + brief console text loading DRM kernel modules, then
+    permanent black: no lightdm, no VT switching, no TTY at all. Onset followed
+    a prior low-performing agent simultaneously finalizing compiz/wallpaper AND
+    juggling flatpak LM Studio (U-059 territory). Therefore Block 1 of 12.108
+    (session failsafe revert) is UNREACHABLE and this is NOT the Compiz
+    Client0_Command failure — lightdm never starts. Root cause UNKNOWN by
+    directive: do not assume driver, service, or X config until logs are read.
+    Candidate surfaces: /etc/runit/runsvdir/default service set, lightdm,
+    /etc/X11/xorg.conf*, package state, nvidia-drm KMS console takeover.
+    RECEIPT: operator report 2026-08-15, phone, no TTY access.
+
+  [W-204] RECOVERY RESEARCH (sandbox agents, receipts):
+    (a) Void runit single-user: appending `single` to kernel cmdline boots
+        /etc/runit/runsvdir/single — root maintenance shell before any DM/X.
+        Source: r/voidlinux Duncaen (runit maintainer) explanation.
+    (b) Black-console-after-DRM-flash is the nvidia-drm/KMS console takeover
+        class; `nomodeset` keeps console on firmware framebuffer, visible,
+        for recovery only (X won't start under it — irrelevant in single).
+        Sources: ArchWiki NVIDIA/Troubleshooting, Launchpad #1705369.
+    (c) Last-resort shell that bypasses runit entirely: `init=/bin/sh`.
+    RECEIPT: web research 2026-08-15, links in session chat.
+
+  [W-205] BLOCK R1 AUTHORED (unexecuted): GRUB `e` on tkg-bore entry, append
+    `single nomodeset` to linux line, Ctrl+X (one-shot, non-persistent). Then
+    as root: remount rw, ls default runsvdir, ls xorg.conf(.d), dmesg grep
+    nvidia/drm/fail/error tail 25, tail lightdm.log, tail Xorg.0.log.
+    Purpose: visible shell + facts only, no writes except remount.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-4] BOOT-LEVEL RECOVERY IN PROGRESS. Awaiting Block R1
+  receipts (console visible? runsvdir contents? lightdm/Xorg log tails?).
+  12.108 Block 1 (failsafe revert) remains queued for AFTER a desktop returns.
