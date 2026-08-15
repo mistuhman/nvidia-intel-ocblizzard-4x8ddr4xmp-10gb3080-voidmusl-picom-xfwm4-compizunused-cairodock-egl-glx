@@ -7497,3 +7497,34 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-9] FIX-2 (initramfs regen) ISSUED. Awaiting
   lsinitrd before/after counts + boot verdict.
+
+--------------------------------------------------------------------------------
+12.113 REGEN INSUFFICIENT (550->549) — DRACUT HOSTONLY RE-EMBEDS NVIDIA FOR
+      DETECTED 3080. FIX-3: omit_drivers + rd.driver.blacklist (initramfs-only).
+--------------------------------------------------------------------------------
+
+  [X-112] FIX-2 result: lsinitrd nvidia count 550 -> 549 after dracut -f on
+    both tkg-bore images (operator tried .35 and .39; /boot photo shows
+    initramfs-6.10.35-tkg-bore.img AND initramfs-6.10.39-tkg-bore.img plus
+    stock 6.10.35_1/6.10.41_1/6.12.52_1). Removing add_drivers drop-in removed
+    ~1 line only: dracut hostonly auto-includes drivers for present hardware,
+    sees RTX 3080, embeds nvidia stack + GSP firmware unconditionally. W-212
+    gate also crude — raw 'nvidia' count is mostly firmware lines; module
+    presence gate must be grep -c 'nvidia.*\.ko'.
+    RECEIPT: operator photo + report "549 from 550, even after rebuilding
+    from different initramfs", 2026-08-15.
+
+  [W-213] BLOCK FIX-3 AUTHORED (unexecuted), two independent layers:
+    (1) /etc/dracut.conf.d/99-no-nvidia.conf: omit_drivers+=" nvidia
+        nvidia_drm nvidia_modeset nvidia_uvm " — build-time exclusion
+        overrides hostonly; regen 6.10.35-tkg-bore; gate .ko count = 0.
+    (2) GRUB grub.bak.x112 backup, prepend rd.driver.blacklist=nvidia,
+        nvidia_drm,nvidia_modeset,nvidia_uvm to CMDLINE_DEFAULT —
+        dracut-scoped runtime blacklist, active ONLY pre-switch-root; system
+        udev/X load nvidia normally from disk afterwards. Same mechanism that
+        saved console in R2/R3, now persistent + initramfs-scoped.
+    grub-mkconfig, sync, sysrq b. Boot must select 6.10.35-tkg-bore entry.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-10] FIX-3 ISSUED. Awaiting .ko count + verdict
+  (lightdm | console-no-lightdm | black).
