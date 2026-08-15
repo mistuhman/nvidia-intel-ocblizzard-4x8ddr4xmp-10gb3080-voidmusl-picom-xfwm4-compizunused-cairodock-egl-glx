@@ -7365,3 +7365,24 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 [2026-08-15][M12-RECOVERY-6] ROOT SHELL ACHIEVED VIA MODULE BLACKLIST.
   Awaiting R3 forensics photos. Root-cause candidates narrowed to nvidia
   early-boot path (modprobe.d drop-in, initramfs, or package change).
+
+  [X-108] R2 Option B partial: console now VISIBLE (photo receipt) — typed
+    characters echo on screen (tty/keyboard/display healthy) but NO shell
+    reads input: no login prompt, sudo/login/root produce nothing, and
+    Ctrl+Alt+F2 dead (no other getty VTs in single mode — expected). Diagnosis:
+    single-user sulogin/getty never attached to this console. Operator lines
+    also contain phone typos (remot,rw / desg) — harmless, nothing was reading.
+    RECEIPT: two operator photos, 2026-08-15.
+
+  [W-207] BLOCK R3 AUTHORED (unexecuted): bypass runit entirely with
+    `nomodeset module_blacklist=nvidia,nvidia_drm,nvidia_modeset,nvidia_uvm
+    init=/bin/sh` on tkg-bore linux line (drop `single`; init= overrides).
+    Kernel runs /bin/sh as PID 1 → `#` prompt, root, no sudo, no VTs.
+    Facts: remount rw, ls runsvdir/default, ls xorg.conf(.d), dmesg grep
+    nvidia/drm/error/fail, ls modprobe.d dirs, tail lightdm.log. Exit path
+    later: sync + hard reset (PID1 sh cannot reboot cleanly).
+    Fallback if no prompt: photo last kernel lines (initramfs/rootfs class).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-6] CONSOLE PROVEN ALIVE, SHELL ATTACH FAILED (X-108).
+  R3 (init=/bin/sh) issued. Still zero writes to target beyond remount,rw.
