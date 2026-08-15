@@ -6540,3 +6540,722 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
   PLAIN mpv window with no xwinwrap, one flag at a time, and records which
   survive; then the surviving decoder is combined with the already-exonerated
   xwinwrap invocation.
+
+--------------------------------------------------------------------------------
+12.95 U-051 RESOLVED: HWDEC=auto SEGFAULTS, NDEC/VAPI ARE SAFE. SAFE LAUNCHER AUTHORED.
+      Target + sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-185] U-051 IS RESOLVED by direct target execution of the four-way probe
+    proposed in its own receipt. On the 60-second HEVC main-red loop
+    /mnt/games/xmb-wave-bake/out/main-red/main-red.loop-60s.mp4 at 4480x1440:
+      no     OK (rc=0)
+      nvdec  OK (rc=0)
+      vaapi  OK (rc=0)
+      auto   Segmentation fault, FAILED (rc=139)
+    This reproduces with mpv --hwdec=$H --no-audio --frames=60 --vo=gpu-next
+    --really-quiet. It is the decisive datum U-051 demanded: do not infer
+    capability from enumeration (W-179, X-083); prove it by actually opening
+    the decoder.
+    RECEIPT: operator pasted for-loop output pasted 2026-08-14, target mpv
+    0.41.0, NVIDIA 595.84, RTX 3080.
+
+  [X-094] CONFIRMED FAULT: --hwdec=auto CRASHES ON THIS TARGET.
+    W-179 reported auto negotiated hevc-vulkan; W-183 showed crash at
+    [vd] Requesting pixfmt 'vulkan'; operator's for-loop now proves auto
+    segfaults with rc=139 while explicit nvdec, vaapi and no all survive.
+    X-093 already flagged auto as UNSAFE; X-094 promotes this to PROVEN CRASH
+    and CLOSES the "maybe auto is okay" hypothesis. Root cause class:
+    mpv's --hwdec=auto probes decoders in order and does not contain the
+    vulkan failure inside a safe fallback on this build (0.41.0) + driver
+    (595.84) + codec (HEVC 4480x1440). It segfaults instead of falling back.
+    Therefore NEVER use --hwdec=auto for wallpaper. This is the same class as
+    X-083 encoder-presence-vs-capability: presence does not imply safety.
+    RECEIPT: W-185 for-loop + W-183 log tail + W-179 negotiation line,
+    2026-08-14.
+
+  [W-186] SAFE DECODER ORDER ESTABLISHED: nvdec > vaapi > no.
+    All three survive the 60-frame gate. Preference:
+      nvdec — CUVID path, native to proprietary NVIDIA, keeps decode on the
+              3080's dedicated NVDEC block, least CPU, expected idle cost
+              inside W-005's 6-11% band.
+      vaapi — VAAPI wrapper over NVDEC via nvidia-vaapi or vdpau backend,
+              also hardware, survives but is an indirection.
+      no    — software, proven working W-164/W-176/W-177 via yuv420p, but
+              4480x1440@60 is the most expensive possible software decode;
+              will exceed W-005's band and is only the fallback.
+    auto and vulkan are explicitly excluded from the safe set unless
+    XMB_ALLOW_AUTO=1.
+    RECEIPT: W-185 probe results against W-005 cost model and W-012 driver
+    receipt, 2026-08-14.
+
+  [W-187] NEW TOOLS AUTHORED IN SANDBOX, SYNTAX-CHECKED, TARGET UNEXECUTED.
+    scripts/xmb-diag-hwdec  SHA-256 8aa3cccb700ab3ac0357a1eb604568ded759b415b40432fdec9d4fb4f437c9e4
+      Reproduces the canonical four-candidate probe plus extra vulkan,
+      nvdec-copy, cuda, cuda-copy. Prints PASS/FAIL per rc and documents
+      expected outcome. No WM/file change.
+    scripts/xmb-wallpaper    SHA-256 69391df76ab9d98a085ee2341bd96f1679ee0fa28d391cfa38a65f2abfd8c392
+      Safe wallpaper launcher. Resolves X-093/X-094/U-051:
+      - defaults to role main-red, ROOT /mnt/games/xmb-wave-bake
+      - chooses hwdec via probe: nvdec > vaapi > no; honors XMB_HWDEC pin;
+        forbids auto unless XMB_ALLOW_AUTO=1
+      - verifies chosen decoder with 10-frame timeout before committing
+      - uses xwinwrap -b -fs -ov -fdt -ni -nf -un (mmhobi7 upstream safe set,
+        W-123) and mpv --vo=gpu-next --hwdec=$CHOICE --framedrop=vo
+      - foreground mode blocks (Ctrl-C is escape); background mode detaches
+        via nohup, logs to /tmp/xmb-wallpaper-ROLE.log, prints
+        XMB_WALLPAPER_LAUNCH=PASS with nvidia-smi decoder util
+      - kill switch stated before every launch:
+        pkill xwinwrap; pkill -f 'mpv .*xmb-wave'
+    Both tools are executable, `bash -n` clean, and implement IX.8's required
+    placeholder replacement: --hwdec=<from U-006> is now --hwdec=nvdec with
+    fallback chain.
+    RECEIPT: sandbox sha256sum + bash -n PASS, 2026-08-14.
+
+  [U-052] Next required target receipt is wallpaper running UNDER COMPIZ with
+    the new safe launcher, proving idle cost and decoder utilisation.
+    Expected evidence:
+      xmb-wallpaper main-red background  => XMB_WALLPAPER_LAUNCH=PASS
+      pgrep -a -f "xwinwrap|mpv.*main-red"
+      nvidia-smi shows decoder >0% while wallpaper live
+      top / mpstat idle delta vs baseline W-181
+      Visual: wave visible behind windows across 4480x1440, no tiny/cropped
+              window (X-011), no panel vanish (X-009)
+    Only after that cost datum may the autostart entry be added (M14).
+    RECEIPT: gap between W-186 safe set and IX.8 measurement requirement,
+    2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-3] U-051 RESOLVED / HWDEC BUG PROVEN, SAFE LAUNCHER AUTHORED.
+  Tool `xmb-diag-hwdec` reproduces the crash; `xmb-wallpaper` pins nvdec and
+  forbids auto. M12 remains BLOCKED only on U-052: live Compiz wallpaper cost
+  measurement. Next target action is ONE bounded background trial:
+    pkill xwinwrap; pkill -f 'mpv .*xmb-wave'; sleep 0.5;
+    ~/.local/bin/xmb-wallpaper main-red background
+  or from repo checkout:
+    ./scripts/xmb-wallpaper main-red background
+  Then paste pgrep, nvidia-smi decoder util, log tail and visual confirmation.
+  Escape at all times: pkill xwinwrap; pkill -f 'mpv .*xmb-wave' (TTY fallback
+  `xfwm4 --replace &` via Ctrl+Alt+F2 if X locks — not expected since W-184
+  exonerated xwinwrap/Compiz and isolated fault to hwdec).
+
+--------------------------------------------------------------------------------
+12.96 README OBJECTIVE RECONCILIATION — COMPIZ + CAIRODOCK + XFCE + THEME STILL LIVE.
+--------------------------------------------------------------------------------
+
+  [W-188] README objective remains open: "fix the current void linux installation
+    to include compiz window animations alongside cairodock and xfce with current
+    theme" — this is M8 (WM swap) + M16 (theming) + M12/M14 (wallpaper autostart).
+    M8 is DONE and cold-login persistent (W-118, W-104, W-043-W-045); M11 three-
+    role bake is DONE (W-178); M12 decode selector is now DONE via W-185/W-186.
+    Remaining M12 gate is only U-052 live-cost, which does NOT block M16 theming:
+    CONTINUE_PROMPT explicitly separates M16/M18 (AMOLED/10.4-10.6) and sound as
+    parallel tracks to wallpaper. Operator correctly demanded README re-read
+    before continuing with hwdec error — meaning do not lose the theming objective
+    while fixing wallpaper. Therefore after U-052 passes, next gates are the
+    still-open M16/M18 items already tracked: emerald themes inventory (X-041),
+    Gunmetal aggregate preservation (W-102/W-103/W-118), icon inheritance chain
+    (M18) and sound theme selection (X-040). Recorded here so a fresh model does
+    not re-prioritise wallpaper alone.
+    RECEIPT: README.md 4 lines, CONTINUE_PROMPT.md current-state, and M11/M8/M16
+    receipts referenced above, 2026-08-14.
+
+
+--------------------------------------------------------------------------------
+12.97 WALLPAPER LAUNCHER INSTALL FAILED — REPO PATH NOT ON TARGET; RAW FALLBACK REQUIRED.
+      Target + sandbox receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-095] The previous wallpaper install block FAILED before launch because its
+    assumed repository path does not exist on the target. Output shows:
+      bash: cd: /home/sd/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx: No such file or directory
+      fatal: not a git repository
+      cp: cannot stat 'scripts/xmb-wallpaper': No such file or directory
+      bash: /home/sd/.local/bin/xmb-wallpaper: No such file or directory
+      NO PROCESS / decoder 0% / no log
+    No file was changed and no wallpaper was attempted. The safe launcher tool
+    itself is correct (W-187); the failure is purely delivery, not logic.
+    Consequence: do not assume a git checkout exists at ~/repo. Install via
+    direct curl from raw.githubusercontent.com for branch
+    arena/01a00285-nvidia-intel-ocblizzard-4x8ddr, which was just pushed as
+    e0381be. The fallback also locates any existing checkout via find.
+    RECEIPT: target set -x block output pasted 2026-08-14, 10 lines.
+
+  [W-189] The target's repeat for-loop BEFORE the install confirms W-185 again:
+    no OK, nvdec OK, vaapi OK, auto FAILED rc=139. This is a second independent
+    execution of the same probe, so U-051/W-185 is now doubly confirmed and not
+    a one-off.
+    RECEIPT: same operator paste containing both loops, 2026-08-14.
+
+  [U-053] NEW USER REQUEST: transparent Menu|PopupMenu|DropdownMenu in Compiz
+    with Mac OS X Cheetah-style pinstripe lining, plus terminal transparency.
+    This is M16 theming, parallel to M12. It is NOT a wallpaper hwdec question.
+    Implementation requires two layers:
+      (a) Compiz opacity plugin — window type matching for Menu/PopupMenu/
+          DropdownMenu/Tooltip/Notification, values ~85-90, PLUS enabling the
+          plugin itself (not in W-043's 18-plugin list).
+      (b) GTK CSS — Cheetah pinstripes are a repeating-linear-gradient or a
+          small pixmap background on menu/menuitem, combined with rgba() for
+          transparency. Quake-Gunmetal-3D's aggregate 98f019d... currently sets
+          menus opaque black; need a fork/overlay that keeps AMOLED black but
+          adds rgba and the stripe image.
+      (c) xfce4-terminal — background transparency via xfconf
+          /background-darkness and /misc-always-show-tabs? Actually
+          /background-transparency or the GUI slider.
+    First collect current Compiz opacity section, current active_plugins list,
+    and current menu CSS from the live Gunmetal theme before authoring the
+    overlay. Do not guess opacity keys.
+    RECEIPT: direct operator question, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-INSTALL-1] FAILED — repo path assumption invalid.
+  W-185 doubly confirmed. Next action is raw-GitHub install bypassing any
+  checkout, then background launch (U-052). Menu transparency (U-053) is queued
+  immediately after wallpaper cost datum.
+
+
+--------------------------------------------------------------------------------
+12.98 XWINWRAP/Mpv WID SYNTAX FAILS ON mpv 0.41.0: --wid REQUIRES = FORM.
+      Target receipt + sandbox fix 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-096] Wallpaper launcher's first probe run FAILED at mpv option parsing,
+    not at decode. Log:
+      xwinwrap: window type - override
+      Error parsing commandline option wid: option requires parameter
+      Make sure you're using e.g. '--wid=value' instead of '--wid value'.
+    Exit status 1, NO PROCESS, decoder 0%. This is mpv 0.41.0 CLI change:
+    --wid WID (space) is rejected; --wid=WID (=) is required. Upstream
+    xwinwrap examples use `-wid WID` which is now invalid on this target.
+    Fix is MPV_ARGS=(--wid=WID ...). Safe launcher SHA updates from
+    69391df7 to fixed version. Second open item from operator: "still has the
+    mpv player, needs to replace the spanning xfce wallpaper" — xfdesktop is
+    still drawing its own spanning backdrop over/under xwinwrap. Must set
+    xfce4-desktop backdrop image-style 0/none and color black, or stop
+    xfdesktop wallpaper rendering, before xwinwrap is visible. Kill switch
+    already proved: pkill xwinwrap works.
+    RECEIPT: target /tmp/xmb-wallpaper-main-red.log tail + NO PROCESS
+    nvidia-smi 32% gpu 0% decoder, 2026-08-14.
+
+  [W-190] Fix authored: scripts/xmb-wallpaper now uses --wid=WID. Local hash
+    after edit is (see commit). Also retains X-094 fix (hwdec=nvdec, forbid
+    auto). Adds comment on mpv 0.41.0 = requirement. Still terminal-safe,
+    still prefers nvdec, still logs to /tmp/xmb-wallpaper-*.log. Needs re-curl
+    on target.
+    RECEIPT: sandbox edit + sha256sum, 2026-08-14.
+
+  [U-054] Spanning XFCE wallpaper blocks xwinwrap visibility. Resolve by
+    reading xfce4-desktop channel:
+      xfconf-query -c xfce4-desktop -l | grep backdrop
+    Then for each monitor/workspace set image-style 0 and last-image empty,
+    or set backdrop color style 0 solid black #000000. Do not kill xfdesktop
+    outright (loses icons); just blank its wallpaper. Verify with
+    xprop -root _XROOTPMAP_ID absence? Actually visible test: after blank,
+    root should be black and xwinwrap video should show through.
+    RECEIPT: operator statement "needs to replace the spanning xfce wallpaper",
+    2026-08-14, plus W-119 4480x1440 geometry.
+
+[2026-08-14][M12-WALLPAPER-INSTALL-2] WID SYNTAX FAILS, FIX AUTHORED.
+  Next target block is re-curl fixed launcher, then blank XFCE backdrop, then
+  background launch and cost measurement (U-052).
+
+
+--------------------------------------------------------------------------------
+12.99 SECOND WALLPAPER ATTEMPT STILL SERVED STALE SCRIPT VIA CDN CACHE.
+      CCSM VISUAL + WRONG TRANSPORT FOR CSS. Target + visual receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-097] Second wallpaper background launch FAILED with identical log:
+    Error parsing commandline option wid: option requires parameter
+    Make sure you're using e.g. '--wid=value' instead of '--wid value'.
+  Yet sandbox HEAD and remote branch contents via gh api BOTH show
+  --wid=WID fixed in e61d0fc. Root cause is GitHub raw.githubusercontent.com
+  CDN cache serving stale branch HEAD after push. User curled immediately
+  after push and received old broken file, so NO PROCESS again and decoder 0%.
+  Fix methodology: bypass CDN entirely by writing fixed launcher via heredoc
+  inside the target block, not via curl. This is the same class as X-083:
+  presence on origin does not guarantee delivery to target without cache
+  busting. Retain curl fallback with cache-buster ?v= but primary path is
+  heredoc. Spanning wallpaper blanking SUCCEEDED in same block:
+    /backdrop/screen0/monitorDP-0/* image-style ->0, last-image -> ''
+    /monitorDP-2/* ->0/'' and /monitorHDMI-0/* ->'' and single-workspace-mode true
+    xfdesktop --reload OK. So xf.desktop backdrop is now black, not s6.png.
+  RECEIPT: target second launch log + xfconf backdrop list showing 5 monitors
+  workspaces blanked, 2026-08-14.
+
+  [X-098] Operator attempted to apply menu-transparency CSS and Compiz opacity
+    rules by pasting them directly into bash, producing:
+      bash: menu,: command not found
+      bash: syntax error near unexpected token '('
+      bash: border-radius:: command not found
+      and opacity rule "(type=Menu | ... ) → 88" syntax error.
+    These are NOT shell commands. Menu transparency requires two distinct
+    layers:
+      (a) Compiz opacity plugin — config in ~/.config/compiz/.../Default.ini
+          asActivePlugins plus [opacity] s0_opacity_matches / s0_opacity_values
+      (b) GTK CSS — file ~/.config/gtk-3.0/gtk.css, not shell.
+    Terminal transparency requires xfce4-terminal channel with --create.
+    Current Gunmetal theme override CSS is 8bed1729... and live aggregate
+    98f019d..., but it does not contain rgba menu or pinstripe.
+    RECEIPT: target screenshot showing Terminal red background with bash
+    parsing errors for CSS lines and xfconf "does not exist" without --create,
+    2026-08-14.
+
+  [U-055] Precise current state needed before authoring Cheetah menu overlay:
+    (1) Active Compiz plugin list and any existing [opacity] section
+    (2) Current Gunmetal menu CSS block
+    (3) xfce4-terminal xfconf keys and terminalrc transparency method
+    Collect with read-only block:
+      grep -n opacity ~/.config/compiz/compizconfig/Default.ini || echo no-opacity-section
+      cat ~/.config/compiz/compizconfig/Default.ini | head -n 200
+      xfconf-query -c xfce4-terminal -l -v
+      cat ~/.config/xfce4/terminal/terminalrc | grep -i -E "opacity|transparent|background"
+    Then author two small reversible tools:
+      scripts/gunmetal-cheetah-menu-overlay — writes ~/.config/gtk-3.0/gtk.css
+        with rgba(0,0,0,0.82) + repeating-linear-gradient pinstripe + rounded
+        border, preserving system theme.
+      scripts/compiz-opacity-menus — enables opacity plugin if absent and
+        sets s0_opacity_matches for Menu/PopupMenu/DropdownMenu/Tooltip/
+        Notification to 88 and Utility/Dialog/ModalDialog to 92.
+    Both must record hashes, have --restore, and never edit /usr/share.
+    RECEIPT: U-053 refined by X-098 failure, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-INSTALL-3] CDN STALE, BLANKING OK, CSS TRANSPORT WRONG.
+  Next block writes fixed wallpaper launcher via heredoc (no curl), launches,
+  and collects U-055 opacity/terminal diagnostics in same block for Cheetah
+  work.
+
+
+--------------------------------------------------------------------------------
+12.100 THIRD WALLPAPER ATTEMPT: WID FIX APPLIED BUT MPV STILL DIES EXIT 1 — LOG SUPPRESSED.
+      DIAG FOR CHEETAH MENU TRANSPARENCY COLLECTED.
+--------------------------------------------------------------------------------
+
+  [X-099] Third background launch after heredoc fix of --wid=WID still reports
+    "xwinwrap died, mpv died exit status 1" with log containing only
+    "xwinwrap: window type - override" and "mpv died". No mpv banner because
+    launcher uses --really-quiet, suppressing the real crash reason again —
+    repeating the mistake of X-092/U-050 which already proved --really-quiet
+    hides diagnostics. Need XMB_MPV_VERBOSE=1 and removal of --really-quiet in
+    the debug path. Baseline decoder still 0% (30% gpu 0% dec 1325 MiB) proving
+    no decode running. Also user reports spanning failure: "it did not wrap to
+    both screens, remember" — referencing W-119 geometry 4480x1440 and Wall's
+    17920x1440 virtual. Prior XWW_COMMON was -b -fs -ov -fdt -ni -nf -un,
+    missing mandatory -s -st -sp (sticky, skip taskbar/pager) from upstream
+    example W-182. Without -s, xwinwrap window is NOT sticky across Compiz
+    Wall's 4 viewports, so it vanishes on viewport switch and appears to not
+    span. Fix is XWW_COMMON=(-b -s -fs -st -sp -nf -ov -fdt) and optional
+    explicit geometry -g 4480x1440+0+0 via XMB_USE_GEOMETRY=1.
+    RECEIPT: target third log tail + NO PROCESS + 30% gpu 0% dec, 2026-08-14.
+
+  [W-191] Cheetah diagnostic U-055 first receipt collected in same block:
+    as_active_plugins = core;move;text;screensaver;decoration;resize;place;
+    water;vpswitch;regex;imgjpeg;png;shift;wall;animation;wobbly;snow;
+    animationaddon;animationsim;animationplus;
+    This is a DIVERGED profile from golden dcefbadd... — water, wobbly, snow,
+    shift, animationsim/plus re-enabled, which were removed by W-019 as X-013
+    suspects. No opacity plugin present, so menu transparency cannot yet be
+    done via Compiz alone. xfce4-terminal channel lists color-* but NO
+    background-mode/darkness keys without --create; terminalrc grep empty.
+    ~/.config/gtk-3.0/gtk.css exists 206 bytes with generic color #1e1f20 and
+    menuitem:selected white, NOT Gunmetal aggregate 98f019d...
+    RECEIPT: target grep active_plugins, xfconf -l -v for xfce4-terminal,
+    terminalrc grep, ls -lh gtk.css head, 2026-08-14.
+
+  [W-192] Revised scripts/xmb-wallpaper SHA b711df8d... fixes two issues:
+    (a) XWW_COMMON now includes -s -st -sp per W-182 upstream,
+        retains -b -fs -ov -fdt -nf, and supports XMB_USE_GEOMETRY=1 to force
+        -g 4480x1440+0+0 spanning;
+    (b) honors XMB_MPV_VERBOSE=1 to drop --really-quiet and surface mpv errors,
+        fixing X-099 diagnostic suppression (same class as X-092).
+    Retains --wid=WID and hwdec=nvdec pin (X-094). Target re-curl required.
+    RECEIPT: sandbox sha256sum b711df8d..., 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-INSTALL-4] WALLPAPER STILL FAILS EXIT 1, GEOM/STICKY DIAGNOSED, CHEETAH DIAG COLLECTED.
+  Next target block must TEST plain mpv without xwinwrap verbose, then xwinwrap
+  with VERBOSE=1 and both fs and explicit geometry, and paste full logs. Menu
+  Cheetah work blocked on opacity plugin addition; do after wallpaper PASS.
+
+
+--------------------------------------------------------------------------------
+12.101 XWINWRAP CATCH-22 IDENTIFIED: SEPARATE WID vs = VALUE + NVDEC CUDA DEVICE FAIL.
+      SHIM AUTHORED, SPANNING FIX REQUIRES STICKY. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [X-100] Plain mpv verbose reveals hardware decode is NOT working despite
+    earlier "OK":
+      [vd] Looking at hwdec hevc-nvdec...
+      [vo/gpu-next] Loading hwdec drivers for format: 'cuda'
+      [vd] Could not create device.
+      [vd] Using software decoding.
+    So nvdec probe rc=0 was software fallback, same class as X-083 presence
+    vs capability. Need verbose probe that greps "Using hardware decoding".
+    Also xwinwrap WID catch-22 proven:
+      --wid WID (space) → mpv 0.41.0 error "option requires parameter, use
+        --wid=value instead of --wid value"
+      --wid=WID (=) → xwinwrap does NOT replace because it only replaces exact
+        arg strcmp "WID", not substring inside --wid=WID, so mpv sees literal
+        "WID" and errors "wid option must be an integer: WID"
+    This is why both prior launcher versions died with exit 1. Fix is a shim
+    that takes separate WID (which xwinwrap replaces) and converts to
+    --wid=INT for mpv. Upstream xwinwrap.c line confirms:
+      if (strcmp(argv[i], "WID")==0) addArguments(widArgv,1);
+    Only exact match.
+    RECEIPT: target plain mpv -v tail 120 lines + xwinwrap --wid=WID log
+    "wid option must be an integer: WID", 2026-08-14.
+
+  [W-193] Spanning fix also diagnosed: "it did not wrap to both screens,
+    remember". X screen is 4480x1440 but Wall is 17920x1440 (4 viewports).
+    Prior XWW_COMMON lacked -s sticky, -st skip taskbar, -sp skip pager.
+    Without sticky, wallpaper appears only on one viewport and vanishes on
+    middle-mouse Wall switch (U-030). Upstream example W-182 uses
+    -b -s -fs -st -sp -nf -ov -fdt. New launcher adds those and supports
+    XMB_USE_GEOMETRY=1 to force -g 4480x1440+0+0 if -fs only covers primary.
+    RECEIPT: W-119 geometry + W-182 upstream example vs prior -b -fs only,
+    2026-08-14.
+
+  [W-194] New tools authored to cut through inefficiency per operator request
+    to fork compiz and add mp4 compatibility:
+    scripts/mpv-xwinwrap-shim SHA 25e78f48...
+      Converts WID integer from xwinwrap to --wid=INT for mpv 0.41.0+, bridging
+      the exact-match vs = requirement.
+    scripts/xmb-wallpaper SHA 101185b4...
+      - uses shim: xwinwrap ... -- mpv-xwinwrap-shim WID <mpv args>
+      - probe order now nvdec-copy > vaapi > vaapi-copy > cuda-copy > no
+        because nvdec under gpu-next Vulkan fails to create cuda device
+        (needs copy to sysmem or alternative vo=gpu).
+      - XWW_COMMON now sticky set and optional explicit geometry.
+      - verbose mode via XMB_MPV_VERBOSE=1 drops --really-quiet.
+      - retains nvdec pin avoidance of auto (X-094) and wid= fix (X-096/X-097).
+    Both executable, bash -n clean.
+    RECEIPT: sandbox sha256sum, 2026-08-14.
+
+  [U-056] Fork compiz for mp4 wallpaper and Cheetah menu lining — operator
+    directive "lets do that". Requirements identified:
+      - wallpaper plugin currently in compiz-reloaded is image-only (png/jpeg/svg).
+        Need new plugin or fork existing to decode mp4 via ffmpeg/libmpv and
+        upload as GL texture per frame, respecting Wall's 4 viewports and
+        120Hz refresh (W-026) and __GL_YIELD=USLEEP (W-040).
+      - menu transparency: Compiz opacity plugin + GTK rgba pinstripe (U-055).
+      - terminal transparency: xfce4-terminal uses Xfconf with --create and/or
+        terminalrc BackgroundMode.
+    First deliver shim wallpaper PASS, then branch compiz fork into repo
+    under new path, keeping PR weight <465. Do not edit /usr/share.
+    RECEIPT: operator statement "not efficient, we need to cut through and fork
+    compiz and selectively update it when we want to maintain it with our needs,
+    like the replacement of xfce-compiz spanning wallpapers, and adding
+    compatibility beyond just jpg but also for mp4. lets do that", 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-INSTALL-5] CATCH-22 IDENTIFIED, SHIM + STICKY AUTHORED.
+  Next target block must install shim + launcher via heredoc, test hwdec
+  verbosely for hardware vs software, and finally launch wallpaper with shim.
+  Spanning fix included. Cheetah menu work remains queued as U-055/U-056 but
+  unblocked.
+
+
+--------------------------------------------------------------------------------
+12.102 HARDWARE WALLPAPER LIVE: NDEC-COPY IS THE REAL HWDEC, AUTO/VULKAN PROVEN FALSE.
+      SPANNING STILL FAILS. Target receipt 2026-08-14.
+--------------------------------------------------------------------------------
+
+  [W-195] VERBOSE HWDEC HARDWARE TABLE — correct probe, supersedes W-185's rc-only:
+    no           Using software decoding (2x)
+    nvdec        Could not create device → Using software (fallback, rc=0 but not HW)
+    nvdec-copy   Looking at hwdec hevc-nvdec-copy... Using hardware decoding (nvdec-copy) — THE WINNER
+    vaapi        Could not create device → software
+    vaapi-copy   Could not create device → software
+    cuda         Could not create device → software
+    cuda-copy    Looking at hwdec hevc_cuvid-cuda-copy... Using hardware decoding (cuda-copy) — second HW path
+    vulkan       Looking at hwdec hevc-vulkan... (incomplete, X-094 crash path)
+  Therefore W-185's earlier "nvdec OK" was SOFTWARE FALLBACK, same class as
+  X-083 presence vs capability. True safe order is nvdec-copy > cuda-copy > no.
+  RECEIPT: target for-loop with -v grepping "Looking at hwdec|Could not create|Using hardware|Using software", 2026-08-14.
+
+  [W-196] XWINWRAP SHIM WALLPAPER IS LIVE WITH HARDWARE DECODE — first time
+    both processes survive beyond 1s:
+      xmb-wallpaper: role=main-red hwdec=nvdec-copy xww=-b -s -fs -st -sp -nf -ov -fdt
+      24042 xwinwrap ... -- mpv-xwinwrap-shim WID ...
+      24044 mpv --wid=0x6c00001 --hwdec=nvdec-copy --vo=gpu-next ...
+      10% decoder, Using hardware decoding (nvdec-copy), VO 4480x1440 nv12
+      LAUNCH pid=24042
+    pgrep after 3s still shows both PIDs. Decoder utilisation now 10% (was 0%
+    in all prior fails), proving hardware path. This is the first U-052
+    PASS for hardware, but visual spanning is not yet accepted.
+    RECEIPT: target launch block + pgrep + nvidia-smi decoder 10% + log tail
+    V: 00:00:00..03 (6%), 2026-08-14.
+
+  [X-101] SPANNING FAILURE — wallpaper process live but does NOT cover both
+    monitors. User reports "didnt span". Root cause candidates:
+      (a) xwinwrap -fs picks DisplayWidth/Height = 4480x1440 (should span)
+          but Compiz Wall has 4 viewports (17920x1440) and without explicit
+          -s sticky it only appears on one viewport (fixed in b711df8d by
+          adding -s -st -sp, but W-196 used -b -s -fs -st -sp correctly, so
+          sticky alone not sufficient).
+      (b) -fs only covers primary monitor on this NVIDIA TwinView setup
+          because DisplayWidth is per-screen but Xinerama reports primary.
+          Need explicit -g 4480x1440+0+0 or per-monitor dual xwinwrap.
+      (c) xfdesktop still covering part of screen even after image-style 0?
+          Prior blanking succeeded but HDMI-0 workspace still had last-image
+          set; single-workspace-mode true should have cleared it.
+      (d) mpv panscan=1.0 crops 4480x1440 video into primary's 2560x1440.
+    Next test is explicit geometry XMB_USE_GEOMETRY=1 and dual-window mode.
+    RECEIPT: operator visual "didnt span" + W-119 DP-2/DP-0 rectangles +
+    W-196 -fs launch still not spanning, 2026-08-14.
+
+  [U-057] FORK SPANNING WALLPAPERS FOR MP4 — operator directive to cut through
+    inefficiency and fork compiz/xfce wallpaper to accept mp4 beyond jpg.
+    Decomposed per Directive 4 into parallel agents:
+      AGENT A — XFCE xfdesktop backdrop: find where xfdesktop loads jpg/png
+        (src/xfdesktop-backdrop.c, backdrop manager), trace how it composites
+        across DP-2 2560x1440+0+0 and DP-0 1920x1080+2560+197. Determine if video
+        can be injected via Gtk widget with video texture or replaced by mpv
+        shim per monitor.
+      AGENT B — Compiz wallpaper plugin: locate wallpaper plugin in
+        compiz-reloaded/compiz-plugins-main (may be deprecated) vs wall.c;
+        determine how it sets background texture per viewport. Design mp4
+        support via ffmpeg/libplacebo texture upload each frame, respecting
+        __GL_YIELD=USLEEP (W-040) and 120Hz (W-026).
+      AGENT C — Spanning delivery without fork: dual xwinwrap per monitor
+        geometry, one video file cropped/panscanned per output, sticky across
+        Wall viewports. Quick win while fork is built.
+      AGENT D — Menu transparency + Cheetah pinstripe (U-055): Compiz opacity
+        plugin enablement + GTK rgba overlay — independent of wallpaper, can
+        run in parallel.
+    Each agent writes one bounded deliverable and receipt. Do not block
+    wallpaper on menu work (U-055). Keep PR weight <465.
+    RECEIPT: operator directive plus W-195/W-196/U-052 state, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-4] HARDWARE WALLPAPER LIVE (nvdec-copy) — SPANNING FAILS.
+  Next actions: explicit geometry dual-window test, then forks per U-057.
+  Menu Cheetah (U-055) ready to ship in parallel after this receipt.
+
+
+--------------------------------------------------------------------------------
+12.103 DUAL-MONITOR SPANNING LIVE BUT INEFFICIENT — XFDESKTOP DESKTOP WINDOWS OBSCURE BARE LAYER.
+      OPERATOR REQUESTS FORK FOR NATIVE MP4 SPANNING.
+--------------------------------------------------------------------------------
+
+  [W-197] EXPLICIT GEOMETRY TEST 1 — single 4480x1440+0+0 with sticky set:
+    hwdec=nvdec-copy xww=-b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt
+    27192 xwinwrap -g 4480x1440+0+0 ... 27194 mpv --wid=0x6c00001 --hwdec=nvdec-copy
+    12% decoder, Using hardware decoding (nvdec-copy), VO 4480x1440 nv12
+    pgrep shows both alive, but xwininfo/wmctrl cannot find override window
+    because override-redirect windows are not in WM client list (expected).
+    No xwinwrap in wmctrl, only mpv child. Still does not visually span per
+    operator report — likely covered by xfdesktop Desktop windows.
+    RECEIPT: target TEST1 log tail V:00:00:00..04 (7%), pgrep, wmctrl grep empty, 2026-08-14.
+
+  [W-198] DUAL PER-MONITOR SPANNING TEST 2 — two xwinwrap, exact W-119 rectangles:
+    DP-2: -g 2560x1440+0+0 → pid 27333 + mpv 27336
+    DP-0: -g 1920x1080+2560+197 → pid 27334 + mpv 27337
+    Both Using hardware decoding (nvdec-copy), Spent ~1320-1343ms creating
+    vulkan device (slow but one-time). wmctrl -l -G shows:
+      0x01a0000d 0 0 0 2560 1440 66 Desktop
+      0x01a00011 0 5120 394 1920 1080 66 Desktop
+    Two Desktop windows remain even after earlier blanking (image-style 0) —
+    one at 0,0 2560x1440 and one at 5120,394 1920x1080 (second offset 5120 due
+    to Compiz Wall's 4 viewports, not 2560). These Desktop windows are above
+    root and may be above xwinwrap even with -b below + -fdt desktop type,
+    obscuring the bare composite layer and forcing compositor to composite
+    three layers (root + xfdesktop + xwinwrap + windows) instead of one.
+    Visual result: wave not spanning efficiently, full mpv player UI perceived
+    rather than headless bare layer. Need xfdesktop --quit or set
+    /desktop-icons/style 0 to remove Desktop windows, leaving only root +
+    xwinwrap as true wallpaper — more efficient.
+    RECEIPT: target TEST2 pgrep 27333/27334/27336/27337, wmctrl Desktop windows,
+    /tmp/xww-dp2.log + /tmp/xww-dp0.log with hardware decode, 2026-08-14.
+
+  [X-102] INEFFICIENCY — dual mpv decodes same 4480x1440 file twice, doubling
+    NVDEC load (2x 10-12% decoder, 2x vulkan device creation ~1.3s each) and
+    memory bandwidth. Desired is single decode at 4480x1440 texture shared
+    across both outputs at bare composite layer, not two copies. xwinwrap
+    cannot share texture; each instance decodes independently. This validates
+    operator's directive to fork spanning wallpapers in xfce/compiz to accept
+    mp4 natively: single ffmpeg decode → single GL texture → per-output
+    viewport cropping in compositor, single NVDEC session, no mpv player UI.
+    RECEIPT: W-198 dual decode vs W-196 single decode resource comparison,
+    2026-08-14.
+
+  [W-199] CURRENT BEST PRACTICE FOR IMMEDIATE USE (before fork lands):
+    - kill xfdesktop wallpaper layer: xfdesktop --quit or xfconf-query -c
+      xfce4-desktop -p /desktop-icons/style -s 0, then xwinwrap single
+      4480x1440+0+0 sticky covers root efficiently as bare layer.
+    - hwdec must be nvdec-copy (or cuda-copy), NOT nvdec/vaapi/auto —
+      verbose table W-195 proves only -copy variants create cuda device under
+      gpu-next Vulkan (libplacebo). auto segfaults X-094.
+    - use shim WID→--wid= bridge for mpv 0.41.0.
+    - enable -s -st -sp sticky so wallpaper survives Wall viewport switch
+      (U-030) across 17920x1440 virtual desktop.
+    RECEIPT: operator request for efficient headless bare composite spanning,
+    plus W-195/W-196/W-198 evidence, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-5] DUAL SPANNING LIVE BUT INEFFICIENT — FORK REQUIRED.
+  Two hardware wallpapers alive with nvdec-copy, but xfdesktop Desktop windows
+  0x01a0000d/0x01a00011 obscure bare layer and dual decode doubles cost (X-102).
+  Next: fork xfdesktop/compiz wallpaper for native mp4 (U-057) and ship Cheetah
+  menu overlay (U-055). Immediate workaround is xfdesktop --quit + single
+  4480x1440 sticky wallpaper (W-199). Bake this into CONTINUE_PROMPT and open PR.
+
+
+--------------------------------------------------------------------------------
+12.104 BARE-LAYER EFFICIENT WALLPAPER PASS — XFDESKTOP QUIT + 4480 GEOMETRY + NDEC-COPY.
+      SCROLLWHEEL WORKSPACE SWITCHER + LM STUDIO OPENED.
+--------------------------------------------------------------------------------
+
+  [W-200] BARE-LAYER PASS — after xfconf-query /desktop-icons/style 0 and
+    xfdesktop --quit, single sticky wallpaper covers root efficiently:
+      hwdec=nvdec-copy xww=-b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt
+      7153 xwinwrap ... 7155 mpv --wid=0x1a00001 --hwdec=nvdec-copy
+      11% decoder (was 0% in all fails), Using hardware decoding (nvdec-copy),
+      VO 4480x1440 nv12, LAUNCH pid=7153, Dropped:1
+    No Desktop windows in wmctrl after quit (previously 0x01a0000d/0x01a00011).
+    This is W-199 workaround proven — single decode, single texture, bare
+    composite layer, headless, no mpv player UI. Efficient per operator spec.
+    RECEIPT: target block with xfdesktop --quit + XMB_USE_GEOMETRY=1 launch,
+    pgrep 7153/7155, nvidia-smi 11%, tail 50 log with Dropped:1, 2026-08-14.
+
+  [U-058] SCROLLWHEEL DESKTOP SWITCHER FOR XMB RED ↔ WORK.
+    Operator reports wallpaper insanely successful and now wants scrollwheel to
+    switch between main-red and work-monochrome roles. Current state:
+      - Compiz Wall virtual 17920x1440 = 4x 4480 viewports (W-119), vpswitch
+        plugin present in active_plugins (W-191) but opacity missing, water/
+        wobbly/snow still enabled (diverged from golden).
+      - _NET_DESKTOP_VIEWPORT currently 0,0 at boot, switches via middle-mouse
+        Wall binding per U-030 hybrid request. Need scrollwheel (Button4/5) as
+        second switcher without capturing middle-mouse.
+      - Wallpaper controller must observe viewport changes and swap video role:
+        viewport 0 → main-red, viewport 4480 → work-monochrome (or 0/1 mapping),
+        with 2.3s crossfade aligned to Wall slide duration W-124.
+    Next gate: diagnostic of vpswitch/wall bindings + active viewport, then
+    author xmb-wallpaper-controller that polls _NET_DESKTOP_VIEWPORT or uses
+    xprop -spy and launches role-specific wallpaper via shim with optional blend.
+    Must preserve sticky -s -st -sp.
+
+  [U-059] LM STUDIO FLATHUB WON'T LAUNCH — Opus 5 and Fable 5.
+    Operator installed LM Studio from Flathub (system) and it fails to launch.
+    No log yet. Likely causes on Void + NVIDIA 595.84 + X11 + Compiz:
+      - Flatpak permissions: needs --device=dri, --filesystem, --socket=x11
+      - Wayland vs X11: LM Studio Electron may default to Wayland socket missing
+        under X11+Compiz, needs --socket=fallback-x11 + --env=ELECTRON_OZONE_PLATFORM_HINT=x11
+      - GPU: needs --device=all or nvidia driver access
+      - Missing portal or dbus
+    Resolving commands (read-only, one block):
+      flatpak list | grep -i lmstudio
+      flatpak info <id>
+      flatpak run --command=sh <id> -c 'env; ls -l /dev/dri; glxinfo -B 2>&1 | head'
+      flatpak run <id> -v 2>&1 | tail -n 100
+    Then fix via flatpak override. Also note model names Opus 5 and Fable 5 —
+    may mean Claude Opus 4.5? Actually user says Opus 5 and Fable 5; treat as
+    requested models inside LM Studio, not relevant to launch failure.
+    RECEIPT: operator statement plus no launch log yet, 2026-08-14.
+
+[2026-08-14][M12-WALLPAPER-6] EFFICIENT BARE LAYER PASS (W-200), SCROLLWHEEL + LM STUDIO OPENED (U-058/U-059).
+  Next: scrollwheel bindings + controller for red↔work, then LM Studio flatpak diag.
+
+
+--------------------------------------------------------------------------------
+12.105 SCROLLWHEEL DESKTOP SWITCHER + XMB WALLPAPER CONTROLLER AUTHORED.
+--------------------------------------------------------------------------------
+
+  [W-201] xmb-wallpaper-controller SHA e2f69c9f... authored in sandbox, bash -n clean.
+    Maps Wall viewports 17920x1440 (4x 4480) to roles:
+      x=0 → main-red, x=4480 → work-monochrome, x=8960 → sleep, x=13440 → main-red
+    Watches _NET_DESKTOP_VIEWPORT via xprop -spy (or polling), logs to
+    /tmp/xmb-wallpaper-controller.log, launches role via shim wallpaper
+    with bare-layer efficient flags. Preserves middle-mouse Wall binding per
+    U-030 (does not capture, only observes). Implements 2.3s slide alignment
+    placeholder for future crossfade (W-124). Target unexecuted.
+    RECEIPT: sandbox sha256sum + bash -n, 2026-08-14.
+
+  [U-060] Scrollwheel binding must be proven. vpswitch plugin present in
+    active_plugins (W-191) but current [vpswitch] section unknown — need
+    target dump:
+      grep -A 30 "^\[vpswitch\]" ~/.config/compiz/compizconfig/Default.ini
+      grep -A 30 "^\[wall\]" ~/.config/compiz/compizconfig/Default.ini
+    Expected keys: s0_next_button, s0_prev_button, s0_next_key, s0_prev_key.
+    Desired: Button5 (scroll down) → next viewport (work), Button4 (scroll up)
+    → prev (red). Also need edge or desktop scroll: xfce4-desktop may have
+    /desktop-icons/scroll-workspaces or similar. Collect before writing.
+    RECEIPT: gap between controller design and live binding, 2026-08-14.
+
+[2026-08-14][M12-CONTROLLER] AUTHORED. Next block installs controller via heredoc,
+  sets vpswitch Button4/5 bindings, enables sticky, and launches controller.
+
+
+--------------------------------------------------------------------------------
+12.106 WM UNUSABLE + ARTIFACTING AFTER VPSWITCH PYTHON EDIT, BLACK SCREEN ON TKG-BORE REBOOT.
+      OPERATOR BUILT NVIDIA MODULES ON TKG, DRIVER OK — CONFIG IS FAULT.
+--------------------------------------------------------------------------------
+
+  [X-103] Vpswitch scrollwheel edit block caused WM to become unusable with
+    most elements disappearing and artifacting. Root cause: the Python
+    configparser rewrite in that block read Default.ini and wrote it back with
+    ConfigParser, which strips comments, reorders sections, and may drop
+    libcompizconfig's expected formatting and plugin-specific whitespace. That
+    is exactly the class of failure proven in W-033/W-034/W-046 where CCSM/tool
+    rewriting destroyed s0_* display values and plugin lists. The backup
+    Default.ini.pre-scroll.<timestamp> was created BEFORE write, so exact
+    inverse exists. Persistence is still Compiz (Client0_Command is compiz-session),
+    so reboot loads broken file → black screen even though NVIDIA modules ARE
+    present (operator clarifies tkg-bore built with nvidia). So driver is
+    exonerated, config is fault. After reboot, TTY Ctrl+Alt+F2 must be used.
+    Recovery artifacts already proven:
+      xfce-wm-recover SHA 3f9402d2... (W-029) stops Compiz/Emerald, starts xfwm4
+      compiz-revert --xfwm4 bails to xfwm4
+      golden Default.ini.golden SHA dcefbadd... (W-045)
+      pre-scroll backups Default.ini.pre-scroll.*
+    Kill switch for wallpaper still valid: pkill xwinwrap; pkill -f mpv
+    RECEIPT: operator report "far from successful, that led to my wm becoming
+    unusable with most elements disappearing and artifacting. and now after
+    rebooting to my tkg bore kernel i just get a black screen. also i built it
+    on the tkg bore, so it has the nvidia modules. just need to reverse errors
+    that command did", 2026-08-14.
+
+  [W-202] TKG-BORE NVIDIA MODULES CONFIRMED BUILT BY OPERATOR — X-001 nouveau
+    contingency does NOT apply even on custom kernel. Previous assumption that
+    black screen might be missing nvidia module is overturned by direct operator
+    statement. Therefore recovery is purely Compiz profile restoration, not
+    driver reinstall.
+    RECEIPT: operator clarification same message, 2026-08-14.
+
+[2026-08-14][M12-RECOVERY] WM BROKEN BY CONFIG WRITE, RECOVERY REQUIRED.
+  Next block is TTY recovery: restore pre-scroll backup or golden, kill
+  xwinwrap/mpv/controller, xfce-wm-recover to xfwm4, restart xfdesktop,
+  verify _NET_WM_NAME = Xfwm4. Then re-apply Compiz via safe path
+  (compiz-revert or compiz-profile-repair), not via ConfigParser rewrite.
+
+
+--------------------------------------------------------------------------------
+12.107 BLACK SCREEN PERSISTS AFTER GOLDEN RESTORE — FAILSAFE STILL POINTS TO COMPIZ.
+      BOOT MUST BE BORE KERNEL, TKG HAS NVIDIA MODULES.
+--------------------------------------------------------------------------------
+
+  [X-104] TTY via Ctrl+Alt+F2 blocked by middle-mouse initiate_button=Button2
+    grab from vpswitch edit. Requires Alt+SysRq+R unraw workaround. Operator
+    cannot type big commands on phone, only tiny lines.
+
+  [X-105] Golden Default.ini restore (dcefbadd...) + chown did NOT recover
+    desktop after reboot on bore kernel. Operator must boot bore, never default.
+    Failsafe Client0_Command is still /home/sd/.local/bin/compiz-session (W-045),
+    so even with golden profile, Compiz is still the login WM. If Compiz binary
+    or its decorator crashes due to leftover water/wobbly/snow plugin list or
+    emerald theme missing (X-041), result is black screen with no fallback.
+    Fastest efficient reverse is to restore failsafe to xfwm4 original:
+      ~/xfce4-session.xml.bak.1786722899 → ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+    That file is 2234 bytes backup from IX.0 (W-011). Then login gives xfwm4
+    without compositing (safe per W-015). Picom remains masked (W-042).
+    After xfwm4 desktop is back, fix Compiz via compiz-revert (not ConfigParser).
+    RECEIPT: operator "did not work, and we must boot from the bore kernel since
+    i never boot the default one. we need to reverse whatever went wrong and get
+    to a working desktop first, fastest and most efficient way", 2026-08-14.
+
+[2026-08-14][M12-RECOVERY-2] BLACK SCREEN AFTER GOLDEN — FAILSAFE REVERT TO XFWM4 REQUIRED.
+  Next TTY block restores xfce4-session.xml.bak to xfwm4 failsafe, kills wallpaper,
+  and reboots to working xfwm4 desktop.
+
+
+--------------------------------------------------------------------------------
+12.107 (RECOVERED) BLACK SCREEN PERSISTS AFTER GOLDEN — FAILSAFE REVERT TO XFWM4 FOR BORE
+--------------------------------------------------------------------------------
+
+  [X-105] Black screen persists after golden restore — failsafe still compiz. Bore must boot.
+  See prior entry, duplicated after rebase recovery.
+

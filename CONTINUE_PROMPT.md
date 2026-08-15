@@ -1,135 +1,105 @@
-# Continuation prompt — theme the working Compiz desktop (M16 + M18)
+# Continuation prompt — wallpaper efficient spanning + Cheetah menu + mp4 fork (M12/M16/M18 + U-055/U-057)
 
 You are continuing a live, reversible desktop project in the Git repository
 `mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx`.
 
-**The window-manager migration is DONE.** Do not redo it. Your job is theming,
-icons, and sound — the aesthetic layer on top of a desktop that already works.
+**WM migration DONE, bake DONE, wallpaper HW decode DONE but spanning inefficient.** Theming (Cheetah transparency) and mp4-native spanning are the current edge.
 
 ## Mandatory initialization
 
-1. This Arena session is fixed to whatever `arena/...` branch it opens on. Do not
-   switch, create, or push another branch.
-2. Read `README.md`, then read `MASTER.md` **completely**, before proposing any
-   target command. Sections XI and XII are the live edge; Sections I–II are the
-   frozen constitution.
-3. `MASTER.md` is an append-only audit log. Add dated, receipt-backed rows to the
-   Section VI ledgers (W-/X-/U-) and Section VII/XI/XII milestones. **Never**
-   rewrite, delete, reformat, or silently correct a prior row — supersede it with
-   a new row that cites the evidence which overturned it.
-4. Do not copy MASTER into chat. Refer to IDs (W-049, X-041, M18) and keep only
-   the capsule below in working memory.
-5. Commit and push each verified receipt to the fixed branch as you go.
+1. This Arena session is fixed to whatever `arena/...` branch it opens on. Do not switch, create, or push another branch.
+2. Read `README.md`, then read `MASTER.md` **completely**, before proposing any target command. Sections 11-12 are live edge (12.103 is latest); Sections I–II are frozen constitution.
+3. `MASTER.md` is append-only audit log. Add dated, receipt-backed rows to Section VI ledgers (W-/X-/U-) and Section VII/XI/XII milestones. **Never** rewrite, delete, reformat, or silently correct a prior row — supersede with evidence.
+4. Do not copy MASTER into chat. Refer to IDs (W-195, X-100, U-057) and keep capsule below.
+5. Commit and push each verified receipt to the fixed branch as you go. PR weight must stay below 465.
 
-## Interaction protocol — non-negotiable
+## Interaction protocol
 
-- **The sandbox is not the target.** It has no X server, no GPU, no Compiz. You
-  author commands; the user runs them on their Void box and pastes the output.
-- Give **exactly ONE copy-paste block at a time**, then wait for output.
-- Before issuing the next block: append the prior receipt to MASTER, commit, push.
-- **Never fabricate** process, file, or visual success. A user's visual report is
-  a valid receipt but is distinct from file/process evidence — label which you have.
-- Any block that can change the WM must state the escape first:
-  `/home/sd/.local/bin/xfce-wm-recover`  (TTY: Ctrl+Alt+F2 → `xfwm4 --replace &`).
-- Verify your own checks. A wrong verification command produced a false alarm
-  once already (X-032); prefer section-scoped, labelled assertions.
+- Sandbox is not target (no X, no GPU, no Compiz). Author commands; user runs on Void box and pastes output.
+- **Exactly ONE copy-paste block at a time**, then wait.
+- Before next block: append receipt to MASTER, commit, push.
+- Never fabricate process/file/visual success. Human visual receipt is valid but labeled separately.
+- WM-changing blocks must state escape: `/home/sd/.local/bin/xfce-wm-recover` (TTY Ctrl+Alt+F2 → `xfwm4 --replace &`).
+- Verify your own checks. `--really-quiet` previously hid diagnostics (X-092, X-099, X-100) — use `XMB_MPV_VERBOSE=1` for debug.
 
-## Current state — all target-verified, do not re-litigate
+## Current state — target-verified, do not re-litigate
 
-- **Compiz Reloaded 0.8.18 is the login WM.** Cold boot → `xfce4-session` runs
-  `/home/sd/.local/bin/compiz-session` → `env __GL_YIELD=USLEEP compiz --replace ccp`.
-  Verified `_NET_WM_NAME = "compiz"` (W-049).
-- **Smoothness is solved** by `__GL_YIELD=USLEEP` (W-040). Do not experiment with it.
-- **Geometry is pinned and self-healing.** `/home/sd/.local/bin/compiz-profile-repair`
-  runs at every login and enforces exactly 7 `[core]` keys, incl.
-  `s0_outputs = 2560x1440+0+0;1920x1080+2560+197;` and `s0_refresh_rate = 120`
-  (W-048, option C). It touches nothing else, so CCSM edits survive.
-- **Escapes exist:** `compiz-revert` (restore golden + restart),
-  `compiz-revert --xfwm4` (bail to xfwm4), `xfce-wm-recover`.
-  Golden snapshot: `~/.local/share/compiz-guard/Default.ini.golden`, 7/7 keys.
-- **picom is masked and must stay off** (X-008/W-042). Compiz composites.
-- Live processes after login: compiz 1210, emerald 1270, xfce4-panel 1251,
-  xfdesktop 1272, cairo-dock 1306.
+- **Compiz Reloaded 0.8.18 login WM**: `xfce4-session` → `/home/sd/.local/bin/compiz-session` → `__GL_YIELD=USLEEP compiz --replace ccp`, `_NET_WM_NAME=compiz` (W-049). Smoothness solved by `__GL_YIELD=USLEEP` (W-040).
+- **Geometry pinned**: `compiz-profile-repair` enforces `s0_outputs = 2560x1440+0+0;1920x1080+2560+197;` and `s0_refresh_rate=120` (W-048). `s0_*` keys are truth (W-024). Current live `as_active_plugins` has diverged to include water/wobbly/snow/shift/animationplus (W-191) — not golden dcefbadd..., needs repair before adding opacity.
+- **Bake DONE**: 3 deterministic 4480x1440 HEVC 60s loops (W-178): main-red 156MB SHA 1f8de512..., sleep 177MB, work-monochrome 240MB, machine+human PASS.
+- **mpv 0.41.0 hwdec table — verbose probe (W-195) supersedes rc-only W-185**:
+  - `no` → software (expected)
+  - `nvdec` → `Could not create device` → software fallback (rc=0 but not HW) — X-100, same class as X-083 presence≠capability
+  - `nvdec-copy` → `Using hardware decoding (nvdec-copy)` — **WINNER**
+  - `vaapi`, `vaapi-copy`, `cuda` → Could not create device → software
+  - `cuda-copy` → `Using hardware decoding (cuda-copy)` — second HW path
+  - `vaapi auto` → `auto` segfaults rc=139 (W-185, X-094) via hevc-vulkan (W-183)
+  - `vulkan` → looks at hevc-vulkan, crashes in prior runs
+  Therefore **never use `--hwdec=auto`** and never probe by rc alone — grep `Using hardware decoding`.
+
+- **xwinwrap WID catch-22 (X-100)**: `xwinwrap.c` only replaces exact arg `strcmp(argv[i],"WID")==0`. mpv 0.41.0 rejects `--wid WID` (space) and requires `--wid=value`. `--wid=WID` not replaced → `wid option must be an integer: WID`. Fix: shim `mpv-xwinwrap-shim WID` → `--wid=INT` (W-194, SHA 25e78f48). Launcher `xmb-wallpaper` SHA 101185b4 → b711df8d → now uses shim + sticky spanning.
+
+- **Wallpaper live but inefficient (W-196–W-199, X-101/X-102)**:
+  - Single: `xwinwrap -b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt -- shim WID ... --hwdec=nvdec-copy --vo=gpu-next` → PID 27192+27194, 12% decoder, hardware PASS, but visual not spanning due to xfdesktop Desktop windows.
+  - Dual per-monitor: DP-2 `2560x1440+0+0` PID 27333+27336 and DP-0 `1920x1080+2560+197` PID 27334+27337, both hardware, wmctrl shows `0x01a0000d 0 0 0 2560 1440 Desktop` and `0x01a00011 0 5120 394 1920 1080 Desktop` — xfdesktop's 2 Desktop windows obscure bare layer even after blanking `image-style 0`/`last-image ''` (X-097, W-198). They are above root, forcing 3-layer composite.
+  - Dual decode doubles NVDEC cost (2x 10-12%, 2x 1.3s vulkan device creation). Desired: **single decode at 4480x1440 → single GL texture → per-output cropping at bare composite layer, headless, no mpv player UI**.
+  - Immediate efficient workaround (W-199): `xfdesktop --quit` or `/desktop-icons/style 0` to remove Desktop windows, then single sticky 4480x1440 wallpaper is bare layer.
+
+- **picom masked** (W-042, X-008). Do not re-enable.
+
+- **GTK override**: `~/.config/gtk-3.0/gtk.css` 206 bytes generic, NOT Gunmetal aggregate 98f019d... (W-191). Needs Cheetah overlay.
 
 ### Hardware
-Void x86_64, glibc 2.41, NVIDIA proprietary 595.84, RTX 3080, OpenGL 4.6.
-DP-2 primary `2560x1440+0+0 @120`; DP-0 right/**inverted** `1920x1080+2560+197`;
-X screen `4480x1440`. The asymmetry matters — see X-039.
+Void x86_64, glibc 2.41, NVIDIA 595.84, RTX 3080, OpenGL 4.6. DP-2 primary `2560x1440+0+0 @120`, DP-0 right/inverted `1920x1080+2560+197`, X 4480x1440, Wall virtual 17920x1440. Asymmetry matters X-039.
 
-## Standing rules learned the hard way
+## Immediate objectives, in order (U-057 fork plan)
 
-- **CCSM rewrites the whole profile** from its own state (W-046). It is safe to
-  use *because* of the repair hook, but never snapshot the profile while CCSM is
-  running (X-035), and never leave CCSM open at logout (X-028/X-029).
-- **Never tick "Save session for future logins."** That is the suspected origin of
-  the `[WM_COMMAND] (1) "ccsm"` relaunch record cleared in W-050.
-- **Never enable Detect Outputs or Detect Refresh Rate** in CCSM. They discard the
-  pinned geometry and reproduce X-011 (cropped display) / X-013 (choppy).
-- Avoid `reflex`, `blur`, `mblur`, `bench`, `showmouse`, `mousepoll` (X-013).
-- Add GPU-visible plugins **one at a time**, re-judging smoothness after each.
-- Keep themes, screenshots and binaries **out of Git**. Record paths, versions and
-  checksums in MASTER only.
+### M12 — Efficient spanning mp4 wallpaper (bare composite layer)
+**Problem**: xwinwrap works but inefficient (dual decode) and obscured by xfdesktop. jpg-only xfdesktop/compiz wallpaper cannot accept mp4.
 
-## Immediate objectives, in order
+**Fork plan per Directive 4 (agents)**:
+- Agent A — xfdesktop: trace `xfdesktop-backdrop.c`, how it loads jpg/png per monitor. Patch to play mp4 via gstreamer or mpv shim per monitor, or make it not draw so xwinwrap is sole layer (quick win).
+- Agent B — Compiz wallpaper plugin (in compiz-plugins-extra/main): image-only. Fork to `video-wallpaper` that ffmpeg-decodes mp4 → GL texture each frame, respects `__GL_YIELD=USLEEP` + 120Hz.
+- Agent C — Spanning without fork: single 4480x1440 sticky wallpaper after `xfdesktop --quit`, efficient bare layer (W-199) — ship now.
+- Agent D — Menu Cheetah (U-055): parallel, does not block wallpaper.
 
-### M16 — AMOLED / OS X 10.4–10.6 theming (12.9, 12.11)
-Brief: *"quake live style, sleek, black, like mac os X but amoled black and the
-10.4-10.6 aesthetic with metal and glossyness."* Four separable attributes:
-AMOLED `#000000` (colour), brushed metal + gloss (pixmap artwork), Aqua glass
-controls (widget geometry), Quake (accent + typography). Quake fights Aqua —
-reconcile by using Quake for **accent/type** and OS X for **surface**.
+**Do not use `--hwdec=auto`, do not use `--wid WID` space, do not use `--really-quiet` for debug.** Use shim, `nvdec-copy`, `-b -s -fs|-g -st -sp -nf -ov -fdt`.
 
-**Compose from what the user already owns** (W-056) — do not clone from scratch:
-`~/.themes/` holds `Skeuo-Dark-Leopard`, `mac-os-x-cheetah-dark`,
-`OS-X-Cheetah-grey`, `ReVista-dark`, `ReVista-main`, `Win2-7(Pixmap)`,
-`Slickness-Reborn`, `OmNu-Ice`.
-Engines confirmed present (W-055): `libpixmap.so`, `libmurrine.so`, GTK2 + GTK3.
+### M16/U-055 — Cheetah menu transparency + pinstripe + terminal
+Operator request: `(type=Menu | PopupMenu | DropdownMenu | Tooltip | Notification) → 88` and `(type=Utility | Dialog | ModalDialog) → 92`, plus lined like Mac OS X Cheetah.
 
-Method: **fork** a theme (never edit in place), grep the CSS for the greys it
-actually ships (`#2b2b2b`/`#303030`/`#383838` are the usual culprits), drive
-backgrounds to `#000000`, and take glossy pixmap assets from `Win2-7(Pixmap)`.
+- **Compiz opacity**: enable `opacity` plugin (absent from current W-191 list). Add section `[opacity]` with `s0_opacity_matches = (type=Menu | PopupMenu | DropdownMenu | Tooltip | Notification);(type=Utility | Dialog | ModalDialog)` and `s0_opacity_values = 88;92`. Do NOT edit active_plugins without backup — use `compiz-profile-repair` as template, preserve golden.
 
-**Blocker to clear first:** `~/.emerald/themes/` **does not exist** (X-041), yet
-emerald is the live decorator — so current titlebars belong to no inventoried
-theme. `mkdir -p ~/.emerald/themes && emerald-theme-manager &`. Candidates in
-R-22 (notably the black+glossy pixmap "Glossy Emerald Theme"). Fallback if
-emerald misbehaves (X-009/W-047): `gtk-window-decorator`.
+- **GTK Cheetah**: `~/.config/gtk-3.0/gtk.css` overlay (NOT bash):
+  ```css
+  menu, .menu, .context-menu, popover.background {
+    background-color: rgba(0,0,0,0.82);
+    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 6px);
+    border: 1px solid rgba(90,90,90,0.6);
+    border-radius: 9px;
+  }
+  ```
+  That's pinstripe (1px line every 6px) + rgba transparency + rounded.
 
-### M18 — icons (12.13)
-(a) Swap the **Zen browser** icon for the **OS X Safari compass**.
-(b) Fix missing/wrong icons for **Thunar, xfce4-terminal** and other system apps.
-(c) Keep the set coherent with the 10.4–10.6 era.
-**Do (b) before (a)** — the fallback chain may itself resolve some wrong icons.
-Root cause is almost always an incomplete theme with no `Inherits=` chain in
-`index.theme`; prefer fixing inheritance + `gtk-update-icon-cache` over
-hand-placing files. Never edit under `/usr/share` (xbps overwrites on update) —
-use `~/.icons/` and `~/.local/share/applications/`.
+- **Terminal**: `xfce4-terminal` transparency via `xfconf-query -c xfce4-terminal --create -p /background-mode -s TERMINAL_BACKGROUND_TRANSPARENT` and `/background-darkness`, or `terminalrc` `BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT` + `BackgroundDarkness=0.85`. Must use `--create`.
 
-### Sound (12.7, 12.8, 12.12) — independent, can run in parallel
-`libcanberra-utils` and `sound-theme-freedesktop` are **installed** (W-058).
-Four things still required, none done: `EnableEventSounds=true`,
-`EnableInputFeedbackSounds=true`, `SoundThemeName=freedesktop` (**not** `default`
-— X-040, that directory does not exist), and `canberra-gtk-module` in
-`GTK_MODULES`. Decisive test: `canberra-gtk-play -i bell`.
-Honest limits: Compiz has **no** audio subsystem (R-16), and canberra hooks GTK
-widget events only — cube/Scale/animations will **never** make sound. The stock
-freedesktop theme lacks most UI events (R-18); a Quake-style set means authoring
-a custom theme in `~/.local/share/sounds/<name>/` (no root needed).
-`ocean-sound-theme` is available as a fuller alternative.
+**Tools to author** (keep PR weight <465):
+- `scripts/gunmetal-cheetah-menu-overlay` — writes gtk.css overlay with backup, hash receipt.
+- `scripts/compiz-opacity-menus` — adds opacity plugin and rules, preserves 7 pinned core keys.
+- `scripts/xfdesktop-mp4-fork` / `scripts/compiz-video-wallpaper` — fork starters, document image→video path.
 
-## Cube / switcher work, if the user returns to it
+### M18 icons + sound
+Same as prior prompt, unchanged.
 
-`scalefilter` (type-to-filter Scale) is the keyboard Mission Control (R-12) —
-bind Scale as a **toggle or hot corner**, never a hold-chord, or the binding eats
-the keystrokes (R-13). Scale and Expo **cannot** be merged in 0.8 (R-14).
-One switcher owns Alt+Tab (R-5). **One big cube across both monitors requires
-collapsing `s0_outputs` to a single rectangle** (X-038) — which conflicts with the
-enforced geometry and looks bad on these mismatched panels (X-039); per-output
-cubes are the recommended default. All plugins are installed (W-051).
+## Open questions / ledger anchors
+X-030 mid-session reset, X-036 lib dirs, X-037 hsize, X-041 emerald themes dir, U-022/U-023 sound/scalefilter, plus:
+- X-094 auto segfault rc139, X-096/X-097 wid syntax, X-100 catch-22, X-101 spanning fail, X-102 inefficiency
+- W-195 hardware table (nvdec-copy winner), W-196 hardware wallpaper LIVE, W-197/W-198 geometry tests, W-199 efficient workaround
+- U-055 Cheetah transparency, U-056/U-057 fork for mp4 spanning
 
-## Open questions carried forward
-X-030 (mid-session reset, cause narrowed to CCSM-side), X-036 (`/usr/lib` vs
-`/usr/lib64` compiz dirs), X-037 (`hsize` unset — cube renders flat until = 4),
-X-041 (no emerald themes dir), U-017, U-022 (which sound events actually fire),
-U-023 (does scalefilter work here), plus three uncollected human checks:
-smoothness re-confirm, titlebars present, panel behaviour on workspace switch.
+## Standing rules addenda (from recent failures)
+- Never `curl` raw GitHub without cache-buster for fresh launcher — CDN stale (X-097). Prefer heredoc install for critical fixes.
+- Never paste GTK CSS or Compiz match rules into bash — they are not shell (X-098).
+- Never probe hwdec by rc alone — check `Using hardware decoding` verbose (X-100, W-195).
+- Always include `-s -st -sp` sticky for Compiz Wall (4 viewports) or wallpaper vanishes on viewport switch (W-193, U-030).
+- For efficient wallpaper, `xfdesktop --quit` after blanking removes Desktop windows `0x01a0000d/0x01a00011` that obscure bare composite layer (W-198/W-199).
