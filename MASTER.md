@@ -7343,3 +7343,25 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-5] R2 ISSUED. Awaiting: which prong yielded a prompt
   + log tails. No writes to target besides remount,rw until logs are read.
+
+  [W-207] OPTION B PROVED VISIBLE CONSOLE: tkg-bore + `single nomodeset
+    module_blacklist=nvidia,nvidia_drm,nvidia_modeset,nvidia_uvm` yields a
+    live root shell (operator photo). CONFIRMS X-107 diagnosis: nvidia module
+    load was killing console visibility; disk/runit/kernel are bootable.
+    Operator confusion cleared: Ctrl+Alt+F2 dead is EXPECTED in single mode
+    (no getty on tty2-6, one console only); sudo prompts nothing because the
+    shell is already root; first mount failed from missing spaces
+    (`mount-o remount,w/` typo class — phone typing).
+    RECEIPT: operator photo of console, 2026-08-15.
+
+  [W-208] BLOCK R3 AUTHORED (unexecuted): id; mount -o remount,rw /;
+    dmesg grep nvidia/drm tail 20; Xorg.0.log + lightdm.log tails;
+    ls xorg.conf(.d); ls -lt modprobe.d dirs (fresh drop-in fingerprint);
+    ls runsvdir/default; ls -lt /var/cache/xbps head 10 (recent package
+    fingerprint of the flatpak-session agent's changes). Read-only except
+    remount,rw. No fix writes until these receipts return.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-6] ROOT SHELL ACHIEVED VIA MODULE BLACKLIST.
+  Awaiting R3 forensics photos. Root-cause candidates narrowed to nvidia
+  early-boot path (modprobe.d drop-in, initramfs, or package change).
