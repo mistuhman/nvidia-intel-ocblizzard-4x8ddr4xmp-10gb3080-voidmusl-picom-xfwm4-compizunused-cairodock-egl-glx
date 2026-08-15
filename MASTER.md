@@ -7584,3 +7584,11 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
     RECEIPT: block text in session chat, 2026-08-15.
 
 [2026-08-15][M12-RECOVERY-12] INITRAMFS LAYER CLOSED. X-LAYER FORENSICS ISSUED.
+
+  [X-114] STANDING RULE (operator escalation): Ctrl+Alt+F2 VT switch is DEAD
+    on this box in every failure state tried this session — stop proposing it.
+    All forensics/repair go through GRUB rescue boot (module_blacklist +
+    init=/bin/sh) until a working desktop proves otherwise. Time-efficiency
+    directive: collapse forensics+fix into single blocks where safe.
+    RECEIPT: operator "ive said multiple times ctrl alt f2 doesnt work",
+    2026-08-15.
