@@ -1,0 +1,93 @@
+#!/bin/sh
+# compiz-profile-verify: READ-ONLY invariant check for the guarded Compiz
+# baseline (W-244/W-245/W-246). Writes nothing, ever. Safe at any time.
+#
+# Usage:  compiz-profile-verify           # full report + verdict word
+#         compiz-profile-verify --quiet   # verdict word only
+#
+# Verdict words:  SAFE  |  REPAIRABLE  |  UNSAFE
+#   SAFE       every invariant holds; a reboot is expected to reproduce Compiz.
+#   REPAIRABLE the 7 enforced [core] keys drifted, which compiz-session's
+#              login hook repairs automatically. Reboot is still safe.
+#   UNSAFE     a structural invariant is broken (missing profile, missing
+#              launcher, missing golden). Fix before logout/reboot.
+set -u
+
+CFG="$HOME/.config/compiz/compizconfig/Default.ini"
+GOLD="$HOME/.local/share/compiz-guard/Default.ini.golden"
+SESS="$HOME/.local/bin/compiz-session"
+QUIET=0
+[ "${1:-}" = "--quiet" ] && QUIET=1
+
+VERDICT=SAFE
+demote() {           # demote VERDICT, never promote it
+  case "$1:$VERDICT" in
+    UNSAFE:*)            VERDICT=UNSAFE ;;
+    REPAIRABLE:SAFE)     VERDICT=REPAIRABLE ;;
+  esac
+}
+say() { [ "$QUIET" = 1 ] || echo "$@"; }
+
+say "== compiz-profile-verify =="
+
+# 1. The three files that the whole guard depends on.
+for f in "$CFG" "$GOLD" "$SESS"; do
+  if [ -e "$f" ]; then
+    say "ok    present  $f"
+  else
+    say "FAIL  MISSING  $f"
+    demote UNSAFE
+  fi
+done
+[ -x "$SESS" ] || { say "FAIL  not executable: $SESS"; demote UNSAFE; }
+
+# 2. Section-scoped [core] key count. Whole-file greps are meaningless once
+#    CCSM has written plugin sections (X-032). This is the corrected check.
+if [ -r "$CFG" ]; then
+  N=$(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" | grep -cE \
+    '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) ')
+  if [ "$N" = 7 ]; then
+    say "ok    [core] enforced keys 7/7"
+  else
+    say "WARN  [core] enforced keys $N/7 -> login hook will repair"
+    demote REPAIRABLE
+  fi
+fi
+
+# 3. Hashes. A drift from golden is INFORMATION, not a failure: CCSM writes
+#    legitimate plugin sections. Only the enforced keys above are load-bearing.
+if [ -r "$CFG" ]; then
+  say "hash  active $(sha256sum "$CFG" | cut -c1-16)..."
+fi
+if [ -r "$GOLD" ]; then
+  say "hash  golden $(sha256sum "$GOLD" | cut -c1-16)...  (expect af457926)"
+fi
+
+# 4. Persistence: does login actually launch the guarded launcher? (W-245)
+if command -v xfconf-query >/dev/null 2>&1; then
+  C0=$(xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command 2>/dev/null \
+       | grep -v '^Value is an array' | grep -v '^$' | head -1)
+  case "$C0" in
+    *compiz-session) say "ok    Client0_Command $C0" ;;
+    "")              say "WARN  Client0_Command unreadable (no xfconf/DISPLAY?)" ;;
+    *)               say "FAIL  Client0_Command is '$C0', expected compiz-session"
+                     demote UNSAFE ;;
+  esac
+fi
+
+# 5. Live process shape. Informational: a tty run has no X and that is fine.
+if [ -n "${DISPLAY:-}" ]; then
+  say "live  compiz pid   $(pgrep -x compiz | head -1)"
+  say "live  emerald pid  $(pgrep -x emerald | head -1)"
+  say "live  ccsm pid     $(pgrep -f '/usr/bin/ccsm' | head -1)"
+  say "live  picom pid    $(pgrep -x picom | head -1)   <- must be empty (W-042)"
+  if pgrep -x picom >/dev/null 2>&1; then
+    say "FAIL  picom is running; it must stay masked"
+    demote UNSAFE
+  fi
+  command -v wmctrl >/dev/null 2>&1 && say "live  wm name      $(wmctrl -m 2>/dev/null | head -1)"
+fi
+
+echo "VERDICT: $VERDICT"
+[ "$VERDICT" = UNSAFE ] && exit 1
+exit 0

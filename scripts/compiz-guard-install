@@ -1,0 +1,61 @@
+#!/bin/sh
+# compiz-guard-install: install/refresh the Compiz guard tools into
+# ~/.local/bin from a repo checkout, with an existence gate after every write.
+#
+# X-033 lesson: pasting a script through a phone terminal produced a file that
+# did NOT match the repo hash and the delta was never explained. The canonical
+# source of truth is the repo file. This installer copies bytes rather than
+# re-typing them, and prints hashes so byte-identity is checkable, not assumed.
+#
+# Usage, from the repo checkout root on the TARGET:
+#   sh scripts/compiz-guard-install
+set -u
+
+SRC=$(dirname "$0")
+DEST="$HOME/.local/bin"
+RC=0
+
+mkdir -p "$DEST" || exit 2
+
+install_one() {
+  name="$1"
+  if [ ! -r "$SRC/$name" ]; then
+    echo "install: SKIP  $name not in $SRC"
+    return 0
+  fi
+  cp -a "$SRC/$name" "$DEST/$name.tmp" || { echo "install: FAIL copy $name"; RC=1; return 1; }
+  chmod 0755 "$DEST/$name.tmp"        || { echo "install: FAIL chmod $name"; RC=1; return 1; }
+  mv -f "$DEST/$name.tmp" "$DEST/$name" || { echo "install: FAIL mv $name"; RC=1; return 1; }
+  # Existence gate. Never report success without listing the file.
+  if [ -x "$DEST/$name" ]; then
+    echo "install: OK    $(sha256sum "$DEST/$name" | cut -c1-16)...  $DEST/$name"
+  else
+    echo "install: FAIL  $DEST/$name not executable after write"
+    RC=1
+  fi
+}
+
+echo "== compiz-guard-install =="
+install_one compiz-profile-repair
+install_one compiz-profile-verify
+install_one ccsm-safe
+
+echo
+echo "-- repo-side hashes (compare with the installed ones above) --"
+for f in compiz-profile-repair compiz-profile-verify ccsm-safe; do
+  [ -r "$SRC/$f" ] && echo "  $(sha256sum "$SRC/$f" | cut -c1-16)...  $f"
+done
+
+echo
+echo "-- pre-existing escapes, NOT touched by this installer --"
+for f in compiz-session compiz-revert xfce-wm-recover; do
+  if [ -x "$DEST/$f" ]; then echo "  ok      $DEST/$f"
+  else echo "  MISSING $DEST/$f"; RC=1; fi
+done
+
+echo
+case "$RC" in
+  0) echo "VERDICT: INSTALLED" ;;
+  *) echo "VERDICT: PROBLEM" ;;
+esac
+exit "$RC"
