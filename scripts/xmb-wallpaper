@@ -21,9 +21,10 @@ if pgrep -x xfdesktop >/dev/null; then
   sleep 1
 fi
 # Upstream safe set + sticky for Compiz Wall 4 viewports (17920x1440). -fs fullscreen covers 4480x1440 X screen; -g explicit fallback.
-# User report "did not wrap to both screens" — sticky + explicit geometry needed.
-XWW_COMMON=(-b -s -fs -st -sp -nf -ov -fdt)
-[ "${XMB_USE_GEOMETRY:-0}" = "1" ] && XWW_COMMON=(-b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt)
+# -ni makes the wallpaper input-transparent. Without it, xwinwrap intercepts
+# root Button2/Button3 and blocks Compiz viewport switching/desktop menus.
+XWW_COMMON=(-b -ni -s -fs -st -sp -nf -ov -fdt)
+[ "${XMB_USE_GEOMETRY:-0}" = "1" ] && XWW_COMMON=(-b -ni -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt)
 choose_hwdec(){
   if [ -n "$HWDEC_FORCE" ]; then echo "$HWDEC_FORCE"; return; fi
   # W-195 proved rc=0 can still mean software fallback. Only these -copy
@@ -39,7 +40,8 @@ choose_hwdec(){
 HWDEC="$(choose_hwdec)"
 echo "xmb-wallpaper: role=$ROLE video=$VIDEO hwdec=$HWDEC mode=$MODE xww=${XWW_COMMON[*]} shim=$SHIM verbose=$VERBOSE"
 [ "$VERBOSE" = "1" ] && Q=() || Q=(--really-quiet)
-MPV_BASE_ARGS=(--loop-file=inf --no-audio --no-osc --no-osd-bar --no-input-default-bindings --panscan=1.0 --vo=gpu-next --hwdec="$HWDEC" --framedrop=vo "${Q[@]}" "$VIDEO")
+# A wallpaper must never inhibit the session screensaver (mpv does by default).
+MPV_BASE_ARGS=(--loop-file=inf --no-audio --no-osc --no-osd-bar --no-input-default-bindings --no-stop-screensaver --panscan=1.0 --vo=gpu-next --hwdec="$HWDEC" --framedrop=vo "${Q[@]}" "$VIDEO")
 launch_bg(){
   local log="/tmp/xmb-wallpaper-$ROLE.log"
   echo "launch $log xww=${XWW_COMMON[*]}"

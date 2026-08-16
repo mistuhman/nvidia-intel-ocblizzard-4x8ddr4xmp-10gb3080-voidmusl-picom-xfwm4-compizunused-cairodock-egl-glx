@@ -8343,3 +8343,245 @@ What worked, in order, when the box went black before lightdm with no TTY.
   compiz-persist-arm re-arms the login key after any escape path. NEXT SESSION:
   the XMB bake resumes at W-200 (inventory launcher/shim/videos first, then the
   proven single-decode bare layer). Never destabilize the WM for the wallpaper.
+
+--------------------------------------------------------------------------------
+12.131 XMB RESUME — POST-REBOOT SAFE RECEIPT ACCEPTED; RUNTIME INVENTORY NEXT
+--------------------------------------------------------------------------------
+
+  [W-268] Operator supplied the post-reboot verifier receipt at the XMB handoff:
+    all three guard files present; seven enforced core keys 7/7; plugin floor
+    core;ccp;move;resize;place;decoration intact; Client0_Command points to
+    /home/sd/.local/bin/compiz-session; live Compiz PID 1194 and Emerald PID
+    1274; CCSM and picom absent; wmctrl names compiz. Active profile 4e987ec5
+    differs deliberately from golden af457926 per W-266, and the verifier says
+    VERDICT: SAFE. This is the same cold-login receipt already accepted in
+    W-267 and clears the XMB gate without touching the working WM.
+    RECEIPT: operator terminal transcript, 2026-08-16.
+
+[2026-08-16][M12-XMB-RESUME] Compiz remains frozen and SAFE. Agent B resumes
+  exactly at W-200: inventory installed launcher, WID shim, runtime commands,
+  role videos, free root space, and stale wallpaper processes before restoring
+  the proven one-decode bare layer. Native MP4 fork U-057 remains deferred.
+
+  [W-269] XMB runtime inventory PASS. Root has 6.7G free (96% used), so X-119
+    is excluded for this step and no bake output belongs there. mpv, xwinwrap,
+    ffprobe, and nvidia-smi are present. Installed launcher and WID shim are
+    executable (SHA e18a30b3..., 2,708 B; SHA 086eb90c..., 134 B). All three
+    external-disk loops are intact HEVC 4480x1440 at 60 fps for exactly 60 s:
+    main-red 150M, sleep 169M, work-monochrome 230M. No xwinwrap or mpv is
+    running; xfdesktop PID 1248 is the sole wallpaper layer to retire for the
+    W-200 bare-layer test. Inventory ended XMB_INVENTORY=COMPLETE.
+    RECEIPT: operator terminal transcript, 2026-08-16.
+
+  [X-137] Installed launcher/shim bytes differ from the current repository
+    copies (repo e8a58875.../e38b0de7...). Do not overwrite working target
+    runtime merely to normalize hashes: the installed pair is complete and is
+    the target-side path being inventoried. First reproduce W-200 with explicit
+    geometry and nvdec-copy; reconcile source bytes only after the visual and
+    process gates. This keeps source deployment out of the WM-critical path.
+
+--------------------------------------------------------------------------------
+12.132 XMB BARE LAYER RESTORED — TWO-SCREEN HARDWARE PASS; DESKTOP UX NEXT
+--------------------------------------------------------------------------------
+
+  [W-270] W-200 reproduced after the guarded Compiz/CCSM work. One xwinwrap PID
+    10604 spans explicit 4480x1440+0+0 and one mpv PID 10606 owns WID
+    0x1a00001. The loop is pinned to nvdec-copy; decoder utilization measured
+    9% at launch and 11% at the live gate. xfdesktop is absent, the launcher
+    reports XMB_WALLPAPER_LAUNCH=PASS, and the operator visually accepts that
+    the red XMB wave works on both screens. This is the desired one-decode bare
+    layer, not W-198's duplicate per-monitor decode.
+    RECEIPT: operator terminal transcript + visual report, 2026-08-16.
+
+  [W-271] WM invariants survived wallpaper launch: core keys 7/7, plugin floor
+    intact, login Client0_Command armed, Compiz PID 1194, Emerald PID 1274,
+    picom absent, wmctrl names compiz, VERDICT SAFE. Active hash moved from
+    4e987ec5 to 5b2f6d75 without a guard failure; investigate read-only before
+    attributing it, but do not stop a visually accepted wallpaper or invoke an
+    escape path on that fact alone (X-135 discipline).
+
+  [U-068] Operator accepts the spanning wave and requests the desktop UX layer:
+    safely restore right-click menus on ordinary Compiz workspaces and switch
+    the XMB role with workspace changes. Do not simply restart xfdesktop: its
+    Desktop windows were proven to obscure this bare layer (W-198). Do not use
+    ConfigParser or rewrite Default.ini (X-103). First inventory current
+    cube/rotate/wall/vpswitch bindings, EWMH viewport reporting, menu helpers,
+    and controller installation; then add only reversible observer/binding
+    pieces around the now-proven renderer. Native in-Compiz MP4 remains U-057.
+
+  [W-272] Desktop UX inventory explains both missing inputs. Active plugins are
+    cube+rotate (plus the operator's 3D/animation stack), but there is no
+    [rotate] binding section and wall/vpswitch are neither active nor configured.
+    EWMH exposes one desktop backed by a 17920x1440 geometry and viewport 0,0,
+    so workspace-role switching must observe viewport X, not desktop number.
+    Both XFCE popup helpers and xdotool/xprop exist; xbindkeys is absent.
+    Installed xmb-wallpaper-controller is a zero-byte file (SHA e3b0c442...),
+    therefore it cannot switch anything and must be replaced, not executed.
+    The operator confirms Button2 and root Button3 currently do nothing.
+    RECEIPT: operator terminal transcript + input report, 2026-08-16.
+
+  [X-138] Do not revive the old W-201 controller blindly. Besides the target
+    file being empty, the repository draft kills wallpaper processes with
+    unanchored `pkill -f`, prohibited by X-128, and has no ownership record.
+    Harden launcher/controller around validated PID state before deployment.
+    Binding repair goes through ccsm-safe; no direct INI writer and no global
+    plain-Button3 command grab until application context menus are proven safe.
+
+  [W-273] Guarded CCSM repair produced a SAFE flat-workspace profile and the
+    desktop switcher now works. CCSM resolved the cube-vs-wall conflict by
+    replacing cube/rotate/cubeaddon/3d with wall/vpswitch while preserving the
+    plugin floor; wrapper again restored ccp automatically. Active hash is
+    d8530c63..., keys 7/7, login owner correct, Compiz/Emerald live, picom
+    absent. Operator accepts switching but Button2/Button3 still fail only
+    while the pointer is over the wallpaper.
+    RECEIPT: ccsm-safe transcript + operator report, 2026-08-16.
+
+  [X-139] INPUT ROOT CAUSE: launcher gives xwinwrap -nf (no focus) but omits
+    xwinwrap -ni (no input). No-focus does not make the override-redirect
+    4480x1440 window input-transparent, so it remains the click target above
+    the root and consumes the exact Button2/Button3 events needed by Compiz and
+    the desktop menu. This is a wallpaper-window defect, not another Compiz
+    binding defect. Do not alter the now-working SAFE profile again.
+
+  [W-274] Repository launcher adds -ni to both fullscreen and explicit-geometry
+    flag sets; bash -n passes, SHA-256 9d047b50.... The target hotfix is a
+    two-match, backup-gated insertion into its already-proven launcher, followed
+    by relaunch and visual/input verification. It is independently reversible
+    by restoring the timestamped backup. Controller hardening remains next.
+
+  [W-275] INPUT TRANSPARENCY PASS. Target launcher backup
+    xmb-wallpaper.pre-no-input.1786898985 was made; exactly two flag arrays
+    gained -ni and bash -n passed. Relaunch produced xwinwrap PID 16937 with
+    `-b -ni -s -g 4480x1440+0+0` and mpv PID 16939, nvdec-copy at 11% decoder.
+    Compiz stayed SAFE. Operator reports input now “works perfectly.” This
+    closes X-139: wallpaper is visually present but absent from X input shape.
+    A subsequent guarded CCSM session changed only three profile lines, retained
+    the flat wall/vpswitch set and plugin floor without repair, and again ended
+    SAFE (active aeb32713...).
+    RECEIPT: operator terminal transcript + human input gate, 2026-08-16.
+
+  [U-069] Operator requests configurable per-workspace assignment of the three
+    baked roles, a blend/fade on viewport changes, and the baked sleep XMB as
+    the screensaver. Design constraints: single decode in steady state; a
+    second decode is permitted only for the bounded fade; explicit role map in
+    a user config rather than hard-coded controller policy; suspend/idle must
+    restore the current workspace role on wake; no Compiz profile rewrite.
+    Exact four-workspace defaults and meaning of “sleeps” require operator gate.
+
+  [W-276] Lock backend inventory: xfce4-screensaver PID 1315 owns X11 session
+    c1; loginctl reports Active=yes, IdleHint=no, LockedHint=no. No xscreensaver
+    or light-locker competes. The daemon reports inactive but inhibited by
+    Application="libxfce4ui" since the wallpaper run. mpv inhibits the desktop
+    screensaver by default, so every XMB runtime path must pass
+    --no-stop-screensaver. This is the screensaver activation defect, not DPMS.
+    RECEIPT: operator terminal transcript, 2026-08-16.
+
+  [W-277] XMB role/controller implementation authored. User config defaults to
+    ROLES=(main-red work-monochrome work-monochrome main-red), FADE_MS=4000,
+    HWDEC=nvdec-copy. The controller maps Compiz viewport X to four slots,
+    crossfades with two owned xwinwrap/mpv pairs for only four seconds, then
+    validates and kills the old exact PIDs; steady state is one decode. It uses
+    -ni and never scans/kills by unanchored command line. The shim atomically
+    receipts WID for opacity control. Mock viewport 0->4480 transition PASS;
+    syntax and isolated installer/reinstall-preserves-config tests PASS.
+
+  [W-278] Native xfce4-screensaver theme authored using its secured
+    XSCREENSAVER_WINDOW: xmb-screensaver embeds the baked sleep loop directly
+    with mpv --wid, nvdec-copy, no controls, and --no-stop-screensaver. Installer
+    ships the helper plus per-user screensaver desktop entry, controller
+    autostart, and editable role config; all generated files are nonempty and
+    installed scripts are byte-identical. Selection remains an explicit GUI
+    gate: choose “XMB Sleep Wave” in xfce4-screensaver-preferences.
+
+  [X-140] FIRST LIVE CROSSFADE FAILED AND IS WITHDRAWN. On controller start it
+    aggressively selected work for the current viewport, then faded to black,
+    produced no replacement, and exited 1. The transition also restarted media
+    rather than preserving the visibly seamless loop expected by the operator.
+    The window-opacity mock proved orchestration only; it did not prove Compiz
+    opacity semantics on override-redirect xwinwrap windows. Presence of a WID
+    and successful xprop in a fake backend was not visual capability (same
+    class as X-083). Do not restart or autostart this controller.
+    RECEIPT: operator visual report + shell job Exit 1, 2026-08-16.
+
+  [W-279] Immediate rollback PASS. Failed controller was stopped and the proven
+    direct launcher restored main-red: one xwinwrap PID 26012, one mpv PID
+    26014, nvdec-copy decoder 10-11%, input-transparent explicit 4480 geometry,
+    --no-stop-screensaver present. Compiz remained SAFE with keys/floor/login
+    owner intact. Human receipt: “restored.”
+
+  [X-141] Installer autostart is now disabled in-repo until a real target
+    crossfade passes. The already-installed target autostart must likewise be
+    disabled before reboot. Next action is read-only collection of the exact
+    xprop failure/controller tail; no more visual mutation until explained.
+
+  [W-280] Failure diagnostics identify the exact mechanism. New transition WID
+    0x7200001 was already invalid when the first X_ChangeProperty ran; xprop
+    raised BadWindow and set -e terminated the controller. Both temporary shims
+    then died (statuses 4/1) and xwinwrap logged invalid DestroyWindow calls.
+    The restored direct WID 0x1a00001 is valid but has no opacity property,
+    expected because its launcher did not request -o. Autostart is disabled on
+    target. Main-red PIDs 26012/26014 remain the only wallpaper pair.
+    RECEIPT: complete target nohup/controller/xprop transcript, 2026-08-16.
+
+  [X-142] Likely trigger is `xwinwrap -o 0.0`: a fully transparent new override
+    window dies before the first fade step, making its receipted WID stale.
+    Independently, 40 steps launch 80 synchronous xprop clients plus four
+    seconds of sleeps, explaining the observed ~15-second transition. Before
+    another controller run, perform one bounded nonzero-opacity overlay test;
+    it must coexist with the restored loop, visibly blend, and self-remove.
+
+--------------------------------------------------------------------------------
+12.133 XMB OPTIMIZATION RULING — STABLE SINGLE DECODE MERGES; SHELL FADE RETIRED
+--------------------------------------------------------------------------------
+
+  [W-281] NONZERO OVERLAY CAPABILITY PASS, CONTROLLER DESIGN FAIL. A temporary
+    work-monochrome pair (xwinwrap 28156/mpv 28158, WID 0x6a00001) launched at
+    opacity 0.01, survived, accepted opacity properties, and displayed together
+    with main-red for four seconds. Exact-PID cleanup removed only the test pair
+    and left proven main-red 26012/26014 alive. Thus Compiz CAN composite both
+    layers; X-142's zero-opacity diagnosis is confirmed. But the operator saw
+    no acceptable timed fade or workspace switch and reports lag under rapid
+    switching. Crossfade/controller acceptance FAILS.
+    RECEIPT: target transcript + operator visual report, 2026-08-16.
+
+  [X-143] SHELL/XPROP MULTI-WINDOW CROSSFADE IS RETIRED, NOT MERGED AS ACTIVE.
+    It has four structural costs that tuning cannot erase: a second 4480x1440
+    HEVC decode, a second gpu-next/Vulkan context, synchronous process creation
+    for every opacity step, and stop/start loss of each loop's media clock.
+    Rapid viewport changes queue behind a blocking transition instead of being
+    coalesced, so input outruns rendering and stale destinations win. Repository
+    xmb-wallpaper-controller now exits 2 with an explicit disabled message;
+    installer autostart remains Hidden/false. Target's disabled .desktop stays.
+
+  [W-282] CURRENT HARDWARE/SOFTWARE EFFICIENCY BASELINE (merge target):
+    - RTX 3080, NVIDIA stack, Compiz X11 at 120 Hz; physical canvas 4480x1440,
+      four Compiz viewports expressed as 17920x1440 virtual geometry.
+    - One sticky input-transparent xwinwrap covers only the physical 4480x1440
+      canvas. One mpv loops one HEVC 4480x1440@60 file for all viewports.
+    - gpu-next + nvdec-copy is the proven path at 10-11% decoder utilization.
+      `nvdec` zero-copy fell back/failed on this Vulkan stack (W-195); the copy
+      costs bandwidth but is safer than `auto` (X-094) and cheaper than a second
+      decoder/context. Do not trade correctness for nominal zero-copy.
+    - --no-stop-screensaver prevents the wallpaper mpv from creating a new
+      inhibitor; -ni preserves Compiz Button2 and desktop Button3 input.
+    - Baked loops live on /mnt/games, not the 96%-used root. Main-red/sleep/work
+      are 150/169/230 MiB; no raw frames or transition cache belongs on root.
+
+  [U-070] CORRECT NEXT-GENERATION SWITCHER SPEC (native MP4 fork U-057): one
+    long-lived renderer and GL context; persistent current loop clock; open the
+    next decoder only for the four-second blend; mix two textures in the render
+    loop using monotonic timestamps; retire old decode immediately at alpha=1.
+    Viewport events are latest-wins: same-role moves are no-ops, rapid changes
+    cancel/retarget the in-flight blend, never queue. This removes xprop process
+    churn, black frames, loop restarts, and steady duplicate VRAM/RAM use.
+    Preferred implementation is a Compiz/libmpv plugin or one IPC-controlled
+    renderer, not two xwinwrap windows. Measure frame time, dropped frames,
+    decoder%, VRAM and RSS before acceptance. A prebaked transition clip is a
+    lower-memory fallback but cannot join an arbitrary live loop phase cleanly.
+
+  [W-283] MERGE SCOPE: accepted direct XMB launcher gains input transparency
+    and stops inhibiting the screensaver; native xfce4-screensaver XMB Sleep
+    theme is installed but remains operator-select/acceptance gated. Failed
+    workspace crossfade is disabled and carried only as ledger evidence/spec.
+    Compiz stayed SAFE throughout rollback. Operator directs: document maximum
+    hardware/software efficiency context in MASTER, then merge.
