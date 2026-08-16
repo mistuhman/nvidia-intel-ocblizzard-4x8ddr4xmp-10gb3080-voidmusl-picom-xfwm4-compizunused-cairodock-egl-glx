@@ -8083,3 +8083,97 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M12-GREETER-5] DISK FIXED AND FAILSAFE FLIPPED. Only H2 (VT 7)
   still stands. Self-terminating VT-1 green probe (W-223/W-227) issued.
+
+--------------------------------------------------------------------------------
+12.122 PROBE 2 NEVER RAN — PHONE PASTE ATE THE REDIRECT. NVIDIA(0) PROVEN
+       HEALTHY BY Xorg.1.log GREP. SESSION CLOSE, HANDOFF WRITTEN.
+--------------------------------------------------------------------------------
+
+  [W-236] AGENT V TRANSCRIPT (operator photos 4+5, 2026-08-16, verbatim; both
+    photos are the same frame, duplicate upload):
+      (tail of the Xorg.1.log grep from Block 6)
+      [2841.090] (==) NVIDIA(0): Backing store enabled
+      [2841.090] (==) NVIDIA(0): Silken mouse enabled
+      [2841.090] (==) NVIDIA(0): DPMS enabled
+      [2841.090] (II) NVIDIA(0): [DRI2] Setup complete
+      [2841.090] (II) NVIDIA(0): [DRI2]   VDPAU driver: nvidia
+      [2841.091] (II) Initializing extension MIT-SCREEN-SAVER
+      $ printf '#!/bin/sh\nxrandr > $HOME/xr.txt 2>&1\nsleep 20\n' /tmp/p2
+      #!/bin/sh
+      xrandr > $HOME/xr.txt 2>&1
+      sleep 20
+      $ chmod 755 /tmp/p2
+      chmod: cannot access '/tmp/p2': No such file or directory
+      $ startx /tmp/p2 -- :1 vt1
+      X.Org X Server 1.21.1.24 / Current OS: Linux 66 6.18.35-tkg-bore
+      Kernel command line: intel_pstate=passive split_lock_detect=off
+        BOOT_IMAGE=/boot/vmlinuz-6.18.35-tkg-bore root=UUID=6933dd0e-3d95-44f4-
+        848a-846d125d9452 ro rd.driver.blackl[ist...]
+      (==) Log file: "/var/log/Xorg.1.log", Time: Sun Aug 16 02:01:49 2026
+      xkbcomp warnings: Multiple symbols for level 1/group 1 on key <FK23>,
+        using F23 ignoring XF86TouchpadOff; could not resolve keysym
+        XF86ElectronicPrivacyScreenOff / XF86ActionOnSelection
+      ...ection to X server lost
+      waiting for X server to shut down (II) Server terminated successfully (0)
+      $ cat ~/xr.txt
+      cat: /home/sd/xr.txt: No such file or directory
+    RECEIPT: operator photos 4+5, 2026-08-16.
+
+  [X-122] PROBE 2 IS VOID — IT NEVER EXECUTED. The phone paste DROPPED the
+    `>` redirect operator, so the command became
+      printf '...' /tmp/p2
+    which PRINTED the script body to the terminal (visible in W-236) and
+    passed /tmp/p2 as a surplus printf argument instead of creating it.
+    Hence chmod's "No such file or directory", hence startx launching a
+    NONEXISTENT client, hence "Connection to X server lost" and immediate
+    teardown, hence no xr.txt. NOTHING about the display was tested. This is
+    the same failure class as W-220 (phone paste joining commands produced
+    "tail: option used in invalid context") and is now the SECOND confirmed
+    instance. STANDING RULE ADDED: never hand this operator a block whose
+    correctness depends on a bare `>` or `|` metacharacter surviving a phone
+    paste. Prefer heredocs, prefer commands that write no files, and ALWAYS
+    include a existence gate (`ls -l <file>`) immediately after any file
+    creation so a silent non-creation cannot propagate into the next step.
+    RECEIPT: W-236.
+
+  [W-237] MAJOR POSITIVE RECEIPT, INDEPENDENT OF THE VOID PROBE: the
+    Xorg.1.log grep proves the NVIDIA X driver is FULLY HEALTHY on this box.
+    NVIDIA(0) reaches "[DRI2] Setup complete" with "VDPAU driver: nvidia",
+    backing store, silken mouse and DPMS all enabled, and X proceeds to
+    MIT-SCREEN-SAVER with NO (EE). Combined with the operator's own
+    observation on probe 1 — "black, monitors arent off though, and i return
+    to a terminal after waiting" — the picture is: X ACQUIRES AND HOLDS THE
+    DISPLAYS FOR THE FULL 20 SECONDS WITHOUT DROPPING SIGNAL, then exits
+    cleanly (Server terminated successfully (0)). Monitors staying POWERED is
+    a decisive change from the original symptom (signal loss at DM handoff).
+    RECEIPT: W-236 + operator verdict text, 2026-08-16.
+
+  [X-123] PROBE 1's "black" IS MOST LIKELY A MISSING BINARY, NOT A DISPLAY
+    FAULT — UNPROVEN, STATED AS THE LEADING HYPOTHESIS FOR THE NEXT SESSION.
+    Black is X's DEFAULT root window colour; a green root requires xsetroot to
+    actually exist and run. This is a minimal Void musl install and xsetroot
+    ships in a separate xorg-apps-class package. If xsetroot is absent, probe 1
+    proved only that X runs 20s and holds signal (which it did), and said
+    NOTHING about paint capability. The `ls /usr/bin/xsetroot /usr/bin/xterm
+    /usr/bin/xclock` gate from Block 6 was ISSUED BUT ITS OUTPUT WAS NEVER
+    PHOTOGRAPHED — that single unread line is the cheapest next fact in the
+    whole project. Do not theorize past it.
+    RECEIPT: reasoning over W-236/W-237; explicitly labelled UNVERIFIED.
+
+  [W-238] H2 (VT-7 invisibility, X-117) IS NOW SUBSTANTIALLY WEAKENED but not
+    formally dead. Probe 1 ran on vt1 and held signal; that does not by itself
+    exonerate vt7. However the ORIGINAL rationale for H2 was "clean X log yet
+    no picture", and X-119 (disk full at 0 bytes) now explains the greeter
+    failure completely and independently. Recommended next-session posture:
+    treat the disk as the cause, test the desktop directly, and only revive H2
+    if a real greeter boot still fails. Do NOT spend cycles on vt7 theory
+    before a plain xfwm4 session has been attempted.
+    RECEIPT: this row.
+
+[2026-08-16][M12-GREETER-6] SESSION CLOSE PER OPERATOR. Root cause found and
+  fixed (X-119 disk full, 0 -> 2.9G). X-105 failsafe landmine disarmed (W-234).
+  NVIDIA/X proven healthy (W-237). Probe 2 void via paste corruption (X-122).
+  Next session resumes at the xsetroot existence gate (X-123) then a direct
+  xfwm4 session attempt. Photos 4+5 transcribed here as the durable receipt;
+  raw images are NOT retrievable from the sandbox, the transcript IS the
+  artifact (Agent V protocol, 14.2).
