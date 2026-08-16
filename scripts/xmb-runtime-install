@@ -22,7 +22,7 @@ FADE_MS=350
 # Total blur window in milliseconds from the first hop; must be >= FADE_MS.
 BLUR_MS=500
 # Transition blur strength 0.0..4.0 (0 = off, 1 = base, higher = stronger).
-BLUR_PEAK=3.0
+BLUR_PEAK=4.0
 HWDEC=nvdec-copy
 CONF
 fi

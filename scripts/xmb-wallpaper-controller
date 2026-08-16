@@ -12,7 +12,7 @@ ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 500, "blur": 700, "hwdec": "nvdec-copy", "peak": 3.0}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 4.0}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -156,7 +156,7 @@ def run(replace):
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
-        rise_time, fall_time = duration / 2, max(blur_duration - duration, 0.1)
+        rise_time, fall_time = duration / 2, max(blur_duration - duration / 2, 0.1)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         while not stop_now and xww.poll() is None:
@@ -185,10 +185,10 @@ def run(replace):
                 if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if active or events:
+                if events or (active and now - started < duration / 2):
                     target = peak * blur_rise((now - burst_start) / rise_time)
                 else:
-                    if not idle_at: idle_at = now
+                    if not idle_at: idle_at = started + duration / 2
                     target = peak * blur_fall((now - idle_at) / fall_time)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):

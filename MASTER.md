@@ -9150,3 +9150,44 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-8] Persistent blur target-proven; timings cut to
   operator spec. Next: reinstall with 350/500 config + verdict.
+
+--------------------------------------------------------------------------------
+12.147 CROSSFADE WAS MASKED BY PEAK-HOLD BLUR; REVEAL ENVELOPE + PEAK 4.0
+--------------------------------------------------------------------------------
+
+  [W-306] U-084 TRIAL RECEIPTS. Gates 1/3 PASS; GATE 2 sha mismatched on a
+    length-neutral paste-whitespace drift — py_compile + --check + the log
+    behavior (rise_ms=175 fall_ms=150, burst formatting) prove the delivered
+    file was functionally exact. Config rewrite to 350/500 confirmed live.
+    Operator ran an 11-hop fast burst: hops=11 max=3.000 state=OK with deep
+    queuing (queued=4), then clean single hops — persistent blur and new
+    speeds confirmed on target ("speed changed"). Operator also ran ccsm-safe
+    mid-trial: snapshot taken, plugin list before == after, enforced keys
+    7/7, VERDICT: SAFE, active hash 6e9cede0..., 4 changed lines vs snapshot
+    (receipt kept at Default.ini.pre-ccsm.1786924111). Rollback to pre-u084
+    at paste end; desktop SAFE. RECEIPT: operator paste 2026-08-16.
+
+  [X-156] CROSSFADE INVISIBLE BY ENVELOPE DESIGN FLAW, NOT GRAPH FAILURE.
+    The u084 envelope held blur at full peak through the entire fade and
+    released only after completion, so the dissolve was always masked and
+    read as blur-pulse-then-snap; operator: "the crossfade hasnt appeared
+    once". Blend graphs ran correctly on every different-role hop (log
+    evidence). Blur intensity also below operator preference at peak 3.0.
+
+  [U-085] OPERATOR DIRECTIVE: blur more intense; crossfade must be visible
+    and persistent.
+
+  [W-307] REVEAL ENVELOPE AUTHORED AND PROVEN IN-REPO. Fall now anchors at
+    the fade midpoint (fall_time = BLUR_MS - FADE_MS/2 = 325 ms at 350/500):
+    rise 175, hold at peak while hops are queued or the fade is in its first
+    half, then release across the fade's second half so the crossfade becomes
+    visible as the blur lifts; total blur window still BLUR_MS from the hop.
+    Burst peak-hold persistence unchanged. BLUR_PEAK default 3.0 -> 4.0;
+    repo defaults now 350/500/4.0, matching target config. Delivery gate 2
+    switched to a whitespace-tolerant normalized sha (per-line rstrip) after
+    the W-306 false alarm. SANDBOX: py_compile PASS; mock run() PASS —
+    hops=2 state=OK, rise_ms=175 fall_ms=325, unimodal 0->4.000->0 with exact
+    endpoints, one set+clr per burst; degraded path PASS. RECEIPT: sandbox.
+
+[2026-08-16][M17-XMB-IPC-9] Reveal envelope makes the crossfade visible under
+  a 4.0-peak burst blur. Next: reinstall + visibility verdict.

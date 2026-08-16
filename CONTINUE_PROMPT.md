@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.145 prompt. This is the 12.146 pre-target edge.
+Supersedes the 12.146 prompt. This is the 12.147 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -27,7 +27,10 @@ Supersedes the 12.145 prompt. This is the 12.146 pre-target edge.
   --panscan=1.0, geometry 4480x1440+0+0 or -fs. main-red proven role; videos
   on /mnt/games (root 96% — df first, always).
 - One-mpv IPC crossfade TARGET-ACCEPTED (W-301): events flow, blends run at
-  60 fps, eased cos curve; blur gate remained open until U-083 burst design.
+  60 fps, eased cos curve. Persistent burst blur TARGET-PROVEN (W-304/W-306:
+  8- and 11-hop bursts state=OK). X-156: a peak-hold blur released only AFTER
+  the fade masked the dissolve; the REVEAL envelope (W-307) releases from the
+  fade midpoint so the crossfade shows as blur lifts. Default BLUR_PEAK 4.0.
 - Shell/xprop crossfade RETIRED (X-143): controller exits 2 disabled,
   autostart off in-repo AND on target. Never re-enable that path.
 - xfce4-screensaver "XMB Sleep Wave" theme installed; operator-select gated.
@@ -60,22 +63,27 @@ Supersedes the 12.145 prompt. This is the 12.146 pre-target edge.
    because no controller is running. New controller is one xwinwrap + one mpv
    + one gpu-next context, lavfi track blend over JSON IPC, latest-wins, and
    exact-PID takeover. Sandbox + FFmpeg graphs PASS; target remains unproven.
-   Crossfade is TARGET-ACCEPTED (W-301); persistent burst blur TARGET-PROVEN
-   (W-304, 8-hop burst state=OK). Timings now operator-directed: FADE_MS=350,
-   BLUR_MS=500 = total blur window (U-084/W-305). NEXT: reinstall controller
-   AND rewrite target config with 350/500 (live config overrides defaults);
-   --check must print fade_ms=350 blur_ms=500 peak=3.0; switch slow + fast;
-   burst lines must read rise_ms=175 fall_ms=150 state=OK. Verdict word; any
-   failure: rollback block (controller + config). Autostart remains
-   Hidden/false until accept. Never run target's old SHA 7484d253 controller
-   or revive X-143.
+   Crossfade TARGET-ACCEPTED (W-301); persistent burst blur TARGET-PROVEN
+   (W-304/W-306). Timings operator-directed: FADE_MS=350, BLUR_MS=500 = total
+   blur window (U-084/W-305). X-156 found the peak-hold blur masked the
+   crossfade; W-307 REVEAL envelope releases from the fade midpoint so the
+   dissolve is visible as blur lifts, BLUR_PEAK raised to 4.0 (U-085). NEXT:
+   reinstall controller AND rewrite target config with 350/500 + peak=4.0
+   (live config overrides defaults); --check must print fade_ms=350
+   blur_ms=500 peak=4.0; switch slow + fast; burst lines must read
+   rise_ms=175 fall_ms=325 state=OK and the crossfade must be VISIBLE as the
+   blur releases. Verdict word; any failure: rollback block (controller +
+   config). Autostart remains Hidden/false until accept. Never run target's
+   old SHA 7484d253 controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
 5. Optional later: obs menu opacity retry (fixed tool) — operator go-ahead only.
 6. Tier-2 USB when convenient. **Tier-3 `~/.bitcoin`: never delete, never
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
-12.146 (W-304 burst blur target-proven, U-084/W-305 timing 350/500),
+12.147 (X-156 crossfade masked by peak-hold blur, U-085/W-307 reveal envelope
++ BLUR_PEAK 4.0, sandbox-proven),
+12.146 (W-304/W-306 burst blur target-proven, U-084/W-305 timing 350/500),
 12.145 (W-301 crossfade target-accepted, X-155 blur-at-speed fail,
 W-302/U-083 persistent burst blur, sandbox-proven),
 12.144 (X-154/W-300/U-082 blur peak + eased crossfade, sandbox-proven),
