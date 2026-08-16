@@ -8261,3 +8261,21 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M12-PERSIST-2] Floor closed on target (W-262). Persistence found
   REVERTED by the X-130(c) escape and is the live defect (X-134). Next: run
   compiz-persist-arm, verify SAFE, reboot, verify again. XMB still gated.
+
+  [W-264] X-134 REPAIRED ON TARGET, VERDICT SAFE. compiz-persist-arm backed up
+    xfce4-session.xml (2296 bytes, .bak.arm.1786856954 — same size as the W-245
+    pre-compiz backup), wrote the key, and the read-back returned
+    /home/sd/.local/bin/compiz-session. Full verify: present x3, keys 7/7,
+    floor ok, Client0_Command ok, picom absent, wm compiz, active fe81708f
+    (byte-identical to the W-246 cold-boot-proven profile), golden af457926.
+    VERDICT: SAFE, the first SAFE this project has earned that also means
+    "drivable WM AND correct login owner". X-010 EXCLUDED INDEPENDENTLY:
+    ~/.cache/sessions/ is now completely empty — not even the thumbs-66:0
+    directory W-050 saw — so no stale xfwm4-*.state can override the key.
+    RECEIPT: operator terminal, 2026-08-16.
+
+  [U-067] Operator directive: "lets get it working so i can use and save with
+    ccsm, then once i can reboot and see its worked lets merge." Merge gate is
+    therefore a POST-REBOOT receipt, not the SAFE above. Order chosen: guarded
+    CCSM session first, then ONE reboot proving both the CCSM work and the
+    re-armed persistence survive together, then PR. RECEIPT: operator, same day.
