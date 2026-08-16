@@ -2,12 +2,12 @@
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
 Supersedes the 12.134 prompt: XMB bare layer stays merged; Cheetah tools now
-exist in-repo. This is the 12.135 edge. (X-126 lesson: a stale prompt costs
+exist in-repo. This is the 12.136 edge (collect PASS; apply pending). (X-126 lesson: a stale prompt costs
 real work.)
 
 ## Mandatory init
 1. Session is fixed to the `arena/...` branch it opens on. Never switch or push another.
-2. Read `README.md`, then `MASTER.md` — **the edge is 12.135, read the tail first.**
+2. Read `README.md`, then `MASTER.md` — **the edge is 12.136, read the tail first.**
    Sections I–II frozen. XIV is boot-death protocol (not currently needed).
 3. MASTER.md is append-only: dated W-/X-/U- rows with receipts. Supersede, never rewrite.
 4. PR ceiling 405 (U-061). X-144 disclosed an honest exceed for this U-055 pair;
@@ -55,13 +55,12 @@ real work.)
 
 ## Objectives, in order
 1. CLOSED: guard tools + CCSM + reboot. CLOSED/MERGED: XMB bare layer (PR #15).
-2. **NEXT — U-055 target land (U-071 gate).**
-   (a) ONE read-only collect paste (profile plugins + [opacity] + gtk.css head +
-       terminal keys). Confirm still no opacity / no cheetah block.
-   (b) `sh scripts/compiz-guard-install` then both --check (expect NOT-APPLIED).
-   (c) apply both, `setsid $HOME/.local/bin/compiz-session`, verify SAFE.
-   (d) operator visual gate on menu look; --restore either layer if rejected.
-   (e) optional: xfce4-terminal background transparency after menus accepted.
+2. **NEXT — U-055 apply (U-072). Collect PASS (W-286): SAFE, no opacity,
+   gtk.css 206 B generic, active 314d29f6.**
+   (a) shallow-clone install+apply paste (see agent handoff / U-072).
+   (b) both --check APPLIED; verify SAFE; operator visual on Thunar/terminal menu.
+   (c) --restore either layer if rejected.
+   (d) optional: xfce4-terminal transparency after menus accepted.
 3. M18 icons/sound: three sub-tasks, do not conflate — (a) Zen icon -> Safari
    override via user theme or ~/.local copy, (b) missing Thunar/terminal icons,
    (c) sound chain.
@@ -70,7 +69,7 @@ real work.)
    delete, never glob-move, only deliberately with the client stopped (U-063).**
 
 ## Anchors
-12.135 (W-285/X-144/U-071), 12.134 (W-284, M12-POST-MERGE), 12.133
+12.136 (W-286/U-072), 12.135 (W-285/X-144/U-071), 12.134 (W-284), 12.133
 (W-281/X-143/W-282/U-070/W-283), 12.132 (W-275/X-139), 12.130 (W-265/W-267),
 W-053 golden af457926, X-031 pre-reboot hash rule, X-032 section-scoped check,
 U-061 ceiling 405 (X-144 one-time exceed for U-055 pair).

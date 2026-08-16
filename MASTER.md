@@ -8686,3 +8686,45 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M16-CHEETAH-1] U-055 tools authored, sandbox ALL_PASS, not yet
   on target. Next: one phone collect paste, then install+apply+verify SAFE.
   M18 icons/sound and U-070 switcher still parked.
+
+--------------------------------------------------------------------------------
+12.136 U-055 COLLECT ON TARGET — SAFE, NO OPACITY, GENERIC GTK.CSS; APPLY NEXT
+--------------------------------------------------------------------------------
+
+  [W-286] U-071 READ-ONLY COLLECT RECEIPT, TARGET. Operator paste 2026-08-16.
+
+    as_active_plugins =
+      core;ccp;move;text;screensaver;decoration;grid;resize;place;svg;
+      vpswitch;regex;imgjpeg;png;wall;animation;wobbly;animationaddon;
+      animationsim;
+    Matches W-284 post-ccsm list EXACTLY. No `opacity` plugin.
+    [opacity] section: ABSENT (awk printed nothing; no no-opacity-section
+      fallback fired because awk exit 0 on empty match — section confirmed gone).
+    gtk.css: 206 bytes, mtime Aug 3 23:16, generic color overrides only
+      (* #1e1f20, *:selected white, menuitem:selected white). NOT Gunmetal
+      aggregate, NOT cheetah block. Same shape as W-191.
+    xfce4-terminal: color-background #000000000000 (opaque black),
+      color-background-vary false, no darkness/transparency keys present.
+      terminalrc: no opacity/transparent/background hits.
+    verify: SAFE. keys 7/7, floor ok, Client0_Command compiz-session,
+      active 314d29f6e34827ee... (W-284), golden af457926, compiz 1194 /
+      emerald 1274 / picom absent / wm Name: compiz. Same boot as W-267+.
+
+    Gate OPEN: tools' preconditions match the authoring assumptions. No
+    pre-existing opacity rules to merge. gtk.css is the 206 B generic file
+    the overlay is designed to preserve-and-append.
+
+  [U-072] APPLY ORDER ON TARGET (single paste, W-254 delivery):
+    1. shallow clone branch arena/01a00b9e-... to $HOME/compiz-guard-repo
+    2. sh scripts/compiz-guard-install  (ships opacity-menus + cheetah overlay)
+    3. both --check expect NOT-APPLIED
+    4. both apply (default)
+    5. setsid $HOME/.local/bin/compiz-session   # reread Default.ini
+    6. both --check expect APPLIED
+    7. compiz-profile-verify must stay SAFE
+    8. operator visual: open a GTK menu (Thunar/terminal). Accept or
+       --restore either layer independently.
+    Terminal transparency still deferred until menus accepted.
+
+[2026-08-16][M16-CHEETAH-2] Collect PASS / SAFE. Apply paste is next operator
+  action. Do not open CCSM for opacity (X-098).
