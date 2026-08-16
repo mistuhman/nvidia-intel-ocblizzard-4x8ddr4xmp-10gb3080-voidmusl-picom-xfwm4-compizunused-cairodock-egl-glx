@@ -148,26 +148,32 @@ def run(replace):
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], stdout=subprocess.PIPE); os.set_blocking(watch.stdout.fileno(), False)
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
-        current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
-        active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on, blur_deadline = False, 0.0
+        current_slot, current_role = initial_slot, initial
+        transition, events, event_buf = None, collections.deque(), b""; blur_on, blur_deadline, settled = False, 0.0, True
         while not stop_now and xww.poll() is None:
             if select.select([watch.stdout], [], [], .05)[0]:
                 chunk = os.read(watch.stdout.fileno(), 65536); chunk or fail("xprop watcher exited")
                 event_buf += chunk; lines = event_buf.split(b"\n"); event_buf = lines.pop()
                 for raw in lines:
-                    desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (target_slot if active else current_slot)
+                    desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (transition[0] if transition else current_slot)
                     if desired != planned: events.append(desired)
             now = time.monotonic()
-            if active and now - started >= duration:
-                current_slot, current_role, active = target_slot, target_role, False
+            if transition and now - transition[2] >= duration:
+                current_slot, current_role, transition = transition[0], transition[1], None
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
-                if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
-            if not active and events:
+                settled = False
+            while transition is None and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
+                if target_role == current_role:
+                    current_slot = target_slot
+                    print(f"same-role slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
+                    continue
                 if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
                 blur_deadline = now + blur_duration; print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
-                active, started = True, now; state_write(xww, target_role)
+                ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
+                transition = (target_slot, target_role, now); state_write(xww, target_role); settled = False
+            if transition is None and not events and not settled:
+                ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm)); settled = True
             if blur_on and now >= blur_deadline:
                 ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")

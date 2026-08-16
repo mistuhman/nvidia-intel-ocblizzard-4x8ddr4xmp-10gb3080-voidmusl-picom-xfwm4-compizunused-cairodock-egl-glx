@@ -9019,3 +9019,28 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
   [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
   [U-081] Target exact-role queue ran at 59.99955 fps/SAFE, but human requires every viewport boundary including same-role 2->3 and 4->1 plus stronger blur; per-slot queue + double Gaussian authored, target unproven.
+
+--------------------------------------------------------------------------------
+12.144 STRONGER BLUR + PERSISTENT CROSSFADE AUTHORED (U-081 FOLLOW-UP)
+--------------------------------------------------------------------------------
+
+  [W-300] U-081 follow-up authored. Controller now treats a same-role viewport
+    boundary as an instant no-op (current_slot advances, no blend-less 500 ms
+    dead fade and no fake crossfade), so a rapid 1->2->3->4->1 sweep chains only
+    the real role changes (red->work->red) into contiguous full-length
+    crossfades instead of interleaving invisible pauses. The blur shader is
+    replaced with a proper separable Gaussian: one horizontal + one vertical
+    25-tap kernel, sigma 6.5, radius 12 (was two radius-2 kernels). Kernel
+    weights normalize to 1.000001; py_compile PASS; bash -n PASS; loop
+    simulation fed an 8-boundary rapid sweep and produced exactly 4 crossfades +
+    4 same-role coalesces with the shader loaded once and cleared once.
+    Sandbox is not target acceptance.
+
+  [U-082] NEXT TARGET TRIAL: install branch; --check; start --replace; then a
+    rapid 1->2->3->4->1 sweep plus the 2->3 and 4->1 same-role moves; --status;
+    collect decoder%/SM/VRAM/RSS and the human visual result (blur strength,
+    crossfade persistence). Any black/lag/error: --restore. Autostart remains
+    Hidden/false until the live gate passes.
+
+[2026-08-16][M17-XMB-IPC-6] Stronger blur + same-role coalescing authored in
+  sandbox; target visual/performance gate remains the only acceptance.
