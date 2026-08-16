@@ -7734,3 +7734,76 @@ What worked, in order, when the box went black before lightdm with no TTY.
   down-file, then resume 12.108 ladder (compiz-revert -> Compiz verify ->
   U-055 Cheetah menus -> M12 efficient mp4 wallpaper). Session closing per
   operator: protocol written, CONTINUE_PROMPT refreshed, PR authorized.
+
+--------------------------------------------------------------------------------
+12.117 NEW SESSION (PHONE) — GREETER EDGE, AGENTS REDEPLOYED, TIMED X PROBE
+       AUTHORED. AWAITING IMAGE/STATUS CONTINUATION FROM OPERATOR.
+--------------------------------------------------------------------------------
+
+  [U-062] Operator opens a fresh session on branch
+    arena/01a00827-nvidia-intel-ocblizzard-4x8ddr and directs: deploy agents
+    per Directive 4, read CONTINUE_PROMPT.md then README.md before continuing,
+    and continue from an image + status the operator will supply. U-061 remains
+    in force unchanged: PR weight ceiling 405, bench-standing reminders every
+    few chats, tiny lines only (X-104).
+    RECEIPT: operator message 2026-08-16, this session.
+
+  [W-221] SESSION-OPEN VERIFICATION (Directive 5, ground truth only):
+    branch arena/01a00827-nvidia-intel-ocblizzard-4x8ddr at 5b8cfa6 (merge of
+    PR #10), working tree clean at open; MASTER.md 7736 lines read to Section
+    XIV; README.md 5 lines; scripts/ holds 12 tools (compiz-profile-repair,
+    gunmetal-emerald-theme, gunmetal-gtk3-theme, mpv-xwinwrap-shim,
+    xmb-bake-profile.mjs, xmb-bake-video.mjs, xmb-diag-hwdec,
+    xmb-render-previews.mjs, xmb-stage, xmb-wallpaper,
+    xmb-wallpaper-controller). Sandbox has NO view of the target box; every
+    target claim below is UNVERIFIED until an operator photo lands (Agent V).
+    RECEIPT: git log/status + ls run in sandbox, 2026-08-16.
+
+  [W-222] AGENT ALLOCATION FOR THE GREETER EDGE (Directive 4, one job each,
+    zero weight until unblocked):
+      Agent V — photo -> verbatim ledger transcription (X-113 1/8 caution).
+      Agent D — greeter isolation ONLY: lightdm.log receipt, failsafe flip to
+        xfwm4 (X-105 landmine cleared BEFORE any DM re-enable), timed X probe.
+      Agent C — compiz-revert + golden Default.ini SHA verify vs W-045.
+        Input = Agent D's verified xfwm4 desktop. Blocked.
+      Agent A — U-055 Cheetah menus (opacity plugin + gtk.css + terminal).
+        Blocked on C. Agent B — M12 efficient mp4 wallpaper fork (U-057,
+        W-199/W-200). Blocked on C. A and B never touch the WM stack.
+    RECEIPT: this row.
+
+  [W-223] TOOL AUTHORED (sandbox, UNEXECUTED on target):
+    scripts/x-probe-timed, 54 lines, 1899 bytes, mode 0755, `sh -n` passed,
+    SHA-256 b282462de3ae37d729766fdc3057676d2ca6ecf940aa76806751f3470487ec5a.
+    Methodology (Directive 2/3): the greeter edge was a MANUAL black-screen
+    guess loop whose failure mode is unrecoverable because VT switching is
+    dead (X-114) — a hung black X strands the operator at a hard reset. The
+    deterministic substitute is a SELF-TERMINATING probe: the X client is a
+    generated inner script ending in `sleep N`, so X always tears itself down
+    and returns tty1 regardless of what the monitors do. Three bounded modes
+    isolate the layer that fails:
+      green   -> xsetroot solid green only. Tests X+driver+DP signal alone.
+      xfwm4   -> xfwm4 --replace + xterm. Tests WM paint (W-015 safe path).
+      session -> xfce4-session. Tests full desktop minus the greeter.
+    Runs `startx <inner> -- vt1 -keeptty` (vt1 explicit because no VT switch
+    exists to escape to). Logs Xorg stderr to ~/xprobe.log and client stderr
+    plus an xrandr connected-output dump to ~/xprobe.inner.log, then prints
+    the EE count and outputs so the operator photographs ONE short screen.
+    Refuses to run as root (probe must reproduce the sd session, not root's).
+    Delivery to target is HEREDOC, never curl — raw.githubusercontent CDN
+    served stale content and cost a full cycle (X-097).
+    RECEIPT: sandbox chmod/sh -n/sha256sum output, 2026-08-16.
+
+  [W-224] ORDERING CONSTRAINT RESTATED BEFORE ANY BLOCK IS ISSUED: the
+    session failsafe Client0_Command still points at compiz-session (X-105).
+    Therefore mode `session` and any `rm /etc/sv/lightdm/down` are FORBIDDEN
+    until the failsafe is flipped to xfwm4 from the
+    ~/xfce4-session.xml.bak.1786722899 backup (W-011, 2234 bytes) — otherwise
+    the probe launches the exact WM suspected of the black screen. Probe order
+    is therefore: lightdm.log receipt -> failsafe flip -> green -> xfwm4 ->
+    session -> only then remove the down-file and reboot to the greeter.
+    RECEIPT: this row, deriving from X-105/W-011/W-219.
+
+[2026-08-16][M12-GREETER-1] AGENTS REDEPLOYED, SELF-TERMINATING X PROBE
+  AUTHORED (W-223), ORDER GATED BY W-224. Nothing executed on target. Awaiting
+  operator image + status continuation for Agent V transcription; Agents C/A/B
+  parked at zero weight.

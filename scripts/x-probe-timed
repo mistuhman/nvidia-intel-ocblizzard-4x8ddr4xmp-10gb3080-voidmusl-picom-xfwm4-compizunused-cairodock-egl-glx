@@ -1,0 +1,54 @@
+#!/bin/sh
+# x-probe-timed: self-terminating X probe for the greeter/display-signal edge.
+# Rationale: Ctrl+Alt+Fn VT switching is DEAD on this box (X-114), so any X
+# session that hangs black is unrecoverable without a hard reset. This probe
+# ALWAYS exits on its own timer, so the operator returns to tty1 every run.
+#
+# Usage (from tty1 as sd, never as root):
+#   x-probe-timed            # 25s solid-green root window  -> "can X light DP?"
+#   x-probe-timed 25 xfwm4   # 25s xfwm4 + xterm            -> "can a WM paint?"
+#   x-probe-timed 40 session # 40s full xfce4-session       -> "does desktop live?"
+#
+# Verdict words to report: green | desktop | black
+# Log: ~/xprobe.log (Xorg stderr) and ~/xprobe.inner.log (client stderr).
+set -u
+
+SECS="${1:-25}"
+MODE="${2:-green}"
+INNER="$HOME/.x-probe-inner.$$"
+
+case "$MODE" in
+  green|xfwm4|session) : ;;
+  *) echo "probe: unknown mode '$MODE' (green|xfwm4|session)"; exit 2 ;;
+esac
+
+if [ "$(id -u)" = "0" ]; then
+  echo "probe: refusing to run as root; log in as sd"; exit 2
+fi
+
+cat > "$INNER" <<EOF
+#!/bin/sh
+exec >>"\$HOME/xprobe.inner.log" 2>&1
+echo "=== probe $MODE ${SECS}s \$(date) ==="
+xsetroot -solid '#00aa00' 2>/dev/null
+xrandr --verbose 2>/dev/null | grep -E '^[A-Z]+-[0-9]+ (connected|disconnected)|^  [0-9]+x[0-9]+' | head -20
+case "$MODE" in
+  xfwm4)   xfwm4 --replace & xterm -geometry 80x10+100+100 & ;;
+  session) xfce4-session & ;;
+esac
+sleep $SECS
+EOF
+chmod 0755 "$INNER"
+
+echo "probe: starting X for ${SECS}s in mode '$MODE'; it will exit by itself."
+startx "$INNER" -- vt1 -keeptty >"$HOME/xprobe.log" 2>&1
+RC=$?
+rm -f "$INNER"
+
+echo "probe: X exited rc=$RC"
+echo "probe: fatal EE lines in ~/xprobe.log:"
+grep -c '^\[.*(EE)' "$HOME/xprobe.log" 2>/dev/null || echo 0
+echo "probe: outputs seen:"
+grep -E '^[A-Z]+-[0-9]+ connected' "$HOME/xprobe.inner.log" 2>/dev/null | tail -4
+echo "VERDICT: green | desktop | black"
+exit "$RC"
