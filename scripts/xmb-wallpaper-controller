@@ -188,7 +188,7 @@ def launch(cfg, initial):
                         ids[role] = track.get("id")
             if set(ids) != set(ROLES) or len(set(ids.values())) != 3:
                 fail(f"could not map mpv video tracks: {tracks}")
-            return xww, ipc, ids, log
+            ipc.call("set_property", "lavfi-complex", steady(initial, ids)); return xww, ipc, ids, log
         time.sleep(.05)
     kill(xww.pid, "xwinwrap"); fail(f"no mpv IPC socket; inspect {LOG}")
 
@@ -285,7 +285,7 @@ def status():
     if not live_pid(): print("XMB_CONTROLLER_STATUS=STOPPED"); return 1
     print(STATE.read_text().strip())
     ipc = IPC()
-    for name in ("lavfi-complex", "vo-drop-frame-count", "decoder-frame-drop-count"):
+    for name in ("lavfi-complex", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
         print(f"{name}={ipc.call('get_property', name)}")
     ipc.close(); print("XMB_CONTROLLER_STATUS=RUNNING"); return 0
 
