@@ -16,6 +16,51 @@ ENFORCE = [
     ("as_texture_filter",      "0"),
 ]
 
+# X-130a. The plugin floor. NOT an allow-list: W-252 settled that the guard
+# does not police as_active_plugins, because W-191 wants water/wobbly freely
+# enablable. But a CCSM session dropped `ccp` -- so Compiz stopped reading
+# Default.ini at all -- and input died on existing windows while the verifier
+# happily said SAFE. Removing these six does not express operator intent, it
+# breaks the desktop. --floor therefore only ever ADDS missing members and
+# never removes or reorders anything the operator chose.
+FLOOR = ["core", "ccp", "move", "resize", "place", "decoration"]
+
+
+def floor_repair(lines):
+    """Return (newlines, added). Additive only, inside [core]."""
+    try:
+        ci = lines.index("[core]")
+    except ValueError:
+        return lines, []
+    end = len(lines)
+    for i in range(ci + 1, len(lines)):
+        if lines[i].startswith("[") and lines[i].endswith("]"):
+            end = i
+            break
+    idx = None
+    for i in range(ci + 1, end):
+        if re.match(r"^\s*as_active_plugins\s*=", lines[i]):
+            idx = i
+            break
+    if idx is None:
+        cur = []
+    else:
+        cur = [p for p in lines[idx].split("=", 1)[1].strip().split(";") if p]
+    added = [p for p in FLOOR if p not in cur]
+    if not added:
+        return lines, []
+    # core and ccp must lead; the rest keep the operator's ordering.
+    head = [p for p in FLOOR if p in ("core", "ccp")]
+    rest = [p for p in cur if p not in head]
+    rest += [p for p in added if p not in head]
+    new = "as_active_plugins = " + ";".join(head + rest) + ";"
+    out = list(lines)
+    if idx is None:
+        out.insert(ci + 1, new)
+    else:
+        out[idx] = new
+    return out, added
+
 def parse(path):
     with open(path) as f:
         return f.read().splitlines()
@@ -59,12 +104,21 @@ def main():
     check = "--check" in sys.argv
     if not os.path.exists(CFG):
         print("repair: no profile at %s" % CFG); return 1
+    do_floor = "--floor" in sys.argv
     lines = parse(CFG)
     new, changed = repair(lines)
-    if not changed:
+    added = []
+    if do_floor:
+        new, added = floor_repair(new)
+        if added:
+            print("repair: plugin floor restored: %s" % ", ".join(added))
+        else:
+            print("repair: plugin floor OK, nothing added")
+    if not changed and not added:
         print("repair: OK, all %d enforced keys already correct" % len(ENFORCE))
         return 0
-    print("repair: %d key(s) wrong or missing: %s" % (len(changed), ", ".join(changed)))
+    if changed:
+        print("repair: %d key(s) wrong or missing: %s" % (len(changed), ", ".join(changed)))
     if check:
         print("repair: --check, no write performed")
         return 0

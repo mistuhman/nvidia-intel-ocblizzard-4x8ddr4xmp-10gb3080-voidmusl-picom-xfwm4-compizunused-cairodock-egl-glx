@@ -54,6 +54,47 @@ if [ -r "$CFG" ]; then
   fi
 fi
 
+# 2b. PLUGIN FLOOR (X-130a). The 7 [core] keys can be perfect while the desktop
+#     is unusable: a CCSM session dropped `ccp` and this verifier still said
+#     SAFE, so the next login would start Compiz that ignores Default.ini and
+#     loses input on existing windows. These six are not an allow-list (W-252
+#     keys-only stands) -- they are the floor below which the WM is not a
+#     working desktop. Extra plugins are the operator's business; MISSING ones
+#     are not.
+if [ -r "$CFG" ]; then
+  PL=$(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" \
+       | grep -E '^as_active_plugins *=' | head -1 | sed 's/^[^=]*= *//')
+  if [ -z "$PL" ]; then
+    say "FAIL  as_active_plugins missing from [core]"
+    demote UNSAFE
+  else
+    MISS=""
+    for p in core ccp move resize place decoration; do
+      case ";$PL;" in
+        *";$p;"*) ;;
+        *) MISS="$MISS $p" ;;
+      esac
+    done
+    if [ -z "$MISS" ]; then
+      say "ok    plugin floor core;ccp;move;resize;place;decoration"
+    else
+      say "FAIL  plugin floor BROKEN, missing:$MISS"
+      say "      next login would start a Compiz that cannot be driven."
+      # If the login hook itself repairs the floor, the drift is self-healing
+      # and a reboot is still safe -- same logic the 7 keys already get.
+      if grep -q -- '--floor' "$SESS" 2>/dev/null; then
+        say "      login hook runs --floor -> will self-repair at next login"
+        say "      fix now: compiz-profile-repair --floor"
+        demote REPAIRABLE
+      else
+        say "      login hook does NOT repair the floor. Fix before logout:"
+        say "      compiz-profile-repair --floor"
+        demote UNSAFE
+      fi
+    fi
+  fi
+fi
+
 # 3. Hashes. A drift from golden is INFORMATION, not a failure: CCSM writes
 #    legitimate plugin sections. Only the enforced keys above are load-bearing.
 if [ -r "$CFG" ]; then
@@ -71,6 +112,11 @@ if command -v xfconf-query >/dev/null 2>&1; then
     *compiz-session) say "ok    Client0_Command $C0" ;;
     "")              say "WARN  Client0_Command unreadable (no xfconf/DISPLAY?)" ;;
     *)               say "FAIL  Client0_Command is '$C0', expected compiz-session"
+                     # X-134: an escape path (compiz-revert --xfwm4 /
+                     # xfce-wm-recover) reverts this key. The live desktop can
+                     # be a perfect Compiz while the NEXT login is xfwm4.
+                     say "      next login would start '$C0', NOT Compiz."
+                     say "      fix: compiz-persist-arm"
                      demote UNSAFE ;;
   esac
 fi

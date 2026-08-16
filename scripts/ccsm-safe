@@ -36,8 +36,12 @@ post() {
   echo
   echo "== ccsm-safe: post-session repair =="
   # 1. Repair the seven hardware keys. Idempotent; prints its own verdict.
+  # `--floor` is additive only (X-130a): it restores core;ccp;move;resize;
+  # place;decoration if CCSM dropped one, and never removes a plugin the
+  # operator deliberately enabled. W-252 keys-only still holds for everything
+  # else -- water/wobbly/cube stay exactly as the session left them.
   if [ -x "$REPAIR" ]; then
-    "$REPAIR" || echo "ccsm-safe: WARNING repair returned non-zero"
+    "$REPAIR" --floor || echo "ccsm-safe: WARNING repair returned non-zero"
   else
     echo "ccsm-safe: WARNING $REPAIR missing; cannot auto-repair"
   fi
@@ -68,7 +72,11 @@ post() {
   echo
   echo "ccsm-safe: snapshot kept at $SNAP"
   echo "ccsm-safe: to undo everything this session did:"
-  echo "  cp -a $SNAP $CFG && compiz --replace ccp &"
+  echo "  cp -a $SNAP $CFG"
+  # X-130b: NOT `compiz --replace ccp &`. Backgrounding leaves the WM as a job
+  # of this shell rather than a session-owned process; closing the terminal
+  # takes the desktop with it. setsid detaches it properly.
+  echo "  setsid \$HOME/.local/bin/compiz-session"
 }
 
 # ---- preconditions -----------------------------------------------------

@@ -1,0 +1,82 @@
+#!/bin/sh
+# compiz-persist-arm: re-arm (or inspect) the XFCE session key that decides
+# WHICH WINDOW MANAGER STARTS AT LOGIN.
+#
+# WHY THIS EXISTS (W-261/X-134):
+#   Reboot-persistence was armed in W-245 and cold-boot proven in W-246, so it
+#   was treated as settled. It is not durable: `compiz-revert --xfwm4` and
+#   `xfce-wm-recover` exist precisely to put xfwm4 back, and X-130(c) fired one
+#   of them over a benign warning. That escape ALSO reverts this key, so the
+#   machine silently went back to "next login = xfwm4" while the LIVE desktop
+#   still showed a perfectly good Compiz. Live state is not next-boot state
+#   (X-031). Every use of an escape path must be followed by a re-arm.
+#
+#   Doing it by hand is a long xfconf-query line with -n -a -t string, and a
+#   phone paste corrupts long lines (W-220/X-122). Hence a script.
+#
+# Usage:
+#   compiz-persist-arm --check   # read-only: print current value, no writes
+#   compiz-persist-arm           # back up, arm, read back, gate
+set -u
+
+SESS="$HOME/.local/bin/compiz-session"
+XML="$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml"
+PROP=/sessions/Failsafe/Client0_Command
+CHECK=0
+[ "${1:-}" = "--check" ] && CHECK=1
+
+command -v xfconf-query >/dev/null 2>&1 || {
+  echo "arm: FAIL  xfconf-query not found"; exit 2; }
+[ -n "${DISPLAY:-}" ] || {
+  echo "arm: FAIL  no DISPLAY; xfconf needs the running session"; exit 2; }
+
+read_c0() {
+  xfconf-query -c xfce4-session -p "$PROP" 2>/dev/null \
+    | grep -v '^Value is an array' | grep -v '^$' | head -1
+}
+
+CUR=$(read_c0)
+echo "arm: current $PROP"
+echo "arm:   '$CUR'"
+
+case "$CUR" in
+  *compiz-session)
+    echo "arm: OK    already armed; next login starts Compiz."
+    exit 0 ;;
+esac
+
+echo "arm: NOT ARMED -- next login would start '$CUR', not Compiz."
+
+if [ "$CHECK" = 1 ]; then
+  echo "arm: --check, no write performed"
+  exit 0
+fi
+
+# The launcher must exist BEFORE we point login at it. Pointing the session at
+# a missing file is how you get a login with no window manager at all.
+[ -x "$SESS" ] || { echo "arm: FAIL  $SESS missing/not executable; refusing"; exit 2; }
+
+if [ -f "$XML" ]; then
+  B="$XML.bak.arm.$(date +%s)"
+  cp -a "$XML" "$B" || { echo "arm: FAIL backup"; exit 2; }
+  ls -l "$B" || exit 2
+else
+  B=""
+  echo "arm: note  no $XML yet (xfconf writes it on session exit)"
+fi
+
+xfconf-query -c xfce4-session -p "$PROP" -n -a -t string -s "$SESS" \
+  || { echo "arm: FAIL  xfconf-query write failed"; exit 2; }
+
+NEW=$(read_c0)
+echo "arm: read-back '$NEW'"
+case "$NEW" in
+  *compiz-session)
+    echo "arm: OK    armed. Next login starts Compiz."
+    [ -n "$B" ] && echo "arm:       undo: cp -a $B $XML"
+    echo "arm:       undo (live): compiz-revert --xfwm4"
+    exit 0 ;;
+  *)
+    echo "arm: FAIL  read-back does not match; key is '$NEW'"
+    exit 1 ;;
+esac

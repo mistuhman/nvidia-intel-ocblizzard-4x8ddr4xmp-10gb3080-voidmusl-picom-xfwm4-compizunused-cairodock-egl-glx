@@ -39,12 +39,67 @@ echo "== compiz-guard-install =="
 install_one compiz-profile-repair
 install_one compiz-profile-verify
 install_one ccsm-safe
+install_one compiz-persist-arm
 
 echo
 echo "-- repo-side hashes (compare with the installed ones above) --"
-for f in compiz-profile-repair compiz-profile-verify ccsm-safe; do
+for f in compiz-profile-repair compiz-profile-verify ccsm-safe compiz-persist-arm; do
   [ -r "$SRC/$f" ] && echo "  $(sha256sum "$SRC/$f" | cut -c1-16)...  $f"
 done
+
+# X-130a. The login hook is the only guard that runs when nobody is watching,
+# so it is where the plugin floor belongs. Opt-in and reversible: we rewrite
+# ONE known line, back the launcher up first, gate on `sh -n`, and refuse
+# outright if the file does not have the exact expected shape (never guess at
+# an unfamiliar launcher -- X-103's ConfigParser lesson applies to sed too).
+arm_hook() {
+  L="$DEST/compiz-session"
+  if [ ! -f "$L" ]; then echo "hook: FAIL  $L missing"; RC=1; return 1; fi
+  if grep -qE 'compiz-profile-repair"? --floor' "$L"; then
+    echo "hook: OK    already armed (--floor present)"
+    return 0
+  fi
+  if ! grep -q 'compiz-profile-repair' "$L"; then
+    echo "hook: SKIP  $L has no compiz-profile-repair line; refusing to guess"
+    echo "hook:       inspect it by hand, then add --floor to that line"
+    RC=1; return 1
+  fi
+  B="$L.bak.floor.$(date +%s)"
+  cp -a "$L" "$B" || { echo "hook: FAIL backup"; RC=1; return 1; }
+  # Token-aware insert. A naive sed got this wrong twice in testing: with two
+  # -e branches it appended `--floor --floor`, and on a quoted invocation
+  # (`"$HOME/.local/bin/compiz-profile-repair"`) it pushed the flag INSIDE the
+  # quotes, producing a path that cannot exist. Insert exactly once, after the
+  # repair token and after its closing quote if there is one.
+  awk '
+    !done && /compiz-profile-repair/ {
+      if (match($0, /compiz-profile-repair"?/)) {
+        e = RSTART + RLENGTH
+        $0 = substr($0, 1, e - 1) " --floor" substr($0, e)
+        done = 1
+      }
+    }
+    { print }
+  ' "$B" > "$L.tmp" || { echo "hook: FAIL rewrite"; RC=1; return 1; }
+  if ! sh -n "$L.tmp"; then
+    echo "hook: FAIL  rewritten launcher fails sh -n; discarded"
+    rm -f "$L.tmp"; RC=1; return 1
+  fi
+  if ! grep -qE 'compiz-profile-repair"? --floor' "$L.tmp"; then
+    echo "hook: FAIL  rewrite did not take; discarded"
+    rm -f "$L.tmp"; RC=1; return 1
+  fi
+  mv -f "$L.tmp" "$L" && chmod 0755 "$L" || { echo "hook: FAIL install"; RC=1; return 1; }
+  echo "hook: OK    armed. Launcher now repairs the plugin floor every login."
+  echo "hook:       undo:  cp -a $B $L"
+  sed 's/^/hook:  | /' "$L"
+}
+
+if [ "${1:-}" = "--arm-session-hook" ]; then
+  echo
+  echo "-- login-hook floor arming (X-130a) --"
+  arm_hook
+fi
 
 echo
 echo "-- pre-existing escapes, NOT touched by this installer --"

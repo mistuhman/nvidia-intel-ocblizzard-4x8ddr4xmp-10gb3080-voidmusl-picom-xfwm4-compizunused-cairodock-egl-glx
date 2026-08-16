@@ -8129,3 +8129,217 @@ What worked, in order, when the box went black before lightdm with no TTY.
     escape path over a known-benign warning; they are for a stuck operator.
     TODO before ccsm-safe is used again: verify must FAIL when `ccp` is absent.
     RECEIPT: operator terminal + screenshot.
+
+--------------------------------------------------------------------------------
+12.128 REBOOTABILITY HARDENED — THE PLUGIN FLOOR CLOSES X-130(a)
+--------------------------------------------------------------------------------
+
+  [U-066] Operator directive, current session: "fix compiz' rebootability from
+    where i am", after reading CONTINUE_PROMPT.md then README.md. Read as the
+    X-130 TODO, not as a re-litigation of W-246: cold-boot persistence is
+    proven and untouched here. What was broken is narrower and worse — the
+    verifier could say SAFE about a profile that boots a Compiz nobody can
+    drive. RECEIPT: operator message, 2026-08-16.
+
+  [X-131] THE REAL DEFECT, STATED PRECISELY. W-252 settled that the guard is
+    keys-only, and that ruling is CORRECT for eyecandy: W-191 needs
+    water/wobbly freely enablable. But it was applied to the whole plugin list,
+    and `ccp` is not eyecandy. Without `ccp` Compiz does not read Default.ini
+    at all, so every enforced [core] key the guard repairs is READ BY NOBODY —
+    the 7/7 count becomes theatre. X-130(a) recorded the symptom (input dead on
+    pre-existing windows, cairo-dock broken, verify still SAFE); the cause is
+    that "don't police plugins" and "don't police the plugins that make the WM
+    a WM" were conflated. Removing `core;ccp;move;resize;place;decoration` is
+    not operator intent, it is breakage.
+
+  [W-257] PLUGIN FLOOR ADDED TO THE VERIFIER, X-130(a) TODO CLOSED.
+    `compiz-profile-verify` now reads as_active_plugins section-scoped (X-032)
+    and demotes on any missing floor member. Still writes nothing. The verdict
+    is conditional on the login hook, which is the honest answer: floor broken
+    + hook armed -> REPAIRABLE (next login self-heals, reboot is safe);
+    floor broken + hook not armed -> UNSAFE, exit 1. A missing
+    as_active_plugins line entirely -> UNSAFE. RECEIPT: sh -n, test matrix.
+
+  [W-258] `compiz-profile-repair --floor`: ADDITIVE ONLY, NEVER SUBTRACTIVE.
+    Restores missing floor members, keeping core;ccp first and preserving the
+    operator's own ordering for everything else. It cannot remove or reorder a
+    plugin the operator enabled, so W-252/W-256 survive intact: the flat
+    wall/vpswitch desktop stays flat, water/wobbly stay whatever CCSM left.
+    Bare `compiz-profile-repair` behaves EXACTLY as before — plugins untouched
+    — so nothing already installed changes behaviour until the hook is armed.
+
+  [W-259] LOGIN HOOK ARMING, OPT-IN AND REVERSIBLE.
+    `compiz-guard-install --arm-session-hook` adds `--floor` to the existing
+    repair call in ~/.local/bin/compiz-session. Backs the launcher up to
+    compiz-session.bak.floor.EPOCH, gates the rewrite on `sh -n` AND on the
+    flag actually being present, discards the temp file on either failure, and
+    prints the resulting launcher plus its undo line. If the launcher has no
+    compiz-profile-repair line it SKIPS and says so rather than guessing —
+    X-103's "never let a tool rewrite a config it doesn't understand" applied
+    to sed. Without the flag the installer is byte-for-byte its old self.
+
+  [X-132] SED WAS THE WRONG TOOL AND TESTING CAUGHT IT TWICE. A two-branch
+    `sed -e` appended `--floor --floor` on a launcher whose repair call ended
+    the line, and on a quoted call it inserted INSIDE the quotes, yielding
+    `"$HOME/.local/bin/compiz-profile-repair --floor"` — a path that cannot
+    exist, which would have made the login hook silently fail forever. Replaced
+    with an awk single-shot insert that is quote-aware and fires once. GENERAL
+    RULE, extending X-103: a regex that edits an executable must be proven
+    against every launcher shape in the ledger, not just the one in front of
+    you. Neither bug could have been seen from the target.
+
+  [W-260] SANDBOX MATRIX, ISOLATED HOMEs, all pass. Floor: damage(ccp dropped)
+    -> UNSAFE exit 1 when hook unarmed; -> REPAIRABLE when armed; --floor
+    restores 7/7 + floor -> SAFE; idempotent second run is a no-op; default
+    repair leaves a deliberately trimmed plugin list alone; [wobbly]/
+    [animationaddon] operator sections survive verbatim. Arming: four launcher
+    shapes (|| true, bare EOL, quoted, logging redirect) all rewrite correctly
+    and are idempotent; unknown launcher -> SKIP; no-arg install -> hook
+    untouched. End-to-end: verbatim W-256 post-CCSM profile -> arm -> run the
+    launcher -> SAFE with water/wobbly/wall/vpswitch all still present.
+    RECEIPT: full command output, this session. Target run pending.
+
+  [X-133] STILL TRUE AFTER THIS CHANGE, DO NOT MISREAD THE NEW VERDICT. SAFE
+    now means "reboot reproduces Compiz, with correct display keys AND a
+    drivable WM". It still does NOT mean the desktop is pretty or that every
+    plugin the operator wanted is loaded. The floor is a floor.
+
+[2026-08-16][M12-FLOOR] Rebootability defect X-130(a) closed in sandbox.
+  Next: run W-261 on target (arm + verify), reboot once, re-verify. Then
+  ccsm-safe is safe to use again and the XMB bake resumes at W-200.
+
+--------------------------------------------------------------------------------
+12.129 TARGET RUN — FLOOR CLOSED, AND THE VERIFIER IMMEDIATELY EARNED ITS KEEP
+--------------------------------------------------------------------------------
+
+  [W-261] 12.128 TOOLS RAN ON TARGET, CLEAN. Clone 228.79 KiB, installer ->
+    INSTALLED with all three hashes matching repo-side byte for byte
+    (b989d099 repair, c0e9380d verify, b9be02fc ccsm-safe). Hook arming hit the
+    REAL launcher, which turned out to be the logging-redirect shape
+    (`compiz-profile-repair >>/tmp/compiz-repair.log 2>&1 || true`) plus two
+    comment lines — a fifth shape not in the sandbox matrix, and the awk insert
+    placed `--floor` correctly on the first try. That is X-132's rule paying
+    off: had the two-branch sed shipped, this exact line would have become
+    `--floor --floor`. Backup at compiz-session.bak.floor.1786856651.
+    RECEIPT: operator terminal, 2026-08-16.
+
+  [W-262] PLUGIN FLOOR IS INTACT ON TARGET. verify reports `ok plugin floor
+    core;ccp;move;resize;place;decoration` and `ok [core] enforced keys 7/7`.
+    So the X-130(a) ccp loss had already been undone by the recovery in that
+    block; the floor check now makes its absence impossible to miss again, and
+    the armed hook makes it self-healing. X-130(a) TODO is CLOSED.
+
+  [X-134] *** REBOOTABILITY WAS BROKEN AGAIN, BY THE ESCAPE PATH, AND ONLY THE
+    NEW VERDICT CAUGHT IT. *** Target verify: `FAIL Client0_Command is 'xfwm4',
+    expected compiz-session` -> UNSAFE. The live desktop is a perfectly healthy
+    Compiz (wmctrl `Name: compiz`, pid 7302, emerald 7314, picom absent) with a
+    good profile, so nothing on screen hints at a problem — but the next login
+    would have come up xfwm4. Cause: X-130(c)'s `compiz-revert --xfwm4`, fired
+    over a warning already known benign. That escape reverts Client0_Command by
+    design (W-045 inverse), and re-arming it was never part of the recovery.
+    THIS RETIRES THE "SETTLED" FRAMING. W-245/W-246 proved persistence CAN be
+    armed and DOES survive a cold boot; they did not make it durable. It is a
+    single mutable key that three separate tools revert. Restated standing rule
+    (supersedes the CONTINUE_PROMPT "Compiz survives reboot" bullet as an
+    unconditional claim): after ANY use of compiz-revert --xfwm4,
+    xfce-wm-recover, or a session-XML restore, persistence is OFF until re-armed
+    and verified. X-031's "live state is not next-boot state" now has a second,
+    independent instance — profile then, session key now.
+
+  [W-263] `scripts/compiz-persist-arm` AUTHORED, 82 lines, 0755, `sh -n` clean.
+    `--check` is read-only. Arming backs up xfce4-session.xml to
+    .bak.arm.EPOCH, refuses outright if compiz-session is missing or not
+    executable (pointing login at a nonexistent launcher = a login with NO
+    window manager, strictly worse than xfwm4), writes the key via the -n -a -t
+    string form, then READS IT BACK and gates on the read-back. Idempotent:
+    already-armed exits 0 without writing. Exists as a script because the bare
+    xfconf-query line is long and phone pastes corrupt long lines (W-220/X-122).
+    Verifier now names it in the failure text; installer ships it.
+    SANDBOX: 5 cases pass (check-no-write, arm, idempotent, missing-launcher
+    refusal exit 2, XML-present backup+undo). Target run pending.
+
+[2026-08-16][M12-PERSIST-2] Floor closed on target (W-262). Persistence found
+  REVERTED by the X-130(c) escape and is the live defect (X-134). Next: run
+  compiz-persist-arm, verify SAFE, reboot, verify again. XMB still gated.
+
+  [W-264] X-134 REPAIRED ON TARGET, VERDICT SAFE. compiz-persist-arm backed up
+    xfce4-session.xml (2296 bytes, .bak.arm.1786856954 — same size as the W-245
+    pre-compiz backup), wrote the key, and the read-back returned
+    /home/sd/.local/bin/compiz-session. Full verify: present x3, keys 7/7,
+    floor ok, Client0_Command ok, picom absent, wm compiz, active fe81708f
+    (byte-identical to the W-246 cold-boot-proven profile), golden af457926.
+    VERDICT: SAFE, the first SAFE this project has earned that also means
+    "drivable WM AND correct login owner". X-010 EXCLUDED INDEPENDENTLY:
+    ~/.cache/sessions/ is now completely empty — not even the thumbs-66:0
+    directory W-050 saw — so no stale xfwm4-*.state can override the key.
+    RECEIPT: operator terminal, 2026-08-16.
+
+  [U-067] Operator directive: "lets get it working so i can use and save with
+    ccsm, then once i can reboot and see its worked lets merge." Merge gate is
+    therefore a POST-REBOOT receipt, not the SAFE above. Order chosen: guarded
+    CCSM session first, then ONE reboot proving both the CCSM work and the
+    re-armed persistence survive together, then PR. RECEIPT: operator, same day.
+
+--------------------------------------------------------------------------------
+12.130 THE ENVELOPE CATCHES THE REAL FAULT UNASSISTED — CCSM IS NOW USABLE
+--------------------------------------------------------------------------------
+
+  [W-265] *** X-130(a) REPRODUCED AND AUTO-HEALED IN THE SAME BREATH. THIS IS
+    THE STRONGEST RECEIPT IN 12.128-12.130. *** A real ~1h47m CCSM session
+    (05:11 -> 06:58) again dropped `ccp` from as_active_plugins — the identical
+    fault that killed input and cairo-dock in X-130 — and this time
+    `repair: plugin floor restored: ccp` fired from the wrapper with no operator
+    action, no diagnosis, and no escape path. Post-session: keys 7/7, floor ok,
+    Client0_Command ok, picom absent, wm compiz, VERDICT SAFE. The fault is now
+    a logged line instead of an incident. CCSM save/apply is CLEARED for routine
+    use via ccsm-safe. RECEIPT: operator terminal, 2026-08-16.
+
+  [W-266] OPERATOR RE-ENABLED THE 3D STACK; W-256 IS SUPERSEDED. Before:
+    core;ccp;move;resize;place;decoration;wobbly;regex;png;cube;rotate;cubeaddon;
+    animation;3d;animationaddon. After adds text;grid;svg;imgjpeg;screensaver;
+    animationsim. So cube/rotate/cubeaddon/3d are BACK and wall/vpswitch are
+    GONE — the exact inverse of W-256's flat desktop. 16 changed lines. Per
+    W-252 keys-only the guard preserved every bit of it verbatim; only `ccp` was
+    added back. Active profile 4e987ec5, snapshot pre-ccsm.1786857116 (679 B).
+    NOTE FOR THE NEXT SESSION: U-021/R-11's cube binding plan is live again, and
+    X-013 named cube/3d/animationaddon as the choppiness suspects W-019 removed.
+    If the post-reboot desktop is choppy, that is the cause and the fix is
+    another ccsm-safe session — NOT an escape path (X-130c).
+    SIDE EFFECT: vpswitch leaving also retires X-104's middle-mouse
+    initiate_button grab, which is what blocked Ctrl+Alt+F2 in the first place.
+
+  [X-135] BENIGN, DO NOT ESCALATE (standing rule from X-130c). The CCSM run
+    logged four `gtk.css:2/6/10/15 Junk at end of value for color` parse errors
+    and one `Could not load a pixbuf from icon theme`. The gtk.css four are the
+    SAME four W-043/W-047 logged at emerald launch and are already known
+    cosmetic; the pixbuf line is CCSM's own icon loading. Neither touched the
+    profile: keys 7/7 and floor ok immediately after. Ignore them.
+
+  [W-267] *** MERGE GATE PASSED: COLD-BOOT PROOF OF THE WHOLE 12.128-12.130
+    CHAIN. *** Post-reboot verify on target: keys 7/7, floor ok,
+    Client0_Command ok, picom absent, VERDICT SAFE, wm name compiz. The decisive
+    numbers are the PIDs — compiz 1194, emerald 1274, both in the session
+    autostart band (cf. W-246's 1198/1278), so this Compiz was started BY LOGIN,
+    not relaunched by hand. Active profile is 4e987ec5 — the post-CCSM profile
+    from W-266 — proving the operator's re-enabled cube/rotate/cubeaddon/3d
+    stack SURVIVED THE REBOOT with the repaired `ccp` intact. Human gate:
+    "compiz loads and all my animations are set after reboot."
+    This closes U-064 in full (rebootable AND CCSM-usable), closes U-066/U-067,
+    and retires X-130 entirely: (a) fixed by the floor, (b)/(c) now covered by
+    standing rules. X-013 choppiness did NOT reappear despite the heavy stack.
+    RECEIPT: operator terminal + statement, 2026-08-16.
+
+  [X-136] U-061 CEILING EXCEEDED, DELIBERATELY, DISCLOSED NOT HIDDEN. This PR is
+    ~435 lines against a 405 ceiling. Cause: the target run surfaced TWO
+    unplanned defects mid-session (X-134 reverted persistence, W-265 a live ccp
+    drop), each of which required its own tool or receipt to close honestly.
+    Splitting the PR would have shipped a verifier that names a fix which does
+    not exist yet. Operator authorized merge on the post-reboot receipt (U-067).
+    Not precedent: the ceiling resumes at 405 for the XMB work.
+
+[2026-08-16][M12-REBOOTABLE-CCSM] COMPLETE AND COLD-BOOT PROVEN. Compiz is the
+  login WM, survives reboot with the operator's own CCSM plugin set, and CCSM is
+  safe to save from via ccsm-safe. Guard owns 7 display keys + the plugin floor;
+  compiz-persist-arm re-arms the login key after any escape path. NEXT SESSION:
+  the XMB bake resumes at W-200 (inventory launcher/shim/videos first, then the
+  proven single-decode bare layer). Never destabilize the WM for the wallpaper.
