@@ -10,7 +10,7 @@ set -euo pipefail
 ROOT="${XMB_BAKE_ROOT:-/mnt/games/xmb-wave-bake}"
 CUR=""; LOG="/tmp/xmb-wallpaper-controller.log"
 vp_to_role(){ local vx="$1"; if [ "$vx" -lt 2240 ]; then echo "main-red"; elif [ "$vx" -lt 6720 ]; then echo "work-monochrome"; elif [ "$vx" -lt 11200 ]; then echo "sleep"; else echo "main-red"; fi; }
-get_vp(){ xprop -root _NET_DESKTOP_VIEWPORT 2>/dev/null | awk -F= '{print $2}' | tr -d ' ,' | cut -d',' -f1 || echo "0"; }
+get_vp(){ xprop -root _NET_DESKTOP_VIEWPORT 2>/dev/null | awk -F= '{print $2}' | cut -d',' -f1 | tr -d ' ' || echo "0"; }
 launch_role(){ local role="$1"; [ "$role" != "$CUR" ] || return 0; echo "$(date -Is) $CUR -> $role vp=$(get_vp)" | tee -a "$LOG"; pkill -f "xwinwrap.*$CUR" 2>/dev/null || true; pkill -f "mpv.*$CUR" 2>/dev/null || true; XMB_USE_GEOMETRY=1 XMB_MPV_VERBOSE=0 "$HOME/.local/bin/xmb-wallpaper" "$role" background 2>&1 | tee -a "$LOG"; CUR="$role"; }
 vp=$(get_vp); role=$(vp_to_role "$vp"); echo "start vp=$vp role=$role" | tee "$LOG"; launch_role "$role"
 xprop -root -spy _NET_DESKTOP_VIEWPORT 2>/dev/null | while read -r line; do vx=$(echo "$line" | awk -F= '{print $2}' | cut -d',' -f1 | tr -d ' '); role=$(vp_to_role "${vx:-0}"); launch_role "$role"; done
