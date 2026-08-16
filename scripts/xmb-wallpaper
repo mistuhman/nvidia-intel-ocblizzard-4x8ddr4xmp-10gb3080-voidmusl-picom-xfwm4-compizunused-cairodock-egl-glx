@@ -7,7 +7,6 @@ MODE="${2:-background}"
 ROOT="${XMB_BAKE_ROOT:-/mnt/games/xmb-wave-bake}"
 VIDEO="${XMB_VIDEO:-$ROOT/out/$ROLE/$ROLE.loop-60s.mp4}"
 HWDEC_FORCE="${XMB_HWDEC:-}"
-ALLOW_AUTO="${XMB_ALLOW_AUTO:-0}"
 VERBOSE="${XMB_MPV_VERBOSE:-0}"
 SHIM="${XMB_SHIM:-$HOME/.local/bin/mpv-xwinwrap-shim}"
 case "$ROLE" in sleep|main-red|work-monochrome) ;; *) echo "usage: $0 [sleep|main-red|work-monochrome] [foreground|background]" >&2; exit 2;; esac
@@ -15,15 +14,21 @@ case "$ROLE" in sleep|main-red|work-monochrome) ;; *) echo "usage: $0 [sleep|mai
 command -v mpv >/dev/null || { echo "mpv not installed" >&2; exit 2; }
 command -v xwinwrap >/dev/null || { echo "xwinwrap not installed" >&2; exit 2; }
 [ -x "$SHIM" ] || { echo "shim missing at $SHIM — install scripts/mpv-xwinwrap-shim to ~/.local/bin/" >&2; exit 2; }
+# W-200: xfdesktop's Desktop windows cover xwinwrap's bare layer. Stop only
+# xfdesktop; XFCE panel/session and the Compiz stack remain untouched.
+if pgrep -x xfdesktop >/dev/null; then
+  xfdesktop --quit
+  sleep 1
+fi
 # Upstream safe set + sticky for Compiz Wall 4 viewports (17920x1440). -fs fullscreen covers 4480x1440 X screen; -g explicit fallback.
 # User report "did not wrap to both screens" — sticky + explicit geometry needed.
 XWW_COMMON=(-b -s -fs -st -sp -nf -ov -fdt)
 [ "${XMB_USE_GEOMETRY:-0}" = "1" ] && XWW_COMMON=(-b -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt)
 choose_hwdec(){
   if [ -n "$HWDEC_FORCE" ]; then echo "$HWDEC_FORCE"; return; fi
-  # nvdec fails under gpu-next Vulkan (Could not create device). Only -copy variants work per W-195 verbose table.
-  local candidates=("nvdec-copy" "vaapi" "vaapi-copy" "cuda-copy" "no")
-  [ "$ALLOW_AUTO" = "1" ] && candidates+=("auto")
+  # W-195 proved rc=0 can still mean software fallback. Only these -copy
+  # variants logged real NVIDIA hardware decode; never select auto/VAAPI here.
+  local candidates=("nvdec-copy" "cuda-copy" "no")
   for H in "${candidates[@]}"; do
     if timeout 8 mpv --hwdec="$H" --vo=gpu-next --no-audio --frames=5 --really-quiet "$VIDEO" >/dev/null 2>&1; then
       echo "$H"; return
