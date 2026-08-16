@@ -7807,3 +7807,97 @@ What worked, in order, when the box went black before lightdm with no TTY.
   AUTHORED (W-223), ORDER GATED BY W-224. Nothing executed on target. Awaiting
   operator image + status continuation for Agent V transcription; Agents C/A/B
   parked at zero weight.
+
+--------------------------------------------------------------------------------
+12.118 LIGHTDM.LOG RECEIPT LANDS — GREETER LOOPS ON VT 7, SESSION pid=1476
+       EXITS rc=1. TWO CANDIDATE KILLERS ISOLATED.
+--------------------------------------------------------------------------------
+
+  [W-225] AGENT V TRANSCRIPT (operator photo, 2026-08-16, tty1 live, verbatim;
+    X-113 1/8 caution applied to all digits):
+      [sd@66 ~]$ sudo grep -E 'EE|WW|creens' /var/log/Xorg.0.log | tail -20
+      [ 46.249] Current Operating System: Linux 66 6.18.35-tkg-bore #1 SMP
+        PREEMPT_DYNAMIC TKG Tue Jun 9 05:23:38 MDT 2026 x86_64
+      [ 46.250] (WW) The directory "/usr/share/fonts/X11/OTF" does not exist.
+      [ 46.260] (WW) Open ACPI failed (/var/run/acpid.socket) (No such file or directory)
+      [ 46.261] (==) Option "AllowNVIDIAGpuScreens"
+      [ 46.887] (II) Initializing extension MIT-SCREEN-SAVER
+      (two joined-paste attempts failed: "tail: option used in invalid context -- 2")
+      [sd@66 ~]$ sudo tail -30 /var/log/lightdm/lightdm.log
+      [+0.79s] DEBUG: Seat seat0 changes active session to c35
+      [+0.79s] DEBUG: Session c35 is already active
+      [+0.79s] DEBUG: Session pid=1476: Exited with return value 1
+      [+0.79s] DEBUG: Seat seat0: Session stopped
+      [+0.79s] DEBUG: Seat seat0: Stopping display server, no sessions require it
+      [+0.79s] DEBUG: Sending signal 15 to process 1465
+      [+0.80s] DEBUG: Seat seat0 changes active session to
+      [+1.12s] DEBUG: Process 1465 exited with return value 0
+      [+1.12s] DEBUG: XServer 0: X server stopped
+      [+1.12s] DEBUG: Releasing VT 7
+      [+1.12s] DEBUG: XServer 0: Removing X server authority /var/run/lightdm/root/:0
+      [+1.12s] DEBUG: Seat seat0: Display server stopped
+      [+1.12s] DEBUG: Seat seat0: Active display server stopped, starting greeter
+      [+1.12s] DEBUG: Seat seat0: Creating greeter session
+      [+1.12s] DEBUG: Seat seat0: Creating display server of type x
+      [+1.12s] DEBUG: Using VT 7
+      [+1.12s] DEBUG: Seat seat0: Starting local X display on VT 7
+      [+1.12s] DEBUG: XServer 0: Logging to /var/log/lightdm/x-0.log
+      [+1.12s] DEBUG: XServer 0: Writing X server authority to /var/run/lightdm/root/:0
+      [+1.12s] DEBUG: XServer 0: Launching X Server
+      [+1.12s] DEBUG: Launching process 1481: /usr/bin/X :0 -seat seat0 -auth
+        /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch
+      [+1.12s] DEBUG: XServer 0: Waiting for ready signal from X server :0
+      [+1.75s] DEBUG: Got signal 15 from process 840
+      [+1.75s] DEBUG: Caught Terminated signal, shutting down
+      [+1.75s] DEBUG: Seat seat0: Stopping / Stopping display server /
+        Sending signal 15 to process 1481 / Stopping session / Session stopped
+      [sd@66 ~]$
+    RECEIPT: operator photo image.jpg, 2026-08-16.
+
+  [W-226] KERNEL VERSION NOW DOUBLY CONFIRMED from Xorg.0.log OS line:
+    6.18.35-tkg-bore, build stamp Tue Jun 9 05:23:38 MDT 2026. X-113's erratum
+    (6.10 misread) stays superseded; ledger figure is correct.
+    RECEIPT: same photo.
+
+  [X-117] THE GREETER NEVER GETS TO FAIL — IT IS TORN DOWN FIRST, AND THE
+    PRECEDING SESSION DIED rc=1. Two candidate killers, both consistent with
+    every prior receipt, neither yet discriminated:
+      H1 (SESSION-EXEC): "Session pid=1476: Exited with return value 1"
+        immediately precedes "no sessions require it". A user/greeter session
+        exec that dies instantly makes lightdm tear the X server down and
+        respawn — the classic login-loop signature. The known landmine that
+        produces exactly this is X-105: failsafe Client0_Command still points
+        at /home/sd/.local/bin/compiz-session, so the session exec is Compiz,
+        which is the very binary suspected of crashing (W-191 plugin
+        divergence, X-041 emerald theme). This costs the monitors their signal
+        at DM handoff exactly as observed.
+      H2 (VT-7 INVISIBILITY): lightdm launches X with `vt7 -novtswitch`. On
+        this box VT switching is DEAD (X-114). An X server bound to VT 7 with
+        -novtswitch cannot pull the console away from VT 1 if the VT layer is
+        broken — X would initialize cleanly (which Xorg.0.log confirms: no
+        fatal EE, reaches MIT-SCREEN-SAVER) while the panels are never handed
+        the VT 7 framebuffer. "Clean X log + no picture" is the exact
+        fingerprint of this failure, and it explains why no EE was ever found.
+    NOTE the shutdown at [+1.75s] is NOT a fault: signal 15 from process 840 is
+    runit honouring the /etc/sv/lightdm/down file (W-219). Do not read it as a
+    crash. Also newly surfaced: a SECOND log, /var/log/lightdm/x-0.log, holds
+    the greeter's own X output and has never been read.
+    RECEIPT: W-225 transcript, 2026-08-16.
+
+  [W-227] DISCRIMINATOR DESIGNED (Directive 3 — smallest test that separates
+    H1 from H2, not a fix): run X on VT 1 with a trivial non-session client.
+      - If the screen paints, the X/driver/DP path is healthy on VT 1 and VT 7
+        is the killer (H2) -> fix is forcing lightdm's X off VT 7.
+      - If the screen stays black with a clean log, H2 is refuted and the
+        signal loss is in the driver/output path itself, not the session.
+    The failsafe flip to xfwm4 (W-011 backup, 2234 bytes) is applied in the
+    SAME block per the X-114 combine directive: it is provably safe, fully
+    backed up, and it must precede any session-mode probe (W-224) regardless
+    of which hypothesis wins. Probe is self-terminating (W-223 rationale) so
+    tty1 always returns.
+    RECEIPT: this row.
+
+[2026-08-16][M12-GREETER-2] LIGHTDM.LOG READ. H1 (compiz session-exec rc=1) vs
+  H2 (VT 7 invisible under dead-VT box) isolated as the only two live killers.
+  Combined failsafe-flip + VT-1 green probe issued to operator. Awaiting two
+  verdicts: grep count, then green | black.
