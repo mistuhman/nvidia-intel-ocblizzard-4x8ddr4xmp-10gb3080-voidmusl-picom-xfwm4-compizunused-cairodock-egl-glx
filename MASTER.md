@@ -8585,3 +8585,28 @@ What worked, in order, when the box went black before lightdm with no TTY.
     workspace crossfade is disabled and carried only as ledger evidence/spec.
     Compiz stayed SAFE throughout rollback. Operator directs: document maximum
     hardware/software efficiency context in MASTER, then merge.
+
+--------------------------------------------------------------------------------
+12.134 POST-MERGE STANDING — TRANSCRIPTS FILED, CCSM SAFETY RE-AFFIRMED
+--------------------------------------------------------------------------------
+
+  [W-284] THIRD CONSECUTIVE SAFE GUARDED CCSM SESSION, FILED AFTER MERGE. The
+    session's final ccsm-safe run (17:03, snapshot pre-ccsm.1786899790,
+    1368 B) closed 7/7 enforced keys, plugin floor OK with "nothing added"
+    (no ccp loss this time, unlike W-265), plugin list before/after identical
+    (flat core;ccp;move;text;screensaver;decoration;grid;resize;place;svg;
+    vpswitch;regex;imgjpeg;png;wall;animation;wobbly;animationaddon;
+    animationsim), and VERDICT: SAFE. Two changed lines vs the pre-session
+    snapshot — operator edits, preserved verbatim per W-252 keys-only. Active
+    profile hash moved aeb32713 -> 314d29f6...; golden af457926 still matches.
+    Live compiz 1194 / emerald 1274 / picom absent, same boot as W-267/W-281.
+    The gtk.css/pixbuf warnings in the run are the known-benign X-135 four.
+    RECEIPT: operator terminal transcript, 2026-08-16. The same paste
+    re-supplied the W-280/W-281 receipts verbatim; nothing re-recorded.
+
+[2026-08-16][M12-POST-MERGE] Merge gate closed: PR #15 (17:07 UTC) merged the
+  W-283 scope. Standing: bare XMB layer accepted, controller disabled (exit 2),
+  crossfade retired as spec (X-143), CCSM wrapper SAFE 3/3 (W-265/W-275/W-284),
+  active profile 314d29f6... Next: U-055 read-only collect on target, then
+  author the two reversible Cheetah tools; M18 icons/sound after. U-070
+  switcher stays parked until operator go-ahead.
