@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.143 prompt. This is the 12.144 pre-target edge.
+Supersedes the 12.144 prompt. This is the 12.145 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -26,6 +26,8 @@ Supersedes the 12.143 prompt. This is the 12.144 pre-target edge.
   one mpv, gpu-next + nvdec-copy (10-11% dec), --no-stop-screensaver,
   --panscan=1.0, geometry 4480x1440+0+0 or -fs. main-red proven role; videos
   on /mnt/games (root 96% — df first, always).
+- One-mpv IPC crossfade TARGET-ACCEPTED (W-301): events flow, blends run at
+  60 fps, eased cos curve; blur gate remained open until U-083 burst design.
 - Shell/xprop crossfade RETIRED (X-143): controller exits 2 disabled,
   autostart off in-repo AND on target. Never re-enable that path.
 - xfce4-screensaver "XMB Sleep Wave" theme installed; operator-select gated.
@@ -58,19 +60,22 @@ Supersedes the 12.143 prompt. This is the 12.144 pre-target edge.
    because no controller is running. New controller is one xwinwrap + one mpv
    + one gpu-next context, lavfi track blend over JSON IPC, latest-wins, and
    exact-PID takeover. Sandbox + FFmpeg graphs PASS; target remains unproven.
-   NEXT (X-154/W-300/U-082): update target clone to the 12.144 SHA, run
-   scripts/xmb-runtime-install (controller+shader from one SHA), --check must
-   print peak=2.0, --stop, start --replace, switch 1->2->3->4->1 including
-   same-role hops 2->3 and 4->1 (blur pulse is their visible transition),
-   --status, measure drops/decoder%/VRAM/RSS + human verdict word.
-   Any black/lag/error: --restore. Autostart remains Hidden/false until accept.
-   Never run target's old SHA 7484d253 controller or revive X-143.
+   Crossfade is TARGET-ACCEPTED (W-301). Blur v1 pulse failed at switching
+   speed (X-155); rebuilt as persistent burst blur (W-302). NEXT (U-083):
+   heredoc reinstall with new tokens, --check must print peak=3.0, switch
+   slowly AND in a fast burst; log must show one "blur burst ... state=OK"
+   line per burst with hops>1 on fast runs; blur must stay strong through
+   the whole burst. Verdict word; any failure: rollback block. Autostart
+   remains Hidden/false until accept. Never run target's old SHA 7484d253
+   controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
 5. Optional later: obs menu opacity retry (fixed tool) — operator go-ahead only.
 6. Tier-2 USB when convenient. **Tier-3 `~/.bitcoin`: never delete, never
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.145 (W-301 crossfade target-accepted, X-155 blur-at-speed fail,
+W-302/U-083 persistent burst blur, sandbox-proven),
 12.144 (X-154/W-300/U-082 blur peak + eased crossfade, sandbox-proven),
 12.140 (W-292/X-148/W-293/U-073), 12.139 (W-291/X-147 merge),
 12.138 (W-290 RECOVERED), 12.137 (X-145/X-146),

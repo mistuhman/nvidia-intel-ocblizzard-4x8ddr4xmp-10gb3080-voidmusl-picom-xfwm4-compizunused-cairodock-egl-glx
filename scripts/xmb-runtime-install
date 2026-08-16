@@ -21,7 +21,7 @@ ROLES=(main-red work-monochrome work-monochrome main-red)
 FADE_MS=500
 BLUR_MS=700
 # Transition blur pulse strength 0.0..4.0 (0 = off, 1 = base, higher = stronger).
-BLUR_PEAK=2.0
+BLUR_PEAK=3.0
 HWDEC=nvdec-copy
 CONF
 fi

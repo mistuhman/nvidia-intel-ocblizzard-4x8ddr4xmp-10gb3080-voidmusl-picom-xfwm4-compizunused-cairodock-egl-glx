@@ -9069,3 +9069,50 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-6] Divergent-anchor abort diagnosed; blur peak +
   eased crossfade sandbox-proven in-repo. Next: single-SHA re-install trial.
+
+--------------------------------------------------------------------------------
+12.145 TARGET CROSSFADE ACCEPTED; BLUR PULSE FAILED AT SPEED; PERSISTENT BURST BLUR
+--------------------------------------------------------------------------------
+
+  [W-301] U-082 REINSTALL TRIAL PASSED ITS GATES ON TARGET. Heredoc delivery
+    matched all tokens (15645 B, sha256 47e83631..., compile PASS), --check
+    printed peak=2.0, start PASS (27888/27907/27908), and the controller log
+    recorded start/complete cycles for every hop with one fade queued under
+    fast switching — viewport events flow, blends run, and the crossfade WORKS
+    on target for the first time since the retired shell path. This also
+    proves the earlier no-crossfade symptom was the divergent 15025 B
+    controller, not the XMB architecture. mpv held 60.0 fps; the
+    "mpv-xwinwrap-shim died, exit status 4" log lines are history from
+    pre-install runs, not this renderer. Operator verdict: works, blur fails.
+    Operator then rolled back to the pre-u082 backup; desktop SAFE.
+    RECEIPT: operator paste 2026-08-16 23:15.
+
+  [X-155] BLUR PULSE DESIGN DIED AT SWITCHING SPEED. The per-hop strength
+    reset to 0 plus per-hop shader unload/reload churn kept the blur near
+    zero during rapid switching and reloaded the Gaussian passes constantly.
+    Operator: "it needs to be persistent, very persistent". RECEIPT: same
+    paste (rollback + verdict).
+
+  [W-302] PERSISTENT BURST BLUR AUTHORED AND PROVEN IN-REPO (U-083). One
+    shader load per burst; no strength reset between hops. Envelope: sin rise
+    over FADE_MS/2 on cold start, HOLD AT PEAK while transitions are active
+    or queued (fast switching now sustains the blur), cos fall over
+    BLUR_MS-FADE_MS/2 after the last completion, then unload. Definite steps:
+    >=0.02 quantized emission with exact peak and exact 0.000 endpoints
+    always emitted; loop tick 16 ms while active/blur, 50 ms idle.
+    Utilization logged once per burst: hops/peak/max/steps/rise_ms/fall_ms/
+    state. glsl-shader-opts failures degrade gracefully (3-strike disable
+    line) and can never kill the crossfade. Default BLUR_PEAK 2.0 -> 3.0.
+    SANDBOX: py_compile PASS; shape units PASS; full mock run() PASS — one
+    shader set+clr across a two-hop burst with a fast same-role hop, unimodal
+    strength 0->3.000->0 with zero mid-burst resets, hops=2 state=OK line,
+    --check prints peak=3.0. RECEIPT: sandbox harness this session.
+
+  [U-083] RETRY GATE: heredoc reinstall (new tokens), --check must print
+    peak=3.0, switch slowly AND in a fast burst; the log must show one
+    "blur burst ... state=OK" line per burst with hops>1 on fast runs and
+    the blur must stay strong through the whole burst. Verdict word; any
+    failure: rollback block. Target unproven.
+
+[2026-08-16][M17-XMB-IPC-7] Crossfade accepted on target; blur rebuilt as a
+  persistent burst envelope. Next: heredoc reinstall + fast-burst trial.
