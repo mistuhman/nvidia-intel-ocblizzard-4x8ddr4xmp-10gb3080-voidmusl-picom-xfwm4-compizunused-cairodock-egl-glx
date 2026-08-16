@@ -7622,3 +7622,21 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-13] LAST KMS LEVER (modprobe.d modeset=1) REMOVED
   WITH BACKUP. Awaiting verdict: lightdm | black+text | black+notext.
+
+  [X-116] X-3 verdict: full kernel text visible through boot (all four
+    KMS/early-load layers now confirmed neutralized), screen goes black at
+    service stage = lightdm/X start. With modeset=1 gone, the killer is
+    inside the X/lightdm/driver stage itself. Logs should NOW exist.
+    RECEIPT: operator "saw the full kernel loading and it was black",
+    2026-08-15.
+
+  [W-219] BLOCK X-4 STRATEGY SHIFT — stop lightdm from auto-starting
+    (runit down-file, fully reversible: rm /etc/sv/lightdm/down) so normal
+    boot lands on agetty tty1 LOGIN PROMPT instead of black. Restores a
+    live interactive console on every normal boot (kills the rescue-shell
+    round-trip cost, X-114 efficiency directive), then X can be started
+    manually under observation with dmesg + logs readable in real time.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-14] LIGHTDM DOWNED FOR CONSOLE-FIRST WORKFLOW.
+  Awaiting: login prompt verdict, then X log receipts from live console.
