@@ -7887,3 +7887,33 @@ What worked, in order, when the box went black before lightdm with no TTY.
   `/etc/sv/lightdm/down`, reboot, and verify the normal greeter/login path.
   Compiz remains gated until that boot succeeds; then reclaim storage and run
   the reversible Compiz repair/verification ladder.
+
+
+--------------------------------------------------------------------------------
+12.124 NORMAL BOOT AND NETWORK RESTORED
+--------------------------------------------------------------------------------
+
+  [W-240] After removing `/etc/sv/lightdm/down` and rebooting the TKG-bore
+    kernel, the operator reached the working stock XFCE/xfwm4 desktop. The
+    normal LightDM/session path is restored; no compositor is expected because
+    picom remains masked. RECEIPT: operator report and desktop photos, current
+    session.
+
+  [X-125] Two filtered `nmcli device show` requests used field selectors that
+    this installed nmcli rejected. They produced no diagnostic result and made
+    no system change. The unfiltered output is authoritative: NetworkManager
+    saw enp3s0, state 20 unavailable, carrier off. Treating that snapshot as a
+    proven cable fault was premature; it did not distinguish transient link,
+    PHY, driver, or administrative state. RECEIPT: operator photos and
+    correction, current session.
+
+  [W-241] Ethernet recovered without a configuration mutation. Final kernel
+    receipt: `ip link show enp3s0` reports
+    `<BROADCAST,MULTICAST,UP,LOWER_UP>` and `state UP`; operator confirms
+    "network works now". Thus the NIC is administratively up with physical
+    carrier and connectivity. The earlier carrier-off state was transient.
+    RECEIPT: verbatim operator terminal transcript, current session.
+
+[2026-08-15][M12-NETWORK] Normal TKG-bore desktop boot and Ethernet are both
+  working. Next gate is deliberate Tier-2 relocation to the 2TB USB HDD,
+  preserving Tier-3 `~/.bitcoin`; then reversible Compiz repair and verify.
