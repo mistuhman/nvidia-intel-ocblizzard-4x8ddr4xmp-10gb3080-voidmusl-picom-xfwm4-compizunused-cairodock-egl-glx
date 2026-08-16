@@ -8,8 +8,7 @@ PID, STATE, SOCK = (RUN / name for name in ("controller.pid", "state.json", "mpv
 LOG = Path(os.getenv("XMB_CONTROLLER_LOG", "/tmp/xmb-wallpaper-controller.log"))
 SHIM = Path(os.getenv("XMB_SHIM", Path.home() / ".local/bin/mpv-xwinwrap-shim"))
 SHADER = Path(os.getenv("XMB_BLUR_SHADER", Path.home() / ".local/bin/xmb-transition-blur.glsl"))
-ROLES = ("main-red", "work-monochrome", "sleep")
-stop_now = False
+ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
@@ -101,35 +100,32 @@ def role_at_viewport(cfg, line=None):
     match = re.search(r"=\s*(-?\d+)", line); slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
     return cfg["roles"][slot]
 def launch(cfg, initial):
-    order = [initial] + [r for r in ROLES if r != initial]
-    ids = {role: index + 1 for index, role in enumerate(order)}
+    order = [initial] + [r for r in ROLES if r != initial]; ids = {role: index + 1 for index, role in enumerate(order)}
     SOCK.unlink(missing_ok=True)
     args = ["xwinwrap", "-b", "-ni", "-s", "-g", "4480x1440+0+0", "-st", "-sp", "-nf", "-ov", "-fdt",
             "--", str(SHIM), "WID", "--no-config", "--loop-file=inf", "--no-audio", "--no-osc", "--no-osd-bar",
             "--no-input-default-bindings", "--no-stop-screensaver", "--panscan=1.0", "--vo=gpu-next",
             f"--hwdec={cfg['hwdec']}", "--framedrop=vo", "--really-quiet", f"--input-ipc-server={SOCK}", f"--lavfi-complex={steady(initial, ids)}"]
     args += [f"--external-file={video(r)}" for r in order[1:]] + [str(video(initial))]
-    log = LOG.open("a", buffering=1)
-    xww = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)
+    log = LOG.open("a", buffering=1); xww = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)
+    ipc, tracks = None, []
     for _ in range(160):
         if xww.poll() is not None: fail(f"renderer exited {xww.returncode}; inspect {LOG}")
-        if SOCK.exists():
-            ipc = IPC()
-            tracks = [t for t in ipc.call("get_property", "track-list") if t.get("type") == "video"]
+        if ipc is None and SOCK.exists(): ipc = IPC()
+        if ipc:
+            try: tracks = [t for t in ipc.call("get_property", "track-list") if t.get("type") == "video"]
+            except RuntimeError: tracks = []
             ids = {}
             for track in tracks:
-                filename = Path(track.get("external-filename", "")).name
-                if not track.get("external") and not track.get("albumart"): ids[initial] = track.get("id")
+                filename = Path(track.get("external-filename", "")).name; ids.update({initial: track.get("id")} if not track.get("external") and not track.get("albumart") else {})
                 for role in order[1:]:
                     if filename == video(role).name: ids[role] = track.get("id")
-            if set(ids) != set(ROLES) or len(set(ids.values())) != 3:
-                fail(f"could not map mpv video tracks: {tracks}")
-            ipc.call("set_property", "lavfi-complex", steady(initial, ids)); return xww, ipc, ids, log
+            if set(ids) == set(ROLES) and len(set(ids.values())) == 3:
+                ipc.call("set_property", "lavfi-complex", steady(initial, ids)); return xww, ipc, ids, log
         time.sleep(.05)
-    kill(xww.pid, "xwinwrap"); fail(f"no mpv IPC socket; inspect {LOG}")
+    (ipc and ipc.close()); kill(xww.pid, "xwinwrap"); fail(f"track map timeout: {tracks}; inspect {LOG}")
 def state_write(xww, role):
-    children = [int(p.name) for p in Path("/proc").glob("[0-9]*") if proc(int(p.name))[2] == xww.pid and proc(int(p.name))[0] == "mpv"]
-    data = {"controller": os.getpid(), "xwinwrap": xww.pid, "mpv": children[0] if children else 0, "role": role}
+    children = [int(p.name) for p in Path("/proc").glob("[0-9]*") if proc(int(p.name))[2] == xww.pid and proc(int(p.name))[0] == "mpv"]; data = {"controller": os.getpid(), "xwinwrap": xww.pid, "mpv": children[0] if children else 0, "role": role}
     temp = STATE.with_suffix(".tmp"); temp.write_text(json.dumps(data) + "\n"); temp.replace(STATE)
 def run(replace):
     global stop_now
@@ -137,8 +133,7 @@ def run(replace):
     lock = (RUN / "controller.lock").open("w")
     try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError: fail("controller already running")
-    PID.write_text(f"{os.getpid()}\n")
-    signal.signal(signal.SIGTERM, lambda *_: globals().__setitem__("stop_now", True))
+    PID.write_text(f"{os.getpid()}\n"); signal.signal(signal.SIGTERM, lambda *_: globals().__setitem__("stop_now", True))
     if shutil.which("xfdesktop"): subprocess.run(["xfdesktop", "--quit"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(.5)
     if direct_renderers():
         if not replace: fail("direct wallpaper is live; use start --replace")

@@ -9013,3 +9013,7 @@ What worked, in order, when the box went black before lightdm with no TTY.
   [W-298] 500/700 live gate: controller/xwinwrap/mpv 21609/21623/21624, steady 60.000182 fps, mpv RSS 849868 KiB, VRAM 2545 MiB, Compiz SAFE; rapid decoder peaked 76%.
   [X-152] Human: switching back rapidly stutters/skips; immediate in-flight graph retarget is rejected despite eventual steady correctness.
   [U-078] Controller now lets each 500 ms fade finish, coalesces only the latest pending role, chains it before decoder retirement, and keeps the 700 ms shader loaded. Target unproven.
+
+  [X-153] Complete-fade target start hit an IPC readiness race: socket existed before mpv populated track-list, so the first read was `[]`; no switch ran. Rollback restored direct 26452/26454 at 9%, Compiz SAFE.
+  [W-299] Launcher now retries track metadata on the same IPC connection for up to 8 seconds and maps only when all three unique roles exist. Mock returned five empty lists before nonsequential IDs and passed start/status/stop.
+[2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
