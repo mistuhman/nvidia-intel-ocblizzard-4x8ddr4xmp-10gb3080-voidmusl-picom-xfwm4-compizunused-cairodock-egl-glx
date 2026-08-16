@@ -8279,3 +8279,38 @@ What worked, in order, when the box went black before lightdm with no TTY.
     therefore a POST-REBOOT receipt, not the SAFE above. Order chosen: guarded
     CCSM session first, then ONE reboot proving both the CCSM work and the
     re-armed persistence survive together, then PR. RECEIPT: operator, same day.
+
+--------------------------------------------------------------------------------
+12.130 THE ENVELOPE CATCHES THE REAL FAULT UNASSISTED — CCSM IS NOW USABLE
+--------------------------------------------------------------------------------
+
+  [W-265] *** X-130(a) REPRODUCED AND AUTO-HEALED IN THE SAME BREATH. THIS IS
+    THE STRONGEST RECEIPT IN 12.128-12.130. *** A real ~1h47m CCSM session
+    (05:11 -> 06:58) again dropped `ccp` from as_active_plugins — the identical
+    fault that killed input and cairo-dock in X-130 — and this time
+    `repair: plugin floor restored: ccp` fired from the wrapper with no operator
+    action, no diagnosis, and no escape path. Post-session: keys 7/7, floor ok,
+    Client0_Command ok, picom absent, wm compiz, VERDICT SAFE. The fault is now
+    a logged line instead of an incident. CCSM save/apply is CLEARED for routine
+    use via ccsm-safe. RECEIPT: operator terminal, 2026-08-16.
+
+  [W-266] OPERATOR RE-ENABLED THE 3D STACK; W-256 IS SUPERSEDED. Before:
+    core;ccp;move;resize;place;decoration;wobbly;regex;png;cube;rotate;cubeaddon;
+    animation;3d;animationaddon. After adds text;grid;svg;imgjpeg;screensaver;
+    animationsim. So cube/rotate/cubeaddon/3d are BACK and wall/vpswitch are
+    GONE — the exact inverse of W-256's flat desktop. 16 changed lines. Per
+    W-252 keys-only the guard preserved every bit of it verbatim; only `ccp` was
+    added back. Active profile 4e987ec5, snapshot pre-ccsm.1786857116 (679 B).
+    NOTE FOR THE NEXT SESSION: U-021/R-11's cube binding plan is live again, and
+    X-013 named cube/3d/animationaddon as the choppiness suspects W-019 removed.
+    If the post-reboot desktop is choppy, that is the cause and the fix is
+    another ccsm-safe session — NOT an escape path (X-130c).
+    SIDE EFFECT: vpswitch leaving also retires X-104's middle-mouse
+    initiate_button grab, which is what blocked Ctrl+Alt+F2 in the first place.
+
+  [X-135] BENIGN, DO NOT ESCALATE (standing rule from X-130c). The CCSM run
+    logged four `gtk.css:2/6/10/15 Junk at end of value for color` parse errors
+    and one `Could not load a pixbuf from icon theme`. The gtk.css four are the
+    SAME four W-043/W-047 logged at emerald launch and are already known
+    cosmetic; the pixbuf line is CCSM's own icon loading. Neither touched the
+    profile: keys 7/7 and floor ok immediately after. Ignore them.
