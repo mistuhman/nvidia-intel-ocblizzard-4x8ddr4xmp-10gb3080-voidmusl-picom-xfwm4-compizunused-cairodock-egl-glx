@@ -8246,7 +8246,7 @@ What worked, in order, when the box went black before lightdm with no TTY.
     and verified. X-031's "live state is not next-boot state" now has a second,
     independent instance — profile then, session key now.
 
-  [W-263] `scripts/compiz-persist-arm` AUTHORED, 84 lines, 0755, `sh -n` clean.
+  [W-263] `scripts/compiz-persist-arm` AUTHORED, 82 lines, 0755, `sh -n` clean.
     `--check` is read-only. Arming backs up xfce4-session.xml to
     .bak.arm.EPOCH, refuses outright if compiz-session is missing or not
     executable (pointing login at a nonexistent launcher = a login with NO
