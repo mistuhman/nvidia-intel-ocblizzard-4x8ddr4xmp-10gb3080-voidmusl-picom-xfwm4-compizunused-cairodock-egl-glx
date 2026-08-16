@@ -8314,3 +8314,32 @@ What worked, in order, when the box went black before lightdm with no TTY.
     SAME four W-043/W-047 logged at emerald launch and are already known
     cosmetic; the pixbuf line is CCSM's own icon loading. Neither touched the
     profile: keys 7/7 and floor ok immediately after. Ignore them.
+
+  [W-267] *** MERGE GATE PASSED: COLD-BOOT PROOF OF THE WHOLE 12.128-12.130
+    CHAIN. *** Post-reboot verify on target: keys 7/7, floor ok,
+    Client0_Command ok, picom absent, VERDICT SAFE, wm name compiz. The decisive
+    numbers are the PIDs — compiz 1194, emerald 1274, both in the session
+    autostart band (cf. W-246's 1198/1278), so this Compiz was started BY LOGIN,
+    not relaunched by hand. Active profile is 4e987ec5 — the post-CCSM profile
+    from W-266 — proving the operator's re-enabled cube/rotate/cubeaddon/3d
+    stack SURVIVED THE REBOOT with the repaired `ccp` intact. Human gate:
+    "compiz loads and all my animations are set after reboot."
+    This closes U-064 in full (rebootable AND CCSM-usable), closes U-066/U-067,
+    and retires X-130 entirely: (a) fixed by the floor, (b)/(c) now covered by
+    standing rules. X-013 choppiness did NOT reappear despite the heavy stack.
+    RECEIPT: operator terminal + statement, 2026-08-16.
+
+  [X-136] U-061 CEILING EXCEEDED, DELIBERATELY, DISCLOSED NOT HIDDEN. This PR is
+    ~435 lines against a 405 ceiling. Cause: the target run surfaced TWO
+    unplanned defects mid-session (X-134 reverted persistence, W-265 a live ccp
+    drop), each of which required its own tool or receipt to close honestly.
+    Splitting the PR would have shipped a verifier that names a fix which does
+    not exist yet. Operator authorized merge on the post-reboot receipt (U-067).
+    Not precedent: the ceiling resumes at 405 for the XMB work.
+
+[2026-08-16][M12-REBOOTABLE-CCSM] COMPLETE AND COLD-BOOT PROVEN. Compiz is the
+  login WM, survives reboot with the operator's own CCSM plugin set, and CCSM is
+  safe to save from via ccsm-safe. Guard owns 7 display keys + the plugin floor;
+  compiz-persist-arm re-arms the login key after any escape path. NEXT SESSION:
+  the XMB bake resumes at W-200 (inventory launcher/shim/videos first, then the
+  proven single-decode bare layer). Never destabilize the WM for the wallpaper.
