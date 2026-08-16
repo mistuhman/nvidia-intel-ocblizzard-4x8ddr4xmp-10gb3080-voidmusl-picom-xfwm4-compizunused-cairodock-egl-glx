@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""One-window, IPC-controlled XMB workspace renderer (U-070)."""
 import fcntl, json, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
 from pathlib import Path
 ROOT = Path(os.getenv("XMB_BAKE_ROOT", "/mnt/games/xmb-wave-bake"))
@@ -8,14 +7,14 @@ RUN = Path(os.getenv("XDG_RUNTIME_DIR", "/tmp")) / f"xmb-wallpaper-{os.getuid()}
 PID, STATE, SOCK = (RUN / name for name in ("controller.pid", "state.json", "mpv.sock"))
 LOG = Path(os.getenv("XMB_CONTROLLER_LOG", "/tmp/xmb-wallpaper-controller.log"))
 SHIM = Path(os.getenv("XMB_SHIM", Path.home() / ".local/bin/mpv-xwinwrap-shim"))
+SHADER = Path(os.getenv("XMB_BLUR_SHADER", Path.home() / ".local/bin/xmb-transition-blur.glsl"))
 ROLES = ("main-red", "work-monochrome", "sleep")
 stop_now = False
 def fail(text):
     print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"],
-           "fade": 2000, "hwdec": "nvdec-copy"}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 1000, "hwdec": "nvdec-copy"}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -34,6 +33,7 @@ def check():
     for command in ("mpv", "xwinwrap", "xprop"):
         if not shutil.which(command): fail(f"missing command: {command}")
     if not SHIM.is_file() or not os.access(SHIM, os.X_OK): fail(f"missing executable shim: {SHIM}")
+    if not SHADER.is_file(): fail(f"missing transition shader: {SHADER}")
     for role in ROLES:
         if not video(role).is_file(): fail(f"missing video: {video(role)}")
     return cfg
@@ -41,8 +41,7 @@ def proc(pid):
     path = Path("/proc") / str(pid)
     try:
         comm = (path / "comm").read_text().strip()
-        argv = [x.decode(errors="replace") for x in
-                (path / "cmdline").read_bytes().rstrip(b"\0").split(b"\0")]
+        argv = [x.decode(errors="replace") for x in (path / "cmdline").read_bytes().rstrip(b"\0").split(b"\0")]
         return comm, argv, int((path / "stat").read_text().split()[3])
     except (OSError, ValueError): return "", [], -1
 def kill(pid, name):
@@ -70,9 +69,7 @@ def stop_direct():
     return len(found)
 class IPC:
     def __init__(self):
-        sock = socket.socket(socket.AF_UNIX)
-        sock.settimeout(4)
-        sock.connect(str(SOCK))
+        sock = socket.socket(socket.AF_UNIX); sock.settimeout(4); sock.connect(str(SOCK))
         self.sock, self.file, self.number = sock, sock.makefile("rwb", buffering=0), 0
     def call(self, *args):
         self.number += 1
@@ -99,8 +96,7 @@ def blend(weights, target, ids, frames):
         opacity = f"({start[role]:.8f}*(1-{u}))/({cumulative:.8f}*(1-{u})+{u})"
         output = "[premix]" if index == len(active) - 1 else f"[mix{index}]"
         name = f"xmb{index}"
-        chains.append(f"[vid{ids[role]}]{source}blend@{name}="
-                      f"all_mode=normal:all_opacity={initial:.8f}{output}")
+        chains.append(f"[vid{ids[role]}]{source}blend@{name}=all_mode=normal:all_opacity={initial:.8f}{output}")
         commands.append(f"[expr] blend@{name} all_opacity {opacity}")
         source = output
     command = ",".join(commands)
@@ -112,9 +108,7 @@ def weights(state):
     out[target] = out.get(target, 0) + progress
     return {r: value for r, value in out.items() if value > .0001}
 def role_at_viewport(cfg, line=None):
-    if line is None:
-        line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"],
-                              text=True, capture_output=True, check=True).stdout
+    if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
     match = re.search(r"=\s*(-?\d+)", line)
     slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
     return cfg["roles"][slot]
@@ -122,12 +116,10 @@ def launch(cfg, initial):
     order = [initial] + [r for r in ROLES if r != initial]
     ids = {role: index + 1 for index, role in enumerate(order)}
     SOCK.unlink(missing_ok=True)
-    args = ["xwinwrap", "-b", "-ni", "-s", "-g", "4480x1440+0+0", "-st", "-sp",
-            "-nf", "-ov", "-fdt", "--", str(SHIM), "WID", "--no-config",
-            "--loop-file=inf", "--no-audio", "--no-osc", "--no-osd-bar",
-            "--no-input-default-bindings", "--no-stop-screensaver", "--panscan=1.0",
-            "--vo=gpu-next", f"--hwdec={cfg['hwdec']}", "--framedrop=vo", "--really-quiet",
-            f"--input-ipc-server={SOCK}", f"--lavfi-complex={steady(initial, ids)}"]
+    args = ["xwinwrap", "-b", "-ni", "-s", "-g", "4480x1440+0+0", "-st", "-sp", "-nf", "-ov", "-fdt",
+            "--", str(SHIM), "WID", "--no-config", "--loop-file=inf", "--no-audio", "--no-osc", "--no-osd-bar",
+            "--no-input-default-bindings", "--no-stop-screensaver", "--panscan=1.0", "--vo=gpu-next",
+            f"--hwdec={cfg['hwdec']}", "--framedrop=vo", "--really-quiet", f"--input-ipc-server={SOCK}", f"--lavfi-complex={steady(initial, ids)}"]
     args += [f"--external-file={video(r)}" for r in order[1:]] + [str(video(initial))]
     log = LOG.open("a", buffering=1)
     xww = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)
@@ -148,10 +140,8 @@ def launch(cfg, initial):
         time.sleep(.05)
     kill(xww.pid, "xwinwrap"); fail(f"no mpv IPC socket; inspect {LOG}")
 def state_write(xww, role):
-    children = [int(p.name) for p in Path("/proc").glob("[0-9]*")
-                if proc(int(p.name))[2] == xww.pid and proc(int(p.name))[0] == "mpv"]
-    data = {"controller": os.getpid(), "xwinwrap": xww.pid,
-            "mpv": children[0] if children else 0, "role": role}
+    children = [int(p.name) for p in Path("/proc").glob("[0-9]*") if proc(int(p.name))[2] == xww.pid and proc(int(p.name))[0] == "mpv"]
+    data = {"controller": os.getpid(), "xwinwrap": xww.pid, "mpv": children[0] if children else 0, "role": role}
     temp = STATE.with_suffix(".tmp"); temp.write_text(json.dumps(data) + "\n"); temp.replace(STATE)
 def run(replace):
     global stop_now
@@ -168,8 +158,7 @@ def run(replace):
     initial, xww, ipc, log, watch = role_at_viewport(cfg), None, None, None, None
     try:
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
-        watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"],
-                                 text=True, stdout=subprocess.PIPE)
+        watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], text=True, stdout=subprocess.PIPE)
         duration = cfg["fade"] / 1000
         fade = ({initial: 1.}, initial, time.monotonic(), duration)
         while not stop_now and xww.poll() is None:
@@ -184,12 +173,13 @@ def run(replace):
                     desired = role_at_viewport(cfg, line)
                 current = weights(fade)
                 if desired != fade[1]:
-                    ipc.call("set_property", "lavfi-complex",
-                             blend(current, desired, ids, round(duration * 60)))
+                    ipc.call("change-list", "glsl-shaders", "set", str(SHADER))
+                    ipc.call("set_property", "lavfi-complex", blend(current, desired, ids, round(duration * 60)))
                     fade = (current, desired, time.monotonic(), duration)
                     state_write(xww, desired)
             if time.monotonic() - fade[2] >= fade[3] and len(fade[0]) != 0:
                 ipc.call("set_property", "lavfi-complex", steady(fade[1], ids))
+                ipc.call("change-list", "glsl-shaders", "clr", "")
                 fade = ({}, fade[1], time.monotonic(), duration)
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
@@ -229,14 +219,13 @@ def stop(restore=False):
         if live_pid(): fail("controller did not stop")
     if restore:
         env = os.environ.copy(); env["XMB_USE_GEOMETRY"] = "1"
-        subprocess.run([str(Path.home() / ".local/bin/xmb-wallpaper"),
-                        "main-red", "background"], env=env, check=True)
+        subprocess.run([str(Path.home() / ".local/bin/xmb-wallpaper"), "main-red", "background"], env=env, check=True)
     print("XMB_CONTROLLER_RESTORE=PASS" if restore else "XMB_CONTROLLER_STOP=PASS")
 def status():
     if not live_pid(): print("XMB_CONTROLLER_STATUS=STOPPED"); return 1
     print(STATE.read_text().strip())
     ipc = IPC()
-    for name in ("lavfi-complex", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
+    for name in ("lavfi-complex", "glsl-shaders", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
         try: value = ipc.call("get_property", name)
         except RuntimeError as error: value = f"UNAVAILABLE ({error})"
         print(f"{name}={value}")
@@ -245,9 +234,7 @@ def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
     if action == "run": run("--replace" in sys.argv)
     elif action == "start": check(); start("--replace" in sys.argv)
-    elif action == "--check":
-        cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} hwdec={cfg['hwdec']}")
-        print("XMB_CONTROLLER_CHECK=PASS")
+    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
     elif action == "--status": raise SystemExit(status())
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)

@@ -11,12 +11,14 @@ for name in xmb-wallpaper xmb-wallpaper-controller mpv-xwinwrap-shim xmb-screens
   install -m 0755 "$HERE/$name" "$BIN/$name"
   cmp -s "$HERE/$name" "$BIN/$name" || { echo "install mismatch: $name" >&2; exit 2; }
 done
+install -m 0644 "$HERE/xmb-transition-blur.glsl" "$BIN/xmb-transition-blur.glsl"
+cmp -s "$HERE/xmb-transition-blur.glsl" "$BIN/xmb-transition-blur.glsl" || { echo "install mismatch: transition shader" >&2; exit 2; }
 if [ ! -e "$CONFIG" ]; then
   cat >"$CONFIG" <<'CONF'
 # Workspace 1..4. Allowed: main-red, work-monochrome, sleep.
 ROLES=(main-red work-monochrome work-monochrome main-red)
 # Crossfade duration in milliseconds. Two decoders run only during this window.
-FADE_MS=2000
+FADE_MS=1000
 HWDEC=nvdec-copy
 CONF
 fi
