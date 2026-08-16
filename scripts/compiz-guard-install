@@ -40,10 +40,14 @@ install_one compiz-profile-repair
 install_one compiz-profile-verify
 install_one ccsm-safe
 install_one compiz-persist-arm
+# U-055 Cheetah menus: reversible opacity + GTK overlay (never /usr/share)
+install_one compiz-opacity-menus
+install_one gunmetal-cheetah-menu-overlay
 
 echo
 echo "-- repo-side hashes (compare with the installed ones above) --"
-for f in compiz-profile-repair compiz-profile-verify ccsm-safe compiz-persist-arm; do
+for f in compiz-profile-repair compiz-profile-verify ccsm-safe compiz-persist-arm \
+         compiz-opacity-menus gunmetal-cheetah-menu-overlay; do
   [ -r "$SRC/$f" ] && echo "  $(sha256sum "$SRC/$f" | cut -c1-16)...  $f"
 done
 

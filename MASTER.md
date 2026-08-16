@@ -8610,3 +8610,265 @@ What worked, in order, when the box went black before lightdm with no TTY.
   active profile 314d29f6... Next: U-055 read-only collect on target, then
   author the two reversible Cheetah tools; M18 icons/sound after. U-070
   switcher stays parked until operator go-ahead.
+
+--------------------------------------------------------------------------------
+12.135 U-055 CHEETAH TOOLS AUTHORED (SANDBOX) — TARGET COLLECT THEN APPLY
+--------------------------------------------------------------------------------
+
+  [W-285] TWO REVERSIBLE U-055 TOOLS AUTHORED AND SANDBOX-PROVEN. Neither has
+    run on the target yet. Both refuse root, never touch /usr/share, record
+    sha256, gate on post-write existence, and ship --check/--restore/--status.
+
+      scripts/compiz-opacity-menus          265 lines  mode 0755
+        sha256 40be1340aa1da2e9230fcba84a7b90cb4e8bedda5eeacb5169245532ce47f200
+        Additive-only: appends `opacity` to as_active_plugins if missing
+        (W-252 — never removes or reorders operator plugins). Writes:
+          [opacity]
+          s0_opacity_matches = (type=Menu|PopupMenu|DropdownMenu|Tooltip|
+                                 Notification);(type=Utility|Dialog|ModalDialog);
+          s0_opacity_values  = 88;92;
+        Backups under ~/.local/state/compiz-opacity-menus/ as
+        Default.ini.pre-opacity.TS.PID. Restore uses a different tag
+        (pre-restore) so a same-second safety copy cannot become the undo
+        target. Does NOT touch the seven hardware [core] keys. Live Compiz
+        does not reread Default.ini alone — apply prints the reload line:
+        setsid $HOME/.local/bin/compiz-session.
+
+      scripts/gunmetal-cheetah-menu-overlay 287 lines  mode 0755
+        sha256 d1d79bc181fcd69290bf833f1dfa86bf60633debc76c69ff0f4f8938ac9af11e
+        Writes ~/.config/gtk-3.0/gtk.css with a marked block:
+          BEGIN/END gunmetal-cheetah-menu-overlay (U-055)
+          rgba(0,0,0,0.82) fill + repeating-linear-gradient 1px/3px pinstripe
+          + 6px radius + gunmetal hover with #640c12 left rail (gunmetal accent).
+        Preserves any pre-existing user CSS outside the markers. First-apply
+        backup is permanent; re-apply keeps it so --restore returns to the
+        pre-overlay file, not a mid-session overlaid snapshot. Absent gtk.css
+        is recorded as *.ABSENT and restore deletes the file.
+
+      scripts/compiz-guard-install          +5 lines
+        sha256 17f5adb674eb1ba7db9b712ced411d5c4d8b8de87adcb8ee2765bdeb21ea5065
+        Now installs both tools next to the guard set.
+
+    SANDBOX MATRIX (fake HOME, 21 cases, all PASS):
+      opacity: check-before NOT-APPLIED; apply; idempotent; check APPLIED;
+        plugin appended; matches/values present; core keys + [wall]/[wobbly]
+        intact; restore removes opacity; wall survives; re-apply works;
+        missing-profile refuses.
+      cheetah: check-before; apply; idempotent; rgba+prior CSS kept; single
+        BEGIN/END block; user rules outside block survive re-apply; restore
+        returns ORIGINAL (no overlay, no mid-session edits); create-from-
+        absent + restore-to-absent; installer places both executables.
+    RECEIPT: sandbox py_compile + harness exit 0, 2026-08-16.
+
+  [X-144] U-061 CEILING EXCEEDED, DISCLOSED. This PR is ~560 script lines
+    (265+287+5) plus ledger against a 405 ceiling. Cause: U-055 is one
+    objective with two inseparable layers (Compiz alpha + GTK lining); shipping
+    either alone leaves menus half-done and invites a second phone-session
+    install. Same class as X-136 (honest exceed, not silent). Ceiling resumes
+    at 405 after merge. Not precedent for future multi-objective PRs.
+
+  [U-071] TARGET APPLY GATE (do not skip). Tools are authored against the
+    U-055 spec and the W-191 partial collect (no opacity plugin; gtk.css was
+    206 B generic, not Gunmetal). Before apply on target, run the read-only
+    collect once more — profile may have moved (active now 314d29f6... per
+    W-284) — and paste the block. Only then:
+      sh scripts/compiz-guard-install
+      compiz-opacity-menus --check          # expect NOT-APPLIED
+      gunmetal-cheetah-menu-overlay --check
+      compiz-opacity-menus                  # apply
+      gunmetal-cheetah-menu-overlay
+      setsid $HOME/.local/bin/compiz-session
+      compiz-profile-verify                 # must stay SAFE
+    Undo either layer independently via --restore. Do not open CCSM to add
+    opacity by hand (X-098). Terminal transparency remains a separate
+    xfconf step after menus look right.
+
+[2026-08-16][M16-CHEETAH-1] U-055 tools authored, sandbox ALL_PASS, not yet
+  on target. Next: one phone collect paste, then install+apply+verify SAFE.
+  M18 icons/sound and U-070 switcher still parked.
+
+--------------------------------------------------------------------------------
+12.136 U-055 COLLECT ON TARGET — SAFE, NO OPACITY, GENERIC GTK.CSS; APPLY NEXT
+--------------------------------------------------------------------------------
+
+  [W-286] U-071 READ-ONLY COLLECT RECEIPT, TARGET. Operator paste 2026-08-16.
+
+    as_active_plugins =
+      core;ccp;move;text;screensaver;decoration;grid;resize;place;svg;
+      vpswitch;regex;imgjpeg;png;wall;animation;wobbly;animationaddon;
+      animationsim;
+    Matches W-284 post-ccsm list EXACTLY. No `opacity` plugin.
+    [opacity] section: ABSENT (awk printed nothing; no no-opacity-section
+      fallback fired because awk exit 0 on empty match — section confirmed gone).
+    gtk.css: 206 bytes, mtime Aug 3 23:16, generic color overrides only
+      (* #1e1f20, *:selected white, menuitem:selected white). NOT Gunmetal
+      aggregate, NOT cheetah block. Same shape as W-191.
+    xfce4-terminal: color-background #000000000000 (opaque black),
+      color-background-vary false, no darkness/transparency keys present.
+      terminalrc: no opacity/transparent/background hits.
+    verify: SAFE. keys 7/7, floor ok, Client0_Command compiz-session,
+      active 314d29f6e34827ee... (W-284), golden af457926, compiz 1194 /
+      emerald 1274 / picom absent / wm Name: compiz. Same boot as W-267+.
+
+    Gate OPEN: tools' preconditions match the authoring assumptions. No
+    pre-existing opacity rules to merge. gtk.css is the 206 B generic file
+    the overlay is designed to preserve-and-append.
+
+  [U-072] APPLY ORDER ON TARGET (single paste, W-254 delivery):
+    1. shallow clone branch arena/01a00b9e-... to $HOME/compiz-guard-repo
+    2. sh scripts/compiz-guard-install  (ships opacity-menus + cheetah overlay)
+    3. both --check expect NOT-APPLIED
+    4. both apply (default)
+    5. setsid $HOME/.local/bin/compiz-session   # reread Default.ini
+    6. both --check expect APPLIED
+    7. compiz-profile-verify must stay SAFE
+    8. operator visual: open a GTK menu (Thunar/terminal). Accept or
+       --restore either layer independently.
+    Terminal transparency still deferred until menus accepted.
+
+[2026-08-16][M16-CHEETAH-2] Collect PASS / SAFE. Apply paste is next operator
+  action. Do not open CCSM for opacity (X-098).
+
+--------------------------------------------------------------------------------
+12.137 X-145 WRONG PLUGIN NAME (`opacity` vs `obs`); X-146 COMPIZ REPLACE
+      ORPHANS DOCK/EMERALD. Theme overlay restored off; menus deferred.
+--------------------------------------------------------------------------------
+
+  [X-145] *** PLUGIN SHORT NAME IS `obs`, NOT `opacity`. *** Target apply of
+    U-055 wrote `opacity` into as_active_plugins and a `[opacity]` section.
+    Live Compiz on reload printed:
+      /usr/bin/compiz (core) - Error: Couldn't load plugin 'opacity'
+    and the login-hook floor path (or ccp rewrite on replace) dropped the
+    unknown token, leaving:
+      as_active_plugins without opacity
+      [opacity] section still on disk (orphaned, ignored)
+      --check NOT-APPLIED for opacity tool; cheetah gtk.css APPLIED
+    Compiz Reloaded's Opacity/Brightness/Saturation plugin is short-named
+    `obs` (ArchWiki flat-file sample: `obs` in as_active_plugins and
+    `[obs] s0_opacity_matches / s0_opacity_values`). U-055's first ship used
+    the human name. Fixed tool: PLUGIN=obs, SECTION=obs, scrubs legacy
+    `opacity` token and `[opacity]` section on apply. Hash after fix:
+    (see commit). RECEIPT: target apply paste 2026-08-16 + ArchWiki Compiz
+    Configuration sample.
+
+  [X-146] *** `setsid compiz-session` ORPHANS EMERALD + CAN DROP CAIRO-DOCK. ***
+    Same paste's reload replaced Compiz (new pid 27774, was 1194) while
+    emerald stayed at 1274 (pre-replace) and operator reports cairo-dock and
+    other UI elements disappeared. A full Compiz replace does not restart
+    session-autostart companions. Standing rule: never use bare
+    compiz-session replace as the opacity-apply reload without a companion
+    restart. Recovery is companions-only:
+      setsid emerald --replace
+      setsid cairo-dock     # only if pgrep -x cairo-dock is empty
+    Tool gains `--reload` for that path. Prefer logout/login to pick up
+    Default.ini changes when dock/panel health matters more than speed.
+    RECEIPT: target pids + operator statement, 2026-08-16.
+
+  [W-287] OPERATOR REJECTS THEME CHANGE FOR THIS PASS. "we dont need to
+    change the theme". Cheetah gtk.css overlay is NOT wanted right now;
+    restore it. Menu transparency via obs may still land later; workspace
+    switcher (U-070 / XMB crossfade) is the operator's live complaint and
+    is a SEPARATE parked track — do not conflate with U-055. RECEIPT:
+    operator, same paste session.
+
+  [W-288] POST-FAIL STATE ON TARGET (before recovery paste):
+    verify SAFE, active d1eabc9a... then after operator ccsm-safe session
+    75e3ca83... (2 lines changed, plugins list unchanged, SAFE).
+    gtk.css 2041 B with cheetah BEGIN/END markers (must --restore).
+    [opacity] section still present with 88/92 rules (must scrub).
+    opacity not in as_active_plugins. emerald 1274 stale vs compiz 27774.
+    cairo-dock missing per operator. RECEIPT: apply+ccsm-safe paste.
+
+  [W-289] TOOL FIXED IN REPO (sandbox). compiz-opacity-menus now:
+      PLUGIN=obs SECTION=obs; scrubs legacy opacity; --reload companions;
+      apply no longer prints bare setsid compiz-session as the happy path.
+    Sandbox: scrub of damaged profile, clean apply, idempotent, restore.
+    Target recovery paste is next (theme restore + emerald + cairo-dock);
+    obs re-apply is OPTIONAL and gated on operator go-ahead after UI is back.
+    RECEIPT: sandbox harness this session.
+
+[2026-08-16][M16-CHEETAH-3] Apply FAILED on wrong plugin name; theme unwanted;
+  dock/emerald orphaned by replace. Recovery first. U-070 switcher still
+  parked and is the operator's other open complaint — separate from menus.
+
+--------------------------------------------------------------------------------
+12.138 RECOVERY COMPLETE — THEME RESTORED, DOCK/EMERALD LIVE, SAFE
+--------------------------------------------------------------------------------
+
+  [W-290] TARGET RECOVERY PASTE PASSED. Operator output 2026-08-16 17:53.
+
+    gtk.css: restored to 206 B, hash eed9b077... (pre-cheetah backup
+      1786902454.27771). cheetah markers: 0. Theme change undone (W-287).
+    [opacity] section: scrubbed True. plugins back to W-284 list without
+      opacity token:
+      core;ccp;move;text;screensaver;decoration;grid;resize;place;svg;
+      vpswitch;regex;imgjpeg;png;wall;animation;wobbly;animationaddon;
+      animationsim;
+    Backup of pre-scrub profile: Default.ini.bak.scrub-opacity.1786902825
+      (1560 B).
+    emerald: restarted --replace -> pid 32484 (was stale 1274 / then
+      post-fail). Four gtk.css Junk warnings = known benign X-135.
+      Wnck-CRITICAL client type = known benign on emerald --replace.
+    cairo-dock: already up pid 1290 (`cairo-dock -o`). Not missing at
+      recovery time — either self-recovered or was never fully dead; operator
+      earlier report of disappearance may have been transient during the
+      Compiz replace window (X-146).
+    live: compiz 27774 --replace ccp, emerald 32484, cairo-dock 1290,
+      picom absent. verify SAFE. active b94b49e0... (post-scrub).
+      Client0_Command still compiz-session. VERDICT: RECOVERED + SAFE.
+
+    X-145/X-146 incident CLOSED on target for the failed apply side-effects.
+    Menu opacity (obs) remains OPTIONAL and off. Cheetah gtk overlay remains
+    OFF. U-070 workspace switcher still the open operator complaint and is
+    a separate track — do not re-enter U-055 without explicit go-ahead.
+
+[2026-08-16][M16-CHEETAH-4] Recovered. Desktop SAFE, theme stock, dock and
+  emerald live. Next only on operator direction: (a) obs menu opacity retry
+  with fixed tool + companions --reload, or (b) U-070 XMB workspace switcher,
+  or (c) M18 icons/sound. Default: wait.
+
+--------------------------------------------------------------------------------
+12.139 PR #17 MERGED — U-055 ARC CLOSED (TOOLS+FAIL+RECOVER); U-070 NEXT CHAT
+--------------------------------------------------------------------------------
+
+  [W-291] OPERATOR DIRECTS MERGE THEN NEW CHAT FOR XMB SWITCHER. PR #17
+    closes the U-055 arc as landed-in-repo + target-recovered, NOT as
+    "menus accepted". Final target state (W-290): SAFE, theme stock 206 B
+    gtk.css, no obs, no cheetah overlay, emerald 32484, cairo-dock 1290,
+    active b94b49e0..., Client0_Command compiz-session. Tools remain in
+    ~/.local/bin for a later optional obs retry. RECEIPT: operator "lets
+    merge then continue in a new chat with the xmb switcher".
+
+  [X-147] WHY THIS PR BLEW THE 405 CEILING (operator asked). Final diff
+    +901 / -24 against U-061's 405. Breakdown of the 901:
+      scripts/compiz-opacity-menus          364   (U-055 layer A; grew
+                                                   after X-145 obs fix +
+                                                   X-146 --reload)
+      scripts/gunmetal-cheetah-menu-overlay 287   (U-055 layer B; applied
+                                                   then operator-rejected;
+                                                   kept because --restore
+                                                   is the undo path and the
+                                                   tool is still correct)
+      MASTER.md ledger                      216   (receipts W-285..W-291,
+                                                   X-144..X-147 — the cost
+                                                   of not lying about the
+                                                   failed apply)
+      CONTINUE_PROMPT refresh                29 net
+      compiz-guard-install wire-up            5
+    Three honest overruns stacked:
+      (1) X-144 — shipped both U-055 layers together (inseparable objective).
+      (2) X-145/X-146 — target disproved `opacity` and bare compiz-session
+          reload; fix + recovery path had to land in the same PR or the
+          next session would re-ship the broken tool.
+      (3) Ledger weight — every failed paste and recovery is a MASTER row
+          (Directive 7/8). Suppressing those would have hidden X-145.
+    Same class as X-136 (disclosed exceed, not silent). Ceiling resumes
+    at 405 for the U-070 switcher chat. Split rule going forward: one
+    objective per PR; if target fails mid-flight, either a tiny fixup
+    commit on the same PR (this case) or close and open a recovery PR —
+    do not keep stacking new objectives onto an already-over PR.
+    RECEIPT: gh pr view 17 --json additions + git diff --numstat.
+
+[2026-08-16][M16-CHEETAH-CLOSE] PR #17 merge. U-055 not accepted visually;
+  tools in-repo; desktop recovered SAFE. NEXT CHAT: U-070 XMB workspace
+  switcher (operator: "doesnt work"). Read CONTINUE_PROMPT 12.139 edge.

@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+"""compiz-opacity-menus — reversible Compiz OBS opacity for menus (U-055).
+
+Enables the `obs` plugin (Opacity/Brightness/Saturation — Compiz 0.8 name;
+there is NO plugin literally called `opacity`, X-145) and writes [obs]
+match/value lists. Additive only. Never edits /usr/share. Never removes
+operator plugins (W-252). Never touches the seven hardware [core] keys.
+
+  compiz-opacity-menus            # apply
+  compiz-opacity-menus --check    # read-only
+  compiz-opacity-menus --restore  # newest pre-apply backup
+  compiz-opacity-menus --status
+  compiz-opacity-menus --reload   # companions only (emerald + cairo-dock)
+"""
+from __future__ import annotations
+
+import hashlib, os, re, shutil, subprocess, sys, time
+
+CFG = os.path.expanduser("~/.config/compiz/compizconfig/Default.ini")
+STATE = os.path.expanduser("~/.local/state/compiz-opacity-menus")
+# Compiz Reloaded / plugins-main: plugin short name is `obs`.
+# Target proved `opacity` does not load: "Couldn't load plugin 'opacity'" (X-145).
+PLUGIN = "obs"
+SECTION = "obs"
+# Stale names from the first broken ship — scrubbed on apply/restore-check.
+LEGACY_PLUGIN = "opacity"
+LEGACY_SECTION = "opacity"
+MATCHES = [
+    "(type=Menu | type=PopupMenu | type=DropdownMenu | type=Tooltip | type=Notification)",
+    "(type=Utility | type=Dialog | type=ModalDialog)",
+]
+VALUES = ["88", "92"]
+
+
+def die(msg, code=1):
+    print("opacity-menus: FAIL  %s" % msg)
+    sys.exit(code)
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for c in iter(lambda: f.read(1 << 20), b""):
+            h.update(c)
+    return h.hexdigest()
+
+
+def read_lines(path):
+    with open(path) as f:
+        return f.read().splitlines()
+
+
+def write_lines(path, lines):
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    os.replace(tmp, path)
+
+
+def section_bounds(lines, name):
+    tag = "[%s]" % name
+    try:
+        s = lines.index(tag)
+    except ValueError:
+        return None, None
+    e = len(lines)
+    for i in range(s + 1, len(lines)):
+        if lines[i].startswith("[") and lines[i].endswith("]"):
+            e = i
+            break
+    return s, e
+
+
+def drop_section(lines, name):
+    s, e = section_bounds(lines, name)
+    if s is None:
+        return lines, False
+    out = lines[:s] + lines[e:]
+    while out and out[-1].strip() == "" and len(out) > s:
+        # keep a single trailing blank at most; strip run left by removal
+        if s > 0 and out[s - 1].strip() == "":
+            out.pop(s - 1)
+        break
+    return out, True
+
+
+def get_key(lines, s, e, key):
+    for i in range(s + 1, e):
+        m = re.match(r"^\s*%s\s*=\s*(.*)$" % re.escape(key), lines[i])
+        if m:
+            return i, m.group(1).strip()
+    return None, None
+
+
+def set_key(lines, s, e, key, value):
+    idx, _ = get_key(lines, s, e, key)
+    want = "%s = %s" % (key, value)
+    out = list(lines)
+    if idx is None:
+        out.insert(e, want)
+    else:
+        out[idx] = want
+    return out
+
+
+def parse_plugins(lines):
+    s, e = section_bounds(lines, "core")
+    if s is None:
+        return None, [], None
+    idx, raw = get_key(lines, s, e, "as_active_plugins")
+    if idx is None:
+        return s, [], None
+    return s, [p for p in raw.split(";") if p], idx
+
+
+def scrub_legacy(lines):
+    """Remove failed `opacity` plugin token and [opacity] section (X-145)."""
+    out = list(lines)
+    changed = []
+    s, plugins, idx = parse_plugins(out)
+    if s is not None and LEGACY_PLUGIN in plugins:
+        plugins = [p for p in plugins if p != LEGACY_PLUGIN]
+        new = "as_active_plugins = " + ";".join(plugins) + ";"
+        if idx is None:
+            out.insert(s + 1, new)
+        else:
+            out[idx] = new
+        changed.append("dropped-plugin:%s" % LEGACY_PLUGIN)
+    out2, dropped = drop_section(out, LEGACY_SECTION)
+    if dropped:
+        changed.append("dropped-section:[%s]" % LEGACY_SECTION)
+        out = out2
+    return out, changed
+
+
+def ensure_plugin(lines):
+    s, plugins, idx = parse_plugins(lines)
+    if s is None:
+        die("no [core] section in %s" % CFG)
+    if PLUGIN in plugins:
+        return lines, False
+    plugins.append(PLUGIN)
+    new = "as_active_plugins = " + ";".join(plugins) + ";"
+    out = list(lines)
+    if idx is None:
+        out.insert(s + 1, new)
+    else:
+        out[idx] = new
+    return out, True
+
+
+def ensure_obs_section(lines):
+    out = list(lines)
+    s, e = section_bounds(out, SECTION)
+    if s is None:
+        if out and out[-1].strip() != "":
+            out.append("")
+        out.append("[%s]" % SECTION)
+        s, e = section_bounds(out, SECTION)
+    out = set_key(out, s, section_bounds(out, SECTION)[1],
+                  "s0_opacity_matches", ";".join(MATCHES) + ";")
+    s, e = section_bounds(out, SECTION)
+    out = set_key(out, s, e, "s0_opacity_values", ";".join(VALUES) + ";")
+    return out
+
+
+def desired_present(lines):
+    _, plugins, _ = parse_plugins(lines)
+    if PLUGIN not in plugins:
+        return False
+    if LEGACY_PLUGIN in plugins:
+        return False
+    s, e = section_bounds(lines, SECTION)
+    if s is None:
+        return False
+    if section_bounds(lines, LEGACY_SECTION)[0] is not None:
+        return False
+    _, mv = get_key(lines, s, e, "s0_opacity_matches")
+    _, vv = get_key(lines, s, e, "s0_opacity_values")
+    if not mv or not vv:
+        return False
+    return ([p for p in mv.split(";") if p] == MATCHES and
+            [p for p in vv.split(";") if p] == VALUES)
+
+
+def backup(path, tag="pre-opacity"):
+    os.makedirs(STATE, mode=0o755, exist_ok=True)
+    bak = os.path.join(STATE, "Default.ini.%s.%d.%d" % (tag, int(time.time()), os.getpid()))
+    if os.path.exists(bak):
+        bak += ".%d" % int(time.time() * 1000)
+    shutil.copy2(path, bak)
+    if not os.path.isfile(bak):
+        die("backup missing after copy: %s" % bak)
+    return bak
+
+
+def newest_backup():
+    if not os.path.isdir(STATE):
+        return ""
+    cands = [os.path.join(STATE, n) for n in os.listdir(STATE)
+             if n.startswith("Default.ini.pre-opacity.")]
+    if not cands:
+        return ""
+    cands.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+    return cands[0]
+
+
+def restart_companions():
+    """Restart emerald + cairo-dock without replacing Compiz (X-146).
+
+    A full `compiz-session` replace orphans emerald decorations and can drop
+    cairo-dock off the new WM. Companions only is the safe recovery path.
+    """
+    print("opacity-menus: restarting emerald + cairo-dock (Compiz left alone)")
+    # emerald --replace reattaches decorations to the live Compiz
+    if shutil.which("emerald"):
+        subprocess.Popen(
+            ["setsid", "emerald", "--replace"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        print("opacity-menus:   emerald --replace launched")
+    else:
+        print("opacity-menus:   emerald not in PATH")
+    # cairo-dock: only start if not already alive
+    dock = None
+    for name in ("cairo-dock", "cairo-dock-glx"):
+        if shutil.which(name):
+            dock = name
+            break
+    if dock:
+        alive = subprocess.run(
+            ["pgrep", "-x", "cairo-dock"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if alive:
+            print("opacity-menus:   cairo-dock already running")
+        else:
+            subprocess.Popen(
+                ["setsid", dock],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )
+            print("opacity-menus:   %s launched" % dock)
+    else:
+        print("opacity-menus:   cairo-dock not in PATH")
+    return 0
+
+
+def cmd_status():
+    print("== compiz-opacity-menus status ==")
+    if not os.path.isfile(CFG):
+        print("profile: MISSING  %s" % CFG)
+        return 1
+    lines = read_lines(CFG)
+    _, plugins, _ = parse_plugins(lines)
+    print("profile: %s" % CFG)
+    print("hash:    %s" % sha(CFG))
+    print("plugins: %s" % (";".join(plugins) + ";" if plugins else "(none)"))
+    print("obs:     %s" % ("yes" if PLUGIN in plugins else "NO"))
+    print("legacy opacity token: %s" % ("YES-BAD" if LEGACY_PLUGIN in plugins else "no"))
+    s, e = section_bounds(lines, SECTION)
+    if s is None:
+        print("[obs]: absent")
+    else:
+        _, mv = get_key(lines, s, e, "s0_opacity_matches")
+        _, vv = get_key(lines, s, e, "s0_opacity_values")
+        print("matches:  %s" % (mv or "(unset)"))
+        print("values:   %s" % (vv or "(unset)"))
+    print("legacy [opacity] section: %s" % (
+        "YES-BAD" if section_bounds(lines, LEGACY_SECTION)[0] is not None else "no"))
+    print("desired:  %s" % ("YES" if desired_present(lines) else "no"))
+    print("backup:   %s" % (newest_backup() or "(none yet)"))
+    return 0
+
+
+def cmd_check():
+    print("== compiz-opacity-menus --check ==")
+    if not os.path.isfile(CFG):
+        die("no profile at %s" % CFG, 2)
+    lines = read_lines(CFG)
+    ok = desired_present(lines)
+    _, plugins, _ = parse_plugins(lines)
+    print("obs in as_active_plugins:     %s" % (PLUGIN in plugins))
+    print("legacy opacity token present: %s" % (LEGACY_PLUGIN in plugins))
+    print("desired rules present:        %s" % ok)
+    print("hash: %s" % sha(CFG))
+    print("VERDICT: %s" % ("APPLIED" if ok else "NOT-APPLIED"))
+    return 0 if ok else 1
+
+
+def cmd_apply():
+    if os.geteuid() == 0:
+        die("refusing to run as root", 2)
+    if not os.path.isfile(CFG):
+        die("no profile at %s" % CFG, 2)
+    lines = read_lines(CFG)
+    if desired_present(lines):
+        print("opacity-menus: OK    already applied (idempotent)")
+        print("opacity-menus: hash  %s" % sha(CFG))
+        return 0
+    bak = backup(CFG)
+    print("opacity-menus: backup %s" % bak)
+    print("opacity-menus:        sha %s" % sha(bak))
+    new, scrubbed = scrub_legacy(lines)
+    for s in scrubbed:
+        print("opacity-menus: scrub %s" % s)
+    new, added = ensure_plugin(new)
+    print("opacity-menus: %s plugin '%s'" % (
+        "added" if added else "kept", PLUGIN))
+    new = ensure_obs_section(new)
+    write_lines(CFG, new)
+    if not os.path.isfile(CFG):
+        die("profile missing after write")
+    print("opacity-menus: wrote  %s" % CFG)
+    print("opacity-menus: hash   %s" % sha(CFG))
+    if not desired_present(read_lines(CFG)):
+        die("post-write verify failed; undo: cp -a %s %s" % (bak, CFG))
+    print("opacity-menus: OK     rules present")
+    print("opacity-menus: NOTE   live Compiz must reread Default.ini.")
+    print("opacity-menus:        full replace orphans dock/emerald (X-146).")
+    print("opacity-menus:        prefer: logout/login, OR after replace run:")
+    print("opacity-menus:          %s --reload" % (sys.argv[0] or "compiz-opacity-menus"))
+    print("opacity-menus: undo:   %s --restore" % (sys.argv[0] or "compiz-opacity-menus"))
+    return 0
+
+
+def cmd_restore():
+    if os.geteuid() == 0:
+        die("refusing to run as root", 2)
+    bak = newest_backup()
+    if not bak:
+        die("no backup under %s" % STATE, 2)
+    if not os.path.isfile(CFG):
+        die("no profile at %s" % CFG, 2)
+    safety = backup(CFG, tag="pre-restore")
+    shutil.copy2(bak, CFG)
+    print("opacity-menus: restored from %s" % bak)
+    print("opacity-menus: hash now      %s" % sha(CFG))
+    print("opacity-menus: pre-restore   %s" % safety)
+    print("opacity-menus: then run:     %s --reload" % (sys.argv[0] or "compiz-opacity-menus"))
+    return 0
+
+
+def main():
+    arg = sys.argv[1] if len(sys.argv) > 1 else ""
+    if arg in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if arg == "--status":
+        return cmd_status()
+    if arg == "--check":
+        return cmd_check()
+    if arg == "--restore":
+        return cmd_restore()
+    if arg == "--reload":
+        return restart_companions()
+    if arg in ("", "--apply"):
+        return cmd_apply()
+    die("unknown arg %r (use --check|--restore|--status|--reload|--apply)" % arg, 2)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
