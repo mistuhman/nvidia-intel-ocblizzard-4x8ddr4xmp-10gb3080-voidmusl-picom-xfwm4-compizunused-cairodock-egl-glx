@@ -8957,3 +8957,32 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-2] Desktop is restored SAFE. Retry only the corrected
   metadata-mapped controller; autostart stays disabled.
+
+--------------------------------------------------------------------------------
+12.142 ONE-MPV VISUAL PASS; HARNESS MISREAD LOWERCASE YES; 700 MS REQUEST
+--------------------------------------------------------------------------------
+
+  [W-296] MAPPED ONE-MPV LIVE GATE RAN. Controller 21082 owned one xwinwrap
+    21086 and one mpv 21087; role mapping worked across all four viewports.
+    Operator verdict: "VERY GOOD". Twenty transition samples measured SM
+    18-24%, memory-engine 5-6%, and decoder 22-27% during two-track fades;
+    steady returned to 11-15%, matching the accepted one-decode baseline.
+    Hardware remained nvdec-copy at 4480x1440. This is the first human visual
+    acceptance of the U-070 architecture. Full --status/RSS counters were not
+    collected because the delivery harness rolled back before that branch.
+
+  [X-150] HARNESS BUG, NOT RENDERER FAILURE: prompt demanded uppercase `YES`;
+    operator entered lowercase `yes`, so the shell treated a positive visual
+    gate as rejection. Rollback behaved correctly and restored direct main-red
+    23297/23299 at 11% decoder; Compiz remained SAFE at b94b49e0.... Never use
+    a case-sensitive human-acceptance token again.
+
+  [U-074] Operator requests the accepted fade shortened from 4000 ms to about
+    700 ms. Controller/install defaults now 700; existing target config needs
+    the reversible one-line update before relaunch. New renderer also uses
+    --really-quiet so its private log contains faults, not per-frame status.
+    After 700 ms visual confirmation, collect status/RSS/drops and keep it live;
+    autostart remains disabled until those final receipts pass.
+
+[2026-08-16][M17-XMB-IPC-3] Architecture visually accepted; rollback was only
+  a lowercase-token harness error. Next: set 700 ms, relaunch, measure, persist.
