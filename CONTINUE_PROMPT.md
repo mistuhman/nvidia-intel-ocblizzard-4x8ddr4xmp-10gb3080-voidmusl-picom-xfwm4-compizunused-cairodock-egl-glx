@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.139 prompt. This is the 12.140 pre-target edge.
+Supersedes the 12.143 prompt. This is the 12.144 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -47,6 +47,8 @@ Supersedes the 12.139 prompt. This is the 12.140 pre-target edge.
 - Deliver by heredoc or git checkout, never curl (X-097). No unanchored `pgrep -f` (X-128).
 - CCSM gtk.css/pixbuf warnings benign (X-135). Never destabilize WM for wallpaper (W-282).
 - One objective per PR (X-147). Ceiling 405.
+- Never re-patch an installed copy whose SHA diverges from repo HEAD;
+  re-install whole files from one SHA via xmb-runtime-install (X-154).
 
 ## Objectives, in order
 1. CLOSED: guard + CCSM + reboot. CLOSED/MERGED: XMB bare layer (PR #15).
@@ -56,8 +58,11 @@ Supersedes the 12.139 prompt. This is the 12.140 pre-target edge.
    because no controller is running. New controller is one xwinwrap + one mpv
    + one gpu-next context, lavfi track blend over JSON IPC, latest-wins, and
    exact-PID takeover. Sandbox + FFmpeg graphs PASS; target remains unproven.
-   NEXT: install branch, --check, start --replace, switch 0->1->2->0, --status,
-   then measure dropped frames, decoder%, VRAM, RSS and human visual result.
+   NEXT (X-154/W-300/U-082): update target clone to the 12.144 SHA, run
+   scripts/xmb-runtime-install (controller+shader from one SHA), --check must
+   print peak=2.0, --stop, start --replace, switch 1->2->3->4->1 including
+   same-role hops 2->3 and 4->1 (blur pulse is their visible transition),
+   --status, measure drops/decoder%/VRAM/RSS + human verdict word.
    Any black/lag/error: --restore. Autostart remains Hidden/false until accept.
    Never run target's old SHA 7484d253 controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
@@ -66,6 +71,7 @@ Supersedes the 12.139 prompt. This is the 12.140 pre-target edge.
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.144 (X-154/W-300/U-082 blur peak + eased crossfade, sandbox-proven),
 12.140 (W-292/X-148/W-293/U-073), 12.139 (W-291/X-147 merge),
 12.138 (W-290 RECOVERED), 12.137 (X-145/X-146),
 12.136 (W-286), 12.135 (W-285), 12.134 (W-284), 12.133 (W-281/X-143/U-070),

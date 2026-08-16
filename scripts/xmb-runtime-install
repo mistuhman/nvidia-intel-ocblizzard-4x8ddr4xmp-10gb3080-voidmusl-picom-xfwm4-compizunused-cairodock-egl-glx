@@ -20,6 +20,8 @@ ROLES=(main-red work-monochrome work-monochrome main-red)
 # Crossfade duration in milliseconds. Two decoders run only during this window.
 FADE_MS=500
 BLUR_MS=700
+# Transition blur pulse strength 0.0..4.0 (0 = off, 1 = base, higher = stronger).
+BLUR_PEAK=2.0
 HWDEC=nvdec-copy
 CONF
 fi

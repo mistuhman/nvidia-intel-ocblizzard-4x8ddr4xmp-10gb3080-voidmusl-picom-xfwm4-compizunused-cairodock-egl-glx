@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import collections, fcntl, json, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
+import collections, fcntl, json, math, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
 from pathlib import Path
 ROOT = Path(os.getenv("XMB_BAKE_ROOT", "/mnt/games/xmb-wave-bake"))
 CFG = Path(os.getenv("XMB_CONFIG", Path.home() / ".config/xmb-wallpaper.conf"))
@@ -12,7 +12,7 @@ ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 500, "blur": 700, "hwdec": "nvdec-copy"}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 500, "blur": 700, "hwdec": "nvdec-copy", "peak": 2.0}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -22,10 +22,12 @@ def config():
             elif line.startswith("FADE_MS="): out["fade"] = int(line.split("=", 1)[1])
             elif line.startswith("BLUR_MS="): out["blur"] = int(line.split("=", 1)[1])
             elif line.startswith("HWDEC="): out["hwdec"] = line.split("=", 1)[1].strip()
+            elif line.startswith("BLUR_PEAK="): out["peak"] = float(line.split("=", 1)[1])
             else: fail(f"unsupported config line: {raw}")
     if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
     if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
     if not out["fade"] <= out["blur"] <= 10000: fail("BLUR_MS must be FADE_MS..10000")
+    if not 0.0 <= out["peak"] <= 4.0: fail("BLUR_PEAK must be 0.0..4.0")
     if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"): fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 def check():
@@ -88,7 +90,7 @@ def blend(weights, target, ids, frames):
     if len(active) == 1: return steady(target, ids)
     total = sum(weights.get(r, 0) for r in active) or 1; start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
-    u = f"min(N/{frames}\\\\,1)"
+    u = f"(1-cos(PI*min(N/{frames}\\\\,1)))/2"
     for index, role in enumerate(active[1:], 1):
         cumulative += start[role]
         initial = start[role] / cumulative
@@ -100,6 +102,12 @@ def blend(weights, target, ids, frames):
         source = output
     command = ",".join(commands)
     return ";".join(chains) + f";[premix]sendcmd=c='0-999999 {command}'[vo]"
+def blur_envelope(elapsed, fade, blur, peak):
+    half = fade / 2.0
+    if elapsed <= half:
+        return peak * math.sin(math.pi / 2.0 * (elapsed / half))
+    fall = max(blur - half, 0.05)
+    return peak * math.cos(math.pi / 2.0 * min((elapsed - half) / fall, 1.0))
 def slot_at_viewport(line=None):
     if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
     match = re.search(r"=\s*(-?\d+)", line); return max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
@@ -148,6 +156,7 @@ def run(replace):
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], stdout=subprocess.PIPE); os.set_blocking(watch.stdout.fileno(), False)
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
+        peak, strength_last = cfg["peak"], -1.0
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on, blur_deadline = False, 0.0
         while not stop_now and xww.poll() is None:
@@ -164,12 +173,17 @@ def run(replace):
                 if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
             if not active and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
+                ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000"); strength_last = 0.0
                 if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
                 blur_deadline = now + blur_duration; print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
                 if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
                 active, started = True, now; state_write(xww, target_role)
+            if blur_on:
+                strength = blur_envelope(now - started, duration, blur_duration, peak)
+                if abs(strength - strength_last) >= 0.02:
+                    ipc.call("set_property", "glsl-shader-opts", f"xmb_strength={strength:.3f}"); strength_last = strength
             if blur_on and now >= blur_deadline:
-                ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False
+                ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False; strength_last = -1.0
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
         if watch: watch.terminate()
@@ -223,7 +237,7 @@ def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
     if action == "run": run("--replace" in sys.argv)
     elif action == "start": check(); start("--replace" in sys.argv)
-    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
+    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} peak={cfg['peak']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
     elif action == "--status": raise SystemExit(status())
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)

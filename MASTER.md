@@ -9019,3 +9019,53 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
   [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
   [U-081] Target exact-role queue ran at 59.99955 fps/SAFE, but human requires every viewport boundary including same-role 2->3 and 4->1 plus stronger blur; per-slot queue + double Gaussian authored, target unproven.
+
+--------------------------------------------------------------------------------
+12.144 TARGET PATCH-ABORT DIAGNOSED; BLUR PEAK + EASED CROSSFADE LANDED IN-REPO
+--------------------------------------------------------------------------------
+
+  [X-154] TARGET PATCH ABORTED ON A DIVERGENT ANCHOR; THE ATOMIC GUARD SAVED
+    THE FILE. The strength-animation patch was authored against repo HEAD, but
+    the installed target controller is an older SHA: anchor 7
+    (peak/strength_last init) matched 0 times and the script exited before
+    os.replace, so nothing was written. --check printing the pre-patch line
+    (no peak=) is the proof. The separately installed 2330 B double-Gaussian
+    shader defaults xmb_strength=0.0, which is mathematically identity (its
+    taps sum to 1.0 and collapse onto the center pixel), and same-role
+    viewport hops build no blend graph at all; an unpatched controller on top
+    of that shader therefore shows no visible transition on those hops — the
+    reported "no fade or blur". The restart itself was clean
+    (31046/31066/31067, main-red). Standing rule: never re-patch an installed
+    copy whose SHA diverges from repo HEAD; re-install whole files from one
+    SHA via xmb-runtime-install. RECEIPT: operator paste 2026-08-16 22:53
+    (PATCH ABORT + clean restart).
+
+  [W-300] BLUR PEAK ANIMATION + EASED CROSSFADE AUTHORED AND PROVEN IN-REPO.
+    Shader: repo now carries the exact 2330 B xmb_strength double-Gaussian the
+    target already runs (wc -c identical), so xmb-runtime-install keeps both
+    sides equal. Controller: BLUR_PEAK config line (default 2.0, validated
+    0.0..4.0, printed by --check); blur_envelope helper (sin rise across the
+    first half of FADE_MS, cos fall to BLUR_MS); per-tick glsl-shader-opts
+    animation quantized to >=0.02 steps; strength zeroed before shader load
+    and state reset after unload; and the crossfade mix eased from linear
+    min(N/F,1) to (1-cos(PI*min(N/F,1)))/2 so blend weight no longer drives
+    at constant slope into its hold — the crossfade-persistence fix.
+    Installer config template documents BLUR_PEAK. SANDBOX: py_compile PASS;
+    envelope unit tests PASS (0/peak/0 endpoints, monotone rise+fall, clamp
+    past deadline); eased blend graph escaping PASS incl. three-role retarget;
+    full mock xwinwrap/mpv/xprop run() PASS — nonsequential track IDs mapped,
+    shader set+clr once per transition, strength 0->1.999->0, same-role hop
+    pulsed blur with zero blend graphs, --check prints peak=2.0. Target
+    remains the acceptance gate. RECEIPT: sandbox harness this session.
+
+  [U-082] RETRY GATE: one-SHA re-install of controller+shader via
+    xmb-runtime-install, then the U-073 trial order: --check must print
+    peak=2.0 (the install-correctness token), --stop, start --replace, switch
+    1->2->3->4->1 including same-role hops 2->3 and 4->1 (the blur pulse is
+    their visible transition now), --status, collect counters, human verdict
+    word. Any black frame/lag/launch error: --restore. Autostart stays
+    Hidden/false until accept. BLUR_PEAK in ~/.config/xmb-wallpaper.conf tunes
+    strength 0.0..4.0. Target unproven.
+
+[2026-08-16][M17-XMB-IPC-6] Divergent-anchor abort diagnosed; blur peak +
+  eased crossfade sandbox-proven in-repo. Next: single-SHA re-install trial.
