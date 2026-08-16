@@ -9009,3 +9009,7 @@ What worked, in order, when the box went black before lightdm with no TTY.
   [U-076] LIVE-2S gate: one renderer 29422/29440/29441, 59.9988 fps, mpv RSS 874456 KiB, SAFE; operator requests Gaussian blur + 1s. GPU shader authored, target unproven. RECEIPT: target + operator, 2026-08-16.
 
   [U-077] Operator requests 500 ms crossfade + 700 ms blur; clocks are now separate and rapid retarget extends, rather than recompiles, the active shader. Target unproven.
+
+  [W-298] 500/700 live gate: controller/xwinwrap/mpv 21609/21623/21624, steady 60.000182 fps, mpv RSS 849868 KiB, VRAM 2545 MiB, Compiz SAFE; rapid decoder peaked 76%.
+  [X-152] Human: switching back rapidly stutters/skips; immediate in-flight graph retarget is rejected despite eventual steady correctness.
+  [U-078] Controller now lets each 500 ms fade finish, coalesces only the latest pending role, chains it before decoder retirement, and keeps the 700 ms shader loaded. Target unproven.

@@ -96,11 +96,6 @@ def blend(weights, target, ids, frames):
         source = output
     command = ",".join(commands)
     return ";".join(chains) + f";[premix]sendcmd=c='0-999999 {command}'[vo]"
-def weights(state):
-    start, target, began, duration = state; progress = min(1., max(0., time.monotonic() - began) / duration)
-    out = {r: value * (1 - progress) for r, value in start.items()}
-    out[target] = out.get(target, 0) + progress
-    return {r: value for r, value in out.items() if value > .0001}
 def role_at_viewport(cfg, line=None):
     if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
     match = re.search(r"=\s*(-?\d+)", line); slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
@@ -153,30 +148,30 @@ def run(replace):
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], text=True, stdout=subprocess.PIPE)
         duration, blur_duration = cfg["fade"] / 1000, cfg["blur"] / 1000
-        fade = ({initial: 1.}, initial, time.monotonic(), duration)
+        fade, pending = ({}, initial, time.monotonic(), duration), None
         blur_on, blur_deadline = False, 0.0
         while not stop_now and xww.poll() is None:
             ready, _, _ = select.select([watch.stdout], [], [], .05)
             if ready:
                 line = watch.stdout.readline()
                 if not line: fail("xprop watcher exited")
-                desired = role_at_viewport(cfg, line)
+                pending = role_at_viewport(cfg, line)
                 while select.select([watch.stdout], [], [], 0)[0]:
                     line = watch.stdout.readline()
                     if not line: fail("xprop watcher exited")
-                    desired = role_at_viewport(cfg, line)
-                current = weights(fade)
-                if desired != fade[1]:
-                    now = time.monotonic()
+                    pending = role_at_viewport(cfg, line)
+            now, active = time.monotonic(), bool(fade[0])
+            if active and now - fade[2] >= fade[3]:
+                current = fade[1]; fade, active = ({}, current, now, duration), False
+                if pending == current: pending = None
+                if pending is None: ipc.call("set_property", "lavfi-complex", steady(current, ids))
+            if not active and pending:
+                current, target, pending = fade[1], pending, None
+                if target != current:
                     if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
                     blur_deadline = now + blur_duration
-                    ipc.call("set_property", "lavfi-complex", blend(current, desired, ids, round(duration * 60)))
-                    fade = (current, desired, now, duration)
-                    state_write(xww, desired)
-            now = time.monotonic()
-            if now - fade[2] >= fade[3] and len(fade[0]) != 0:
-                ipc.call("set_property", "lavfi-complex", steady(fade[1], ids))
-                fade = ({}, fade[1], now, duration)
+                    ipc.call("set_property", "lavfi-complex", blend({current: 1.}, target, ids, round(duration * 60)))
+                    fade = ({current: 1.}, target, now, duration); state_write(xww, target)
             if blur_on and now >= blur_deadline:
                 ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
