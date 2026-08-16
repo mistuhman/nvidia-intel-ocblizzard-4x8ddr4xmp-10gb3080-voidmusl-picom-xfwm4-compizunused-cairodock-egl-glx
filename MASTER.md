@@ -8097,3 +8097,24 @@ What worked, in order, when the box went black before lightdm with no TTY.
   target, then use `ccsm-safe` instead of bare `ccsm`, and read
   `compiz-profile-verify` before any logout. U-065 (plugin allow-list) is the
   open question. XMB bake remains gated behind operator sign-off, per U-064.
+
+  [W-252] U-065 CLOSED BY OPERATOR DECISION: keys-only. The guard continues to
+    own exactly the seven [core] display keys and will NOT police
+    `as_active_plugins`. Rationale accepted as designed: W-191 requires
+    water/wobbly to be deliberately enablable before opacity work, so a plugin
+    allow-list would fight the operator's own intent. ccsm-safe's before/after
+    plugin listing remains the visibility mechanism. No code change was needed;
+    the shipped behaviour already matches. RECEIPT: operator selection
+    "Keys only (ship as-is)", 2026-08-16.
+
+  [W-253] CONTINUE_PROMPT.md REWRITTEN to the 12.127 edge per operator, closing
+    X-126. It now marks the greeter/reboot/network/Compiz work SETTLED so a
+    fresh session cannot redo it, carries the phone-paste/VT/df/pgrep
+    constraints forward, documents the three guard tools and the keys-only
+    ruling, and points objective 3 at the XMB bake resuming from W-200.
+    RECEIPT: operator selection "Yes, rewrite it to the 12.127 edge", file diff.
+
+[2026-08-16][M12-CCSM-CLOSE] U-065 closed keys-only; CONTINUE_PROMPT refreshed.
+  Guard tools authored and sandbox-tested but STILL UNEXECUTED ON TARGET — the
+  next target action is `sh scripts/compiz-guard-install` then
+  `compiz-profile-verify`, verdict word. XMB bake is the next milestone.
