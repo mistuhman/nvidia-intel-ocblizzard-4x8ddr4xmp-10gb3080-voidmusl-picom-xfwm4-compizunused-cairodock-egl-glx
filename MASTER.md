@@ -8929,3 +8929,31 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M17-XMB-IPC-1] Root cause closed: Compiz viewports work; no active
   role observer existed. One-mpv IPC implementation is sandbox-proven and not
   yet target-proven. Next action is one reversible install/live trial paste.
+
+--------------------------------------------------------------------------------
+12.141 U-070 INSTALL ARMED; FIRST START ID-GATE FAILED; ROLLBACK SAFE
+--------------------------------------------------------------------------------
+
+  [W-294] TARGET INSTALL/ARM PASS. Target fetched exact e9e0da2, backed up the
+    retired controller as *.pre-u070.1786904329, and installed controller SHA
+    62602262..., launcher 70e2d4cc..., shim 104cf87e.... Existing role config
+    was preserved (red/work/work/red, 4000 ms, nvdec-copy). Autostart was
+    created but remains Hidden=true/enabled=false. --check PASS; accepted direct
+    renderer 26012/26014 remained untouched; Compiz SAFE at b94b49e0....
+
+  [X-149] FIRST LIVE START STOPPED AT AN OVERSTRICT TRACK-ID ASSERTION, BEFORE
+    ANY VISUAL SWITCH TEST. One-mpv launched and exposed three video tracks,
+    but their mpv IDs were not the assumed literal set 1,2,3. Controller refused
+    rather than risk wrong roles. This does not test or disprove lavfi blending.
+    Exact takeover stopped one direct pair; scripted --restore immediately
+    relaunched proven main-red as 18512/18514 at nvdec-copy 11%. Compiz remained
+    SAFE. Earlier BadWindow/old role lines in the tailed append-only log are
+    X-140 history, not this renderer. VERDICT ROLLED-BACK.
+
+  [W-295] FIX AUTHORED: map role IDs from mpv track-list metadata — primary
+    non-external track plus each external-filename basename — and require three
+    unique mapped IDs, never positional IDs. Mock IPC covers nonsequential IDs;
+    py_compile and generated FFmpeg graph tests remain PASS. Target retry gated.
+
+[2026-08-16][M17-XMB-IPC-2] Desktop is restored SAFE. Retry only the corrected
+  metadata-mapped controller; autostart stays disabled.

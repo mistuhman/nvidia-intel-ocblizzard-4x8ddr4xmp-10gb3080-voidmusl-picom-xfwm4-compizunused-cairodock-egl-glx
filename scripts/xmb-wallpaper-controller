@@ -12,15 +12,12 @@ SHIM = Path(os.getenv("XMB_SHIM", Path.home() / ".local/bin/mpv-xwinwrap-shim"))
 ROLES = ("main-red", "work-monochrome", "sleep")
 stop_now = False
 
-
 def fail(text):
     print(f"xmb-controller: {text}", file=sys.stderr)
     raise SystemExit(2)
 
-
 def video(role):
     return ROOT / "out" / role / f"{role}.loop-60s.mp4"
-
 
 def config():
     out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"],
@@ -47,7 +44,6 @@ def config():
         fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 
-
 def check():
     cfg = config()
     for command in ("mpv", "xwinwrap", "xprop"):
@@ -60,7 +56,6 @@ def check():
             fail(f"missing video: {video(role)}")
     return cfg
 
-
 def proc(pid):
     path = Path("/proc") / str(pid)
     try:
@@ -70,7 +65,6 @@ def proc(pid):
         return comm, argv, int((path / "stat").read_text().split()[3])
     except (OSError, ValueError):
         return "", [], -1
-
 
 def kill(pid, name):
     if proc(pid)[0] != name:
@@ -86,7 +80,6 @@ def kill(pid, name):
     if proc(pid)[0] == name:
         os.kill(pid, signal.SIGKILL)
 
-
 def direct_renderers():
     videos = {str(video(role)) for role in ROLES}
     found = []
@@ -95,7 +88,6 @@ def direct_renderers():
         if comm == "xwinwrap" and str(SHIM) in argv and videos.intersection(argv):
             found.append(int(path.name))
     return found
-
 
 def stop_direct():
     found = direct_renderers()
@@ -106,7 +98,6 @@ def stop_direct():
                 kill(pid, "mpv")
         kill(xww, "xwinwrap")
     return len(found)
-
 
 class IPC:
     def __init__(self):
@@ -129,10 +120,8 @@ class IPC:
     def close(self):
         self.file.close(); self.sock.close()
 
-
 def steady(role, ids):
     return f"[vid{ids[role]}]null[vo]"
-
 
 def blend(weights, target, ids, frames):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
@@ -155,14 +144,12 @@ def blend(weights, target, ids, frames):
     command = ",".join(commands)
     return ";".join(chains) + f";[premix]sendcmd=c='0-999999 {command}'[vo]"
 
-
 def weights(state):
     start, target, began, duration = state
     progress = min(1., max(0., time.monotonic() - began) / duration)
     out = {r: value * (1 - progress) for r, value in start.items()}
     out[target] = out.get(target, 0) + progress
     return {r: value for r, value in out.items() if value > .0001}
-
 
 def role_at_viewport(cfg, line=None):
     if line is None:
@@ -171,7 +158,6 @@ def role_at_viewport(cfg, line=None):
     match = re.search(r"=\s*(-?\d+)", line)
     slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
     return cfg["roles"][slot]
-
 
 def launch(cfg, initial):
     order = [initial] + [r for r in ROLES if r != initial]
@@ -192,12 +178,19 @@ def launch(cfg, initial):
         if SOCK.exists():
             ipc = IPC()
             tracks = [t for t in ipc.call("get_property", "track-list") if t.get("type") == "video"]
-            if len(tracks) < 3 or {t.get("id") for t in tracks} != {1, 2, 3}:
-                fail("mpv did not expose expected video track IDs 1,2,3")
+            ids = {}
+            for track in tracks:
+                filename = Path(track.get("external-filename", "")).name
+                if not track.get("external") and not track.get("albumart"):
+                    ids[initial] = track.get("id")
+                for role in order[1:]:
+                    if filename == video(role).name:
+                        ids[role] = track.get("id")
+            if set(ids) != set(ROLES) or len(set(ids.values())) != 3:
+                fail(f"could not map mpv video tracks: {tracks}")
             return xww, ipc, ids, log
         time.sleep(.05)
     kill(xww.pid, "xwinwrap"); fail(f"no mpv IPC socket; inspect {LOG}")
-
 
 def state_write(xww, role):
     children = [int(p.name) for p in Path("/proc").glob("[0-9]*")
@@ -205,7 +198,6 @@ def state_write(xww, role):
     data = {"controller": os.getpid(), "xwinwrap": xww.pid,
             "mpv": children[0] if children else 0, "role": role}
     temp = STATE.with_suffix(".tmp"); temp.write_text(json.dumps(data) + "\n"); temp.replace(STATE)
-
 
 def run(replace):
     global stop_now
@@ -255,13 +247,11 @@ def run(replace):
         if log: log.close()
         for path in (PID, STATE, SOCK): path.unlink(missing_ok=True)
 
-
 def live_pid():
     try: pid = int(PID.read_text())
     except (OSError, ValueError): return 0
     comm, argv, _ = proc(pid)
     return pid if comm.startswith("python") and any("xmb-wallpaper-controller" in x for x in argv) else 0
-
 
 def start(replace):
     if live_pid(): fail("controller already running")
@@ -277,7 +267,6 @@ def start(replace):
         time.sleep(.05)
     fail(f"start timed out; inspect {LOG}")
 
-
 def stop(restore=False):
     pid = live_pid()
     if pid:
@@ -292,7 +281,6 @@ def stop(restore=False):
                         "main-red", "background"], env=env, check=True)
     print("XMB_CONTROLLER_RESTORE=PASS" if restore else "XMB_CONTROLLER_STOP=PASS")
 
-
 def status():
     if not live_pid(): print("XMB_CONTROLLER_STATUS=STOPPED"); return 1
     print(STATE.read_text().strip())
@@ -300,7 +288,6 @@ def status():
     for name in ("lavfi-complex", "vo-drop-frame-count", "decoder-frame-drop-count"):
         print(f"{name}={ipc.call('get_property', name)}")
     ipc.close(); print("XMB_CONTROLLER_STATUS=RUNNING"); return 0
-
 
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
@@ -313,6 +300,5 @@ def main():
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)
     else: fail("usage: xmb-wallpaper-controller [start --replace|--check|--status|--stop|--restore]")
-
 
 if __name__ == "__main__": main()
