@@ -1,16 +1,87 @@
 #!/usr/bin/env bash
-# xmb-wallpaper-controller — scrollwheel/desktop Wall switcher that swaps XMB roles red ↔ work
-# Maps Compiz Wall viewports (17920x1440 = 4x 4480) to roles:
-#   viewport x=0      → main-red
-#   viewport x=4480   → work-monochrome
-#   viewport x=8960   → sleep (optional)
-#   viewport x=13440  → main-red (wrap)
-# Watches _NET_DESKTOP_VIEWPORT via xprop -spy or polling
+# Configurable Compiz viewport -> XMB role controller with a bounded crossfade.
 set -euo pipefail
 ROOT="${XMB_BAKE_ROOT:-/mnt/games/xmb-wave-bake}"
-CUR=""; LOG="/tmp/xmb-wallpaper-controller.log"
-vp_to_role(){ local vx="$1"; if [ "$vx" -lt 2240 ]; then echo "main-red"; elif [ "$vx" -lt 6720 ]; then echo "work-monochrome"; elif [ "$vx" -lt 11200 ]; then echo "sleep"; else echo "main-red"; fi; }
-get_vp(){ xprop -root _NET_DESKTOP_VIEWPORT 2>/dev/null | awk -F= '{print $2}' | cut -d',' -f1 | tr -d ' ' || echo "0"; }
-launch_role(){ local role="$1"; [ "$role" != "$CUR" ] || return 0; echo "$(date -Is) $CUR -> $role vp=$(get_vp)" | tee -a "$LOG"; pkill -f "xwinwrap.*$CUR" 2>/dev/null || true; pkill -f "mpv.*$CUR" 2>/dev/null || true; XMB_USE_GEOMETRY=1 XMB_MPV_VERBOSE=0 "$HOME/.local/bin/xmb-wallpaper" "$role" background 2>&1 | tee -a "$LOG"; CUR="$role"; }
-vp=$(get_vp); role=$(vp_to_role "$vp"); echo "start vp=$vp role=$role" | tee "$LOG"; launch_role "$role"
-xprop -root -spy _NET_DESKTOP_VIEWPORT 2>/dev/null | while read -r line; do vx=$(echo "$line" | awk -F= '{print $2}' | cut -d',' -f1 | tr -d ' '); role=$(vp_to_role "${vx:-0}"); launch_role "$role"; done
+CONFIG="${XMB_CONFIG:-$HOME/.config/xmb-wallpaper.conf}"
+RUNDIR="${XDG_RUNTIME_DIR:-/tmp}/xmb-wallpaper-$UID"
+LOG="${XMB_CONTROLLER_LOG:-/tmp/xmb-wallpaper-controller.log}"
+SHIM="${XMB_SHIM:-$HOME/.local/bin/mpv-xwinwrap-shim}"
+ROLES=(main-red work-monochrome work-monochrome main-red)
+FADE_MS=4000
+HWDEC=nvdec-copy
+[ -r "$CONFIG" ] && source "$CONFIG"
+mkdir -p "$RUNDIR"
+exec 9>"$RUNDIR/controller.lock"
+flock -n 9 || { echo "xmb controller already running" >&2; exit 2; }
+for c in xwinwrap mpv xprop flock; do command -v "$c" >/dev/null || { echo "missing $c" >&2; exit 2; }; done
+[ -x "$SHIM" ] || { echo "missing shim $SHIM" >&2; exit 2; }
+[ "${#ROLES[@]}" -eq 4 ] || { echo "ROLES must contain exactly four entries" >&2; exit 2; }
+for role in "${ROLES[@]}" sleep; do
+  case "$role" in main-red|work-monochrome|sleep) ;; *) echo "invalid role $role" >&2; exit 2;; esac
+  [ -f "$ROOT/out/$role/$role.loop-60s.mp4" ] || { echo "missing video for $role" >&2; exit 2; }
+done
+CUR_ROLE=""; CUR_XWW=""; CUR_MPV=""; CUR_WID=""
+comm_is(){
+  local comm
+  [ -n "$1" ] && comm="$(cat "/proc/$1/comm" 2>/dev/null)" && [ "$comm" = "$2" ]
+}
+stop_pair(){
+  local xww="${1:-}" mpv_pid="${2:-}"
+  comm_is "$mpv_pid" mpv && kill "$mpv_pid" 2>/dev/null || true
+  comm_is "$xww" xwinwrap && kill "$xww" 2>/dev/null || true
+}
+cleanup(){ stop_pair "$CUR_XWW" "$CUR_MPV"; rm -f "$RUNDIR/controller.pid"; }
+trap cleanup EXIT INT TERM
+printf '%s\n' "$$" >"$RUNDIR/controller.pid"
+viewport_x(){ xprop -root _NET_DESKTOP_VIEWPORT 2>/dev/null | awk -F'[=,]' '{gsub(/ /,"",$2); print $2+0}'; }
+role_for_viewport(){
+  local x="$1" slot=$(( (x + 2240) / 4480 ))
+  [ "$slot" -ge 0 ] && [ "$slot" -le 3 ] || slot=0
+  printf '%s\n' "${ROLES[$slot]}"
+}
+set_opacity(){
+  local hex
+  printf -v hex '0x%08x' "$2"
+  xprop -id "$1" -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY "$hex" >/dev/null
+}
+spawn_role(){
+  local role="$1" opacity="$2" video widfile i
+  video="$ROOT/out/$role/$role.loop-60s.mp4"
+  widfile="$RUNDIR/wid.$$.${RANDOM}"
+  XMB_WID_FILE="$widfile" nohup xwinwrap -b -ni -s -g 4480x1440+0+0 -st -sp -nf -ov -fdt -o "$opacity" -- \
+    "$SHIM" WID --loop-file=inf --no-audio --no-osc --no-osd-bar \
+    --no-input-default-bindings --no-stop-screensaver --panscan=1.0 --vo=gpu-next --hwdec="$HWDEC" \
+    --framedrop=vo --really-quiet "$video" >>"$LOG" 2>&1 &
+  NEXT_XWW=$!
+  for ((i=0; i<60; i++)); do [ -s "$widfile" ] && break; sleep 0.05; done
+  [ -s "$widfile" ] || { stop_pair "$NEXT_XWW" ""; echo "no WID for $role" >&2; return 1; }
+  NEXT_WID="$(cat "$widfile")"; rm -f "$widfile"
+  NEXT_MPV="$(pgrep -P "$NEXT_XWW" -x mpv 2>/dev/null || true)"
+  comm_is "$NEXT_XWW" xwinwrap && comm_is "$NEXT_MPV" mpv || {
+    stop_pair "$NEXT_XWW" "$NEXT_MPV"; echo "launch failed for $role" >&2; return 1;
+  }
+}
+transition(){
+  local role="$1" i steps=40 alpha inverse delay
+  [ "$role" != "$CUR_ROLE" ] || return 0
+  if [ -z "$CUR_ROLE" ]; then
+    spawn_role "$role" 1.0
+  else
+    spawn_role "$role" 0.0
+    delay="$(awk -v ms="$FADE_MS" -v n="$steps" 'BEGIN { printf "%.3f", ms/n/1000 }')"
+    for ((i=1; i<=steps; i++)); do
+      alpha=$((4294967295 * i / steps)); inverse=$((4294967295 - alpha))
+      set_opacity "$NEXT_WID" "$alpha"; set_opacity "$CUR_WID" "$inverse"
+      sleep "$delay"
+    done
+    stop_pair "$CUR_XWW" "$CUR_MPV"
+  fi
+  CUR_ROLE="$role"; CUR_XWW="$NEXT_XWW"; CUR_MPV="$NEXT_MPV"; CUR_WID="$NEXT_WID"
+  printf '%s role=%s viewport=%s xwinwrap=%s mpv=%s\n' "$(date -Is)" "$role" "$(viewport_x)" "$CUR_XWW" "$CUR_MPV" | tee -a "$LOG"
+}
+last_x=""
+while :; do
+  x="$(viewport_x)"
+  if [ "$x" != "$last_x" ]; then transition "$(role_for_viewport "$x")"; last_x="$x"; fi
+  sleep 0.20
+done

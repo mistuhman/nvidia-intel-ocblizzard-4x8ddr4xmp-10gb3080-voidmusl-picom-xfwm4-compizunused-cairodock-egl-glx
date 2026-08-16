@@ -14,4 +14,10 @@ if [ "$WID" = "WID" ]; then
   echo "mpv-xwinwrap-shim: WID not replaced by xwinwrap (still literal WID)" >&2
   exit 2
 fi
+# The controller uses this private receipt to crossfade the two owned windows.
+# A normal xmb-wallpaper launch leaves XMB_WID_FILE unset and behaves unchanged.
+if [ -n "${XMB_WID_FILE:-}" ]; then
+  printf '%s\n' "$WID" >"$XMB_WID_FILE.tmp"
+  mv -f "$XMB_WID_FILE.tmp" "$XMB_WID_FILE"
+fi
 exec mpv --wid="$WID" "$@"

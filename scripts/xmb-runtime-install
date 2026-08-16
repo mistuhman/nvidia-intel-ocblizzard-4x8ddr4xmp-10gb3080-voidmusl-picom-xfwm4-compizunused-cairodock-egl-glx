@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Install the XMB controller and native xfce4-screensaver theme for this user.
+set -euo pipefail
+HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+BIN="$HOME/.local/bin"
+AUTOSTART="$HOME/.config/autostart"
+SAVERS="$HOME/.local/share/applications/screensavers"
+CONFIG="$HOME/.config/xmb-wallpaper.conf"
+mkdir -p "$BIN" "$AUTOSTART" "$SAVERS" "$(dirname "$CONFIG")"
+for name in xmb-wallpaper xmb-wallpaper-controller mpv-xwinwrap-shim xmb-screensaver; do
+  install -m 0755 "$HERE/$name" "$BIN/$name"
+  cmp -s "$HERE/$name" "$BIN/$name" || { echo "install mismatch: $name" >&2; exit 2; }
+done
+if [ ! -e "$CONFIG" ]; then
+  cat >"$CONFIG" <<'CONF'
+# Workspace 1..4. Allowed: main-red, work-monochrome, sleep.
+ROLES=(main-red work-monochrome work-monochrome main-red)
+# Crossfade duration in milliseconds. Two decoders run only during this window.
+FADE_MS=4000
+HWDEC=nvdec-copy
+CONF
+fi
+cat >"$AUTOSTART/xmb-wallpaper-controller.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=XMB Workspace Wallpaper
+Exec=$BIN/xmb-wallpaper-controller
+OnlyShowIn=XFCE;
+Terminal=false
+X-GNOME-Autostart-enabled=true
+EOF
+cat >"$SAVERS/xmb-sleep.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=XMB Sleep Wave
+Comment=Baked sleep XMB loop
+Exec=$BIN/xmb-screensaver
+TryExec=$BIN/xmb-screensaver
+Categories=Screensaver;
+NoDisplay=true
+EOF
+for file in "$CONFIG" "$AUTOSTART/xmb-wallpaper-controller.desktop" "$SAVERS/xmb-sleep.desktop"; do
+  [ -s "$file" ] || { echo "empty install artifact: $file" >&2; exit 2; }
+  ls -l "$file"
+done
+echo "XMB_RUNTIME_INSTALL=PASS"
+echo "Select 'XMB Sleep Wave' once in xfce4-screensaver-preferences."

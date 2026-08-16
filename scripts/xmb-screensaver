@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# xfce4-screensaver theme: render the baked sleep loop into its secured window.
+set -euo pipefail
+ROOT="${XMB_BAKE_ROOT:-/mnt/games/xmb-wave-bake}"
+VIDEO="$ROOT/out/sleep/sleep.loop-60s.mp4"
+WID="${XSCREENSAVER_WINDOW:-}"
+[ -n "$WID" ] || { echo "XSCREENSAVER_WINDOW is unset" >&2; exit 2; }
+[ -f "$VIDEO" ] || { echo "missing $VIDEO" >&2; exit 2; }
+exec mpv --wid="$WID" --loop-file=inf --no-audio --no-osc --no-osd-bar \
+  --no-input-default-bindings --no-stop-screensaver --panscan=1.0 --vo=gpu-next --hwdec=nvdec-copy \
+  --framedrop=vo --really-quiet "$VIDEO"
