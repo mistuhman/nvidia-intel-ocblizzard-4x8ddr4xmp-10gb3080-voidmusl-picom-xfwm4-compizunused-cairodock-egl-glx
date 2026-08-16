@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.144 prompt. This is the 12.145 pre-target edge.
+Supersedes the 12.145 prompt. This is the 12.146 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -60,20 +60,22 @@ Supersedes the 12.144 prompt. This is the 12.145 pre-target edge.
    because no controller is running. New controller is one xwinwrap + one mpv
    + one gpu-next context, lavfi track blend over JSON IPC, latest-wins, and
    exact-PID takeover. Sandbox + FFmpeg graphs PASS; target remains unproven.
-   Crossfade is TARGET-ACCEPTED (W-301). Blur v1 pulse failed at switching
-   speed (X-155); rebuilt as persistent burst blur (W-302). NEXT (U-083):
-   heredoc reinstall with new tokens, --check must print peak=3.0, switch
-   slowly AND in a fast burst; log must show one "blur burst ... state=OK"
-   line per burst with hops>1 on fast runs; blur must stay strong through
-   the whole burst. Verdict word; any failure: rollback block. Autostart
-   remains Hidden/false until accept. Never run target's old SHA 7484d253
-   controller or revive X-143.
+   Crossfade is TARGET-ACCEPTED (W-301); persistent burst blur TARGET-PROVEN
+   (W-304, 8-hop burst state=OK). Timings now operator-directed: FADE_MS=350,
+   BLUR_MS=500 = total blur window (U-084/W-305). NEXT: reinstall controller
+   AND rewrite target config with 350/500 (live config overrides defaults);
+   --check must print fade_ms=350 blur_ms=500 peak=3.0; switch slow + fast;
+   burst lines must read rise_ms=175 fall_ms=150 state=OK. Verdict word; any
+   failure: rollback block (controller + config). Autostart remains
+   Hidden/false until accept. Never run target's old SHA 7484d253 controller
+   or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
 5. Optional later: obs menu opacity retry (fixed tool) — operator go-ahead only.
 6. Tier-2 USB when convenient. **Tier-3 `~/.bitcoin`: never delete, never
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.146 (W-304 burst blur target-proven, U-084/W-305 timing 350/500),
 12.145 (W-301 crossfade target-accepted, X-155 blur-at-speed fail,
 W-302/U-083 persistent burst blur, sandbox-proven),
 12.144 (X-154/W-300/U-082 blur peak + eased crossfade, sandbox-proven),
