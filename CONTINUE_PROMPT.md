@@ -3,7 +3,7 @@
 You are continuing a live, reversible desktop project in the Git repository
 `mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx`.
 
-**BOOT DEATH RESOLVED (12.108–12.116, Section XIII).** The box boots
+**BOOT DEATH RESOLVED (12.108–12.116, Section XIV).** The box boots
 6.18.35-tkg-bore to a tty1 login prompt (lightdm intentionally downed), user
 `sd` logs in, nvidia loads at real-root with console surviving, X initializes
 with no fatal EE. The desktop is NOT yet back — greeter/display-signal stage is
@@ -12,7 +12,7 @@ the current edge, now debuggable from a live shell.
 ## Mandatory initialization
 
 1. This Arena session is fixed to whatever `arena/...` branch it opens on. Do not switch, create, or push another branch.
-2. Read `README.md`, then `MASTER.md` **completely** before proposing any target command. Section XIII is the proven boot-death recovery protocol; 12.116 is latest; Sections I–II frozen constitution.
+2. Read `README.md`, then `MASTER.md` **completely** before proposing any target command. Section XIV is the proven boot-death recovery protocol; 12.116 is latest; Sections I–II frozen constitution.
 3. MASTER.md is append-only audit log: dated, receipt-backed rows (W-/X-/U-), supersede never rewrite.
 4. Refer to IDs; do not copy MASTER into chat.
 5. **PR weight ceiling is 405 (U-061).** Rescue was ledger-only; keep script weight for milestones. Remind the operator of bench standing every few messages (standing order).
@@ -48,6 +48,6 @@ the current edge, now debuggable from a live shell.
 
 ## Ledger anchors for this edge
 X-114 (no VT), X-115/W-218 (modeset=1 removal), W-219/W-220 (lightdm down,
-tty1 live, X clean init), Section XIII (recovery protocol), X-105 (failsafe
+tty1 live, X clean init), Section XIV (recovery protocol), X-105 (failsafe
 landmine), W-191 (plugin divergence), W-199/W-200 (efficient wallpaper),
 U-055/U-057 (menus + fork), U-061 (PR ceiling 405 + bench reminders).
