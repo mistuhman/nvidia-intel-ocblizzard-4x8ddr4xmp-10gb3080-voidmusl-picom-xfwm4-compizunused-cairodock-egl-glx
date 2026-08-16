@@ -7847,3 +7847,43 @@ What worked, in order, when the box went black before lightdm with no TTY.
   exists. Next: X-123 binary gate, then a self-terminating direct
   `xfce4-session` attempt; verdict desktop | black. If desktop: remove down-file,
   reboot, verify greeter. Then Tier-2 USB migration, Compiz, U-055, M12, M18.
+
+--------------------------------------------------------------------------------
+12.123 X-123 BINARY GATE RESOLVED — XSETROOT/XCLOCK PRESENT, XTERM ABSENT
+--------------------------------------------------------------------------------
+
+  [W-239/X-124] AGENT V TRANSCRIPT (operator photo, 2026-08-15):
+      [sd@66 ~]$ ls /usr/bin/xsetroot /usr/bin/xterm /usr/bin/xclock
+      ls: cannot access '/usr/bin/xterm': No such file or directory
+      /usr/bin/xclock  /usr/bin/xsetroot
+    X-123's leading hypothesis is REFUTED: xsetroot exists, so its absence did
+    not cause probe 1's black root. xterm alone is absent, making W-223's xfwm4
+    mode unsuitable as written, but it does not block a direct xfce4-session.
+    Per W-238, do not reopen display theory before the direct session test.
+    RECEIPT: operator image.jpg, current Arena session.
+
+[2026-08-15][M12-GREETER-7] X-123 CLOSED. Next gate is a timed direct
+  xfce4-session on :1/vt1; verdict desktop | black.
+
+
+--------------------------------------------------------------------------------
+12.123 DIRECT XFCE SESSION WORKS — DISPLAY STACK RECOVERED
+--------------------------------------------------------------------------------
+
+  [X-124] X-123 resolved: `/usr/bin/xsetroot` and `/usr/bin/xclock` exist;
+    `/usr/bin/xterm` does not. Root remains 152G total, 141G used, 2.9G
+    available, 99%. The attempted heredoc was phone-joined and never created
+    `/tmp/xfce-probe`; no result is attributed to it. RECEIPT: operator photo,
+    current session.
+
+  [W-239] `timeout 35s startx /usr/bin/xfce4-session -- :1 vt1` produced a
+    working desktop. It lacked a compositing manager, which is expected because
+    the recovered session uses stock xfwm4 and picom remains masked (W-042).
+    This proves the user session, XFCE, xfwm4, NVIDIA/X, and display path work.
+    RECEIPT: operator verdict "got me to a working desktop lacking a composite
+    manager", current session.
+
+[2026-08-15][M12-GREETER-RESTORE] Direct desktop gate passed. Next: remove
+  `/etc/sv/lightdm/down`, reboot, and verify the normal greeter/login path.
+  Compiz remains gated until that boot succeeds; then reclaim storage and run
+  the reversible Compiz repair/verification ladder.
