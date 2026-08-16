@@ -7961,3 +7961,30 @@ What worked, in order, when the box went black before lightdm with no TTY.
   persistence is armed. Next: clear only XFCE session cache, reboot TKG-bore,
   verify login-owned Compiz and profile/process invariants, then declare the
   CCSM-safe baseline before resuming XMB.
+
+
+--------------------------------------------------------------------------------
+12.126 REBOOT GATE PASSED — CCSM-SAFE COMPIZ BASELINE
+--------------------------------------------------------------------------------
+
+  [W-246] TKG-bore reboot returned directly to a working Compiz desktop.
+    Post-login receipts: kernel 6.18.35-tkg-bore; wmctrl names compiz;
+    `/usr/bin/compiz --replace ccp` PID 1198, Emerald 1278, Cairo-Dock 1295,
+    xfce4-panel 1239; picom absent. Login repair reports all seven enforced
+    hardware keys correct. Active profile remains fe81708f... and golden guard
+    af457926...; Failsafe Client0_Command reads the guarded compiz-session
+    path. Root has 6.8G available and NetworkManager connectivity is full.
+    No xwinwrap, mpv, or xmb-wallpaper process exists, providing a clean
+    wallpaper starting point. RECEIPT: complete labelled operator transcript.
+
+  [W-247] Human gate passed: operator reports "compiz desktop. everythings
+    working, just no wallpaper." This accepts decorations, desktop usability,
+    and boot stability. CCSM is now permitted with standing protections:
+    keep Detect Outputs and Detect Refresh Rate off; close CCSM before logout;
+    never save the XFCE session while CCSM is open; keep golden +
+    compiz-profile-repair + `compiz-revert --xfwm4` intact.
+
+[2026-08-15][M12-COMPIZ-STABLE] Rebootable guarded Compiz baseline COMPLETE.
+  The WM stack is frozen while Agent B resumes XMB from W-200: first inventory
+  installed launcher/shim/videos, then restore the proven single-decode bare
+  layer. Native MP4 fork remains U-057; do not destabilize WM for wallpaper.
