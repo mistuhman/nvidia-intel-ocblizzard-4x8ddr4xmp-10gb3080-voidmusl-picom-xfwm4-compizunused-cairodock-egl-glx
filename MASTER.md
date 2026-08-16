@@ -8001,16 +8001,15 @@ What worked, in order, when the box went black before lightdm with no TTY.
     RECEIPT: operator message, 2026-08-16.
 
   [X-126] CONTINUE_PROMPT.md IS STALE AND MUST NOT BE FOLLOWED AS WRITTEN. It
-    still calls the disk-full greeter crisis the live edge, but 12.123-12.126
-    resolved the greeter, reboot, network and Compiz baseline; its objectives
-    1-3 are CLOSED by W-239/W-240/W-246. A fresh model obeying it will redo
+    still calls the disk-full greeter crisis the live edge, but its objectives
+    1-3 are CLOSED by W-239/W-240/W-246, so a fresh model obeying it will redo
     finished work. Anchor on the ledger tail. RECEIPT: those entries vs file.
 
   [X-127] W-247's CCSM permission rests on THREE MANUAL HABITS — close CCSM
     before logout, never save the session while open, keep the guards intact.
     Directive 2 names this shape as the thing to engineer away: repeated,
-    attention-dependent, penalty deferred to next login. W-046 proves it fired
-    once already. Habit is not a guard.
+    attention-dependent, penalty deferred to next login (W-046 fired once
+    already). Habit is not a guard.
 
   [W-248] GUARDED CCSM WRAPPER AUTHORED: `scripts/ccsm-safe`, 110 lines, 0755,
     `sh -n` clean, SHA-256 d88864b4c17473cfabfa40e1610d8fa81fc08dfd622db911eb3f94d52115f4cb.
@@ -8018,8 +8017,8 @@ What worked, in order, when the box went black before lightdm with no TTY.
     Default.ini.pre-ccsm.EPOCH, runs CCSM in the FOREGROUND, and on ANY exit
     path repairs the seven enforced [core] keys, re-verifies them section-scoped
     (X-032), prints before/after plugin lists plus a changed-line count, and
-    emits a one-line undo. The repair fires from a signal trap, so it also runs
-    on crash and on Ctrl-C — the paths a human habit cannot cover.
+    emits a one-line undo. The repair fires from a signal trap, so it covers
+    crash and Ctrl-C too — the paths a human habit cannot cover.
     RECEIPT: chmod, sh -n, sha256sum, matrix below.
 
   [W-249] READ-ONLY VERIFIER AUTHORED: `scripts/compiz-profile-verify`,
@@ -8028,16 +8027,14 @@ What worked, in order, when the box went black before lightdm with no TTY.
     the section-scoped 7-key count, both hashes, Client0_Command, and picom
     absence (W-042). Verdict SAFE | REPAIRABLE | UNSAFE; REPAIRABLE means only
     the seven keys drifted and the login hook will fix them, so a reboot is
-    still safe. The pre-logout gate X-031 demanded, reduced to one phone-legible
-    word. RECEIPT: chmod, sh -n, sha256sum, matrix below.
+    still safe. The X-031 pre-logout gate as one phone-legible word.
 
   [W-250] BYTE-IDENTITY INSTALLER AUTHORED: `scripts/compiz-guard-install`,
     61 lines, SHA-256 4679eec2a8863f8f4422bef2ffb97e7a3b9e98fdb2455a046dee726fc5825d1d.
     Copies the three guard tools into ~/.local/bin with a chmod and an `-x`
-    gate after every write, then prints installed vs repo-side hashes. Does not
-    touch the escapes (compiz-session, compiz-revert, xfce-wm-recover), only
-    reports them. Structurally closes X-033: copying bytes cannot introduce the
-    whitespace delta a terminal paste did. Reproduced compiz-profile-repair at
+    gate after every write, then prints installed vs repo-side hashes. Reports
+    but never touches the escapes. Structurally closes X-033: copying bytes
+    cannot introduce the whitespace delta a terminal paste did. Reproduced repair at
     canonical 4bac9046e18bcd9e238dbb5fc71fa7c07f76235696c593461ec24ce1f0659221.
     RECEIPT: installer output, fake HOME then target, all hashes matching.
 
@@ -8051,15 +8048,11 @@ What worked, in order, when the box went black before lightdm with no TTY.
     T12 installer -> INSTALLED with matching hashes. (Target run: W-255.)
     RECEIPT: full command output, this session.
 
-  [X-128] BUG FOUND AND FIXED DURING TESTING, RECORDED BECAUSE IT WOULD HAVE
-    HIT THE OPERATOR. The first ccsm-safe used `pgrep -f '/usr/bin/ccsm'` for
-    its already-running check. That matches any process whose command line
-    merely CONTAINS the string — an editor open on the script, a grep, or the
-    invoking shell — and it falsely refused to start during T8. On target,
-    `nano ~/.local/bin/ccsm-safe` in another tab would have blocked CCSM.
-    Fixed with an anchored pattern allowing CCSM's real `python3 /usr/bin/ccsm`
-    cmdline shape (W-034) and excluding its own pid. Both directions proven:
-    T11b detects a genuine CCSM, T10 ignores a decoy.
+  [X-128] BUG FOUND AND FIXED DURING TESTING. ccsm-safe's first already-running
+    check used `pgrep -f '/usr/bin/ccsm'`, which matches any cmdline merely
+    CONTAINING the string (an editor on the script, a grep, the invoking shell)
+    and falsely refused to start in T8. Fixed with an anchored pattern per
+    W-034, excluding its own pid; T11b detects real CCSM, T10 ignores a decoy.
     GENERAL RULE: never gate an action on an unanchored `pgrep -f`.
 
   [U-065] compiz-profile-repair owns ONLY the seven [core] display keys and
@@ -8080,52 +8073,59 @@ What worked, in order, when the box went black before lightdm with no TTY.
     the seven [core] display keys and will NOT police `as_active_plugins`,
     because W-191 requires water/wobbly deliberately enablable before opacity
     work and an allow-list would fight the operator's intent; ccsm-safe's
-    before/after listing is the visibility mechanism instead.
-    RECEIPT: operator selection "Keys only (ship as-is)", 2026-08-16.
+    before/after listing is the visibility mechanism. RECEIPT: operator
+    selection "Keys only (ship as-is)", 2026-08-16.
 
   [W-253] CONTINUE_PROMPT.md REWRITTEN to the 12.127 edge per operator, closing
     X-126. Marks greeter/reboot/network/Compiz work SETTLED, carries the
     phone-paste/VT/df/pgrep constraints forward, documents the guard tools and
-    the keys-only ruling, points objective 3 at the XMB bake from W-200.
-    RECEIPT: operator selection, file diff.
+    the keys-only ruling, points objective 3 at the XMB bake. RECEIPT: diff.
 
-[2026-08-16][M12-CCSM-CLOSE] U-065 closed keys-only; CONTINUE_PROMPT refreshed.
-  Delivery route corrected below (X-129/W-254), then the tools ran for real on
-  target (W-255). XMB bake is the next milestone.
-
-  [X-129] AGENT ERROR — PLACEHOLDER SHIPPED IN A PHONE PASTE BLOCK. The agent
-    told the operator to `cd` into an angle-bracket placeholder path; bash read
-    the bracket as a redirection and died with `syntax error near unexpected
-    token '&&'`. Nothing ran. TWO rules broken at once: an unexpanded
-    placeholder, and a bare redirect char X-122 already forbade. Worse, X-095
-    had proven no checkout exists on target, so it was unsatisfiable anyway.
-    Operator-side error: none. STANDING RULE, tightened: every phone block must
-    be literally runnable as transmitted — no angle brackets, no placeholders,
-    no assumed checkout path; verify its exact text in a fake HOME before
-    sending. RECEIPT: operator terminal output, this session.
+  [X-129] AGENT ERROR — PLACEHOLDER SHIPPED IN A PHONE PASTE BLOCK. A `cd` into
+    an angle-bracket placeholder; bash read it as a redirection and died with
+    `syntax error near unexpected token '&&'`. Nothing ran. Two rules broken:
+    a placeholder, and a bare redirect char X-122 already forbade; X-095 had
+    also proven no checkout exists on target. STANDING RULE: every phone block
+    must be literally runnable as transmitted; verify its exact text in a fake
+    HOME first. RECEIPT: operator output.
 
   [W-254] DELIVERY PATH FIXED, DRY-RUN THEN TARGET PROVEN. The repo is PUBLIC
     (`gh repo view --json isPrivate` -> false), so the target needs no
     credentials; a shallow single-branch clone is 990K. The corrected block
     clones to the fixed literal path `$HOME/compiz-guard-repo`, gates with
     `ls -l`, then runs the installer from there — no placeholder, no redirect
-    chars, no assumed checkout. Proven in a fake HOME, then for real (W-255).
-    Supersedes X-095's curl fallback; a branch-pinned clone cannot serve the
-    stale content X-097 hit. RECEIPT: sandbox + target output, this session.
+    chars, no assumed checkout. Supersedes X-095's curl fallback; a
+    branch-pinned clone cannot serve the stale content X-097 hit.
+    RECEIPT: fake-HOME dry run, then target (W-255).
 
   [W-255] GUARD TOOLS EXECUTED ON TARGET; DIRECTIVE 9 CLEARED FOR THEM.
     Installer -> INSTALLED, hashes matching, escapes untouched. verify -> SAFE,
     keys 7/7, golden af457926 as predicted, Client0_Command correct, picom
     absent (W-042), wm compiz. Then a real ccsm-safe session: repair found all
     7 keys ALREADY correct, post-verify SAFE, snapshot kept. NOTE: active hash
-    never equals golden BY DESIGN -- only the 7 [core] keys are load-bearing.
-    RECEIPT: operator output.
+    never equals golden BY DESIGN. RECEIPT: operator output.
 
   [W-256] U-021/R-11 CUBE PLAN SUPERSEDED BY OPERATOR CHOICE. The ccsm-safe
     session dropped cube;rotate;cubeaddon;3d and added text;screensaver;svg;
     vpswitch;imgjpeg;wall;animationsim, retiring the 12.2 binding plan's
     Ctrl+Alt+Btn1 cube free-rotate and the "3D Only on mouse rotate" pairing
-    (R-11): the desktop is flat wall/vpswitch now, not a cube. Operator
-    confirmed INTENTIONAL; consistent with X-013 naming the heavy stack a
-    choppiness suspect. Per W-252 the guard is keys-only and will NOT restore
-    them, so this survives reboot. RECEIPT: ccsm-safe before/after, operator.
+    (R-11): the desktop is flat wall/vpswitch now. Operator confirmed
+    INTENTIONAL; consistent with X-013 naming the heavy stack a choppiness
+    suspect. Per W-252 the guard is keys-only and will NOT restore them, so
+    this survives reboot. RECEIPT: ccsm-safe before/after, operator.
+
+  [X-130] VERIFIER BLIND SPOT + TWO AGENT ERRORS IN RECOVERY.
+    (a) BLIND SPOT: the CCSM session dropped `ccp` from as_active_plugins and
+    verify still said SAFE -- it checks the 7 [core] keys, not whether the
+    plugin set is FUNCTIONAL. Input died on pre-existing windows; cairo-dock
+    and the crosshair broke. SAFE means "reboot reproduces Compiz with correct
+    display keys", NOT "desktop works".
+    (b) AGENT ERROR: relaunch advised as `compiz --replace ccp &` --
+    backgrounded, not detached, so xfce4-session did not own the WM. Correct
+    form is `setsid "$HOME/.local/bin/compiz-session"`.
+    (c) AGENT ERROR, WORSE: escalated to `compiz-revert --xfwm4` over a
+    `No XI2 extension` warning ALREADY confirmed benign (line 780), killing a
+    working Compiz and blacking the main screen. STANDING RULE: never invoke an
+    escape path over a known-benign warning; they are for a stuck operator.
+    TODO before ccsm-safe is used again: verify must FAIL when `ccp` is absent.
+    RECEIPT: operator terminal + screenshot.
