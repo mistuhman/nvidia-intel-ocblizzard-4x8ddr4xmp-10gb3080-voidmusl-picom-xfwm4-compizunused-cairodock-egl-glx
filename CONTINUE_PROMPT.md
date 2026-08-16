@@ -2,12 +2,12 @@
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
 Supersedes the 12.134 prompt: XMB bare layer stays merged; Cheetah tools now
-exist in-repo. This is the 12.137 edge (X-145 obs not opacity; X-146 replace orphans dock). (X-126 lesson: a stale prompt costs
+exist in-repo. This is the 12.138 edge (RECOVERED SAFE; menus off; switcher still open). (X-126 lesson: a stale prompt costs
 real work.)
 
 ## Mandatory init
 1. Session is fixed to the `arena/...` branch it opens on. Never switch or push another.
-2. Read `README.md`, then `MASTER.md` — **the edge is 12.137, read the tail first.**
+2. Read `README.md`, then `MASTER.md` — **the edge is 12.138, read the tail first.**
    Sections I–II frozen. XIV is boot-death protocol (not currently needed).
 3. MASTER.md is append-only: dated W-/X-/U- rows with receipts. Supersede, never rewrite.
 4. PR ceiling 405 (U-061). X-144 disclosed an honest exceed for this U-055 pair;
@@ -55,13 +55,14 @@ real work.)
 
 ## Objectives, in order
 1. CLOSED: guard tools + CCSM + reboot. CLOSED/MERGED: XMB bare layer (PR #15).
-2. **NEXT — recover UI (X-145/X-146), then decide menus.**
-   (a) restore gtk.css (operator rejected theme change W-287).
-   (b) restart emerald + cairo-dock companions ONLY (no full compiz replace).
-   (c) scrub legacy [opacity] section; plugin is `obs` not `opacity`.
-   (d) obs menu opacity is OPTIONAL after UI is healthy — operator go-ahead.
-   (e) XMB workspace switcher is U-070 (parked); do not conflate with U-055.
-3. M18 icons/sound after menus/switcher direction is clear.
+2. **CLOSED — U-055 failed apply recovered (W-290).** Theme stock, SAFE,
+   emerald+dock live. Menu opacity OFF until operator asks. Plugin is `obs`.
+3. **NEXT — operator chooses:**
+   (a) U-070 XMB workspace switcher (operator: "doesnt work") — parked spec,
+       needs go-ahead and acceptance metrics (frame time, drops, decoder%, VRAM).
+   (b) obs menu opacity retry with fixed tool + --reload companions only.
+   (c) M18 icons/sound (Zen->Safari, Thunar/terminal icons, sound chain).
+   Default: wait for direction. Do not re-apply cheetah gtk.css.
 3. M18 icons/sound: three sub-tasks, do not conflate — (a) Zen icon -> Safari
    override via user theme or ~/.local copy, (b) missing Thunar/terminal icons,
    (c) sound chain.
@@ -70,7 +71,7 @@ real work.)
    delete, never glob-move, only deliberately with the client stopped (U-063).**
 
 ## Anchors
-12.137 (X-145/X-146/W-287/W-288/W-289), 12.136 (W-286), 12.135 (W-285), 12.134
+12.138 (W-290 RECOVERED), 12.137 (X-145/X-146), 12.136 (W-286), 12.135 (W-285)
 (W-281/X-143/W-282/U-070/W-283), 12.132 (W-275/X-139), 12.130 (W-265/W-267),
 W-053 golden af457926, X-031 pre-reboot hash rule, X-032 section-scoped check,
 U-061 ceiling 405 (X-144 one-time exceed for U-055 pair).

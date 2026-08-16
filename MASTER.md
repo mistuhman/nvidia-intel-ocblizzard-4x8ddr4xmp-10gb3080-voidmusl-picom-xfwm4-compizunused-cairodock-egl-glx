@@ -8790,3 +8790,39 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M16-CHEETAH-3] Apply FAILED on wrong plugin name; theme unwanted;
   dock/emerald orphaned by replace. Recovery first. U-070 switcher still
   parked and is the operator's other open complaint — separate from menus.
+
+--------------------------------------------------------------------------------
+12.138 RECOVERY COMPLETE — THEME RESTORED, DOCK/EMERALD LIVE, SAFE
+--------------------------------------------------------------------------------
+
+  [W-290] TARGET RECOVERY PASTE PASSED. Operator output 2026-08-16 17:53.
+
+    gtk.css: restored to 206 B, hash eed9b077... (pre-cheetah backup
+      1786902454.27771). cheetah markers: 0. Theme change undone (W-287).
+    [opacity] section: scrubbed True. plugins back to W-284 list without
+      opacity token:
+      core;ccp;move;text;screensaver;decoration;grid;resize;place;svg;
+      vpswitch;regex;imgjpeg;png;wall;animation;wobbly;animationaddon;
+      animationsim;
+    Backup of pre-scrub profile: Default.ini.bak.scrub-opacity.1786902825
+      (1560 B).
+    emerald: restarted --replace -> pid 32484 (was stale 1274 / then
+      post-fail). Four gtk.css Junk warnings = known benign X-135.
+      Wnck-CRITICAL client type = known benign on emerald --replace.
+    cairo-dock: already up pid 1290 (`cairo-dock -o`). Not missing at
+      recovery time — either self-recovered or was never fully dead; operator
+      earlier report of disappearance may have been transient during the
+      Compiz replace window (X-146).
+    live: compiz 27774 --replace ccp, emerald 32484, cairo-dock 1290,
+      picom absent. verify SAFE. active b94b49e0... (post-scrub).
+      Client0_Command still compiz-session. VERDICT: RECOVERED + SAFE.
+
+    X-145/X-146 incident CLOSED on target for the failed apply side-effects.
+    Menu opacity (obs) remains OPTIONAL and off. Cheetah gtk overlay remains
+    OFF. U-070 workspace switcher still the open operator complaint and is
+    a separate track — do not re-enter U-055 without explicit go-ahead.
+
+[2026-08-16][M16-CHEETAH-4] Recovered. Desktop SAFE, theme stock, dock and
+  emerald live. Next only on operator direction: (a) obs menu opacity retry
+  with fixed tool + companions --reload, or (b) U-070 XMB workspace switcher,
+  or (c) M18 icons/sound. Default: wait.
