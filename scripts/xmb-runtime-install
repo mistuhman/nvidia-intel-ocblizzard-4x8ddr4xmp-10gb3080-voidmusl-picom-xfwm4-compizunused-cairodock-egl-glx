@@ -24,7 +24,7 @@ cat >"$AUTOSTART/xmb-wallpaper-controller.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=XMB Workspace Wallpaper
-Exec=$BIN/xmb-wallpaper-controller
+Exec=$BIN/xmb-wallpaper-controller start --replace
 OnlyShowIn=XFCE;
 Terminal=false
 # Remains opt-in until a live crossfade gate passes on this hardware.

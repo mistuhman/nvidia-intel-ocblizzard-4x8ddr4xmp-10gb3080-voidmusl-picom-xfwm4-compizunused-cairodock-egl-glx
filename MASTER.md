@@ -8872,3 +8872,60 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M16-CHEETAH-CLOSE] PR #17 merge. U-055 not accepted visually;
   tools in-repo; desktop recovered SAFE. NEXT CHAT: U-070 XMB workspace
   switcher (operator: "doesnt work"). Read CONTINUE_PROMPT 12.139 edge.
+
+--------------------------------------------------------------------------------
+12.140 U-070 ROOT CAUSE PROVEN; ONE-MPV IPC SWITCHER AUTHORED, TARGET GATED
+--------------------------------------------------------------------------------
+
+  [W-292] U-070 READ-ONLY TARGET COLLECT + HUMAN FAILURE GATE. Root remains
+    96% used (6.4G free), so no output may land there. The accepted renderer is
+    still exactly xwinwrap 26012 + mpv 26014, main-red, explicit 4480x1440,
+    input-transparent, nvdec-copy, --no-stop-screensaver. mpv RSS 543708 KiB;
+    GPU snapshot 28%, decoder 13% global / 10% mpv, total VRAM 2355 MiB.
+    xfdesktop absent. The observer captured every valid viewport X (0, 4480,
+    8960, 13440), including rapid changes; therefore middle mouse and Compiz
+    Wall switching DO work. The same PIDs and main-red argv survived every
+    change. Human: XMB role "didnt work upon switching with middle mouse and
+    desktop switcher with compiz." Failure is renderer role selection, not the
+    Wall binding. Compiz ended SAFE, active b94b49e0..., picom absent.
+    RECEIPT: operator transcript + visual report, 2026-08-16.
+
+  [X-148] TARGET HAS THE RETIRED CONTROLLER, NOT AN ACTIVE SWITCHER. Installed
+    xmb-wallpaper-controller is the old 3865 B shell fade (SHA 7484d253...),
+    no controller process exists, and its autostart desktop file is missing.
+    Starting that file would revive X-143's two-window/xprop design and is
+    prohibited. Repository controller was intentionally exit-2 disabled. The
+    >15-character pgrep warning in the collect is only a detector limitation;
+    the process absence and missing autostart are independently established.
+
+  [W-293] U-070 SINGLE-WINDOW IMPLEMENTATION AUTHORED. The replacement keeps
+    one xwinwrap, one mpv process and one gpu-next context for its lifetime.
+    mpv opens all role files as synchronized tracks; lavfi-complex selects one
+    track/decoder at steady state and an FFmpeg blend only during transition.
+    One JSON IPC socket changes the graph; FFmpeg sendcmd updates the named
+    blend's optimized all_opacity once per decoded frame, with no xprop client
+    per opacity step and no second xwinwrap. Viewport events are drained to the
+    latest value; same-role moves are no-ops. A retarget starts from computed
+    current weights instead of queueing or restarting media clocks. Normal
+    fades use two decoders; only a third-role retarget can transiently select
+    three to preserve the exact in-flight composite, then steady returns to one.
+    Config is parsed, not sourced. Takeover kills only /proc-validated owned
+    xwinwrap/mpv PIDs. --check/--status/--stop/--restore are reversible gates;
+    autostart remains Hidden/false until live acceptance.
+
+    SANDBOX: py_compile PASS; fake xprop/mpv IPC 0->4480->8960 retarget PASS;
+    status returned both dropped-frame counters; stop left no process residue.
+    FFmpeg n8.0 minimal build executed generated two-input and three-input
+    blend@instance + sendcmd graphs at 60 fps with rc 0, proving graph escaping,
+    per-frame command routing, and all_opacity runtime support. mpv 0.41 target
+    visual/performance remains the required live gate; sandbox is not acceptance.
+
+  [U-073] TARGET TRIAL ORDER: install current branch; --check; start --replace;
+    switch 0->1->2->0 once; --status; collect pids/RSS/decoder/VRAM and human
+    visual result. On any black frame, lag, or launch error, run --restore;
+    it stops the owned controller pair and relaunches proven direct main-red.
+    Do not enable autostart before that gate.
+
+[2026-08-16][M17-XMB-IPC-1] Root cause closed: Compiz viewports work; no active
+  role observer existed. One-mpv IPC implementation is sandbox-proven and not
+  yet target-proven. Next action is one reversible install/live trial paste.
