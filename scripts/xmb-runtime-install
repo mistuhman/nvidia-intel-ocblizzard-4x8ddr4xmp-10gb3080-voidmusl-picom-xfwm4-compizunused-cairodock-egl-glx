@@ -27,7 +27,9 @@ Name=XMB Workspace Wallpaper
 Exec=$BIN/xmb-wallpaper-controller
 OnlyShowIn=XFCE;
 Terminal=false
-X-GNOME-Autostart-enabled=true
+# Remains opt-in until a live crossfade gate passes on this hardware.
+X-GNOME-Autostart-enabled=false
+Hidden=true
 EOF
 cat >"$SAVERS/xmb-sleep.desktop" <<EOF
 [Desktop Entry]

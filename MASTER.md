@@ -8492,3 +8492,24 @@ What worked, in order, when the box went black before lightdm with no TTY.
     autostart, and editable role config; all generated files are nonempty and
     installed scripts are byte-identical. Selection remains an explicit GUI
     gate: choose “XMB Sleep Wave” in xfce4-screensaver-preferences.
+
+  [X-140] FIRST LIVE CROSSFADE FAILED AND IS WITHDRAWN. On controller start it
+    aggressively selected work for the current viewport, then faded to black,
+    produced no replacement, and exited 1. The transition also restarted media
+    rather than preserving the visibly seamless loop expected by the operator.
+    The window-opacity mock proved orchestration only; it did not prove Compiz
+    opacity semantics on override-redirect xwinwrap windows. Presence of a WID
+    and successful xprop in a fake backend was not visual capability (same
+    class as X-083). Do not restart or autostart this controller.
+    RECEIPT: operator visual report + shell job Exit 1, 2026-08-16.
+
+  [W-279] Immediate rollback PASS. Failed controller was stopped and the proven
+    direct launcher restored main-red: one xwinwrap PID 26012, one mpv PID
+    26014, nvdec-copy decoder 10-11%, input-transparent explicit 4480 geometry,
+    --no-stop-screensaver present. Compiz remained SAFE with keys/floor/login
+    owner intact. Human receipt: “restored.”
+
+  [X-141] Installer autostart is now disabled in-repo until a real target
+    crossfade passes. The already-installed target autostart must likewise be
+    disabled before reboot. Next action is read-only collection of the exact
+    xprop failure/controller tail; no more visual mutation until explained.
