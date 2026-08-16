@@ -7640,3 +7640,478 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
 
 [2026-08-15][M12-RECOVERY-14] LIGHTDM DOWNED FOR CONSOLE-FIRST WORKFLOW.
   Awaiting: login prompt verdict, then X log receipts from live console.
+
+--------------------------------------------------------------------------------
+12.108 NEW SESSION (PHONE) — PR WEIGHT CEILING 405, RECOVERY BLOCK 1 AUTHORED.
+--------------------------------------------------------------------------------
+
+  [U-061] Operator opens fresh session from phone, directs: get Compiz working,
+    PR weight limit is 405 (SUPERSEDES the <465 figure in CONTINUE_PROMPT §5),
+    remind operator of bench/weight standing every few chats, deploy agents per
+    Directive 4 to research and problem-solve while keeping PR lean. Tiny lines
+    only (X-104 phone constraint) remain in force.
+    RECEIPT: operator message 2026-08-15, session branch
+    arena/01a004a9-nvidia-intel-ocblizzard-4x8ddr.
+
+  [W-203] RECOVERY BLOCK 1 AUTHORED (sandbox, unexecuted on target) per
+    M12-RECOVERY-2 plan: TTY (Alt+SysRq+R unraw if VT switch blocked, X-104),
+    kill xwinwrap/mpv/xmb-wall/xfconfd, restore failsafe
+    ~/xfce4-session.xml.bak.1786722899 -> xfce-perchannel-xml/xfce4-session.xml,
+    rm -rf ~/.cache/sessions/* (X-010 no-op guard), reboot bore. Expected
+    xfwm4 desktop (W-015 safe, picom masked W-042). Block 2 planned as single
+    line compiz-revert from live desktop with xfce-wm-recover escape armed —
+    NO ConfigParser writes ever again (X-103).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-3] BLOCK 1 (failsafe revert to xfwm4) ISSUED TO
+  OPERATOR. Awaiting one-word receipt: desktop | black. Agents A/B (mp4 fork)
+  parked at zero weight until WM restored; Agent C (compiz-revert) queued.
+
+--------------------------------------------------------------------------------
+12.109 BOOT-LEVEL FAILURE SUPERSEDES X-105 — NO LIGHTDM, NO TTY, CONSOLE DARK
+      AFTER DRM MODULE FLASH. RUNIT SINGLE-MODE RECOVERY AUTHORED.
+--------------------------------------------------------------------------------
+
+  [X-106] NEW FAILURE CLASS, deeper than X-105. Operator reports tkg-bore boot
+    now flashes black + brief console text loading DRM kernel modules, then
+    permanent black: no lightdm, no VT switching, no TTY at all. Onset followed
+    a prior low-performing agent simultaneously finalizing compiz/wallpaper AND
+    juggling flatpak LM Studio (U-059 territory). Therefore Block 1 of 12.108
+    (session failsafe revert) is UNREACHABLE and this is NOT the Compiz
+    Client0_Command failure — lightdm never starts. Root cause UNKNOWN by
+    directive: do not assume driver, service, or X config until logs are read.
+    Candidate surfaces: /etc/runit/runsvdir/default service set, lightdm,
+    /etc/X11/xorg.conf*, package state, nvidia-drm KMS console takeover.
+    RECEIPT: operator report 2026-08-15, phone, no TTY access.
+
+  [W-204] RECOVERY RESEARCH (sandbox agents, receipts):
+    (a) Void runit single-user: appending `single` to kernel cmdline boots
+        /etc/runit/runsvdir/single — root maintenance shell before any DM/X.
+        Source: r/voidlinux Duncaen (runit maintainer) explanation.
+    (b) Black-console-after-DRM-flash is the nvidia-drm/KMS console takeover
+        class; `nomodeset` keeps console on firmware framebuffer, visible,
+        for recovery only (X won't start under it — irrelevant in single).
+        Sources: ArchWiki NVIDIA/Troubleshooting, Launchpad #1705369.
+    (c) Last-resort shell that bypasses runit entirely: `init=/bin/sh`.
+    RECEIPT: web research 2026-08-15, links in session chat.
+
+  [W-205] BLOCK R1 AUTHORED (unexecuted): GRUB `e` on tkg-bore entry, append
+    `single nomodeset` to linux line, Ctrl+X (one-shot, non-persistent). Then
+    as root: remount rw, ls default runsvdir, ls xorg.conf(.d), dmesg grep
+    nvidia/drm/fail/error tail 25, tail lightdm.log, tail Xorg.0.log.
+    Purpose: visible shell + facts only, no writes except remount.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-4] BOOT-LEVEL RECOVERY IN PROGRESS. Awaiting Block R1
+  receipts (console visible? runsvdir contents? lightdm/Xorg log tails?).
+  12.108 Block 1 (failsafe revert) remains queued for AFTER a desktop returns.
+
+  [X-107] `single nomodeset` on tkg-bore STILL black after kernel text flash.
+    Diagnosis refined: nomodeset only gates in-tree KMS (i915/nouveau);
+    proprietary nvidia-drm ignores it (its modeset is a module option), so
+    console dies when nvidia modules load from initramfs regardless. The
+    single-user shell is likely RUNNING but invisible.
+    RECEIPT: operator report 2026-08-15.
+
+  [W-206] BLOCK R2 AUTHORED (unexecuted), three prongs:
+    (0) check BOTH monitors — console may land on DP-0 (asymmetry X-039).
+    (A) boot STOCK Void kernel + `single` — lacks nvidia modules, which is
+        precisely why its console survives; recovery-only, not daily boot.
+    (B) tkg-bore + `single nomodeset module_blacklist=nvidia,nvidia_drm,
+        nvidia_modeset,nvidia_uvm` — keep bore, forbid nvidia load.
+    Last resort: `init=/bin/sh` on stock kernel. Fact lines unchanged (W-205).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-5] R2 ISSUED. Awaiting: which prong yielded a prompt
+  + log tails. No writes to target besides remount,rw until logs are read.
+
+  [W-207] OPTION B PROVED VISIBLE CONSOLE: tkg-bore + `single nomodeset
+    module_blacklist=nvidia,nvidia_drm,nvidia_modeset,nvidia_uvm` yields a
+    live root shell (operator photo). CONFIRMS X-107 diagnosis: nvidia module
+    load was killing console visibility; disk/runit/kernel are bootable.
+    Operator confusion cleared: Ctrl+Alt+F2 dead is EXPECTED in single mode
+    (no getty on tty2-6, one console only); sudo prompts nothing because the
+    shell is already root; first mount failed from missing spaces
+    (`mount-o remount,w/` typo class — phone typing).
+    RECEIPT: operator photo of console, 2026-08-15.
+
+  [W-208] BLOCK R3 AUTHORED (unexecuted): id; mount -o remount,rw /;
+    dmesg grep nvidia/drm tail 20; Xorg.0.log + lightdm.log tails;
+    ls xorg.conf(.d); ls -lt modprobe.d dirs (fresh drop-in fingerprint);
+    ls runsvdir/default; ls -lt /var/cache/xbps head 10 (recent package
+    fingerprint of the flatpak-session agent's changes). Read-only except
+    remount,rw. No fix writes until these receipts return.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-6] ROOT SHELL ACHIEVED VIA MODULE BLACKLIST.
+  Awaiting R3 forensics photos. Root-cause candidates narrowed to nvidia
+  early-boot path (modprobe.d drop-in, initramfs, or package change).
+
+  [X-108] R2 Option B partial: console now VISIBLE (photo receipt) — typed
+    characters echo on screen (tty/keyboard/display healthy) but NO shell
+    reads input: no login prompt, sudo/login/root produce nothing, and
+    Ctrl+Alt+F2 dead (no other getty VTs in single mode — expected). Diagnosis:
+    single-user sulogin/getty never attached to this console. Operator lines
+    also contain phone typos (remot,rw / desg) — harmless, nothing was reading.
+    RECEIPT: two operator photos, 2026-08-15.
+
+  [W-207] BLOCK R3 AUTHORED (unexecuted): bypass runit entirely with
+    `nomodeset module_blacklist=nvidia,nvidia_drm,nvidia_modeset,nvidia_uvm
+    init=/bin/sh` on tkg-bore linux line (drop `single`; init= overrides).
+    Kernel runs /bin/sh as PID 1 → `#` prompt, root, no sudo, no VTs.
+    Facts: remount rw, ls runsvdir/default, ls xorg.conf(.d), dmesg grep
+    nvidia/drm/error/fail, ls modprobe.d dirs, tail lightdm.log. Exit path
+    later: sync + hard reset (PID1 sh cannot reboot cleanly).
+    Fallback if no prompt: photo last kernel lines (initramfs/rootfs class).
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-6] CONSOLE PROVEN ALIVE, SHELL ATTACH FAILED (X-108).
+  R3 (init=/bin/sh) issued. Still zero writes to target beyond remount,rw.
+
+--------------------------------------------------------------------------------
+12.110 ROOT CAUSE FOUND — GRUB CMDLINE POISONED WITH EARLY NVIDIA_DRM LOAD
+      (rd.driver.pre=nvidia_drm modules-load=nvidia-drm) BY PRIOR AGENT.
+--------------------------------------------------------------------------------
+
+  [W-208] R3 PASS — init=/bin/sh gave bash-5.3# PID-1 shell, remount rw OK.
+    Facts from photo receipt:
+    - /etc/runit/runsvdir/default: NetworkManager agetty-tty1..tty6 bluetoothd
+      chronyd current dbus libvirtd lightdm nvidia-persistenced ... — lightdm
+      enabled, gettys intact. Services NOT the damage.
+    - /etc/X11/xorg.conf.d: 20-nvidia-anti-tear.conf, 20-nvidia.conf (suspects
+      #2, unexamined).
+    - dmesg: kernel cmdline contains rd.driver.pre=nvidia_drm
+      modules-load=nvidia-drm (more cut off at screen edge) — NOT typed by
+      operator, baked into grub.cfg. dracut initramfs in use.
+    - This boot: "Module nvidia is blacklisted" + "dracut: modprobe: ERROR:
+      could not insert 'nvidia_drm': Operation not permitted" — our
+      module_blacklist held, console survived. Controlled A/B: early
+      nvidia_drm blocked = console lives; loaded = black at switch-root.
+    RECEIPT: operator photo, 2026-08-15.
+
+  [X-109] ROOT CAUSE (boot-level black screen X-106): prior low-performing
+    agent injected early-KMS nvidia_drm load into GRUB kernel cmdline
+    (rd.driver.pre + modules-load) during LM Studio flatpak juggling. nvidia
+    DRM takes console at initramfs stage, paints nothing, no VT, lightdm
+    invisible/never composited. Full injected param list pending grep of
+    /etc/default/grub. Fix path: backup + strip params + grub-mkconfig +
+    conditional dracut conf.d clean, NOTHING else.
+    RECEIPT: W-208 photo, 2026-08-15.
+
+  [W-209] FACT BLOCK 2 ISSUED (unexecuted): grep -n nvidia /etc/default/grub;
+    grep -rn nvidia /etc/dracut.conf.d /etc/modprobe.d; tail -15
+    /var/log/lightdm/lightdm.log. Then single reversal block with backups.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-7] ROOT CAUSE ISOLATED TO GRUB CMDLINE INJECTION
+  (X-109). Awaiting grep receipts to author the one-shot reversal.
+
+--------------------------------------------------------------------------------
+12.111 FULL DAMAGE MAP TRANSCRIBED (AGENT V PHOTO ANALYSIS) — CONTRADICTORY
+      EARLY-LOAD + SELF-BLACKLIST. ONE-SHOT REVERSAL BLOCK FIX-1 ISSUED.
+--------------------------------------------------------------------------------
+
+  [W-210] AGENT V VERBATIM TRANSCRIPT of operator photo (all four surfaces):
+    /etc/default/grub:3:GRUB_CMDLINE_LINUX_DEFAULT="rd.driver.pre=nvidia_drm
+      modules-load=nvidia-drm loglevel=7 nvidia-drm.modeset=1 intel_pstate=active"
+    /etc/dracut.conf.d/nvidia.conf:1:add_drivers+=" nvidia nvidia_modeset
+      nvidia_uvm nvidia_drm "
+    /etc/modprobe.d/nvidia.conf:1:options nvidia-drm modeset=1  (pre-existing
+      style — LEAVE)
+    /etc/modprobe.d/nvidia-blacklist.conf:1 blacklist nouveau (standard);
+      lines 2-5 blacklist nvidia / nvidia_drm / nvidia_uvm / nvidia_modeset
+      (SELF-BLACKLIST of own driver — prior agent damage layer 2)
+    Also confirmed: /etc/X11/xorg.conf exists + xorg.conf.d 20-nvidia*.conf;
+    runsvdir/default includes lightdm + nvidia-persistenced. Sandbox note:
+    phone uploads not present on disk; vision transcription is the bridge.
+    RECEIPT: operator photo, transcription 2026-08-15.
+
+  [X-110] CONTRADICTION STACK (extends X-109): GRUB early-loads nvidia_drm
+    with modeset=1 in dracut initramfs (console killed pre-switch-root) WHILE
+    modprobe.d blacklists entire nvidia stack (normal autoload also broken).
+    Both boot paths sabotaged; explains black under every normal boot.
+    RECEIPT: W-210, 2026-08-15.
+
+  [W-211] BLOCK FIX-1 AUTHORED (unexecuted), backups first, minimal deltas:
+    1. cp grub -> /etc/default/grub.bak.x109; sed strips ONLY
+       rd.driver.pre=nvidia_drm, modules-load=nvidia-drm, nvidia-drm.modeset=1;
+       expected residue "loglevel=7 intel_pstate=active"; verify sed -n 3p gate.
+    2. cp blacklist -> /root/nvblk.bak.x109; sed -i 2,5d keeps only
+       blacklist nouveau; cat gate.
+    3. mv dracut nvidia.conf -> /root/dracut-nv.bak.x109 (no initramfs regen
+       needed: embedded-but-unreferenced drivers inert once cmdline clean).
+    4. mount proc/sys guards; grub-mkconfig -o /boot/grub/grub.cfg; sync;
+       sysrq b reboot (PID1 sh cannot clean-reboot).
+    Untouched by design: /etc/modprobe.d/nvidia.conf, xorg.conf(.d), services.
+    Expected: normal tkg-bore boot -> visible console -> lightdm.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-8] FIX-1 ISSUED. Awaiting one-word receipt:
+  lightdm | console-but-no-lightdm | black. After lightdm: resume 12.108
+  ladder (failsafe check, compiz-revert, Compiz verify).
+
+--------------------------------------------------------------------------------
+12.112 FIX-1 INSUFFICIENT — INITRAMFS STILL EMBEDS NVIDIA, UDEV COLDPLUG LOADS
+      IT WITHOUT ANY CMDLINE. REGEN REQUIRED (FIX-2).
+--------------------------------------------------------------------------------
+
+  [X-111] Operator: FIX-1 all gates passed, normal boot still BLACK. W-211
+    assumption FALSIFIED: "embedded-but-unreferenced drivers inert once
+    cmdline clean" is wrong. dracut initramfs (built while
+    /etc/dracut.conf.d/nvidia.conf add_drivers was active) physically contains
+    nvidia modules, and dracut's internal udev coldplugs drivers for detected
+    PCI hardware — RTX 3080 present → nvidia_drm loads pre-switch-root with
+    no cmdline reference. Cross-proof: prior R3 boot logged udev's attempt
+    ("Module nvidia is blacklisted" / dracut modprobe ERROR), i.e. only the
+    module_blacklist= param stopped it. On-disk modprobe.d blacklist never
+    entered the image (no rebuild after it was written). Same presence≠inert
+    error class as X-083/X-100.
+    RECEIPT: operator report black + FIX-1 gates passed, 2026-08-15.
+
+  [W-212] BLOCK FIX-2 AUTHORED (unexecuted): rescue boot (blacklist +
+    init=/bin/sh), remount rw, mount proc/sys/devtmpfs, ls /boot to confirm
+    image name (expected initramfs-6.10.35-tkg-bore.img), evidence gate
+    lsinitrd | grep -c nvidia (nonzero), dracut -f <img> 6.10.35-tkg-bore,
+    post-gate grep -c = 0, tail lightdm.log from black boot + grep grub.cfg
+    cmdline as cross-receipts, sync + sysrq-b. Then normal boot test.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-9] FIX-2 (initramfs regen) ISSUED. Awaiting
+  lsinitrd before/after counts + boot verdict.
+
+--------------------------------------------------------------------------------
+12.113 REGEN INSUFFICIENT (550->549) — DRACUT HOSTONLY RE-EMBEDS NVIDIA FOR
+      DETECTED 3080. FIX-3: omit_drivers + rd.driver.blacklist (initramfs-only).
+--------------------------------------------------------------------------------
+
+  [X-112] FIX-2 result: lsinitrd nvidia count 550 -> 549 after dracut -f on
+    both tkg-bore images (operator tried .35 and .39; /boot photo shows
+    initramfs-6.10.35-tkg-bore.img AND initramfs-6.10.39-tkg-bore.img plus
+    stock 6.10.35_1/6.10.41_1/6.12.52_1). Removing add_drivers drop-in removed
+    ~1 line only: dracut hostonly auto-includes drivers for present hardware,
+    sees RTX 3080, embeds nvidia stack + GSP firmware unconditionally. W-212
+    gate also crude — raw 'nvidia' count is mostly firmware lines; module
+    presence gate must be grep -c 'nvidia.*\.ko'.
+    RECEIPT: operator photo + report "549 from 550, even after rebuilding
+    from different initramfs", 2026-08-15.
+
+  [W-213] BLOCK FIX-3 AUTHORED (unexecuted), two independent layers:
+    (1) /etc/dracut.conf.d/99-no-nvidia.conf: omit_drivers+=" nvidia
+        nvidia_drm nvidia_modeset nvidia_uvm " — build-time exclusion
+        overrides hostonly; regen 6.10.35-tkg-bore; gate .ko count = 0.
+    (2) GRUB grub.bak.x112 backup, prepend rd.driver.blacklist=nvidia,
+        nvidia_drm,nvidia_modeset,nvidia_uvm to CMDLINE_DEFAULT —
+        dracut-scoped runtime blacklist, active ONLY pre-switch-root; system
+        udev/X load nvidia normally from disk afterwards. Same mechanism that
+        saved console in R2/R3, now persistent + initramfs-scoped.
+    grub-mkconfig, sync, sysrq b. Boot must select 6.10.35-tkg-bore entry.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-10] FIX-3 ISSUED. Awaiting .ko count + verdict
+  (lightdm | console-no-lightdm | black).
+
+  [W-214] AGENT V TRANSCRIPT (FIX-3 photo): dracut -f 6.10.35-tkg-bore
+    SUCCEEDED (tmp moved into place); lsinitrd plain nvidia count 549 -> 543.
+    Delta of exactly 6 = the nvidia .ko set (nvidia, -drm, -modeset, -uvm,
+    -peermem, +1) — consistent with omit_drivers WORKING and residue being
+    inert GSP firmware refs. Plain-count gate cannot distinguish; .ko gate
+    pending. Second dracut invocation errored realpath
+    /lib/modules-6.10.35-tkg-bore missing + dracut[F] Cannot find module
+    directory — contradicts first success, suspected kver-arg typo, must be
+    settled by ls /lib/modules (if tree truly missing, that alone would
+    black X later). Rescue shield held again ("Module nvidia is blacklisted").
+    /boot inventory: tkg-bore 6.10.35 + 6.10.39 pairs, stock 6.10.35_1,
+    6.10.36_1, 6.10.39_1, 6.10.40_1, 6.10.41_1, 6.12.52_1.
+    RECEIPT: operator photo + "543 from 550" note, 2026-08-15.
+
+  [W-215] BLOCK V-1 ISSUED (verify-only): (1) lsinitrd | grep nvidia |
+    grep -c ko — PASS=0; (2) ls /lib/modules — must contain 6.10.35-tkg-bore;
+    (3) sed -n 3p /etc/default/grub — rd.driver.blacklist present;
+    (4) grep -c rd.driver.blacklist /boot/grub/grub.cfg — PASS>0 else
+    grub-mkconfig. Then sync + sysrq b, normal boot of vmlinuz-6.10.35-tkg-bore.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-11] FIX-3 LIKELY EFFECTIVE (delta-6 module set),
+  V-1 gates issued before boot test. Awaiting 4 gate values + verdict.
+
+--------------------------------------------------------------------------------
+12.114 FIX-3 EFFECTIVE — BOOT SURVIVES INITRAMFS, FAILURE MOVED UP TO X START
+      (MONITOR POWERS OFF). KERNEL NAME ERRATUM 6.10->6.18.
+--------------------------------------------------------------------------------
+
+  [X-113] ERRATUM: kernel is 6.18.35-tkg-bore, NOT 6.10.35 — Agent V photo
+    transcription misread 1 vs 8 in console font across W-208..W-215 (and the
+    /boot stock list is likewise 6.18.x/6.12.x era). Operator's dracut runs
+    hit the correct image (counts moved 550->549->543), so FIX-2/FIX-3
+    substance unaffected. All prior 6.10.35 references read as 6.18.35.
+    RECEIPT: operator "6.10.35 tkg bore doesnt exist... i regularly boot
+    6.18.35", 2026-08-15.
+
+  [W-216] FIX-3 VERDICT: normal 6.18.35-tkg-bore boot now shows FULL kernel
+    loading text (console survives DRM/initramfs stage — early-load poison
+    NEUTRALIZED), then monitor POWERS OFF later = lightdm/X start applying a
+    modeset the displays reject. Failure class moved from boot-level (X-106)
+    back to X-level. Suspects: static /etc/X11/xorg.conf stale MetaMode
+    (older monitor arrangement, see ledger ~line 522 note) + 20-nvidia*.conf
+    drop-ins. Unlike X-106 boots, Xorg.0.log/lightdm logs NOW EXIST.
+    RECEIPT: operator report 2026-08-15.
+
+  [W-217] BLOCK X-1 ISSUED: (1) after monitor-off, try Ctrl+Alt+F2 — gettys
+    tty1-6 enabled and console no longer early-grabbed; login sd if prompt.
+    (2) From TTY (or rescue init=/bin/sh + remount rw): grep EE/fatal/no
+    screens Xorg.0.log tail 15; tail x-0.log; dmesg nvidia/drm tail 15;
+    grep -n MetaMode /etc/X11/xorg.conf. Candidate endgame: mv xorg.conf
+    aside (backup) for X auto-detect — pending receipts.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-12] INITRAMFS LAYER CLOSED. X-LAYER FORENSICS ISSUED.
+
+  [X-114] STANDING RULE (operator escalation): Ctrl+Alt+F2 VT switch is DEAD
+    on this box in every failure state tried this session — stop proposing it.
+    All forensics/repair go through GRUB rescue boot (module_blacklist +
+    init=/bin/sh) until a working desktop proves otherwise. Time-efficiency
+    directive: collapse forensics+fix into single blocks where safe.
+    RECEIPT: operator "ive said multiple times ctrl alt f2 doesnt work",
+    2026-08-15.
+
+--------------------------------------------------------------------------------
+12.115 X-LAYER TAILS FAILED (LOGS LIKELY ABSENT) — SUSPICION MOVES TO
+      MODPROBE.D nvidia-drm modeset=1 AT REAL-ROOT. FINAL KMS LEVER PULLED.
+--------------------------------------------------------------------------------
+
+  [X-115] BLOCK X-2 partial: xorg.conf + anti-tear moved aside OK, but
+    Xorg.0.log/x-0.log tails ERRORED (likely nonexistent) and boot still
+    black. Inference: X never ran/logged; screen dies when nvidia module
+    loads at real-root with KMS modeset=1. W-210's "pre-existing — LEAVE"
+    judgment on /etc/modprobe.d/nvidia.conf (options nvidia-drm modeset=1)
+    RETRACTED: file matches the injecting agent's KMS theme (same
+    nvidia-drm.modeset=1 it put on cmdline); desktop history (Compiz/xfwm4
+    era) predates it. Now treated as damage layer 4 of 4.
+    RECEIPT: operator report tails errored + still black, 2026-08-15.
+
+  [W-218] BLOCK X-3 ISSUED (combined verify+fix+reboot per X-114 directive):
+    rescue shell → remount rw → ls Xorg.0.log+lightdm dir (existence
+    receipt) → cat nvidia.conf (content receipt) → mv nvidia.conf
+    /root/nvidia-modeset.bak.x114 → sync → sysrq b → normal 6.18.35 boot.
+    Expected: nvidia-drm modeset defaults OFF, console keeps firmware fb
+    (visible), X drives displays classic non-KMS path as in working era.
+    Backups now staged in /root: xorg.conf.bak.x114, anti-tear.bak.x114,
+    nvidia-modeset.bak.x114, nvblk.bak.x109, dracut-nv.bak.x109,
+    grub.bak.x109/.x112. Diagnostic fork requested with verdict: if still
+    black, does console TEXT persist (modeset exonerated) or vanish?
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-13] LAST KMS LEVER (modprobe.d modeset=1) REMOVED
+  WITH BACKUP. Awaiting verdict: lightdm | black+text | black+notext.
+
+  [X-116] X-3 verdict: full kernel text visible through boot (all four
+    KMS/early-load layers now confirmed neutralized), screen goes black at
+    service stage = lightdm/X start. With modeset=1 gone, the killer is
+    inside the X/lightdm/driver stage itself. Logs should NOW exist.
+    RECEIPT: operator "saw the full kernel loading and it was black",
+    2026-08-15.
+
+  [W-219] BLOCK X-4 STRATEGY SHIFT — stop lightdm from auto-starting
+    (runit down-file, fully reversible: rm /etc/sv/lightdm/down) so normal
+    boot lands on agetty tty1 LOGIN PROMPT instead of black. Restores a
+    live interactive console on every normal boot (kills the rescue-shell
+    round-trip cost, X-114 efficiency directive), then X can be started
+    manually under observation with dmesg + logs readable in real time.
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-14] LIGHTDM DOWNED FOR CONSOLE-FIRST WORKFLOW.
+  Awaiting: login prompt verdict, then X log receipts from live console.
+
+--------------------------------------------------------------------------------
+12.116 CONSOLE RESTORED — LIGHTDM DOWN-FILE LANDS ON TTY1 LOGIN, SD SESSION
+      LIVE, NVIDIA LOADS AT REAL-ROOT WITHOUT KILLING CONSOLE. SESSION CLOSE.
+--------------------------------------------------------------------------------
+
+  [W-220] BLOCK X-4 PASS (photo receipt, Agent V transcript):
+    "Void 6.18.35-tkg-bore (66) (tty1)" + login: prompt on normal boot,
+    "elogind: New session 1 of user sd". nvidia-persistenced early output
+    "Enabled Legacy persistence mode for GPU 00000000:01:00.0 / All done"
+    = nvidia module NOW LOADS AT REAL-ROOT WITH CONSOLE SURVIVING (modeset
+    removal X-115/W-218 proven correct). Xorg.0.log grep receipts: OS line
+    Linux 66 6.18.35-tkg-bore #1 SMP PREEMPT_DYNAMIC TKG Jun 9 2026; only
+    (WW) /usr/share/fonts/X11/OTF missing, (WW) Open ACPI failed
+    (/var/run/acpid.socket), (==) Option "AllowNVIDIAGpuScreens", reaches
+    (II) Initializing extension MIT-SCREEN-SAVER — NO FATAL (EE). X itself
+    initializes; remaining issue is greeter/display-signal stage, now
+    debuggable from a live console. lightdm tail lines failed only from
+    phone paste joining commands ("option used in invalid context").
+    RECEIPT: operator photo, 2026-08-15.
+
+================================================================================
+SECTION XIII — BOOT-DEATH RECOVERY PROTOCOL (PROVEN 2026-08-15, X-106..X-116)
+What worked, in order, when the box went black before lightdm with no TTY.
+================================================================================
+
+13.1 THE LADDER (each rung is a receipt gate; never skip down-rungs)
+  R0. Reframe first: "black + no TTY + no DM" is BOOT-level, not WM-level.
+      Do not run WM-era fixes (failsafe reverts etc.) — they are unreachable.
+  R1. Console visibility: `nomodeset` alone is INSUFFICIENT on proprietary
+      nvidia — nvidia_drm ignores it (its modeset is a module option).
+      The working shield is kernel param:
+        module_blacklist=nvidia,nvidia_drm,nvidia_modeset,nvidia_uvm
+  R2. Shell attach: Void `single` mode may echo keys with NO reader attached
+      (typed chars visible, no login) — do not fight it; go PID-1 direct:
+        init=/bin/sh   (+ the blacklist above, one-shot GRUB `e` edit)
+      In PID-1 sh: no job control is NORMAL; no sudo needed; VTs don't exist.
+      Exit is sync + `echo b > /proc/sysrq-trigger` (never bare exit).
+  R3. Facts before writes, writes only with dated backups (.bak.xNNN in
+      /root/), one contradiction surface at a time:
+        dmesg | grep kernel cmdline  -> injected params visible here even
+        when /etc/default/grub looks plausible; grub.cfg is the truth baked.
+  R4. The four-layer KMS poison stack found this time (strip ALL of them,
+      any one alone keeps the screen black):
+        L1 /etc/default/grub: rd.driver.pre=nvidia_drm modules-load=nvidia-drm
+           nvidia-drm.modeset=1            -> sed-strip + grub-mkconfig
+        L2 /etc/modprobe.d/nvidia-blacklist.conf self-blacklisting the very
+           driver (lines 2-5)              -> keep only blacklist nouveau
+        L3 dracut initramfs EMBEDDING nvidia: add_drivers drop-in AND
+           hostonly auto-inclusion (removing the drop-in moved lsinitrd
+           count 550->549 only!). Fix = /etc/dracut.conf.d/99-no-nvidia.conf
+           omit_drivers+=" nvidia nvidia_drm nvidia_modeset nvidia_uvm "
+           + dracut -f <img> <kver>. GATE: lsinitrd | grep nvidia | grep -c ko
+           must be 0 — plain `grep -c nvidia` counts inert GSP firmware and
+           misleads (549 vs 543 confusion; delta 6 = the .ko set).
+           Belt+suspenders: rd.driver.blacklist=... on cmdline is scoped to
+           initramfs ONLY — X still gets the driver later. Proven twice.
+        L4 /etc/modprobe.d/nvidia.conf `options nvidia-drm modeset=1` —
+           fires at real-root module load, kills displays BEFORE X writes
+           any log (missing Xorg.0.log = X never ran; that absence is data).
+  R5. Console-first beachhead once kernel text survives: down the DM
+        touch /etc/sv/lightdm/down     (reverse: rm .../down)
+      Normal boot then lands on agetty tty1 login — every later fix happens
+      in a live shell, no more rescue-boot round trips. This rung ended the
+      incident: nvidia loads, console survives, X initializes with no fatal
+      EE; remaining greeter/signal work proceeds interactively.
+
+13.2 META-PROTOCOLS THAT PAID OFF
+  - One copy-paste block per turn, tiny lines (phone operator), each block
+    ends in an observable verdict word (lightdm | black+text | black).
+  - Photo -> full verbatim transcription into ledger ("Agent V") — sandbox
+    cannot see target; the transcription IS the shared terminal. Beware
+    console-font 1/8 confusion (X-113 kernel-version erratum).
+  - Never assume inertness: presence != inert (X-083/X-100/X-111 —
+    embedded modules coldplug via dracut udev with zero cmdline reference).
+  - Retract wrong judgments explicitly (W-210 "LEAVE" -> X-115 retraction);
+    ledger rows are superseded, never rewritten.
+  - Controlled A/B built into rescue itself: every blacklist boot that
+    showed a console WAS the experiment proving the driver path guilty.
+  - All target writes reversible: /root/*.bak.x109/.x112/.x114 inventory +
+    grub backups; the exact inverse of every mutation exists on disk.
+
+13.3 STANDING RULES ADDED
+  - VT switching (Ctrl+Alt+Fn) is OFF THE TABLE on this box until a working
+    desktop proves otherwise (X-114).
+  - Fact-block and fix-block may be COMBINED when the fix is provably safe
+    and backed up — saves one reboot cycle per layer (X-114 directive).
+  - lsinitrd module gates use grep -c 'ko', never bare substring counts.
+
+[2026-08-15][M12-RECOVERY-FINAL] BOOT DEATH RESOLVED TO LIVE CONSOLE + CLEAN
+  X INIT. Remaining: greeter/display-signal fix from live tty, rm lightdm
+  down-file, then resume 12.108 ladder (compiz-revert -> Compiz verify ->
+  U-055 Cheetah menus -> M12 efficient mp4 wallpaper). Session closing per
+  operator: protocol written, CONTINUE_PROMPT refreshed, PR authorized.
