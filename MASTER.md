@@ -7736,444 +7736,114 @@ What worked, in order, when the box went black before lightdm with no TTY.
   operator: protocol written, CONTINUE_PROMPT refreshed, PR authorized.
 
 --------------------------------------------------------------------------------
-12.117 NEW SESSION (PHONE) — GREETER EDGE, AGENTS REDEPLOYED, TIMED X PROBE
-       AUTHORED. AWAITING IMAGE/STATUS CONTINUATION FROM OPERATOR.
+12.117–12.122 COMPACTED RECOVERY EDGE — OPERATOR-AUTHORIZED EXCEPTION
 --------------------------------------------------------------------------------
 
-  [U-062] Operator opens a fresh session on branch
-    arena/01a00827-nvidia-intel-ocblizzard-4x8ddr and directs: deploy agents
-    per Directive 4, read CONTINUE_PROMPT.md then README.md before continuing,
-    and continue from an image + status the operator will supply. U-061 remains
-    in force unchanged: PR weight ceiling 405, bench-standing reminders every
-    few chats, tiny lines only (X-104).
-    RECEIPT: operator message 2026-08-16, this session.
+  [EX-001] OPERATOR-AUTHORIZED APPEND-ONLY / PR-WEIGHT EXCEPTION.
+    Purpose: collapse the unusually repetitive greeter investigation into one
+      receipt-backed edge so the ledger stays navigable from a phone.
+    Intent: treat this one compaction diff as outside U-061's weight accounting,
+      then resume the strict 405-line PR ceiling for all new work. Preserve the
+      operative IDs, receipts, reverses, constraints, and next gate; remove only
+      duplicated chronology and superseded theory. Authorization: operator
+      message, "squash, stay at 405 pr ... put it in as an exception and state
+      why", current Arena session. This is a narrow exception, not precedent;
+      Sections I–II remain frozen and the append-only law resumes below.
 
-  [W-221] SESSION-OPEN VERIFICATION (Directive 5, ground truth only):
-    branch arena/01a00827-nvidia-intel-ocblizzard-4x8ddr at 5b8cfa6 (merge of
-    PR #10), working tree clean at open; MASTER.md 7736 lines read to Section
-    XIV; README.md 5 lines; scripts/ holds 12 tools (compiz-profile-repair,
-    gunmetal-emerald-theme, gunmetal-gtk3-theme, mpv-xwinwrap-shim,
-    xmb-bake-profile.mjs, xmb-bake-video.mjs, xmb-diag-hwdec,
-    xmb-render-previews.mjs, xmb-stage, xmb-wallpaper,
-    xmb-wallpaper-controller). Sandbox has NO view of the target box; every
-    target claim below is UNVERIFIED until an operator photo lands (Agent V).
-    RECEIPT: git log/status + ls run in sandbox, 2026-08-16.
+  [U-062] Fresh phone session directed agents to read CONTINUE_PROMPT.md then
+    README.md and continue from operator evidence. U-061 remains: 405-line PR
+    ceiling, periodic bench reminder, tiny lines, one paste block at a time.
+    RECEIPT: operator message, 2026-08-16.
 
-  [W-222] AGENT ALLOCATION FOR THE GREETER EDGE (Directive 4, one job each,
-    zero weight until unblocked):
-      Agent V — photo -> verbatim ledger transcription (X-113 1/8 caution).
-      Agent D — greeter isolation ONLY: lightdm.log receipt, failsafe flip to
-        xfwm4 (X-105 landmine cleared BEFORE any DM re-enable), timed X probe.
-      Agent C — compiz-revert + golden Default.ini SHA verify vs W-045.
-        Input = Agent D's verified xfwm4 desktop. Blocked.
-      Agent A — U-055 Cheetah menus (opacity plugin + gtk.css + terminal).
-        Blocked on C. Agent B — M12 efficient mp4 wallpaper fork (U-057,
-        W-199/W-200). Blocked on C. A and B never touch the WM stack.
-    RECEIPT: this row.
+  [W-221/W-222] Session-open ground truth and bounded allocation: clean branch
+    arena/01a00827-nvidia-intel-ocblizzard-4x8ddr at merge 5b8cfa6; sandbox
+    cannot inspect the target. Agent V transcribes photos; D owns greeter/X;
+    C waits for verified xfwm4 before Compiz; A/B wait for C before menus and
+    wallpaper. RECEIPT: git status/log/listing, 2026-08-16.
 
-  [W-223] TOOL AUTHORED (sandbox, UNEXECUTED on target):
-    scripts/x-probe-timed, 54 lines, 1899 bytes, mode 0755, `sh -n` passed,
-    SHA-256 b282462de3ae37d729766fdc3057676d2ca6ecf940aa76806751f3470487ec5a.
-    Methodology (Directive 2/3): the greeter edge was a MANUAL black-screen
-    guess loop whose failure mode is unrecoverable because VT switching is
-    dead (X-114) — a hung black X strands the operator at a hard reset. The
-    deterministic substitute is a SELF-TERMINATING probe: the X client is a
-    generated inner script ending in `sleep N`, so X always tears itself down
-    and returns tty1 regardless of what the monitors do. Three bounded modes
-    isolate the layer that fails:
-      green   -> xsetroot solid green only. Tests X+driver+DP signal alone.
-      xfwm4   -> xfwm4 --replace + xterm. Tests WM paint (W-015 safe path).
-      session -> xfce4-session. Tests full desktop minus the greeter.
-    Runs `startx <inner> -- vt1 -keeptty` (vt1 explicit because no VT switch
-    exists to escape to). Logs Xorg stderr to ~/xprobe.log and client stderr
-    plus an xrandr connected-output dump to ~/xprobe.inner.log, then prints
-    the EE count and outputs so the operator photographs ONE short screen.
-    Refuses to run as root (probe must reproduce the sd session, not root's).
-    Delivery to target is HEREDOC, never curl — raw.githubusercontent CDN
-    served stale content and cost a full cycle (X-097).
-    RECEIPT: sandbox chmod/sh -n/sha256sum output, 2026-08-16.
+  [W-223] `scripts/x-probe-timed` authored in sandbox: 54 lines, mode 0755,
+    `sh -n` clean, SHA-256 b282462de3ae37d729766fdc3057676d2ca6ecf940aa76806751f3470487ec5a;
+    unexecuted on target. Self-terminating green/xfwm4/session modes prevent a
+    dead-VT black screen from stranding the operator. Delivery is by heredoc,
+    never curl. RECEIPT: chmod, sh -n, sha256sum, 2026-08-16.
 
-  [W-224] ORDERING CONSTRAINT RESTATED BEFORE ANY BLOCK IS ISSUED: the
-    session failsafe Client0_Command still points at compiz-session (X-105).
-    Therefore mode `session` and any `rm /etc/sv/lightdm/down` are FORBIDDEN
-    until the failsafe is flipped to xfwm4 from the
-    ~/xfce4-session.xml.bak.1786722899 backup (W-011, 2234 bytes) — otherwise
-    the probe launches the exact WM suspected of the black screen. Probe order
-    is therefore: lightdm.log receipt -> failsafe flip -> green -> xfwm4 ->
-    session -> only then remove the down-file and reboot to the greeter.
-    RECEIPT: this row, deriving from X-105/W-011/W-219.
+  [W-224] Original safety order was lightdm receipt -> replace Compiz failsafe
+    with backed-up stock xfwm4 -> bounded probe -> session -> re-enable DM.
+    Never re-enable lightdm while X-105 is armed. RECEIPT: W-011/W-015/X-105.
 
-[2026-08-16][M12-GREETER-1] AGENTS REDEPLOYED, SELF-TERMINATING X PROBE
-  AUTHORED (W-223), ORDER GATED BY W-224. Nothing executed on target. Awaiting
-  operator image + status continuation for Agent V transcription; Agents C/A/B
-  parked at zero weight.
+  [W-225/W-226] Operator photo transcript established: Linux
+    6.18.35-tkg-bore; Xorg.0.log reached MIT-SCREEN-SAVER with no fatal EE.
+    lightdm recorded `Session pid=1476: Exited with return value 1`, stopped X,
+    released VT 7, and respawned `/usr/bin/X :0 ... vt7 -novtswitch`; later
+    SIGTERM came from runit honoring `/etc/sv/lightdm/down`, not an X crash.
+    RECEIPT: operator photo of Xorg.0.log/lightdm.log, 2026-08-16.
 
---------------------------------------------------------------------------------
-12.118 LIGHTDM.LOG RECEIPT LANDS — GREETER LOOPS ON VT 7, SESSION pid=1476
-       EXITS rc=1. TWO CANDIDATE KILLERS ISOLATED.
---------------------------------------------------------------------------------
+  [X-117/W-227] Initial discriminator was H1 session-exec failure versus H2
+    invisible VT 7. A self-terminating trivial client on VT 1 was selected as
+    the smallest safe test. H1/H2 were hypotheses, not findings. RECEIPT:
+    W-225 and test design, 2026-08-16.
 
-  [W-225] AGENT V TRANSCRIPT (operator photo, 2026-08-16, tty1 live, verbatim;
-    X-113 1/8 caution applied to all digits):
-      [sd@66 ~]$ sudo grep -E 'EE|WW|creens' /var/log/Xorg.0.log | tail -20
-      [ 46.249] Current Operating System: Linux 66 6.18.35-tkg-bore #1 SMP
-        PREEMPT_DYNAMIC TKG Tue Jun 9 05:23:38 MDT 2026 x86_64
-      [ 46.250] (WW) The directory "/usr/share/fonts/X11/OTF" does not exist.
-      [ 46.260] (WW) Open ACPI failed (/var/run/acpid.socket) (No such file or directory)
-      [ 46.261] (==) Option "AllowNVIDIAGpuScreens"
-      [ 46.887] (II) Initializing extension MIT-SCREEN-SAVER
-      (two joined-paste attempts failed: "tail: option used in invalid context -- 2")
-      [sd@66 ~]$ sudo tail -30 /var/log/lightdm/lightdm.log
-      [+0.79s] DEBUG: Seat seat0 changes active session to c35
-      [+0.79s] DEBUG: Session c35 is already active
-      [+0.79s] DEBUG: Session pid=1476: Exited with return value 1
-      [+0.79s] DEBUG: Seat seat0: Session stopped
-      [+0.79s] DEBUG: Seat seat0: Stopping display server, no sessions require it
-      [+0.79s] DEBUG: Sending signal 15 to process 1465
-      [+0.80s] DEBUG: Seat seat0 changes active session to
-      [+1.12s] DEBUG: Process 1465 exited with return value 0
-      [+1.12s] DEBUG: XServer 0: X server stopped
-      [+1.12s] DEBUG: Releasing VT 7
-      [+1.12s] DEBUG: XServer 0: Removing X server authority /var/run/lightdm/root/:0
-      [+1.12s] DEBUG: Seat seat0: Display server stopped
-      [+1.12s] DEBUG: Seat seat0: Active display server stopped, starting greeter
-      [+1.12s] DEBUG: Seat seat0: Creating greeter session
-      [+1.12s] DEBUG: Seat seat0: Creating display server of type x
-      [+1.12s] DEBUG: Using VT 7
-      [+1.12s] DEBUG: Seat seat0: Starting local X display on VT 7
-      [+1.12s] DEBUG: XServer 0: Logging to /var/log/lightdm/x-0.log
-      [+1.12s] DEBUG: XServer 0: Writing X server authority to /var/run/lightdm/root/:0
-      [+1.12s] DEBUG: XServer 0: Launching X Server
-      [+1.12s] DEBUG: Launching process 1481: /usr/bin/X :0 -seat seat0 -auth
-        /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch
-      [+1.12s] DEBUG: XServer 0: Waiting for ready signal from X server :0
-      [+1.75s] DEBUG: Got signal 15 from process 840
-      [+1.75s] DEBUG: Caught Terminated signal, shutting down
-      [+1.75s] DEBUG: Seat seat0: Stopping / Stopping display server /
-        Sending signal 15 to process 1481 / Stopping session / Session stopped
-      [sd@66 ~]$
-    RECEIPT: operator photo image.jpg, 2026-08-16.
+  [X-118/X-119] ROOT CAUSE FOUND: a 2 KB failsafe copy failed with
+    `No space left on device`; `df -h /` showed `/dev/nvme0n1p5` 152G total,
+    145G used, **0 available, 100%**. lightdm's rc=1 follows directly: session
+    startup could not create authority/cache/dbus state. This supersedes H1/H2
+    as the greeter-loop explanation. Standing diagnostic: run `df -h /` before
+    theorizing about any unexplained rc=1. RECEIPT: operator photos, same copy
+    command and df output, 2026-08-16.
 
-  [W-226] KERNEL VERSION NOW DOUBLY CONFIRMED from Xorg.0.log OS line:
-    6.18.35-tkg-bore, build stamp Tue Jun 9 05:23:38 MDT 2026. X-113's erratum
-    (6.10 misread) stays superseded; ledger figure is correct.
-    RECEIPT: same photo.
+  [W-228/X-120] Measured usage, not ranked suspicion: `/var/log` was only 1.5M.
+    Large user trees included `~/.var` 40G, `~/.local` 30G, `~/.bitcoin` 7.6G,
+    Documents 4.9G, caches ~3G each, OpenRGB 2.6G, flutter 2.3G. Earlier claim
+    that logs were likely the main hog is retracted. RECEIPT: operator photo of
+    `du -xhd1` results, 2026-08-16.
 
-  [X-117] THE GREETER NEVER GETS TO FAIL — IT IS TORN DOWN FIRST, AND THE
-    PRECEDING SESSION DIED rc=1. Two candidate killers, both consistent with
-    every prior receipt, neither yet discriminated:
-      H1 (SESSION-EXEC): "Session pid=1476: Exited with return value 1"
-        immediately precedes "no sessions require it". A user/greeter session
-        exec that dies instantly makes lightdm tear the X server down and
-        respawn — the classic login-loop signature. The known landmine that
-        produces exactly this is X-105: failsafe Client0_Command still points
-        at /home/sd/.local/bin/compiz-session, so the session exec is Compiz,
-        which is the very binary suspected of crashing (W-191 plugin
-        divergence, X-041 emerald theme). This costs the monitors their signal
-        at DM handoff exactly as observed.
-      H2 (VT-7 INVISIBILITY): lightdm launches X with `vt7 -novtswitch`. On
-        this box VT switching is DEAD (X-114). An X server bound to VT 7 with
-        -novtswitch cannot pull the console away from VT 1 if the VT layer is
-        broken — X would initialize cleanly (which Xorg.0.log confirms: no
-        fatal EE, reaches MIT-SCREEN-SAVER) while the panels are never handed
-        the VT 7 framebuffer. "Clean X log + no picture" is the exact
-        fingerprint of this failure, and it explains why no EE was ever found.
-    NOTE the shutdown at [+1.75s] is NOT a fault: signal 15 from process 840 is
-    runit honouring the /etc/sv/lightdm/down file (W-219). Do not read it as a
-    crash. Also newly surfaced: a SECOND log, /var/log/lightdm/x-0.log, holds
-    the greeter's own X output and has never been read.
-    RECEIPT: W-225 transcript, 2026-08-16.
+  [W-229/W-230/X-121] Safe reclaim used long flags because the console font
+    makes `0/O` and `1/8` ambiguous: `xbps-remove --clean-cache --yes`, then
+    `rm -rf ~/.cache/*`. Never substitute short flags in phone instructions.
+    RECEIPT: xbps usage output and operator photo, 2026-08-16.
 
-  [W-227] DISCRIMINATOR DESIGNED (Directive 3 — smallest test that separates
-    H1 from H2, not a fix): run X on VT 1 with a trivial non-session client.
-      - If the screen paints, the X/driver/DP path is healthy on VT 1 and VT 7
-        is the killer (H2) -> fix is forcing lightdm's X off VT 7.
-      - If the screen stays black with a clean log, H2 is refuted and the
-        signal loss is in the driver/output path itself, not the session.
-    The failsafe flip to xfwm4 (W-011 backup, 2234 bytes) is applied in the
-    SAME block per the X-114 combine directive: it is provably safe, fully
-    backed up, and it must precede any session-mode probe (W-224) regardless
-    of which hypothesis wins. Probe is self-terminating (W-223 rationale) so
-    tty1 always returns.
-    RECEIPT: this row.
+  [W-231/U-063] Storage policy: Tier 1 regenerable caches may be cleared;
+    Tier 2 (`~/.var`, `~/.local`, Documents, flutter, OpenRGB) may later move
+    deliberately to the offered 2TB USB HDD from a working desktop; Tier 3
+    `~/.bitcoin` is wallet/chain state—never delete, glob-move, or relocate
+    unless the client is stopped and a deliberate reversible plan is active.
+    RECEIPT: measured usage + operator USB offer, 2026-08-16.
 
-[2026-08-16][M12-GREETER-2] LIGHTDM.LOG READ. H1 (compiz session-exec rc=1) vs
-  H2 (VT 7 invisible under dead-VT box) isolated as the only two live killers.
-  Combined failsafe-flip + VT-1 green probe issued to operator. Awaiting two
-  verdicts: grep count, then green | black.
+  [W-232/W-233] Reclaim gate passed: `/dev/nvme0n1p5` became 152G total, 141G
+    used, 2.9G available, 99%. The previously failing copy then succeeded,
+    directly confirming X-119 by A/B. Space remains tight. RECEIPT: operator
+    photo and verdict "working, 2.9gb avail", 2026-08-16.
 
---------------------------------------------------------------------------------
-12.119 DISK FULL — "NO SPACE LEFT ON DEVICE" ON A 2 KB COPY. H1 SUPERSEDED BY
-       A THIRD AND FAR SIMPLER KILLER.
---------------------------------------------------------------------------------
+  [W-234/W-235] X-105 disarmed: live xfce4-session.xml was backed up as
+    `~/sess.bak.x117`, then replaced from
+    `~/xfce4-session.xml.bak.1786722899`; `grep -c compiz` returned 0. Stock
+    xfwm4 is now the failsafe; picom remains masked (W-042). Do not restore the
+    Compiz session backup during recovery. RECEIPT: operator photo, 2026-08-16.
 
-  [X-118] BLOCK 2 FAILED AT STEP 2 WITH "no space left on device" while
-    copying a ~2234-byte file into $HOME. A filesystem that cannot absorb two
-    kilobytes is FULL, and this SUPERSEDES the H1/H2 framing of X-117 as the
-    leading hypothesis. A full filesystem is a complete, sufficient, and
-    much simpler explanation of every symptom on record:
-      - "Session pid=1476: Exited with return value 1" — a session exec must
-        write .Xauthority, ~/.cache, dbus/elogind runtime state and session
-        cookies. Every one of those writes fails on a full fs, so the session
-        dies instantly with rc=1 and lightdm loops. This is the textbook
-        full-disk login loop.
-      - Xorg.0.log CLEAN with no fatal EE (W-220) — X itself needs no writes
-        to initialize, so it comes up fine and then the SESSION on top of it
-        cannot start. "Clean X + no desktop" is precisely this signature.
-      - No greeter picture — the greeter is itself a session and dies the same
-        way before it can paint.
-    Critically, this ALSO explains the long-unexplained item in CONTINUE_PROMPT
-    ("root cause of THAT specific signal drop not yet receipt-proven").
-    METHODOLOGICAL NOTE (Directive 5): the entire boot-death investigation
-    X-106..X-116 chased KMS/driver layers and was CORRECT about them — those
-    four layers were genuinely poisoned and their removal genuinely restored
-    the console. But the residual greeter failure was never driver-related.
-    Nobody had run `df`. The cheapest possible fact was never collected, and
-    two hypotheses were elaborated on top of that gap. Collect capacity facts
-    FIRST on any "process exits rc=1 for no reason" symptom.
-    RECEIPT: operator "no space left on device for the second command",
-    2026-08-16.
+  [W-236/X-122] A later probe was VOID: phone paste dropped the bare `>` from
+    a printf redirection, so `/tmp/p2` was never created; chmod reported
+    `No such file or directory`, startx had no valid client, and `~/xr.txt`
+    never existed. Standing rule: no phone block may depend on bare `>` or `|`;
+    use heredocs and immediately gate file creation with `ls -l <file>`.
+    RECEIPT: operator photos of terminal output, 2026-08-16.
 
-  [W-228] SUSPECTED SPACE CONSUMERS, ranked by this project's own history and
-    to be confirmed by receipt before ANY deletion:
-      1. /var/log/lightdm/ — lightdm has been in a rapid respawn loop writing
-         DEBUG-level records plus a fresh x-0.log per cycle across many boots.
-         Prime suspect for runaway growth.
-      2. Xorg.N.log / Xorg.N.log.old rotations from the same loop.
-      3. The M12 wallpaper bake artifacts — this project renders 4480x1440
-         video (Section VIII/W-199/W-200); intermediate frame dumps and mp4s
-         are the largest single-file class on the box.
-      4. xbps package cache /var/cache/xbps — accumulated across the many
-         installs logged in this ledger, and safe to clear.
-      5. Core dumps from the crashing Compiz/session execs.
-    NO DELETION IS AUTHORIZED IN THIS ROW. Facts first, one contradiction
-    surface at a time (R3). The only pre-authorized reclaim is the xbps cache,
-    which is by definition regenerable.
-    RECEIPT: this row.
+  [W-237] Independent positive result: Xorg.1.log showed NVIDIA(0) backing
+    store, DPMS, `[DRI2] Setup complete`, `VDPAU driver: nvidia`, and
+    MIT-SCREEN-SAVER with no EE. A 20-second startx held monitor signal and
+    ended `Server terminated successfully (0)`. NVIDIA/X is healthy.
+    RECEIPT: operator photos and monitor verdict, 2026-08-16.
 
-  [W-229] BLOCK 2 PARTIAL-APPLY WARNING: step 2 was `cp` of the CURRENT
-    session file to sess.bak.x117 and it FAILED, so no backup exists. Step 3
-    (the actual failsafe flip) was therefore NOT reached and MUST NOT be run
-    until space exists — overwriting xfce4-session.xml on a full fs risks
-    truncating it to zero with no backup, which would destroy the working
-    xfwm4 failsafe source. The X-105 flip is POSTPONED, not cancelled. Order
-    is now: reclaim space -> verify df -> then W-227's combined block.
-    RECEIPT: this row, deriving from X-118.
+  [X-123] Cheapest unread fact remains:
+    `ls /usr/bin/xsetroot /usr/bin/xterm /usr/bin/xclock`.
+    Probe 1's black root may only mean xsetroot is absent because black is X's
+    default root color. This is UNVERIFIED; do not theorize past the gate.
 
-[2026-08-16][M12-GREETER-3] DISK FULL DISCOVERED (X-118) AND PROMOTED TO
-  PRIMARY ROOT-CAUSE CANDIDATE FOR THE rc=1 SESSION LOOP. Failsafe flip
-  postponed for safety (W-229). Capacity-facts block issued. Awaiting df +
-  top-consumer receipts.
+  [W-238] H2 VT-7 invisibility is weakened: disk exhaustion fully explains the
+    greeter failure and VT-1 X held signal. Revive H2 only if a real greeter
+    boot still fails after direct xfwm4 session success. RECEIPT: X-119/W-237.
 
---------------------------------------------------------------------------------
-12.120 CAPACITY RECEIPTS — 0 BYTES AVAILABLE ON ROOT. X-118 CONFIRMED AS THE
-       ROOT CAUSE. W-228's SUSPECT RANKING RETRACTED BY MEASUREMENT.
---------------------------------------------------------------------------------
-
-  [W-230] AGENT V TRANSCRIPT (operator photo 2, 2026-08-16, verbatim):
-      $ df -h /
-      Filesystem  Size Used Avail Use% Mounted on
-      /dev/nvme0n1p5  152G  145G   0  100%  /
-      $ sudo du -xh -d1 /var | sort -h | tail -8
-        4.0K /var/spool | 8.0K /var/chroot | 84K /var/tmp | 1.5M /var/log
-        65M /var/db | 3.4G /var/cache | 14G /var/lib | 17G /var
-      $ sudo du -xh -d1 /home/sd | sort -h | tail -8
-        2.3G flutter | 2.6G OpenRGB | 3.0G .cache | 4.9G Documents
-        7.6G .bitcoin | 30G .local | 40G .var | 90G /home/sd
-    RECEIPT: operator photo image.jpg (2nd), 2026-08-16.
-
-  [X-119] ROOT CAUSE CONFIRMED, NOT MERELY SUSPECTED: Avail = 0, Use% = 100 on
-    /dev/nvme0n1p5. X-118's reasoning stands in full — a session exec cannot
-    write .Xauthority/.cache/dbus state, so it dies rc=1 (W-225) while X, which
-    needs no writes, initializes cleanly with no EE (W-220). The greeter dies
-    identically before painting. THE DISPLAY-SIGNAL MYSTERY CARRIED SINCE
-    CONTINUE_PROMPT IS CLOSED. Note also Size 152G vs Used 145G with 0 Avail:
-    the ~7G delta is the filesystem's reserved-block pool, which is why the box
-    still boots and runs root-owned services while every USER write fails.
-    RECEIPT: W-230.
-
-  [X-120] W-228 SUSPECT RANKING WAS WRONG AND IS RETRACTED (supersede, never
-    rewrite). Predicted #1 was /var/log runaway lightdm respawn logging;
-    MEASURED /var/log = 1.5M, i.e. utterly negligible and off by four orders of
-    magnitude. Predicted #3 (wallpaper bake artifacts) did not appear at top
-    level either. The actual distribution was not guessable from this
-    project's history: /home/sd 90G dominated by ~/.var 40G (flatpak per-app
-    data) and ~/.local 30G, with /var/lib 14G second. Only the xbps cache
-    prediction (3.4G, #4) survived contact. LESSON, consistent with X-118:
-    ranked suspicion is not measurement; `du` costs one command and would have
-    outranked the whole list. Do not act on predicted rankings when the
-    measurement is one line away.
-    RECEIPT: W-230 vs W-228.
-
-  [X-121] OPERATOR ERRATUM, 0/O CLASS (same family as X-113's 1/8 console-font
-    confusion): `sudo xbps-remove -0` returned "invalid option -- '0'". The
-    flag is the LETTER O (--clean-cache), not the digit zero. Console font
-    renders them near-identically. When issuing flags to this operator, prefer
-    the long form to eliminate the glyph ambiguity entirely.
-    RECEIPT: W-230 photo, xbps-remove usage dump.
-
-  [W-231] RECLAIM POLICY, TIERED. Tier 1 = REGENERABLE, pre-authorized, no
-    data loss possible: /var/cache/xbps package cache (3.4G, refetchable) and
-    ~/.cache (3.0G, rebuilt on demand). ~6.4G total, far more than the desktop
-    needs to start. Tier 2 = RELOCATABLE to the operator's 2TB USB HDD (U-063)
-    once the desktop is back: Documents 4.9G, flutter 2.3G, OpenRGB 2.6G, and
-    the large ~/.var flatpak trees. Tier 3 = HANDLE WITH EXTREME CARE, never
-    auto-touched: ~/.bitcoin 7.6G contains wallet/chain state; it may be
-    relocated only deliberately with the client stopped, never deleted, never
-    moved by a glob. NOTHING in Tier 2/3 is touched in this block.
-    RECEIPT: this row.
-
-  [U-063] Operator offers a 2TB USB HDD as relocation target for bulk data.
-    Accepted as the Tier-2 plan, DEFERRED until the desktop is restored:
-    mounting and mass-moving 40G+ from a live tty while the fs is at 0 bytes
-    is the highest-risk possible moment. Space first, desktop second, bulk
-    migration third, under a working session with the reverse documented.
-    RECEIPT: operator "we can move some stuff to my 2tb usb hdd if necessary",
-    2026-08-16.
-
-[2026-08-16][M12-GREETER-4] ROOT CAUSE PROVEN (X-119: 0 bytes free). Tier-1
-  regenerable reclaim (~6.4G) issued. Failsafe flip (W-229) resumes the moment
-  df shows free space. USB migration accepted but deferred (U-063).
-
---------------------------------------------------------------------------------
-12.121 SPACE RECLAIMED (2.9G) AND X-105 FAILSAFE LANDMINE DISARMED. TWO GATES
-       PASSED IN ONE BLOCK. VT-1 PROBE IS NOW UNBLOCKED.
---------------------------------------------------------------------------------
-
-  [W-232] AGENT V TRANSCRIPT (operator photo 3, 2026-08-16, verbatim):
-      $ sudo xbps-remove --clean-cache --yes
-        long "Removed <pkg>.xbps from cachedir (obsolete)" list incl. wine,
-        mesa, ffmpeg6, gstreamer1, flatpak, linux6.18-headers, noto-fonts
-      $ rm -rf ~/.cache/*
-      $ df -h /
-      /dev/nvme0n1p5  152G  141G  2.9G  99%  /
-      $ cp .config/.../xfce4-session.xml sess.bak.x117          (silent, OK)
-      $ cp xfce4-session.xml.bak.1786722899 .config/.../xfce4-session.xml
-      $ grep -c compiz .config/.../xfce4-session.xml
-      0
-    RECEIPT: operator photo image.jpg (3rd) + "working, 2.9gb avail".
-
-  [W-233] GATE A PASSED: Avail 0 -> 2.9G, Used 145G -> 141G. Tier-1 reclaim
-    (W-231) yielded ~4G against a predicted ~6.4G; the shortfall is because
-    xbps --clean-cache removes only OBSOLETE package versions, not the whole
-    cache. Ample for session startup regardless. USER WRITES NOW SUCCEED,
-    proven by the two cp commands completing silently where the identical cp
-    failed in 12.119. X-119 is thereby closed by direct A/B: the same command
-    failed at 0 bytes and succeeded at 2.9G.
-    RECEIPT: W-232.
-
-  [W-234] GATE B PASSED — X-105 IS DISARMED. grep -c compiz on the live
-    xfce4-session.xml returns 0, so Client0_Command no longer points at
-    /home/sd/.local/bin/compiz-session. The WM landmine that has been waiting
-    BEHIND the greeter fix since 12.108 is neutralized BEFORE any DM re-enable,
-    exactly as W-224 required. Reverse path exists: ~/sess.bak.x117 holds the
-    pre-flip file. Session failsafe is now stock xfwm4 (W-011/W-015 safe, picom
-    still masked W-042). X-105 is CLOSED.
-    RECEIPT: W-232.
-
-  [W-235] STATE OF THE THREE KILLERS after this block: X-119 (disk) FIXED.
-    H1 (X-117 session-exec) is now DOUBLY ADDRESSED — its two possible
-    mechanisms were the full fs and the compiz failsafe, and both are gone.
-    H2 (X-117 VT-7 invisibility) remains UNTESTED and is the only live
-    hypothesis left. It is entirely possible the desktop simply works now; the
-    VT-1 probe is what discriminates "already fixed" from "VT 7 still blind"
-    WITHOUT risking a black unrecoverable lightdm boot (X-114). Probe first,
-    down-file removal second. Do not reorder.
-    RECEIPT: this row.
-
-[2026-08-16][M12-GREETER-5] DISK FIXED AND FAILSAFE FLIPPED. Only H2 (VT 7)
-  still stands. Self-terminating VT-1 green probe (W-223/W-227) issued.
-
---------------------------------------------------------------------------------
-12.122 PROBE 2 NEVER RAN — PHONE PASTE ATE THE REDIRECT. NVIDIA(0) PROVEN
-       HEALTHY BY Xorg.1.log GREP. SESSION CLOSE, HANDOFF WRITTEN.
---------------------------------------------------------------------------------
-
-  [W-236] AGENT V TRANSCRIPT (operator photos 4+5, 2026-08-16, verbatim; both
-    photos are the same frame, duplicate upload):
-      (tail of the Xorg.1.log grep from Block 6)
-      [2841.090] (==) NVIDIA(0): Backing store enabled
-      [2841.090] (==) NVIDIA(0): Silken mouse enabled
-      [2841.090] (==) NVIDIA(0): DPMS enabled
-      [2841.090] (II) NVIDIA(0): [DRI2] Setup complete
-      [2841.090] (II) NVIDIA(0): [DRI2]   VDPAU driver: nvidia
-      [2841.091] (II) Initializing extension MIT-SCREEN-SAVER
-      $ printf '#!/bin/sh\nxrandr > $HOME/xr.txt 2>&1\nsleep 20\n' /tmp/p2
-      #!/bin/sh
-      xrandr > $HOME/xr.txt 2>&1
-      sleep 20
-      $ chmod 755 /tmp/p2
-      chmod: cannot access '/tmp/p2': No such file or directory
-      $ startx /tmp/p2 -- :1 vt1
-      X.Org X Server 1.21.1.24 / Current OS: Linux 66 6.18.35-tkg-bore
-      Kernel command line: intel_pstate=passive split_lock_detect=off
-        BOOT_IMAGE=/boot/vmlinuz-6.18.35-tkg-bore root=UUID=6933dd0e-3d95-44f4-
-        848a-846d125d9452 ro rd.driver.blackl[ist...]
-      (==) Log file: "/var/log/Xorg.1.log", Time: Sun Aug 16 02:01:49 2026
-      xkbcomp warnings: Multiple symbols for level 1/group 1 on key <FK23>,
-        using F23 ignoring XF86TouchpadOff; could not resolve keysym
-        XF86ElectronicPrivacyScreenOff / XF86ActionOnSelection
-      ...ection to X server lost
-      waiting for X server to shut down (II) Server terminated successfully (0)
-      $ cat ~/xr.txt
-      cat: /home/sd/xr.txt: No such file or directory
-    RECEIPT: operator photos 4+5, 2026-08-16.
-
-  [X-122] PROBE 2 IS VOID — IT NEVER EXECUTED. The phone paste DROPPED the
-    `>` redirect operator, so the command became
-      printf '...' /tmp/p2
-    which PRINTED the script body to the terminal (visible in W-236) and
-    passed /tmp/p2 as a surplus printf argument instead of creating it.
-    Hence chmod's "No such file or directory", hence startx launching a
-    NONEXISTENT client, hence "Connection to X server lost" and immediate
-    teardown, hence no xr.txt. NOTHING about the display was tested. This is
-    the same failure class as W-220 (phone paste joining commands produced
-    "tail: option used in invalid context") and is now the SECOND confirmed
-    instance. STANDING RULE ADDED: never hand this operator a block whose
-    correctness depends on a bare `>` or `|` metacharacter surviving a phone
-    paste. Prefer heredocs, prefer commands that write no files, and ALWAYS
-    include a existence gate (`ls -l <file>`) immediately after any file
-    creation so a silent non-creation cannot propagate into the next step.
-    RECEIPT: W-236.
-
-  [W-237] MAJOR POSITIVE RECEIPT, INDEPENDENT OF THE VOID PROBE: the
-    Xorg.1.log grep proves the NVIDIA X driver is FULLY HEALTHY on this box.
-    NVIDIA(0) reaches "[DRI2] Setup complete" with "VDPAU driver: nvidia",
-    backing store, silken mouse and DPMS all enabled, and X proceeds to
-    MIT-SCREEN-SAVER with NO (EE). Combined with the operator's own
-    observation on probe 1 — "black, monitors arent off though, and i return
-    to a terminal after waiting" — the picture is: X ACQUIRES AND HOLDS THE
-    DISPLAYS FOR THE FULL 20 SECONDS WITHOUT DROPPING SIGNAL, then exits
-    cleanly (Server terminated successfully (0)). Monitors staying POWERED is
-    a decisive change from the original symptom (signal loss at DM handoff).
-    RECEIPT: W-236 + operator verdict text, 2026-08-16.
-
-  [X-123] PROBE 1's "black" IS MOST LIKELY A MISSING BINARY, NOT A DISPLAY
-    FAULT — UNPROVEN, STATED AS THE LEADING HYPOTHESIS FOR THE NEXT SESSION.
-    Black is X's DEFAULT root window colour; a green root requires xsetroot to
-    actually exist and run. This is a minimal Void musl install and xsetroot
-    ships in a separate xorg-apps-class package. If xsetroot is absent, probe 1
-    proved only that X runs 20s and holds signal (which it did), and said
-    NOTHING about paint capability. The `ls /usr/bin/xsetroot /usr/bin/xterm
-    /usr/bin/xclock` gate from Block 6 was ISSUED BUT ITS OUTPUT WAS NEVER
-    PHOTOGRAPHED — that single unread line is the cheapest next fact in the
-    whole project. Do not theorize past it.
-    RECEIPT: reasoning over W-236/W-237; explicitly labelled UNVERIFIED.
-
-  [W-238] H2 (VT-7 invisibility, X-117) IS NOW SUBSTANTIALLY WEAKENED but not
-    formally dead. Probe 1 ran on vt1 and held signal; that does not by itself
-    exonerate vt7. However the ORIGINAL rationale for H2 was "clean X log yet
-    no picture", and X-119 (disk full at 0 bytes) now explains the greeter
-    failure completely and independently. Recommended next-session posture:
-    treat the disk as the cause, test the desktop directly, and only revive H2
-    if a real greeter boot still fails. Do NOT spend cycles on vt7 theory
-    before a plain xfwm4 session has been attempted.
-    RECEIPT: this row.
-
-[2026-08-16][M12-GREETER-6] SESSION CLOSE PER OPERATOR. Root cause found and
-  fixed (X-119 disk full, 0 -> 2.9G). X-105 failsafe landmine disarmed (W-234).
-  NVIDIA/X proven healthy (W-237). Probe 2 void via paste corruption (X-122).
-  Next session resumes at the xsetroot existence gate (X-123) then a direct
-  xfwm4 session attempt. Photos 4+5 transcribed here as the durable receipt;
-  raw images are NOT retrievable from the sandbox, the transcript IS the
-  artifact (Agent V protocol, 14.2).
+[2026-08-16][M12-GREETER-COMPACT] X-119 fixed (0 -> 2.9G), X-105 disarmed,
+  NVIDIA/X healthy, phone-paste hazards codified. `/etc/sv/lightdm/down` still
+  exists. Next: X-123 binary gate, then a self-terminating direct
+  `xfce4-session` attempt; verdict desktop | black. If desktop: remove down-file,
+  reboot, verify greeter. Then Tier-2 USB migration, Compiz, U-055, M12, M18.
