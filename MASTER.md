@@ -7964,3 +7964,73 @@ What worked, in order, when the box went black before lightdm with no TTY.
   PRIMARY ROOT-CAUSE CANDIDATE FOR THE rc=1 SESSION LOOP. Failsafe flip
   postponed for safety (W-229). Capacity-facts block issued. Awaiting df +
   top-consumer receipts.
+
+--------------------------------------------------------------------------------
+12.120 CAPACITY RECEIPTS — 0 BYTES AVAILABLE ON ROOT. X-118 CONFIRMED AS THE
+       ROOT CAUSE. W-228's SUSPECT RANKING RETRACTED BY MEASUREMENT.
+--------------------------------------------------------------------------------
+
+  [W-230] AGENT V TRANSCRIPT (operator photo 2, 2026-08-16, verbatim):
+      $ df -h /
+      Filesystem  Size Used Avail Use% Mounted on
+      /dev/nvme0n1p5  152G  145G   0  100%  /
+      $ sudo du -xh -d1 /var | sort -h | tail -8
+        4.0K /var/spool | 8.0K /var/chroot | 84K /var/tmp | 1.5M /var/log
+        65M /var/db | 3.4G /var/cache | 14G /var/lib | 17G /var
+      $ sudo du -xh -d1 /home/sd | sort -h | tail -8
+        2.3G flutter | 2.6G OpenRGB | 3.0G .cache | 4.9G Documents
+        7.6G .bitcoin | 30G .local | 40G .var | 90G /home/sd
+    RECEIPT: operator photo image.jpg (2nd), 2026-08-16.
+
+  [X-119] ROOT CAUSE CONFIRMED, NOT MERELY SUSPECTED: Avail = 0, Use% = 100 on
+    /dev/nvme0n1p5. X-118's reasoning stands in full — a session exec cannot
+    write .Xauthority/.cache/dbus state, so it dies rc=1 (W-225) while X, which
+    needs no writes, initializes cleanly with no EE (W-220). The greeter dies
+    identically before painting. THE DISPLAY-SIGNAL MYSTERY CARRIED SINCE
+    CONTINUE_PROMPT IS CLOSED. Note also Size 152G vs Used 145G with 0 Avail:
+    the ~7G delta is the filesystem's reserved-block pool, which is why the box
+    still boots and runs root-owned services while every USER write fails.
+    RECEIPT: W-230.
+
+  [X-120] W-228 SUSPECT RANKING WAS WRONG AND IS RETRACTED (supersede, never
+    rewrite). Predicted #1 was /var/log runaway lightdm respawn logging;
+    MEASURED /var/log = 1.5M, i.e. utterly negligible and off by four orders of
+    magnitude. Predicted #3 (wallpaper bake artifacts) did not appear at top
+    level either. The actual distribution was not guessable from this
+    project's history: /home/sd 90G dominated by ~/.var 40G (flatpak per-app
+    data) and ~/.local 30G, with /var/lib 14G second. Only the xbps cache
+    prediction (3.4G, #4) survived contact. LESSON, consistent with X-118:
+    ranked suspicion is not measurement; `du` costs one command and would have
+    outranked the whole list. Do not act on predicted rankings when the
+    measurement is one line away.
+    RECEIPT: W-230 vs W-228.
+
+  [X-121] OPERATOR ERRATUM, 0/O CLASS (same family as X-113's 1/8 console-font
+    confusion): `sudo xbps-remove -0` returned "invalid option -- '0'". The
+    flag is the LETTER O (--clean-cache), not the digit zero. Console font
+    renders them near-identically. When issuing flags to this operator, prefer
+    the long form to eliminate the glyph ambiguity entirely.
+    RECEIPT: W-230 photo, xbps-remove usage dump.
+
+  [W-231] RECLAIM POLICY, TIERED. Tier 1 = REGENERABLE, pre-authorized, no
+    data loss possible: /var/cache/xbps package cache (3.4G, refetchable) and
+    ~/.cache (3.0G, rebuilt on demand). ~6.4G total, far more than the desktop
+    needs to start. Tier 2 = RELOCATABLE to the operator's 2TB USB HDD (U-063)
+    once the desktop is back: Documents 4.9G, flutter 2.3G, OpenRGB 2.6G, and
+    the large ~/.var flatpak trees. Tier 3 = HANDLE WITH EXTREME CARE, never
+    auto-touched: ~/.bitcoin 7.6G contains wallet/chain state; it may be
+    relocated only deliberately with the client stopped, never deleted, never
+    moved by a glob. NOTHING in Tier 2/3 is touched in this block.
+    RECEIPT: this row.
+
+  [U-063] Operator offers a 2TB USB HDD as relocation target for bulk data.
+    Accepted as the Tier-2 plan, DEFERRED until the desktop is restored:
+    mounting and mass-moving 40G+ from a live tty while the fs is at 0 bytes
+    is the highest-risk possible moment. Space first, desktop second, bulk
+    migration third, under a working session with the reverse documented.
+    RECEIPT: operator "we can move some stuff to my 2tb usb hdd if necessary",
+    2026-08-16.
+
+[2026-08-16][M12-GREETER-4] ROOT CAUSE PROVEN (X-119: 0 bytes free). Tier-1
+  regenerable reclaim (~6.4G) issued. Failsafe flip (W-229) resumes the moment
+  df shows free space. USB migration accepted but deferred (U-063).
