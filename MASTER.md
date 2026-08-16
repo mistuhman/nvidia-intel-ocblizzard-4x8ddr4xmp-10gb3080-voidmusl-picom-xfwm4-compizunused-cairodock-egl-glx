@@ -8728,3 +8728,65 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M16-CHEETAH-2] Collect PASS / SAFE. Apply paste is next operator
   action. Do not open CCSM for opacity (X-098).
+
+--------------------------------------------------------------------------------
+12.137 X-145 WRONG PLUGIN NAME (`opacity` vs `obs`); X-146 COMPIZ REPLACE
+      ORPHANS DOCK/EMERALD. Theme overlay restored off; menus deferred.
+--------------------------------------------------------------------------------
+
+  [X-145] *** PLUGIN SHORT NAME IS `obs`, NOT `opacity`. *** Target apply of
+    U-055 wrote `opacity` into as_active_plugins and a `[opacity]` section.
+    Live Compiz on reload printed:
+      /usr/bin/compiz (core) - Error: Couldn't load plugin 'opacity'
+    and the login-hook floor path (or ccp rewrite on replace) dropped the
+    unknown token, leaving:
+      as_active_plugins without opacity
+      [opacity] section still on disk (orphaned, ignored)
+      --check NOT-APPLIED for opacity tool; cheetah gtk.css APPLIED
+    Compiz Reloaded's Opacity/Brightness/Saturation plugin is short-named
+    `obs` (ArchWiki flat-file sample: `obs` in as_active_plugins and
+    `[obs] s0_opacity_matches / s0_opacity_values`). U-055's first ship used
+    the human name. Fixed tool: PLUGIN=obs, SECTION=obs, scrubs legacy
+    `opacity` token and `[opacity]` section on apply. Hash after fix:
+    (see commit). RECEIPT: target apply paste 2026-08-16 + ArchWiki Compiz
+    Configuration sample.
+
+  [X-146] *** `setsid compiz-session` ORPHANS EMERALD + CAN DROP CAIRO-DOCK. ***
+    Same paste's reload replaced Compiz (new pid 27774, was 1194) while
+    emerald stayed at 1274 (pre-replace) and operator reports cairo-dock and
+    other UI elements disappeared. A full Compiz replace does not restart
+    session-autostart companions. Standing rule: never use bare
+    compiz-session replace as the opacity-apply reload without a companion
+    restart. Recovery is companions-only:
+      setsid emerald --replace
+      setsid cairo-dock     # only if pgrep -x cairo-dock is empty
+    Tool gains `--reload` for that path. Prefer logout/login to pick up
+    Default.ini changes when dock/panel health matters more than speed.
+    RECEIPT: target pids + operator statement, 2026-08-16.
+
+  [W-287] OPERATOR REJECTS THEME CHANGE FOR THIS PASS. "we dont need to
+    change the theme". Cheetah gtk.css overlay is NOT wanted right now;
+    restore it. Menu transparency via obs may still land later; workspace
+    switcher (U-070 / XMB crossfade) is the operator's live complaint and
+    is a SEPARATE parked track — do not conflate with U-055. RECEIPT:
+    operator, same paste session.
+
+  [W-288] POST-FAIL STATE ON TARGET (before recovery paste):
+    verify SAFE, active d1eabc9a... then after operator ccsm-safe session
+    75e3ca83... (2 lines changed, plugins list unchanged, SAFE).
+    gtk.css 2041 B with cheetah BEGIN/END markers (must --restore).
+    [opacity] section still present with 88/92 rules (must scrub).
+    opacity not in as_active_plugins. emerald 1274 stale vs compiz 27774.
+    cairo-dock missing per operator. RECEIPT: apply+ccsm-safe paste.
+
+  [W-289] TOOL FIXED IN REPO (sandbox). compiz-opacity-menus now:
+      PLUGIN=obs SECTION=obs; scrubs legacy opacity; --reload companions;
+      apply no longer prints bare setsid compiz-session as the happy path.
+    Sandbox: scrub of damaged profile, clean apply, idempotent, restore.
+    Target recovery paste is next (theme restore + emerald + cairo-dock);
+    obs re-apply is OPTIONAL and gated on operator go-ahead after UI is back.
+    RECEIPT: sandbox harness this session.
+
+[2026-08-16][M16-CHEETAH-3] Apply FAILED on wrong plugin name; theme unwanted;
+  dock/emerald orphaned by replace. Recovery first. U-070 switcher still
+  parked and is the operator's other open complaint — separate from menus.
