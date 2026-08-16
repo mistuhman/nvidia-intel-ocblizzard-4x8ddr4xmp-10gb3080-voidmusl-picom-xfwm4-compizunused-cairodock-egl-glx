@@ -8826,3 +8826,49 @@ What worked, in order, when the box went black before lightdm with no TTY.
   emerald live. Next only on operator direction: (a) obs menu opacity retry
   with fixed tool + companions --reload, or (b) U-070 XMB workspace switcher,
   or (c) M18 icons/sound. Default: wait.
+
+--------------------------------------------------------------------------------
+12.139 PR #17 MERGED — U-055 ARC CLOSED (TOOLS+FAIL+RECOVER); U-070 NEXT CHAT
+--------------------------------------------------------------------------------
+
+  [W-291] OPERATOR DIRECTS MERGE THEN NEW CHAT FOR XMB SWITCHER. PR #17
+    closes the U-055 arc as landed-in-repo + target-recovered, NOT as
+    "menus accepted". Final target state (W-290): SAFE, theme stock 206 B
+    gtk.css, no obs, no cheetah overlay, emerald 32484, cairo-dock 1290,
+    active b94b49e0..., Client0_Command compiz-session. Tools remain in
+    ~/.local/bin for a later optional obs retry. RECEIPT: operator "lets
+    merge then continue in a new chat with the xmb switcher".
+
+  [X-147] WHY THIS PR BLEW THE 405 CEILING (operator asked). Final diff
+    +901 / -24 against U-061's 405. Breakdown of the 901:
+      scripts/compiz-opacity-menus          364   (U-055 layer A; grew
+                                                   after X-145 obs fix +
+                                                   X-146 --reload)
+      scripts/gunmetal-cheetah-menu-overlay 287   (U-055 layer B; applied
+                                                   then operator-rejected;
+                                                   kept because --restore
+                                                   is the undo path and the
+                                                   tool is still correct)
+      MASTER.md ledger                      216   (receipts W-285..W-291,
+                                                   X-144..X-147 — the cost
+                                                   of not lying about the
+                                                   failed apply)
+      CONTINUE_PROMPT refresh                29 net
+      compiz-guard-install wire-up            5
+    Three honest overruns stacked:
+      (1) X-144 — shipped both U-055 layers together (inseparable objective).
+      (2) X-145/X-146 — target disproved `opacity` and bare compiz-session
+          reload; fix + recovery path had to land in the same PR or the
+          next session would re-ship the broken tool.
+      (3) Ledger weight — every failed paste and recovery is a MASTER row
+          (Directive 7/8). Suppressing those would have hidden X-145.
+    Same class as X-136 (disclosed exceed, not silent). Ceiling resumes
+    at 405 for the U-070 switcher chat. Split rule going forward: one
+    objective per PR; if target fails mid-flight, either a tiny fixup
+    commit on the same PR (this case) or close and open a recovery PR —
+    do not keep stacking new objectives onto an already-over PR.
+    RECEIPT: gh pr view 17 --json additions + git diff --numstat.
+
+[2026-08-16][M16-CHEETAH-CLOSE] PR #17 merge. U-055 not accepted visually;
+  tools in-repo; desktop recovered SAFE. NEXT CHAT: U-070 XMB workspace
+  switcher (operator: "doesnt work"). Read CONTINUE_PROMPT 12.139 edge.
