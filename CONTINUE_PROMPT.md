@@ -1,12 +1,12 @@
-# Continuation prompt — U-070 XMB workspace switcher NEXT; U-055 recovered/merged
+# Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.138 prompt. This is the 12.139 edge after PR #17 merge.
+Supersedes the 12.139 prompt. This is the 12.140 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
 1. Session is fixed to the `arena/...` branch it opens on. Never switch or push another.
-2. Read `README.md`, then `MASTER.md` — **the edge is 12.139, read the tail first.**
+2. Read `README.md`, then `MASTER.md` — **the edge is 12.140, read the tail first.**
    Sections I–II frozen. XIV is boot-death protocol (not currently needed).
 3. MASTER.md is append-only: dated W-/X-/U- rows with receipts. Supersede, never rewrite.
 4. PR ceiling 405 (U-061). **Resumes at 405 after X-147.** One objective per PR.
@@ -51,21 +51,22 @@ Supersedes the 12.138 prompt. This is the 12.139 edge after PR #17 merge.
 ## Objectives, in order
 1. CLOSED: guard + CCSM + reboot. CLOSED/MERGED: XMB bare layer (PR #15).
 2. CLOSED/MERGED: U-055 tools + failed apply + recovery (PR #17). Menus OFF.
-3. **NEXT — U-070 single-renderer XMB workspace switcher.**
-   Operator: "the xmb wave workspace switcher doesnt work."
-   Spec (W-282/U-070): one IPC-controlled renderer, not two xwinwrap windows.
-   Measure before accept: frame time, dropped frames, decoder%, VRAM, RSS.
-   Prebaked transition clip is a lower-memory fallback but cannot join an
-   arbitrary live loop phase cleanly. Controller stays exit-2 until a live
-   gate passes. Do NOT revive the retired shell/xprop crossfade (X-143).
-   Start with: read-only target collect (xmb-wallpaper status, mpv/xwinwrap
-   pids, wall plugin viewport bindings, what "doesnt work" means on screen).
+3. **ACTIVE — U-070 one-mpv IPC switcher target trial (W-292/W-293/U-073).**
+   Collect proved Compiz viewport switching works; main-red never changes
+   because no controller is running. New controller is one xwinwrap + one mpv
+   + one gpu-next context, lavfi track blend over JSON IPC, latest-wins, and
+   exact-PID takeover. Sandbox + FFmpeg graphs PASS; target remains unproven.
+   NEXT: install branch, --check, start --replace, switch 0->1->2->0, --status,
+   then measure dropped frames, decoder%, VRAM, RSS and human visual result.
+   Any black/lag/error: --restore. Autostart remains Hidden/false until accept.
+   Never run target's old SHA 7484d253 controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
 5. Optional later: obs menu opacity retry (fixed tool) — operator go-ahead only.
 6. Tier-2 USB when convenient. **Tier-3 `~/.bitcoin`: never delete, never
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
-12.139 (W-291/X-147 merge), 12.138 (W-290 RECOVERED), 12.137 (X-145/X-146),
+12.140 (W-292/X-148/W-293/U-073), 12.139 (W-291/X-147 merge),
+12.138 (W-290 RECOVERED), 12.137 (X-145/X-146),
 12.136 (W-286), 12.135 (W-285), 12.134 (W-284), 12.133 (W-281/X-143/U-070),
 W-053 golden af457926, X-031, X-032, U-061 ceiling 405 (resumed).

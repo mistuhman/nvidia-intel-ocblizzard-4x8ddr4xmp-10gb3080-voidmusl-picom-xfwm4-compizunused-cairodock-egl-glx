@@ -8872,3 +8872,150 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M16-CHEETAH-CLOSE] PR #17 merge. U-055 not accepted visually;
   tools in-repo; desktop recovered SAFE. NEXT CHAT: U-070 XMB workspace
   switcher (operator: "doesnt work"). Read CONTINUE_PROMPT 12.139 edge.
+
+--------------------------------------------------------------------------------
+12.140 U-070 ROOT CAUSE PROVEN; ONE-MPV IPC SWITCHER AUTHORED, TARGET GATED
+--------------------------------------------------------------------------------
+
+  [W-292] U-070 READ-ONLY TARGET COLLECT + HUMAN FAILURE GATE. Root remains
+    96% used (6.4G free), so no output may land there. The accepted renderer is
+    still exactly xwinwrap 26012 + mpv 26014, main-red, explicit 4480x1440,
+    input-transparent, nvdec-copy, --no-stop-screensaver. mpv RSS 543708 KiB;
+    GPU snapshot 28%, decoder 13% global / 10% mpv, total VRAM 2355 MiB.
+    xfdesktop absent. The observer captured every valid viewport X (0, 4480,
+    8960, 13440), including rapid changes; therefore middle mouse and Compiz
+    Wall switching DO work. The same PIDs and main-red argv survived every
+    change. Human: XMB role "didnt work upon switching with middle mouse and
+    desktop switcher with compiz." Failure is renderer role selection, not the
+    Wall binding. Compiz ended SAFE, active b94b49e0..., picom absent.
+    RECEIPT: operator transcript + visual report, 2026-08-16.
+
+  [X-148] TARGET HAS THE RETIRED CONTROLLER, NOT AN ACTIVE SWITCHER. Installed
+    xmb-wallpaper-controller is the old 3865 B shell fade (SHA 7484d253...),
+    no controller process exists, and its autostart desktop file is missing.
+    Starting that file would revive X-143's two-window/xprop design and is
+    prohibited. Repository controller was intentionally exit-2 disabled. The
+    >15-character pgrep warning in the collect is only a detector limitation;
+    the process absence and missing autostart are independently established.
+
+  [W-293] U-070 SINGLE-WINDOW IMPLEMENTATION AUTHORED. The replacement keeps
+    one xwinwrap, one mpv process and one gpu-next context for its lifetime.
+    mpv opens all role files as synchronized tracks; lavfi-complex selects one
+    track/decoder at steady state and an FFmpeg blend only during transition.
+    One JSON IPC socket changes the graph; FFmpeg sendcmd updates the named
+    blend's optimized all_opacity once per decoded frame, with no xprop client
+    per opacity step and no second xwinwrap. Viewport events are drained to the
+    latest value; same-role moves are no-ops. A retarget starts from computed
+    current weights instead of queueing or restarting media clocks. Normal
+    fades use two decoders; only a third-role retarget can transiently select
+    three to preserve the exact in-flight composite, then steady returns to one.
+    Config is parsed, not sourced. Takeover kills only /proc-validated owned
+    xwinwrap/mpv PIDs. --check/--status/--stop/--restore are reversible gates;
+    autostart remains Hidden/false until live acceptance.
+
+    SANDBOX: py_compile PASS; fake xprop/mpv IPC 0->4480->8960 retarget PASS;
+    status returned both dropped-frame counters; stop left no process residue.
+    FFmpeg n8.0 minimal build executed generated two-input and three-input
+    blend@instance + sendcmd graphs at 60 fps with rc 0, proving graph escaping,
+    per-frame command routing, and all_opacity runtime support. mpv 0.41 target
+    visual/performance remains the required live gate; sandbox is not acceptance.
+
+  [U-073] TARGET TRIAL ORDER: install current branch; --check; start --replace;
+    switch 0->1->2->0 once; --status; collect pids/RSS/decoder/VRAM and human
+    visual result. On any black frame, lag, or launch error, run --restore;
+    it stops the owned controller pair and relaunches proven direct main-red.
+    Do not enable autostart before that gate.
+
+[2026-08-16][M17-XMB-IPC-1] Root cause closed: Compiz viewports work; no active
+  role observer existed. One-mpv IPC implementation is sandbox-proven and not
+  yet target-proven. Next action is one reversible install/live trial paste.
+
+--------------------------------------------------------------------------------
+12.141 U-070 INSTALL ARMED; FIRST START ID-GATE FAILED; ROLLBACK SAFE
+--------------------------------------------------------------------------------
+
+  [W-294] TARGET INSTALL/ARM PASS. Target fetched exact e9e0da2, backed up the
+    retired controller as *.pre-u070.1786904329, and installed controller SHA
+    62602262..., launcher 70e2d4cc..., shim 104cf87e.... Existing role config
+    was preserved (red/work/work/red, 4000 ms, nvdec-copy). Autostart was
+    created but remains Hidden=true/enabled=false. --check PASS; accepted direct
+    renderer 26012/26014 remained untouched; Compiz SAFE at b94b49e0....
+
+  [X-149] FIRST LIVE START STOPPED AT AN OVERSTRICT TRACK-ID ASSERTION, BEFORE
+    ANY VISUAL SWITCH TEST. One-mpv launched and exposed three video tracks,
+    but their mpv IDs were not the assumed literal set 1,2,3. Controller refused
+    rather than risk wrong roles. This does not test or disprove lavfi blending.
+    Exact takeover stopped one direct pair; scripted --restore immediately
+    relaunched proven main-red as 18512/18514 at nvdec-copy 11%. Compiz remained
+    SAFE. Earlier BadWindow/old role lines in the tailed append-only log are
+    X-140 history, not this renderer. VERDICT ROLLED-BACK.
+
+  [W-295] FIX AUTHORED: map role IDs from mpv track-list metadata — primary
+    non-external track plus each external-filename basename — and require three
+    unique mapped IDs, never positional IDs. Mock IPC covers nonsequential IDs;
+    py_compile and generated FFmpeg graph tests remain PASS. Target retry gated.
+
+[2026-08-16][M17-XMB-IPC-2] Desktop is restored SAFE. Retry only the corrected
+  metadata-mapped controller; autostart stays disabled.
+
+--------------------------------------------------------------------------------
+12.142 ONE-MPV VISUAL PASS; HARNESS MISREAD LOWERCASE YES; 700 MS REQUEST
+--------------------------------------------------------------------------------
+
+  [W-296] MAPPED ONE-MPV LIVE GATE RAN. Controller 21082 owned one xwinwrap
+    21086 and one mpv 21087; role mapping worked across all four viewports.
+    Operator verdict: "VERY GOOD". Twenty transition samples measured SM
+    18-24%, memory-engine 5-6%, and decoder 22-27% during two-track fades;
+    steady returned to 11-15%, matching the accepted one-decode baseline.
+    Hardware remained nvdec-copy at 4480x1440. This is the first human visual
+    acceptance of the U-070 architecture. Full --status/RSS counters were not
+    collected because the delivery harness rolled back before that branch.
+
+  [X-150] HARNESS BUG, NOT RENDERER FAILURE: prompt demanded uppercase `YES`;
+    operator entered lowercase `yes`, so the shell treated a positive visual
+    gate as rejection. Rollback behaved correctly and restored direct main-red
+    23297/23299 at 11% decoder; Compiz remained SAFE at b94b49e0.... Never use
+    a case-sensitive human-acceptance token again.
+
+  [U-074] Operator requests the accepted fade shortened from 4000 ms to about
+    700 ms. Controller/install defaults now 700; existing target config needs
+    the reversible one-line update before relaunch. New renderer also uses
+    --really-quiet so its private log contains faults, not per-frame status.
+    After 700 ms visual confirmation, collect status/RSS/drops and keep it live;
+    autostart remains disabled until those final receipts pass.
+
+[2026-08-16][M17-XMB-IPC-3] Architecture visually accepted; rollback was only
+  a lowercase-token harness error. Next: set 700 ms, relaunch, measure, persist.
+
+--------------------------------------------------------------------------------
+12.143 700 MS TUNING RUN WORKS; STATUS PROPERTY ABSENT; 2 SECOND + REBOOT GATE
+--------------------------------------------------------------------------------
+  [W-297] 700 ms controller 25334 owned xwinwrap 25343 + mpv 25344; role reached
+    work-monochrome and steady graph `[vid2]null[vo]`, proving switching again.
+    Decoder measured 20-22% in transition / 11-13% steady, SM 17-22%, memory
+    engine 5-6%. Requested 2-second fade is tuning, not renderer rejection.
+  [X-151] STATUS TREATED AN OPTIONAL MPV PROPERTY AS FATAL. lavfi-complex read
+    succeeded; the next requested property was absent in target mpv 0.41 and
+    raised `property not found`. The renderer itself remained live. Harness
+    then conservatively restored direct main-red 26611/26613 at 11% decoder;
+    Compiz remained SAFE b94b49e0.... Status must print UNAVAILABLE and continue.
+  [U-075] Defaults changed to 2000 ms per operator. Status now tolerates missing
+    metrics. Controller also quits xfdesktop before launch, required so XFCE's
+    Desktop windows cannot cover XMB after reboot. Next: deploy, set target
+    config 2000, leave live, collect RSS/status; then enable the still-hidden
+    autostart, reboot, and verify controller + one xwinwrap/mpv + Compiz SAFE.
+[2026-08-16][M17-XMB-IPC-4] Two-second live gate next; reboot proof before merge.
+
+  [U-076] LIVE-2S gate: one renderer 29422/29440/29441, 59.9988 fps, mpv RSS 874456 KiB, SAFE; operator requests Gaussian blur + 1s. GPU shader authored, target unproven. RECEIPT: target + operator, 2026-08-16.
+
+  [U-077] Operator requests 500 ms crossfade + 700 ms blur; clocks are now separate and rapid retarget extends, rather than recompiles, the active shader. Target unproven.
+
+  [W-298] 500/700 live gate: controller/xwinwrap/mpv 21609/21623/21624, steady 60.000182 fps, mpv RSS 849868 KiB, VRAM 2545 MiB, Compiz SAFE; rapid decoder peaked 76%.
+  [X-152] Human: switching back rapidly stutters/skips; immediate in-flight graph retarget is rejected despite eventual steady correctness.
+  [U-078] Controller now lets each 500 ms fade finish, coalesces only the latest pending role, chains it before decoder retirement, and keeps the 700 ms shader loaded. Target unproven.
+
+  [X-153] Complete-fade target start hit an IPC readiness race: socket existed before mpv populated track-list, so the first read was `[]`; no switch ran. Rollback restored direct 26452/26454 at 9%, Compiz SAFE.
+  [W-299] Launcher now retries track metadata on the same IPC connection for up to 8 seconds and maps only when all three unique roles exist. Mock returned five empty lists before nonsequential IDs and passed start/status/stop.
+[2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
+  [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
+  [U-081] Target exact-role queue ran at 59.99955 fps/SAFE, but human requires every viewport boundary including same-role 2->3 and 4->1 plus stronger blur; per-slot queue + double Gaussian authored, target unproven.

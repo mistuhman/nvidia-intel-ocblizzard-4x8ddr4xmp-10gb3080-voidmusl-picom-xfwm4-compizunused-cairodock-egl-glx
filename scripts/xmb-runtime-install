@@ -11,12 +11,15 @@ for name in xmb-wallpaper xmb-wallpaper-controller mpv-xwinwrap-shim xmb-screens
   install -m 0755 "$HERE/$name" "$BIN/$name"
   cmp -s "$HERE/$name" "$BIN/$name" || { echo "install mismatch: $name" >&2; exit 2; }
 done
+install -m 0644 "$HERE/xmb-transition-blur.glsl" "$BIN/xmb-transition-blur.glsl"
+cmp -s "$HERE/xmb-transition-blur.glsl" "$BIN/xmb-transition-blur.glsl" || { echo "install mismatch: transition shader" >&2; exit 2; }
 if [ ! -e "$CONFIG" ]; then
   cat >"$CONFIG" <<'CONF'
 # Workspace 1..4. Allowed: main-red, work-monochrome, sleep.
 ROLES=(main-red work-monochrome work-monochrome main-red)
 # Crossfade duration in milliseconds. Two decoders run only during this window.
-FADE_MS=4000
+FADE_MS=500
+BLUR_MS=700
 HWDEC=nvdec-copy
 CONF
 fi
@@ -24,7 +27,7 @@ cat >"$AUTOSTART/xmb-wallpaper-controller.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=XMB Workspace Wallpaper
-Exec=$BIN/xmb-wallpaper-controller
+Exec=$BIN/xmb-wallpaper-controller start --replace
 OnlyShowIn=XFCE;
 Terminal=false
 # Remains opt-in until a live crossfade gate passes on this hardware.
