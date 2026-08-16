@@ -1,0 +1,110 @@
+#!/bin/sh
+# ccsm-safe: run CCSM inside a guarded envelope so a CCSM edit session can
+# never leave a profile that boots wrong.
+#
+# WHY THIS EXISTS (do not delete it as ceremony):
+#   W-046/X-031 proved CCSM writes a FULL profile dump from its own in-memory
+#   state rather than merging into the file on disk. It silently discarded
+#   every s0_ display value (outputs, refresh rate, sync) and re-enabled the
+#   water/wobbly/cube/3d stack. The LIVE desktop looked perfect the whole time,
+#   because Compiz already held its settings in memory -- the damage is only
+#   visible AT THE NEXT LOGIN, which is the worst possible moment to find it.
+#   W-247 therefore permitted CCSM only under manual discipline: close it
+#   before logout, never save the session while it is open. Manual discipline
+#   is exactly the error-prone hot path Directive 2 says to replace with a
+#   deterministic wrapper. This is that wrapper.
+#
+# WHAT IT DOES:
+#   snapshot -> run ccsm in the foreground -> on ANY exit (clean, crash, or
+#   Ctrl-C) repair the 7 enforced [core] keys and re-verify them -> report the
+#   exact diff. The repair runs from a trap, so it happens even if CCSM dies.
+#
+# Usage:  ccsm-safe            # guarded CCSM session
+#         ccsm-safe --verify   # just re-run the post-checks, launch nothing
+set -u
+
+CFG="$HOME/.config/compiz/compizconfig/Default.ini"
+GUARD="$HOME/.local/share/compiz-guard"
+REPAIR="$HOME/.local/bin/compiz-profile-repair"
+VERIFY="$HOME/.local/bin/compiz-profile-verify"
+TS=$(date +%s)
+SNAP="$GUARD/Default.ini.pre-ccsm.$TS"
+
+plugins() { grep -E '^as_active_plugins' "$1" 2>/dev/null | head -1; }
+
+post() {
+  echo
+  echo "== ccsm-safe: post-session repair =="
+  # 1. Repair the seven hardware keys. Idempotent; prints its own verdict.
+  if [ -x "$REPAIR" ]; then
+    "$REPAIR" || echo "ccsm-safe: WARNING repair returned non-zero"
+  else
+    echo "ccsm-safe: WARNING $REPAIR missing; cannot auto-repair"
+  fi
+
+  # 2. Section-scoped confirmation that the repair actually took (X-032).
+  N=$(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" 2>/dev/null | grep -cE \
+    '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) ')
+  echo "ccsm-safe: [core] enforced keys now $N/7"
+
+  # 3. Show what CCSM actually changed, so nothing lands unseen.
+  echo "ccsm-safe: plugin list before:"
+  echo "  $(plugins "$SNAP")"
+  echo "ccsm-safe: plugin list after:"
+  echo "  $(plugins "$CFG")"
+  if command -v diff >/dev/null 2>&1; then
+    D=$(diff "$SNAP" "$CFG" | grep -c '^[<>]')
+    echo "ccsm-safe: $D changed line(s) vs pre-session snapshot"
+    echo "ccsm-safe: full diff -> diff $SNAP $CFG"
+  fi
+
+  # 4. Final reboot-safety verdict.
+  if [ -x "$VERIFY" ]; then
+    echo
+    "$VERIFY"
+  else
+    if [ "$N" = 7 ]; then echo "VERDICT: SAFE"; else echo "VERDICT: UNSAFE"; fi
+  fi
+  echo
+  echo "ccsm-safe: snapshot kept at $SNAP"
+  echo "ccsm-safe: to undo everything this session did:"
+  echo "  cp -a $SNAP $CFG && compiz --replace ccp &"
+}
+
+# ---- preconditions -----------------------------------------------------
+[ "$(id -u)" = "0" ] && { echo "ccsm-safe: refusing to run as root"; exit 2; }
+[ -n "${DISPLAY:-}" ] || { echo "ccsm-safe: no DISPLAY; run from the desktop"; exit 2; }
+[ -r "$CFG" ] || { echo "ccsm-safe: no profile at $CFG"; exit 2; }
+mkdir -p "$GUARD" || exit 2
+
+if [ "${1:-}" = "--verify" ]; then
+  SNAP="$CFG"; post; exit 0
+fi
+
+# Anchored match. A bare `pgrep -f /usr/bin/ccsm` also matches any process
+# whose command line merely CONTAINS that string -- an editor open on this
+# file, a grep, or the shell running this very script -- which would falsely
+# refuse to start. CCSM is a python script, so its real cmdline is
+# `/usr/bin/python3 /usr/bin/ccsm` (W-034). Anchor on that shape and drop
+# our own pid. Verified against a false-positive reproduction in sandbox.
+CCSM_PIDS=$(pgrep -f '^([^ ]*python[0-9.]* )?/usr/bin/ccsm( |$)' 2>/dev/null \
+            | grep -v "^$$\$" | tr '\n' ' ')
+if [ -n "$(echo "$CCSM_PIDS" | tr -d ' ')" ]; then
+  echo "ccsm-safe: CCSM is ALREADY RUNNING outside this wrapper (pid $CCSM_PIDS)."
+  echo "ccsm-safe: close it first, then rerun. Refusing to stack sessions."
+  exit 2
+fi
+
+# ---- snapshot ----------------------------------------------------------
+cp -a "$CFG" "$SNAP" || { echo "ccsm-safe: snapshot failed (disk full?)"; exit 2; }
+ls -l "$SNAP" || exit 2
+echo "ccsm-safe: snapshot taken. Launching CCSM in the foreground."
+echo "ccsm-safe: REMINDERS -- leave Detect Outputs and Detect Refresh Rate OFF."
+echo "ccsm-safe: close the CCSM window to finish; repair runs automatically."
+
+# ---- guarded run -------------------------------------------------------
+# The trap is the whole point: repair happens on clean exit, crash, or Ctrl-C.
+trap 'post; exit 0' INT TERM
+ccsm
+post
+exit 0
