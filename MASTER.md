@@ -9007,3 +9007,5 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M17-XMB-IPC-4] Two-second live gate next; reboot proof before merge.
 
   [U-076] LIVE-2S gate: one renderer 29422/29440/29441, 59.9988 fps, mpv RSS 874456 KiB, SAFE; operator requests Gaussian blur + 1s. GPU shader authored, target unproven. RECEIPT: target + operator, 2026-08-16.
+
+  [U-077] Operator requests 500 ms crossfade + 700 ms blur; clocks are now separate and rapid retarget extends, rather than recompiles, the active shader. Target unproven.

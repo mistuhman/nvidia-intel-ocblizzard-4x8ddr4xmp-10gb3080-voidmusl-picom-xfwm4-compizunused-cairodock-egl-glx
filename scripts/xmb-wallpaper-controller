@@ -10,11 +10,10 @@ SHIM = Path(os.getenv("XMB_SHIM", Path.home() / ".local/bin/mpv-xwinwrap-shim"))
 SHADER = Path(os.getenv("XMB_BLUR_SHADER", Path.home() / ".local/bin/xmb-transition-blur.glsl"))
 ROLES = ("main-red", "work-monochrome", "sleep")
 stop_now = False
-def fail(text):
-    print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
+def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 1000, "hwdec": "nvdec-copy"}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 500, "blur": 700, "hwdec": "nvdec-copy"}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -22,10 +21,12 @@ def config():
             match = re.fullmatch(r"ROLES=\((.*)\)", line)
             if match: out["roles"] = shlex.split(match.group(1))
             elif line.startswith("FADE_MS="): out["fade"] = int(line.split("=", 1)[1])
+            elif line.startswith("BLUR_MS="): out["blur"] = int(line.split("=", 1)[1])
             elif line.startswith("HWDEC="): out["hwdec"] = line.split("=", 1)[1].strip()
             else: fail(f"unsupported config line: {raw}")
     if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
     if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
+    if not out["fade"] <= out["blur"] <= 10000: fail("BLUR_MS must be FADE_MS..10000")
     if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"): fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 def check():
@@ -40,8 +41,7 @@ def check():
 def proc(pid):
     path = Path("/proc") / str(pid)
     try:
-        comm = (path / "comm").read_text().strip()
-        argv = [x.decode(errors="replace") for x in (path / "cmdline").read_bytes().rstrip(b"\0").split(b"\0")]
+        comm = (path / "comm").read_text().strip(); argv = [x.decode(errors="replace") for x in (path / "cmdline").read_bytes().rstrip(b"\0").split(b"\0")]
         return comm, argv, int((path / "stat").read_text().split()[3])
     except (OSError, ValueError): return "", [], -1
 def kill(pid, name):
@@ -53,8 +53,7 @@ def kill(pid, name):
         time.sleep(.05)
     if proc(pid)[0] == name: os.kill(pid, signal.SIGKILL)
 def direct_renderers():
-    videos = {str(video(role)) for role in ROLES}
-    found = []
+    videos = {str(video(role)) for role in ROLES}; found = []
     for path in Path("/proc").glob("[0-9]*"):
         comm, argv, _ = proc(int(path.name))
         if comm == "xwinwrap" and str(SHIM) in argv and videos.intersection(argv): found.append(int(path.name))
@@ -68,12 +67,9 @@ def stop_direct():
         kill(xww, "xwinwrap")
     return len(found)
 class IPC:
-    def __init__(self):
-        sock = socket.socket(socket.AF_UNIX); sock.settimeout(4); sock.connect(str(SOCK))
-        self.sock, self.file, self.number = sock, sock.makefile("rwb", buffering=0), 0
+    def __init__(self): sock = socket.socket(socket.AF_UNIX); sock.settimeout(4); sock.connect(str(SOCK)); self.sock, self.file, self.number = sock, sock.makefile("rwb", buffering=0), 0
     def call(self, *args):
-        self.number += 1
-        request = {"command": list(args), "request_id": self.number}
+        self.number += 1; request = {"command": list(args), "request_id": self.number}
         self.file.write(json.dumps(request, separators=(",", ":")).encode() + b"\n")
         while True:
             reply = json.loads(self.file.readline())
@@ -86,8 +82,7 @@ def steady(role, ids): return f"[vid{ids[role]}]null[vo]"
 def blend(weights, target, ids, frames):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
     if len(active) == 1: return steady(target, ids)
-    total = sum(weights.get(r, 0) for r in active) or 1
-    start = {r: weights.get(r, 0) / total for r in active}
+    total = sum(weights.get(r, 0) for r in active) or 1; start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
     u = f"min(N/{frames}\\\\,1)"
     for index, role in enumerate(active[1:], 1):
@@ -102,15 +97,13 @@ def blend(weights, target, ids, frames):
     command = ",".join(commands)
     return ";".join(chains) + f";[premix]sendcmd=c='0-999999 {command}'[vo]"
 def weights(state):
-    start, target, began, duration = state
-    progress = min(1., max(0., time.monotonic() - began) / duration)
+    start, target, began, duration = state; progress = min(1., max(0., time.monotonic() - began) / duration)
     out = {r: value * (1 - progress) for r, value in start.items()}
     out[target] = out.get(target, 0) + progress
     return {r: value for r, value in out.items() if value > .0001}
 def role_at_viewport(cfg, line=None):
     if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
-    match = re.search(r"=\s*(-?\d+)", line)
-    slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
+    match = re.search(r"=\s*(-?\d+)", line); slot = max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
     return cfg["roles"][slot]
 def launch(cfg, initial):
     order = [initial] + [r for r in ROLES if r != initial]
@@ -159,8 +152,9 @@ def run(replace):
     try:
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], text=True, stdout=subprocess.PIPE)
-        duration = cfg["fade"] / 1000
+        duration, blur_duration = cfg["fade"] / 1000, cfg["blur"] / 1000
         fade = ({initial: 1.}, initial, time.monotonic(), duration)
+        blur_on, blur_deadline = False, 0.0
         while not stop_now and xww.poll() is None:
             ready, _, _ = select.select([watch.stdout], [], [], .05)
             if ready:
@@ -173,14 +167,18 @@ def run(replace):
                     desired = role_at_viewport(cfg, line)
                 current = weights(fade)
                 if desired != fade[1]:
-                    ipc.call("change-list", "glsl-shaders", "set", str(SHADER))
+                    now = time.monotonic()
+                    if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
+                    blur_deadline = now + blur_duration
                     ipc.call("set_property", "lavfi-complex", blend(current, desired, ids, round(duration * 60)))
-                    fade = (current, desired, time.monotonic(), duration)
+                    fade = (current, desired, now, duration)
                     state_write(xww, desired)
-            if time.monotonic() - fade[2] >= fade[3] and len(fade[0]) != 0:
+            now = time.monotonic()
+            if now - fade[2] >= fade[3] and len(fade[0]) != 0:
                 ipc.call("set_property", "lavfi-complex", steady(fade[1], ids))
-                ipc.call("change-list", "glsl-shaders", "clr", "")
-                fade = ({}, fade[1], time.monotonic(), duration)
+                fade = ({}, fade[1], now, duration)
+            if blur_on and now >= blur_deadline:
+                ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
         if watch: watch.terminate()
@@ -234,7 +232,7 @@ def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
     if action == "run": run("--replace" in sys.argv)
     elif action == "start": check(); start("--replace" in sys.argv)
-    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
+    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
     elif action == "--status": raise SystemExit(status())
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)
