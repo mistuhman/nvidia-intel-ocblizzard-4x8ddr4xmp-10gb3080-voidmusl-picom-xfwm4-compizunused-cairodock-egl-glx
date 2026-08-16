@@ -1,7 +1,16 @@
 //!HOOK MAIN
 //!BIND HOOKED
-//!DESC XMB transition blur - horizontal Gaussian
-vec4 hook(){
+//!WIDTH HOOKED.w 4.0 /
+//!HEIGHT HOOKED.h 4.0 /
+//!DESC XMB blur - downsample 4x
+vec4 hook() {
+    return HOOKED_texOff(vec2(0.0, 0.0));
+}
+
+//!HOOK MAIN
+//!BIND HOOKED
+//!DESC XMB blur - horizontal Gaussian
+vec4 hook() {
     vec4 c = 0.0648930 * HOOKED_texOff(vec2(0.0, 0.0));
     c += 0.0641300 * (HOOKED_texOff(vec2(-1.0, 0.0)) + HOOKED_texOff(vec2(1.0, 0.0)));
     c += 0.0618930 * (HOOKED_texOff(vec2(-2.0, 0.0)) + HOOKED_texOff(vec2(2.0, 0.0)));
@@ -17,10 +26,11 @@ vec4 hook(){
     c += 0.0118010 * (HOOKED_texOff(vec2(-12.0, 0.0)) + HOOKED_texOff(vec2(12.0, 0.0)));
     return c;
 }
+
 //!HOOK MAIN
 //!BIND HOOKED
-//!DESC XMB transition blur - vertical Gaussian
-vec4 hook(){
+//!DESC XMB blur - vertical Gaussian
+vec4 hook() {
     vec4 c = 0.0648930 * HOOKED_texOff(vec2(0.0, 0.0));
     c += 0.0641300 * (HOOKED_texOff(vec2(0.0, -1.0)) + HOOKED_texOff(vec2(0.0, 1.0)));
     c += 0.0618930 * (HOOKED_texOff(vec2(0.0, -2.0)) + HOOKED_texOff(vec2(0.0, 2.0)));

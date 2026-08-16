@@ -9044,3 +9044,40 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-6] Stronger blur + same-role coalescing authored in
   sandbox; target visual/performance gate remains the only acceptance.
+
+--------------------------------------------------------------------------------
+12.145 OPERATOR ON DESKTOP; OBJECTIVE NARROWED TO GAUSSIAN BLUR ONLY
+--------------------------------------------------------------------------------
+
+  [W-301] DELIVERY-MODE AND SCOPE CORRECTION. Operator is working at the
+    desktop terminal, not a phone. The 12.140-era "operator on a PHONE / tiny
+    lines / one paste block / verdict word" guidance was stale and produced
+    unacceptable delivery behavior (phone-sized framing and an unrequested
+    pull request). PR #19 was closed unmerged. Standing rule now: normal
+    desktop terminal, no phone-style gating, and open a pull request only when
+    the operator explicitly asks. Objective narrowed to the Gaussian transition
+    blur ONLY: strong, persistent, and performant. The crossfade loop edit
+    recorded in 12.144/W-300 is REVERTED; the controller is back to its
+    accepted U-081 state and no controller change ships in this objective.
+    RECEIPT: operator instruction, 2026-08-16.
+
+  [W-302] BLUR SHADER REWRITTEN FOR STRENGTH + PERFORMANCE. The transition
+    shader is now a downsampled separable Gaussian: pass 1 resizes MAIN to 1/4
+    (libplacebo RPN `//!WIDTH HOOKED.w 4.0 /`, `//!HEIGHT HOOKED.h 4.0 /`),
+    then horizontal + vertical 25-tap kernels (sigma 6.5) run at quarter
+    resolution, and mpv's built-in scaler returns the blurred quarter-res MAIN
+    to the screen. Effective blur radius is ~26 screen pixels (was ~2), while
+    the per-frame tap count drops ~16x versus a full-resolution 25-tap pass.
+    Weights normalize to 1.000001. Persistence is already provided by the
+    running controller's blur lifecycle (shader loaded once per burst, deadline
+    extended across rapid switches, cleared only after quiescence), so no
+    controller change is required. Sandbox is not target acceptance.
+
+  [U-083] NEXT (desktop): overwrite ~/.local/bin/xmb-transition-blur.glsl with
+    the new shader, then switch workspaces rapidly and confirm the blur is
+    clearly strong, stays visible through every switch, and adds no lag. Report
+    visual result plus --status / nvidia-smi decoder%.
+
+[2026-08-16][M17-XMB-IPC-7] Objective is blur-only. Shader rewritten for strong
+  + performant; persistence already lives in the running controller. Target
+  visual gate remains the only acceptance.
