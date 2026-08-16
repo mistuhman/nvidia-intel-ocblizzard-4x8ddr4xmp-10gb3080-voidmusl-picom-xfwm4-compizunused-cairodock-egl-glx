@@ -8513,3 +8513,19 @@ What worked, in order, when the box went black before lightdm with no TTY.
     crossfade passes. The already-installed target autostart must likewise be
     disabled before reboot. Next action is read-only collection of the exact
     xprop failure/controller tail; no more visual mutation until explained.
+
+  [W-280] Failure diagnostics identify the exact mechanism. New transition WID
+    0x7200001 was already invalid when the first X_ChangeProperty ran; xprop
+    raised BadWindow and set -e terminated the controller. Both temporary shims
+    then died (statuses 4/1) and xwinwrap logged invalid DestroyWindow calls.
+    The restored direct WID 0x1a00001 is valid but has no opacity property,
+    expected because its launcher did not request -o. Autostart is disabled on
+    target. Main-red PIDs 26012/26014 remain the only wallpaper pair.
+    RECEIPT: complete target nohup/controller/xprop transcript, 2026-08-16.
+
+  [X-142] Likely trigger is `xwinwrap -o 0.0`: a fully transparent new override
+    window dies before the first fade step, making its receipted WID stale.
+    Independently, 40 steps launch 80 synchronous xprop clients plus four
+    seconds of sleeps, explaining the observed ~15-second transition. Before
+    another controller run, perform one bounded nonzero-opacity overlay test;
+    it must coexist with the restored loop, visibly blend, and self-remove.
