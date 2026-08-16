@@ -8034,3 +8034,52 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M12-GREETER-4] ROOT CAUSE PROVEN (X-119: 0 bytes free). Tier-1
   regenerable reclaim (~6.4G) issued. Failsafe flip (W-229) resumes the moment
   df shows free space. USB migration accepted but deferred (U-063).
+
+--------------------------------------------------------------------------------
+12.121 SPACE RECLAIMED (2.9G) AND X-105 FAILSAFE LANDMINE DISARMED. TWO GATES
+       PASSED IN ONE BLOCK. VT-1 PROBE IS NOW UNBLOCKED.
+--------------------------------------------------------------------------------
+
+  [W-232] AGENT V TRANSCRIPT (operator photo 3, 2026-08-16, verbatim):
+      $ sudo xbps-remove --clean-cache --yes
+        long "Removed <pkg>.xbps from cachedir (obsolete)" list incl. wine,
+        mesa, ffmpeg6, gstreamer1, flatpak, linux6.18-headers, noto-fonts
+      $ rm -rf ~/.cache/*
+      $ df -h /
+      /dev/nvme0n1p5  152G  141G  2.9G  99%  /
+      $ cp .config/.../xfce4-session.xml sess.bak.x117          (silent, OK)
+      $ cp xfce4-session.xml.bak.1786722899 .config/.../xfce4-session.xml
+      $ grep -c compiz .config/.../xfce4-session.xml
+      0
+    RECEIPT: operator photo image.jpg (3rd) + "working, 2.9gb avail".
+
+  [W-233] GATE A PASSED: Avail 0 -> 2.9G, Used 145G -> 141G. Tier-1 reclaim
+    (W-231) yielded ~4G against a predicted ~6.4G; the shortfall is because
+    xbps --clean-cache removes only OBSOLETE package versions, not the whole
+    cache. Ample for session startup regardless. USER WRITES NOW SUCCEED,
+    proven by the two cp commands completing silently where the identical cp
+    failed in 12.119. X-119 is thereby closed by direct A/B: the same command
+    failed at 0 bytes and succeeded at 2.9G.
+    RECEIPT: W-232.
+
+  [W-234] GATE B PASSED — X-105 IS DISARMED. grep -c compiz on the live
+    xfce4-session.xml returns 0, so Client0_Command no longer points at
+    /home/sd/.local/bin/compiz-session. The WM landmine that has been waiting
+    BEHIND the greeter fix since 12.108 is neutralized BEFORE any DM re-enable,
+    exactly as W-224 required. Reverse path exists: ~/sess.bak.x117 holds the
+    pre-flip file. Session failsafe is now stock xfwm4 (W-011/W-015 safe, picom
+    still masked W-042). X-105 is CLOSED.
+    RECEIPT: W-232.
+
+  [W-235] STATE OF THE THREE KILLERS after this block: X-119 (disk) FIXED.
+    H1 (X-117 session-exec) is now DOUBLY ADDRESSED — its two possible
+    mechanisms were the full fs and the compiz failsafe, and both are gone.
+    H2 (X-117 VT-7 invisibility) remains UNTESTED and is the only live
+    hypothesis left. It is entirely possible the desktop simply works now; the
+    VT-1 probe is what discriminates "already fixed" from "VT 7 still blind"
+    WITHOUT risking a black unrecoverable lightdm boot (X-114). Probe first,
+    down-file removal second. Do not reorder.
+    RECEIPT: this row.
+
+[2026-08-16][M12-GREETER-5] DISK FIXED AND FAILSAFE FLIPPED. Only H2 (VT 7)
+  still stands. Self-terminating VT-1 green probe (W-223/W-227) issued.
