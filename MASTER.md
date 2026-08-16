@@ -7662,11 +7662,11 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
     RECEIPT: operator photo, 2026-08-15.
 
 ================================================================================
-SECTION XIII — BOOT-DEATH RECOVERY PROTOCOL (PROVEN 2026-08-15, X-106..X-116)
+SECTION XIV — BOOT-DEATH RECOVERY PROTOCOL (PROVEN 2026-08-15, X-106..X-116)
 What worked, in order, when the box went black before lightdm with no TTY.
 ================================================================================
 
-13.1 THE LADDER (each rung is a receipt gate; never skip down-rungs)
+14.1 THE LADDER (each rung is a receipt gate; never skip down-rungs)
   R0. Reframe first: "black + no TTY + no DM" is BOOT-level, not WM-level.
       Do not run WM-era fixes (failsafe reverts etc.) — they are unreachable.
   R1. Console visibility: `nomodeset` alone is INSUFFICIENT on proprietary
@@ -7707,7 +7707,7 @@ What worked, in order, when the box went black before lightdm with no TTY.
       incident: nvidia loads, console survives, X initializes with no fatal
       EE; remaining greeter/signal work proceeds interactively.
 
-13.2 META-PROTOCOLS THAT PAID OFF
+14.2 META-PROTOCOLS THAT PAID OFF
   - One copy-paste block per turn, tiny lines (phone operator), each block
     ends in an observable verdict word (lightdm | black+text | black).
   - Photo -> full verbatim transcription into ledger ("Agent V") — sandbox
@@ -7722,7 +7722,7 @@ What worked, in order, when the box went black before lightdm with no TTY.
   - All target writes reversible: /root/*.bak.x109/.x112/.x114 inventory +
     grub backups; the exact inverse of every mutation exists on disk.
 
-13.3 STANDING RULES ADDED
+14.3 STANDING RULES ADDED
   - VT switching (Ctrl+Alt+Fn) is OFF THE TABLE on this box until a working
     desktop proves otherwise (X-114).
   - Fact-block and fix-block may be COMBINED when the fix is provably safe
