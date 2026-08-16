@@ -8207,3 +8207,57 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M12-FLOOR] Rebootability defect X-130(a) closed in sandbox.
   Next: run W-261 on target (arm + verify), reboot once, re-verify. Then
   ccsm-safe is safe to use again and the XMB bake resumes at W-200.
+
+--------------------------------------------------------------------------------
+12.129 TARGET RUN — FLOOR CLOSED, AND THE VERIFIER IMMEDIATELY EARNED ITS KEEP
+--------------------------------------------------------------------------------
+
+  [W-261] 12.128 TOOLS RAN ON TARGET, CLEAN. Clone 228.79 KiB, installer ->
+    INSTALLED with all three hashes matching repo-side byte for byte
+    (b989d099 repair, c0e9380d verify, b9be02fc ccsm-safe). Hook arming hit the
+    REAL launcher, which turned out to be the logging-redirect shape
+    (`compiz-profile-repair >>/tmp/compiz-repair.log 2>&1 || true`) plus two
+    comment lines — a fifth shape not in the sandbox matrix, and the awk insert
+    placed `--floor` correctly on the first try. That is X-132's rule paying
+    off: had the two-branch sed shipped, this exact line would have become
+    `--floor --floor`. Backup at compiz-session.bak.floor.1786856651.
+    RECEIPT: operator terminal, 2026-08-16.
+
+  [W-262] PLUGIN FLOOR IS INTACT ON TARGET. verify reports `ok plugin floor
+    core;ccp;move;resize;place;decoration` and `ok [core] enforced keys 7/7`.
+    So the X-130(a) ccp loss had already been undone by the recovery in that
+    block; the floor check now makes its absence impossible to miss again, and
+    the armed hook makes it self-healing. X-130(a) TODO is CLOSED.
+
+  [X-134] *** REBOOTABILITY WAS BROKEN AGAIN, BY THE ESCAPE PATH, AND ONLY THE
+    NEW VERDICT CAUGHT IT. *** Target verify: `FAIL Client0_Command is 'xfwm4',
+    expected compiz-session` -> UNSAFE. The live desktop is a perfectly healthy
+    Compiz (wmctrl `Name: compiz`, pid 7302, emerald 7314, picom absent) with a
+    good profile, so nothing on screen hints at a problem — but the next login
+    would have come up xfwm4. Cause: X-130(c)'s `compiz-revert --xfwm4`, fired
+    over a warning already known benign. That escape reverts Client0_Command by
+    design (W-045 inverse), and re-arming it was never part of the recovery.
+    THIS RETIRES THE "SETTLED" FRAMING. W-245/W-246 proved persistence CAN be
+    armed and DOES survive a cold boot; they did not make it durable. It is a
+    single mutable key that three separate tools revert. Restated standing rule
+    (supersedes the CONTINUE_PROMPT "Compiz survives reboot" bullet as an
+    unconditional claim): after ANY use of compiz-revert --xfwm4,
+    xfce-wm-recover, or a session-XML restore, persistence is OFF until re-armed
+    and verified. X-031's "live state is not next-boot state" now has a second,
+    independent instance — profile then, session key now.
+
+  [W-263] `scripts/compiz-persist-arm` AUTHORED, 84 lines, 0755, `sh -n` clean.
+    `--check` is read-only. Arming backs up xfce4-session.xml to
+    .bak.arm.EPOCH, refuses outright if compiz-session is missing or not
+    executable (pointing login at a nonexistent launcher = a login with NO
+    window manager, strictly worse than xfwm4), writes the key via the -n -a -t
+    string form, then READS IT BACK and gates on the read-back. Idempotent:
+    already-armed exits 0 without writing. Exists as a script because the bare
+    xfconf-query line is long and phone pastes corrupt long lines (W-220/X-122).
+    Verifier now names it in the failure text; installer ships it.
+    SANDBOX: 5 cases pass (check-no-write, arm, idempotent, missing-launcher
+    refusal exit 2, XML-present backup+undo). Target run pending.
+
+[2026-08-16][M12-PERSIST-2] Floor closed on target (W-262). Persistence found
+  REVERTED by the X-130(c) escape and is the live defect (X-134). Next: run
+  compiz-persist-arm, verify SAFE, reboot, verify again. XMB still gated.

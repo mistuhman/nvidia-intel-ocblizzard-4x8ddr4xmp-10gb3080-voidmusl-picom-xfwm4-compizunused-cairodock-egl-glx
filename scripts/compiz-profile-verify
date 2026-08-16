@@ -112,6 +112,11 @@ if command -v xfconf-query >/dev/null 2>&1; then
     *compiz-session) say "ok    Client0_Command $C0" ;;
     "")              say "WARN  Client0_Command unreadable (no xfconf/DISPLAY?)" ;;
     *)               say "FAIL  Client0_Command is '$C0', expected compiz-session"
+                     # X-134: an escape path (compiz-revert --xfwm4 /
+                     # xfce-wm-recover) reverts this key. The live desktop can
+                     # be a perfect Compiz while the NEXT login is xfwm4.
+                     say "      next login would start '$C0', NOT Compiz."
+                     say "      fix: compiz-persist-arm"
                      demote UNSAFE ;;
   esac
 fi

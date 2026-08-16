@@ -39,10 +39,11 @@ echo "== compiz-guard-install =="
 install_one compiz-profile-repair
 install_one compiz-profile-verify
 install_one ccsm-safe
+install_one compiz-persist-arm
 
 echo
 echo "-- repo-side hashes (compare with the installed ones above) --"
-for f in compiz-profile-repair compiz-profile-verify ccsm-safe; do
+for f in compiz-profile-repair compiz-profile-verify ccsm-safe compiz-persist-arm; do
   [ -r "$SRC/$f" ] && echo "  $(sha256sum "$SRC/$f" | cut -c1-16)...  $f"
 done
 
