@@ -8129,3 +8129,81 @@ What worked, in order, when the box went black before lightdm with no TTY.
     escape path over a known-benign warning; they are for a stuck operator.
     TODO before ccsm-safe is used again: verify must FAIL when `ccp` is absent.
     RECEIPT: operator terminal + screenshot.
+
+--------------------------------------------------------------------------------
+12.128 REBOOTABILITY HARDENED — THE PLUGIN FLOOR CLOSES X-130(a)
+--------------------------------------------------------------------------------
+
+  [U-066] Operator directive, current session: "fix compiz' rebootability from
+    where i am", after reading CONTINUE_PROMPT.md then README.md. Read as the
+    X-130 TODO, not as a re-litigation of W-246: cold-boot persistence is
+    proven and untouched here. What was broken is narrower and worse — the
+    verifier could say SAFE about a profile that boots a Compiz nobody can
+    drive. RECEIPT: operator message, 2026-08-16.
+
+  [X-131] THE REAL DEFECT, STATED PRECISELY. W-252 settled that the guard is
+    keys-only, and that ruling is CORRECT for eyecandy: W-191 needs
+    water/wobbly freely enablable. But it was applied to the whole plugin list,
+    and `ccp` is not eyecandy. Without `ccp` Compiz does not read Default.ini
+    at all, so every enforced [core] key the guard repairs is READ BY NOBODY —
+    the 7/7 count becomes theatre. X-130(a) recorded the symptom (input dead on
+    pre-existing windows, cairo-dock broken, verify still SAFE); the cause is
+    that "don't police plugins" and "don't police the plugins that make the WM
+    a WM" were conflated. Removing `core;ccp;move;resize;place;decoration` is
+    not operator intent, it is breakage.
+
+  [W-257] PLUGIN FLOOR ADDED TO THE VERIFIER, X-130(a) TODO CLOSED.
+    `compiz-profile-verify` now reads as_active_plugins section-scoped (X-032)
+    and demotes on any missing floor member. Still writes nothing. The verdict
+    is conditional on the login hook, which is the honest answer: floor broken
+    + hook armed -> REPAIRABLE (next login self-heals, reboot is safe);
+    floor broken + hook not armed -> UNSAFE, exit 1. A missing
+    as_active_plugins line entirely -> UNSAFE. RECEIPT: sh -n, test matrix.
+
+  [W-258] `compiz-profile-repair --floor`: ADDITIVE ONLY, NEVER SUBTRACTIVE.
+    Restores missing floor members, keeping core;ccp first and preserving the
+    operator's own ordering for everything else. It cannot remove or reorder a
+    plugin the operator enabled, so W-252/W-256 survive intact: the flat
+    wall/vpswitch desktop stays flat, water/wobbly stay whatever CCSM left.
+    Bare `compiz-profile-repair` behaves EXACTLY as before — plugins untouched
+    — so nothing already installed changes behaviour until the hook is armed.
+
+  [W-259] LOGIN HOOK ARMING, OPT-IN AND REVERSIBLE.
+    `compiz-guard-install --arm-session-hook` adds `--floor` to the existing
+    repair call in ~/.local/bin/compiz-session. Backs the launcher up to
+    compiz-session.bak.floor.EPOCH, gates the rewrite on `sh -n` AND on the
+    flag actually being present, discards the temp file on either failure, and
+    prints the resulting launcher plus its undo line. If the launcher has no
+    compiz-profile-repair line it SKIPS and says so rather than guessing —
+    X-103's "never let a tool rewrite a config it doesn't understand" applied
+    to sed. Without the flag the installer is byte-for-byte its old self.
+
+  [X-132] SED WAS THE WRONG TOOL AND TESTING CAUGHT IT TWICE. A two-branch
+    `sed -e` appended `--floor --floor` on a launcher whose repair call ended
+    the line, and on a quoted call it inserted INSIDE the quotes, yielding
+    `"$HOME/.local/bin/compiz-profile-repair --floor"` — a path that cannot
+    exist, which would have made the login hook silently fail forever. Replaced
+    with an awk single-shot insert that is quote-aware and fires once. GENERAL
+    RULE, extending X-103: a regex that edits an executable must be proven
+    against every launcher shape in the ledger, not just the one in front of
+    you. Neither bug could have been seen from the target.
+
+  [W-260] SANDBOX MATRIX, ISOLATED HOMEs, all pass. Floor: damage(ccp dropped)
+    -> UNSAFE exit 1 when hook unarmed; -> REPAIRABLE when armed; --floor
+    restores 7/7 + floor -> SAFE; idempotent second run is a no-op; default
+    repair leaves a deliberately trimmed plugin list alone; [wobbly]/
+    [animationaddon] operator sections survive verbatim. Arming: four launcher
+    shapes (|| true, bare EOL, quoted, logging redirect) all rewrite correctly
+    and are idempotent; unknown launcher -> SKIP; no-arg install -> hook
+    untouched. End-to-end: verbatim W-256 post-CCSM profile -> arm -> run the
+    launcher -> SAFE with water/wobbly/wall/vpswitch all still present.
+    RECEIPT: full command output, this session. Target run pending.
+
+  [X-133] STILL TRUE AFTER THIS CHANGE, DO NOT MISREAD THE NEW VERDICT. SAFE
+    now means "reboot reproduces Compiz, with correct display keys AND a
+    drivable WM". It still does NOT mean the desktop is pretty or that every
+    plugin the operator wanted is loaded. The floor is a floor.
+
+[2026-08-16][M12-FLOOR] Rebootability defect X-130(a) closed in sandbox.
+  Next: run W-261 on target (arm + verify), reboot once, re-verify. Then
+  ccsm-safe is safe to use again and the XMB bake resumes at W-200.
