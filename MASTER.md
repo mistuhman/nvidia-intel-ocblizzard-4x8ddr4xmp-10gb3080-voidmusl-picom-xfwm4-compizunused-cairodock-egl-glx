@@ -8610,3 +8610,79 @@ What worked, in order, when the box went black before lightdm with no TTY.
   active profile 314d29f6... Next: U-055 read-only collect on target, then
   author the two reversible Cheetah tools; M18 icons/sound after. U-070
   switcher stays parked until operator go-ahead.
+
+--------------------------------------------------------------------------------
+12.135 U-055 CHEETAH TOOLS AUTHORED (SANDBOX) — TARGET COLLECT THEN APPLY
+--------------------------------------------------------------------------------
+
+  [W-285] TWO REVERSIBLE U-055 TOOLS AUTHORED AND SANDBOX-PROVEN. Neither has
+    run on the target yet. Both refuse root, never touch /usr/share, record
+    sha256, gate on post-write existence, and ship --check/--restore/--status.
+
+      scripts/compiz-opacity-menus          265 lines  mode 0755
+        sha256 40be1340aa1da2e9230fcba84a7b90cb4e8bedda5eeacb5169245532ce47f200
+        Additive-only: appends `opacity` to as_active_plugins if missing
+        (W-252 — never removes or reorders operator plugins). Writes:
+          [opacity]
+          s0_opacity_matches = (type=Menu|PopupMenu|DropdownMenu|Tooltip|
+                                 Notification);(type=Utility|Dialog|ModalDialog);
+          s0_opacity_values  = 88;92;
+        Backups under ~/.local/state/compiz-opacity-menus/ as
+        Default.ini.pre-opacity.TS.PID. Restore uses a different tag
+        (pre-restore) so a same-second safety copy cannot become the undo
+        target. Does NOT touch the seven hardware [core] keys. Live Compiz
+        does not reread Default.ini alone — apply prints the reload line:
+        setsid $HOME/.local/bin/compiz-session.
+
+      scripts/gunmetal-cheetah-menu-overlay 287 lines  mode 0755
+        sha256 d1d79bc181fcd69290bf833f1dfa86bf60633debc76c69ff0f4f8938ac9af11e
+        Writes ~/.config/gtk-3.0/gtk.css with a marked block:
+          BEGIN/END gunmetal-cheetah-menu-overlay (U-055)
+          rgba(0,0,0,0.82) fill + repeating-linear-gradient 1px/3px pinstripe
+          + 6px radius + gunmetal hover with #640c12 left rail (gunmetal accent).
+        Preserves any pre-existing user CSS outside the markers. First-apply
+        backup is permanent; re-apply keeps it so --restore returns to the
+        pre-overlay file, not a mid-session overlaid snapshot. Absent gtk.css
+        is recorded as *.ABSENT and restore deletes the file.
+
+      scripts/compiz-guard-install          +5 lines
+        sha256 17f5adb674eb1ba7db9b712ced411d5c4d8b8de87adcb8ee2765bdeb21ea5065
+        Now installs both tools next to the guard set.
+
+    SANDBOX MATRIX (fake HOME, 21 cases, all PASS):
+      opacity: check-before NOT-APPLIED; apply; idempotent; check APPLIED;
+        plugin appended; matches/values present; core keys + [wall]/[wobbly]
+        intact; restore removes opacity; wall survives; re-apply works;
+        missing-profile refuses.
+      cheetah: check-before; apply; idempotent; rgba+prior CSS kept; single
+        BEGIN/END block; user rules outside block survive re-apply; restore
+        returns ORIGINAL (no overlay, no mid-session edits); create-from-
+        absent + restore-to-absent; installer places both executables.
+    RECEIPT: sandbox py_compile + harness exit 0, 2026-08-16.
+
+  [X-144] U-061 CEILING EXCEEDED, DISCLOSED. This PR is ~560 script lines
+    (265+287+5) plus ledger against a 405 ceiling. Cause: U-055 is one
+    objective with two inseparable layers (Compiz alpha + GTK lining); shipping
+    either alone leaves menus half-done and invites a second phone-session
+    install. Same class as X-136 (honest exceed, not silent). Ceiling resumes
+    at 405 after merge. Not precedent for future multi-objective PRs.
+
+  [U-071] TARGET APPLY GATE (do not skip). Tools are authored against the
+    U-055 spec and the W-191 partial collect (no opacity plugin; gtk.css was
+    206 B generic, not Gunmetal). Before apply on target, run the read-only
+    collect once more — profile may have moved (active now 314d29f6... per
+    W-284) — and paste the block. Only then:
+      sh scripts/compiz-guard-install
+      compiz-opacity-menus --check          # expect NOT-APPLIED
+      gunmetal-cheetah-menu-overlay --check
+      compiz-opacity-menus                  # apply
+      gunmetal-cheetah-menu-overlay
+      setsid $HOME/.local/bin/compiz-session
+      compiz-profile-verify                 # must stay SAFE
+    Undo either layer independently via --restore. Do not open CCSM to add
+    opacity by hand (X-098). Terminal transparency remains a separate
+    xfconf step after menus look right.
+
+[2026-08-16][M16-CHEETAH-1] U-055 tools authored, sandbox ALL_PASS, not yet
+  on target. Next: one phone collect paste, then install+apply+verify SAFE.
+  M18 icons/sound and U-070 switcher still parked.

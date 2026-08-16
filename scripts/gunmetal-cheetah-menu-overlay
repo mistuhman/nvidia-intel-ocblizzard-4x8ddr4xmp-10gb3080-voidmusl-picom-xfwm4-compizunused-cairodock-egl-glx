@@ -1,0 +1,287 @@
+#!/usr/bin/env python3
+"""gunmetal-cheetah-menu-overlay — reversible GTK3 Cheetah menu pinstripe (U-055).
+
+Writes ~/.config/gtk-3.0/gtk.css with rgba(0,0,0,0.82) + vertical pinstripe.
+Preserves pre-existing user CSS outside a marked block. Never edits /usr/share
+or the Quake-Gunmetal-3D theme tree (U-053/X-098).
+
+  gunmetal-cheetah-menu-overlay            # apply
+  gunmetal-cheetah-menu-overlay --check
+  gunmetal-cheetah-menu-overlay --restore
+  gunmetal-cheetah-menu-overlay --status
+  gunmetal-cheetah-menu-overlay --print    # CSS only, no write
+"""
+from __future__ import annotations
+
+import hashlib, os, shutil, sys, time
+
+GTK_DIR = os.path.expanduser("~/.config/gtk-3.0")
+GTK_CSS = os.path.join(GTK_DIR, "gtk.css")
+STATE = os.path.expanduser("~/.local/state/gunmetal-cheetah-menu")
+BEGIN = "/* === BEGIN gunmetal-cheetah-menu-overlay (U-055) === */"
+END = "/* === END gunmetal-cheetah-menu-overlay (U-055) === */"
+
+# Compiz opacity handles window alpha (88/92). This is the visual lining.
+OVERLAY_CSS = """%s
+/* Cheetah menu lining over AMOLED black. Pair with compiz-opacity-menus. */
+menu,
+.menu,
+.context-menu,
+popover.background,
+.csd.popup {
+  background-color: rgba(0, 0, 0, 0.82);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.045) 0px,
+      rgba(255, 255, 255, 0.045) 1px,
+      rgba(0, 0, 0, 0.00) 1px,
+      rgba(0, 0, 0, 0.00) 3px
+    );
+  background-repeat: repeat;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom-color: rgba(0, 0, 0, 0.85);
+  border-right-color: rgba(0, 0, 0, 0.70);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.10),
+    0 8px 22px rgba(0, 0, 0, 0.55);
+  color: #e8e8e8;
+}
+
+menu menuitem,
+.menu menuitem,
+.context-menu menuitem,
+popover.background modelbutton {
+  border-radius: 3px;
+  padding: 4px 10px;
+  color: #e8e8e8;
+}
+
+menu menuitem:hover,
+.menu menuitem:hover,
+.context-menu menuitem:hover,
+popover.background modelbutton:hover,
+menu menuitem:selected,
+.menu menuitem:selected {
+  background-color: rgba(36, 36, 36, 0.92);
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.08),
+      rgba(0, 0, 0, 0.10)
+    );
+  border-left: 2px solid #640c12;
+  color: #ffffff;
+}
+
+menu separator,
+.menu separator {
+  background: rgba(255, 255, 255, 0.10);
+  min-height: 1px;
+  margin: 3px 6px;
+}
+
+tooltip,
+.tooltip {
+  background-color: rgba(5, 5, 5, 0.90);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(0, 0, 0, 0.00) 1px,
+      rgba(0, 0, 0, 0.00) 3px
+    );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: #f0f0f0;
+  padding: 4px 8px;
+}
+%s
+""" % (BEGIN, END)
+
+
+def die(msg, code=1):
+    print("cheetah-menu: FAIL  %s" % msg)
+    sys.exit(code)
+
+
+def sha_bytes(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def sha_file(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for c in iter(lambda: f.read(1 << 20), b""):
+            h.update(c)
+    return h.hexdigest()
+
+
+def strip_block(text):
+    out, i, lines = [], 0, text.splitlines(keepends=True)
+    while i < len(lines):
+        if BEGIN in lines[i]:
+            i += 1
+            while i < len(lines) and END not in lines[i]:
+                i += 1
+            if i < len(lines):
+                i += 1
+            if i < len(lines) and lines[i].strip() == "":
+                i += 1
+            continue
+        out.append(lines[i])
+        i += 1
+    return "".join(out)
+
+
+def compose(existing):
+    base = strip_block(existing).rstrip()
+    block = OVERLAY_CSS.strip() + "\n"
+    return block if not base else base + "\n\n" + block
+
+
+def block_present(text):
+    return BEGIN in text and END in text and "rgba(0, 0, 0, 0.82)" in text
+
+
+def backup_css(path, tag="pre-cheetah"):
+    os.makedirs(STATE, mode=0o755, exist_ok=True)
+    ts, pid = int(time.time()), os.getpid()
+    if os.path.isfile(path):
+        bak = os.path.join(STATE, "gtk.css.%s.%d.%d" % (tag, ts, pid))
+        if os.path.exists(bak):
+            bak += ".%d" % int(time.time() * 1000)
+        shutil.copy2(path, bak)
+    else:
+        bak = os.path.join(STATE, "gtk.css.%s.%d.%d.ABSENT" % (tag, ts, pid))
+        with open(bak, "w") as f:
+            f.write("ABSENT\n")
+    if not os.path.isfile(bak):
+        die("backup missing after write: %s" % bak)
+    return bak
+
+
+def newest_backup():
+    if not os.path.isdir(STATE):
+        return ""
+    cands = [os.path.join(STATE, n) for n in os.listdir(STATE)
+             if n.startswith("gtk.css.pre-cheetah.")]
+    if not cands:
+        return ""
+    cands.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+    return cands[0]
+
+
+def cmd_status():
+    print("== gunmetal-cheetah-menu-overlay status ==")
+    print("css:    %s" % GTK_CSS)
+    if os.path.isfile(GTK_CSS):
+        text = open(GTK_CSS).read()
+        print("hash:   %s" % sha_file(GTK_CSS))
+        print("size:   %d bytes" % os.path.getsize(GTK_CSS))
+        print("block:  %s" % ("YES" if block_present(text) else "no"))
+    else:
+        print("hash:   (file absent)")
+        print("block:  no")
+    print("overlay css sha: %s" % sha_bytes(OVERLAY_CSS.encode()))
+    print("backup: %s" % (newest_backup() or "(none yet)"))
+    return 0
+
+
+def cmd_check():
+    print("== gunmetal-cheetah-menu-overlay --check ==")
+    if not os.path.isfile(GTK_CSS):
+        print("css absent")
+        print("VERDICT: NOT-APPLIED")
+        return 1
+    text = open(GTK_CSS).read()
+    ok = block_present(text)
+    print("hash:  %s" % sha_file(GTK_CSS))
+    print("block: %s" % ok)
+    print("VERDICT: %s" % ("APPLIED" if ok else "NOT-APPLIED"))
+    return 0 if ok else 1
+
+
+def cmd_apply():
+    if os.geteuid() == 0:
+        die("refusing to run as root", 2)
+    os.makedirs(GTK_DIR, mode=0o755, exist_ok=True)
+    existing = open(GTK_CSS).read() if os.path.isfile(GTK_CSS) else ""
+    if block_present(existing) and existing == compose(existing):
+        print("cheetah-menu: OK    already applied (idempotent)")
+        print("cheetah-menu: hash  %s" % sha_file(GTK_CSS))
+        return 0
+    # Keep FIRST-apply backup forever; re-apply must not snapshot overlay.
+    prior = newest_backup()
+    if prior:
+        bak = prior
+        print("cheetah-menu: keep   first-apply backup %s" % bak)
+    else:
+        bak = backup_css(GTK_CSS)
+        print("cheetah-menu: backup %s" % bak)
+        if not bak.endswith(".ABSENT"):
+            print("cheetah-menu:        sha %s" % sha_file(bak))
+    new_text = compose(existing)
+    tmp = GTK_CSS + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(new_text)
+    os.replace(tmp, GTK_CSS)
+    if not os.path.isfile(GTK_CSS):
+        die("gtk.css missing after write")
+    print("cheetah-menu: wrote  %s" % GTK_CSS)
+    print("cheetah-menu: hash   %s" % sha_file(GTK_CSS))
+    print("cheetah-menu: size   %d bytes" % os.path.getsize(GTK_CSS))
+    if not block_present(open(GTK_CSS).read()):
+        die("post-write verify failed; undo: %s --restore" % sys.argv[0])
+    print("cheetah-menu: OK     block present")
+    print("cheetah-menu: note   GTK3 apps pick this up on next start")
+    print("cheetah-menu: undo:  %s --restore" % (sys.argv[0] or "gunmetal-cheetah-menu-overlay"))
+    return 0
+
+
+def cmd_restore():
+    if os.geteuid() == 0:
+        die("refusing to run as root", 2)
+    bak = newest_backup()
+    if not bak:
+        die("no backup under %s" % STATE, 2)
+    if os.path.isfile(GTK_CSS):
+        safety = backup_css(GTK_CSS, tag="pre-restore")
+        print("cheetah-menu: safety %s" % safety)
+    if bak.endswith(".ABSENT"):
+        if os.path.isfile(GTK_CSS):
+            os.remove(GTK_CSS)
+            print("cheetah-menu: removed %s (was absent pre-apply)" % GTK_CSS)
+        else:
+            print("cheetah-menu: already absent")
+    else:
+        os.makedirs(GTK_DIR, mode=0o755, exist_ok=True)
+        shutil.copy2(bak, GTK_CSS)
+        print("cheetah-menu: restored from %s" % bak)
+        print("cheetah-menu: hash now      %s" % sha_file(GTK_CSS))
+    return 0
+
+
+def main():
+    arg = sys.argv[1] if len(sys.argv) > 1 else ""
+    if arg in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if arg == "--print":
+        sys.stdout.write(OVERLAY_CSS if OVERLAY_CSS.endswith("\n") else OVERLAY_CSS + "\n")
+        return 0
+    if arg == "--status":
+        return cmd_status()
+    if arg == "--check":
+        return cmd_check()
+    if arg == "--restore":
+        return cmd_restore()
+    if arg in ("", "--apply"):
+        return cmd_apply()
+    die("unknown arg %r (use --check|--restore|--status|--print|--apply)" % arg, 2)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
