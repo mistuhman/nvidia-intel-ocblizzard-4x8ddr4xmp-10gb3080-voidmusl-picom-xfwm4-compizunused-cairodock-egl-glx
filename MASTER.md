@@ -7592,3 +7592,33 @@ SECTION XII — MILESTONE LOG (CONTINUED AFTER FUNDAMENTAL DIRECTIVE 12)
     directive: collapse forensics+fix into single blocks where safe.
     RECEIPT: operator "ive said multiple times ctrl alt f2 doesnt work",
     2026-08-15.
+
+--------------------------------------------------------------------------------
+12.115 X-LAYER TAILS FAILED (LOGS LIKELY ABSENT) — SUSPICION MOVES TO
+      MODPROBE.D nvidia-drm modeset=1 AT REAL-ROOT. FINAL KMS LEVER PULLED.
+--------------------------------------------------------------------------------
+
+  [X-115] BLOCK X-2 partial: xorg.conf + anti-tear moved aside OK, but
+    Xorg.0.log/x-0.log tails ERRORED (likely nonexistent) and boot still
+    black. Inference: X never ran/logged; screen dies when nvidia module
+    loads at real-root with KMS modeset=1. W-210's "pre-existing — LEAVE"
+    judgment on /etc/modprobe.d/nvidia.conf (options nvidia-drm modeset=1)
+    RETRACTED: file matches the injecting agent's KMS theme (same
+    nvidia-drm.modeset=1 it put on cmdline); desktop history (Compiz/xfwm4
+    era) predates it. Now treated as damage layer 4 of 4.
+    RECEIPT: operator report tails errored + still black, 2026-08-15.
+
+  [W-218] BLOCK X-3 ISSUED (combined verify+fix+reboot per X-114 directive):
+    rescue shell → remount rw → ls Xorg.0.log+lightdm dir (existence
+    receipt) → cat nvidia.conf (content receipt) → mv nvidia.conf
+    /root/nvidia-modeset.bak.x114 → sync → sysrq b → normal 6.18.35 boot.
+    Expected: nvidia-drm modeset defaults OFF, console keeps firmware fb
+    (visible), X drives displays classic non-KMS path as in working era.
+    Backups now staged in /root: xorg.conf.bak.x114, anti-tear.bak.x114,
+    nvidia-modeset.bak.x114, nvblk.bak.x109, dracut-nv.bak.x109,
+    grub.bak.x109/.x112. Diagnostic fork requested with verdict: if still
+    black, does console TEXT persist (modeset exonerated) or vanish?
+    RECEIPT: block text in session chat, 2026-08-15.
+
+[2026-08-15][M12-RECOVERY-13] LAST KMS LEVER (modprobe.d modeset=1) REMOVED
+  WITH BACKUP. Awaiting verdict: lightdm | black+text | black+notext.
