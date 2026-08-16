@@ -156,7 +156,7 @@ def run(replace):
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
-        rise_time, fall_time = duration / 2, max(blur_duration - duration / 2, 0.1)
+        rise_time, fall_time = duration / 2, max(blur_duration - duration, 0.1)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         while not stop_now and xww.poll() is None:

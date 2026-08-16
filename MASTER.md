@@ -9116,3 +9116,37 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-7] Crossfade accepted on target; blur rebuilt as a
   persistent burst envelope. Next: heredoc reinstall + fast-burst trial.
+
+--------------------------------------------------------------------------------
+12.146 BURST BLUR PERSISTS ON TARGET; TIMING DIRECTIVE 350/500 APPLIED
+--------------------------------------------------------------------------------
+
+  [W-304] U-083 PERSISTENT BURST BLUR PROVED ON TARGET. Gates matched (16887 B,
+    sha256 8759a442..., compile PASS), --check printed peak=3.0, start PASS,
+    and the log recorded an 8-hop fast burst as ONE burst — hops=8 peak=3.000
+    max=3.000 steps=46 state=OK — plus clean single/triple bursts afterwards.
+    Blur persisted through rapid switching exactly as designed; operator:
+    "the blur persists". The "mpv-xwinwrap-shim died, exit status 4" +
+    "xwinwrap: window type - override" pair is now confirmed as a run-boundary
+    artifact (previous renderer shutting down as the next starts), not a
+    runtime fault; fps stayed 60.0. Operator rolled back to pre-u083 after
+    testing; desktop SAFE. RECEIPT: operator paste 2026-08-16.
+
+  [U-084] OPERATOR TIMING DIRECTIVE: crossfade "doesnt persist and needs to be
+    0.35 seconds"; blur "stays for way too long ... needs to be 0.5 seconds".
+    Root of the long blur: fall_time was BLUR_MS - FADE_MS/2, stretching a
+    single hop to ~0.95 s total. Redefined BLUR_MS as the TOTAL blur window
+    from the first hop: fall = BLUR_MS - FADE_MS. Template defaults now
+    FADE_MS=350, BLUR_MS=500; the target's existing config file is rewritten
+    with the same values on reinstall (controller reads live config).
+
+  [W-305] TIMING FIX AUTHORED AND PROVEN IN-REPO. One-line envelope change
+    (fall_time = max(blur_duration - duration, 0.1)); installer template
+    carries FADE_MS=350/BLUR_MS=500 with a BLUR_MS semantics comment.
+    SANDBOX: py_compile PASS; full mock run() PASS with the new config —
+    burst line rise_ms=175 fall_ms=150 state=OK (total window 0.50 s),
+    unimodal strength 0->3.000->0 with exact endpoints; degraded-path PASS
+    unchanged. RECEIPT: sandbox harness this session.
+
+[2026-08-16][M17-XMB-IPC-8] Persistent blur target-proven; timings cut to
+  operator spec. Next: reinstall with 350/500 config + verdict.
