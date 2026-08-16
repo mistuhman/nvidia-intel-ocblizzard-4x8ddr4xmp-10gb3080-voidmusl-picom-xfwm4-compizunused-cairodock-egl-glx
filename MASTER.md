@@ -9018,3 +9018,4 @@ What worked, in order, when the box went black before lightdm with no TTY.
   [W-299] Launcher now retries track metadata on the same IPC connection for up to 8 seconds and maps only when all three unique roles exist. Mock returned five empty lists before nonsequential IDs and passed start/status/stop.
 [2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
   [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
+  [U-081] Target exact-role queue ran at 59.99955 fps/SAFE, but human requires every viewport boundary including same-role 2->3 and 4->1 plus stronger blur; per-slot queue + double Gaussian authored, target unproven.
