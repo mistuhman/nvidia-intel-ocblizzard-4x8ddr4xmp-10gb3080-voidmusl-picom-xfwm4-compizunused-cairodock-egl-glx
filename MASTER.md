@@ -7917,3 +7917,47 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-15][M12-NETWORK] Normal TKG-bore desktop boot and Ethernet are both
   working. Next gate is deliberate Tier-2 relocation to the 2TB USB HDD,
   preserving Tier-3 `~/.bitcoin`; then reversible Compiz repair and verify.
+
+
+--------------------------------------------------------------------------------
+12.125 STORAGE HEADROOM AND COMPIZ LIVE STABILITY RESTORED
+--------------------------------------------------------------------------------
+
+  [W-242] Tier-1 XBPS archives were deleted with `find /var/cache/xbps -type f
+    -name '*.xbps' -delete`; root improved from 4.6G to 6.7G available after
+    the verified media relocation below. Packages remain installed; only
+    regenerable download archives were removed. RECEIPT: operator transcript,
+    current session.
+
+  [W-243] `/dev/sda1`, NTFS label `50`, mounted at `/run/media/sd/50` with
+    1.6T available. `~/Documents/50/Videos` was copied by rsync to
+    `/run/media/sd/50/Temp/Documents-50-Videos`: 5,221,204,730 bytes, 27 files.
+    A checksum dry-run with deletion comparison emitted no differences and
+    returned `VERIFY_RC=0`; only then was the local source removed. Destination
+    still exists. Linux-sensitive `~/.var`, `~/.local`, and Tier-3
+    `~/.bitcoin` were untouched. LM Studio launches. RECEIPT: complete operator
+    command outputs, current session.
+
+  [W-244] Manual `compiz-revert` restored W-053 golden af457926... and started
+    Compiz PID 6576 plus Emerald 6586. A 30-second gate retained both PIDs;
+    `wmctrl -m` named compiz, picom was absent, Cairo-Dock 1280 and xfce4-panel
+    1234 remained live, and compiz-profile-repair reported all seven enforced
+    display keys correct. Active profile hash fe81708f... remained stable.
+    Diff against golden contained exactly one dependency-order normalization:
+    `decoration` moved from before `resize;place` to after `place`; no plugin or
+    setting changed. RECEIPT: operator runtime output and full unified diff.
+
+  [W-245] Reboot persistence armed reversibly. XFCE initially reported the
+    one-item Failsafe Client0_Command array as `xfwm4`. Current session XML was
+    copied to `~/xfce4-session.xml.pre-compiz-stable` (2296 bytes), then
+    xfconf-query replaced the array with
+    `/home/sd/.local/bin/compiz-session`; immediate read-back returned that
+    exact path. Launcher repairs the seven hardware keys, sets
+    `__GL_YIELD=USLEEP`, and execs `/usr/bin/compiz --replace ccp`. RECEIPT:
+    operator transcript, current session. Reverse is the backed-up XML or
+    `compiz-revert --xfwm4` from a live desktop.
+
+[2026-08-15][M12-COMPIZ-PERSIST] Live Compiz stability passed and guarded
+  persistence is armed. Next: clear only XFCE session cache, reboot TKG-bore,
+  verify login-owned Compiz and profile/process invariants, then declare the
+  CCSM-safe baseline before resuming XMB.
