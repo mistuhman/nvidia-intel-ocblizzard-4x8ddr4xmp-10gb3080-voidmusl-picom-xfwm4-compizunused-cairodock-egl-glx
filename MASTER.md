@@ -8529,3 +8529,59 @@ What worked, in order, when the box went black before lightdm with no TTY.
     seconds of sleeps, explaining the observed ~15-second transition. Before
     another controller run, perform one bounded nonzero-opacity overlay test;
     it must coexist with the restored loop, visibly blend, and self-remove.
+
+--------------------------------------------------------------------------------
+12.133 XMB OPTIMIZATION RULING — STABLE SINGLE DECODE MERGES; SHELL FADE RETIRED
+--------------------------------------------------------------------------------
+
+  [W-281] NONZERO OVERLAY CAPABILITY PASS, CONTROLLER DESIGN FAIL. A temporary
+    work-monochrome pair (xwinwrap 28156/mpv 28158, WID 0x6a00001) launched at
+    opacity 0.01, survived, accepted opacity properties, and displayed together
+    with main-red for four seconds. Exact-PID cleanup removed only the test pair
+    and left proven main-red 26012/26014 alive. Thus Compiz CAN composite both
+    layers; X-142's zero-opacity diagnosis is confirmed. But the operator saw
+    no acceptable timed fade or workspace switch and reports lag under rapid
+    switching. Crossfade/controller acceptance FAILS.
+    RECEIPT: target transcript + operator visual report, 2026-08-16.
+
+  [X-143] SHELL/XPROP MULTI-WINDOW CROSSFADE IS RETIRED, NOT MERGED AS ACTIVE.
+    It has four structural costs that tuning cannot erase: a second 4480x1440
+    HEVC decode, a second gpu-next/Vulkan context, synchronous process creation
+    for every opacity step, and stop/start loss of each loop's media clock.
+    Rapid viewport changes queue behind a blocking transition instead of being
+    coalesced, so input outruns rendering and stale destinations win. Repository
+    xmb-wallpaper-controller now exits 2 with an explicit disabled message;
+    installer autostart remains Hidden/false. Target's disabled .desktop stays.
+
+  [W-282] CURRENT HARDWARE/SOFTWARE EFFICIENCY BASELINE (merge target):
+    - RTX 3080, NVIDIA stack, Compiz X11 at 120 Hz; physical canvas 4480x1440,
+      four Compiz viewports expressed as 17920x1440 virtual geometry.
+    - One sticky input-transparent xwinwrap covers only the physical 4480x1440
+      canvas. One mpv loops one HEVC 4480x1440@60 file for all viewports.
+    - gpu-next + nvdec-copy is the proven path at 10-11% decoder utilization.
+      `nvdec` zero-copy fell back/failed on this Vulkan stack (W-195); the copy
+      costs bandwidth but is safer than `auto` (X-094) and cheaper than a second
+      decoder/context. Do not trade correctness for nominal zero-copy.
+    - --no-stop-screensaver prevents the wallpaper mpv from creating a new
+      inhibitor; -ni preserves Compiz Button2 and desktop Button3 input.
+    - Baked loops live on /mnt/games, not the 96%-used root. Main-red/sleep/work
+      are 150/169/230 MiB; no raw frames or transition cache belongs on root.
+
+  [U-070] CORRECT NEXT-GENERATION SWITCHER SPEC (native MP4 fork U-057): one
+    long-lived renderer and GL context; persistent current loop clock; open the
+    next decoder only for the four-second blend; mix two textures in the render
+    loop using monotonic timestamps; retire old decode immediately at alpha=1.
+    Viewport events are latest-wins: same-role moves are no-ops, rapid changes
+    cancel/retarget the in-flight blend, never queue. This removes xprop process
+    churn, black frames, loop restarts, and steady duplicate VRAM/RAM use.
+    Preferred implementation is a Compiz/libmpv plugin or one IPC-controlled
+    renderer, not two xwinwrap windows. Measure frame time, dropped frames,
+    decoder%, VRAM and RSS before acceptance. A prebaked transition clip is a
+    lower-memory fallback but cannot join an arbitrary live loop phase cleanly.
+
+  [W-283] MERGE SCOPE: accepted direct XMB launcher gains input transparency
+    and stops inhibiting the screensaver; native xfce4-screensaver XMB Sleep
+    theme is installed but remains operator-select/acceptance gated. Failed
+    workspace crossfade is disabled and carried only as ledger evidence/spec.
+    Compiz stayed SAFE throughout rollback. Operator directs: document maximum
+    hardware/software efficiency context in MASTER, then merge.
