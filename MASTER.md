@@ -7901,3 +7901,66 @@ What worked, in order, when the box went black before lightdm with no TTY.
   H2 (VT 7 invisible under dead-VT box) isolated as the only two live killers.
   Combined failsafe-flip + VT-1 green probe issued to operator. Awaiting two
   verdicts: grep count, then green | black.
+
+--------------------------------------------------------------------------------
+12.119 DISK FULL — "NO SPACE LEFT ON DEVICE" ON A 2 KB COPY. H1 SUPERSEDED BY
+       A THIRD AND FAR SIMPLER KILLER.
+--------------------------------------------------------------------------------
+
+  [X-118] BLOCK 2 FAILED AT STEP 2 WITH "no space left on device" while
+    copying a ~2234-byte file into $HOME. A filesystem that cannot absorb two
+    kilobytes is FULL, and this SUPERSEDES the H1/H2 framing of X-117 as the
+    leading hypothesis. A full filesystem is a complete, sufficient, and
+    much simpler explanation of every symptom on record:
+      - "Session pid=1476: Exited with return value 1" — a session exec must
+        write .Xauthority, ~/.cache, dbus/elogind runtime state and session
+        cookies. Every one of those writes fails on a full fs, so the session
+        dies instantly with rc=1 and lightdm loops. This is the textbook
+        full-disk login loop.
+      - Xorg.0.log CLEAN with no fatal EE (W-220) — X itself needs no writes
+        to initialize, so it comes up fine and then the SESSION on top of it
+        cannot start. "Clean X + no desktop" is precisely this signature.
+      - No greeter picture — the greeter is itself a session and dies the same
+        way before it can paint.
+    Critically, this ALSO explains the long-unexplained item in CONTINUE_PROMPT
+    ("root cause of THAT specific signal drop not yet receipt-proven").
+    METHODOLOGICAL NOTE (Directive 5): the entire boot-death investigation
+    X-106..X-116 chased KMS/driver layers and was CORRECT about them — those
+    four layers were genuinely poisoned and their removal genuinely restored
+    the console. But the residual greeter failure was never driver-related.
+    Nobody had run `df`. The cheapest possible fact was never collected, and
+    two hypotheses were elaborated on top of that gap. Collect capacity facts
+    FIRST on any "process exits rc=1 for no reason" symptom.
+    RECEIPT: operator "no space left on device for the second command",
+    2026-08-16.
+
+  [W-228] SUSPECTED SPACE CONSUMERS, ranked by this project's own history and
+    to be confirmed by receipt before ANY deletion:
+      1. /var/log/lightdm/ — lightdm has been in a rapid respawn loop writing
+         DEBUG-level records plus a fresh x-0.log per cycle across many boots.
+         Prime suspect for runaway growth.
+      2. Xorg.N.log / Xorg.N.log.old rotations from the same loop.
+      3. The M12 wallpaper bake artifacts — this project renders 4480x1440
+         video (Section VIII/W-199/W-200); intermediate frame dumps and mp4s
+         are the largest single-file class on the box.
+      4. xbps package cache /var/cache/xbps — accumulated across the many
+         installs logged in this ledger, and safe to clear.
+      5. Core dumps from the crashing Compiz/session execs.
+    NO DELETION IS AUTHORIZED IN THIS ROW. Facts first, one contradiction
+    surface at a time (R3). The only pre-authorized reclaim is the xbps cache,
+    which is by definition regenerable.
+    RECEIPT: this row.
+
+  [W-229] BLOCK 2 PARTIAL-APPLY WARNING: step 2 was `cp` of the CURRENT
+    session file to sess.bak.x117 and it FAILED, so no backup exists. Step 3
+    (the actual failsafe flip) was therefore NOT reached and MUST NOT be run
+    until space exists — overwriting xfce4-session.xml on a full fs risks
+    truncating it to zero with no backup, which would destroy the working
+    xfwm4 failsafe source. The X-105 flip is POSTPONED, not cancelled. Order
+    is now: reclaim space -> verify df -> then W-227's combined block.
+    RECEIPT: this row, deriving from X-118.
+
+[2026-08-16][M12-GREETER-3] DISK FULL DISCOVERED (X-118) AND PROMOTED TO
+  PRIMARY ROOT-CAUSE CANDIDATE FOR THE rc=1 SESSION LOOP. Failsafe flip
+  postponed for safety (W-229). Capacity-facts block issued. Awaiting df +
+  top-consumer receipts.
