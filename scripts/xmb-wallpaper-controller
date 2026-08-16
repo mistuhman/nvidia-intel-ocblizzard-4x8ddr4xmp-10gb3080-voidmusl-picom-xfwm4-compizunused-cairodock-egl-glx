@@ -15,37 +15,27 @@ def fail(text):
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
     out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"],
-           "fade": 700, "hwdec": "nvdec-copy"}
+           "fade": 2000, "hwdec": "nvdec-copy"}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
             if not line: continue
             match = re.fullmatch(r"ROLES=\((.*)\)", line)
-            if match:
-                out["roles"] = shlex.split(match.group(1))
-            elif line.startswith("FADE_MS="):
-                out["fade"] = int(line.split("=", 1)[1])
-            elif line.startswith("HWDEC="):
-                out["hwdec"] = line.split("=", 1)[1].strip()
-            else:
-                fail(f"unsupported config line: {raw}")
-    if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]):
-        fail("ROLES must contain four allowed roles")
-    if not 100 <= out["fade"] <= 10000:
-        fail("FADE_MS must be 100..10000")
-    if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"):
-        fail("HWDEC must be nvdec-copy, cuda-copy, or no")
+            if match: out["roles"] = shlex.split(match.group(1))
+            elif line.startswith("FADE_MS="): out["fade"] = int(line.split("=", 1)[1])
+            elif line.startswith("HWDEC="): out["hwdec"] = line.split("=", 1)[1].strip()
+            else: fail(f"unsupported config line: {raw}")
+    if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
+    if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
+    if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"): fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 def check():
     cfg = config()
     for command in ("mpv", "xwinwrap", "xprop"):
-        if not shutil.which(command):
-            fail(f"missing command: {command}")
-    if not SHIM.is_file() or not os.access(SHIM, os.X_OK):
-        fail(f"missing executable shim: {SHIM}")
+        if not shutil.which(command): fail(f"missing command: {command}")
+    if not SHIM.is_file() or not os.access(SHIM, os.X_OK): fail(f"missing executable shim: {SHIM}")
     for role in ROLES:
-        if not video(role).is_file():
-            fail(f"missing video: {video(role)}")
+        if not video(role).is_file(): fail(f"missing video: {video(role)}")
     return cfg
 def proc(pid):
     path = Path("/proc") / str(pid)
@@ -54,36 +44,28 @@ def proc(pid):
         argv = [x.decode(errors="replace") for x in
                 (path / "cmdline").read_bytes().rstrip(b"\0").split(b"\0")]
         return comm, argv, int((path / "stat").read_text().split()[3])
-    except (OSError, ValueError):
-        return "", [], -1
+    except (OSError, ValueError): return "", [], -1
 def kill(pid, name):
-    if proc(pid)[0] != name:
-        return
-    try:
-        os.kill(pid, signal.SIGTERM)
-    except ProcessLookupError:
-        return
+    if proc(pid)[0] != name: return
+    try: os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError: return
     for _ in range(30):
-        if proc(pid)[0] != name:
-            return
+        if proc(pid)[0] != name: return
         time.sleep(.05)
-    if proc(pid)[0] == name:
-        os.kill(pid, signal.SIGKILL)
+    if proc(pid)[0] == name: os.kill(pid, signal.SIGKILL)
 def direct_renderers():
     videos = {str(video(role)) for role in ROLES}
     found = []
     for path in Path("/proc").glob("[0-9]*"):
         comm, argv, _ = proc(int(path.name))
-        if comm == "xwinwrap" and str(SHIM) in argv and videos.intersection(argv):
-            found.append(int(path.name))
+        if comm == "xwinwrap" and str(SHIM) in argv and videos.intersection(argv): found.append(int(path.name))
     return found
 def stop_direct():
     found = direct_renderers()
     for xww in found:
         for path in Path("/proc").glob("[0-9]*"):
             pid = int(path.name)
-            if proc(pid)[2] == xww:
-                kill(pid, "mpv")
+            if proc(pid)[2] == xww: kill(pid, "mpv")
         kill(xww, "xwinwrap")
     return len(found)
 class IPC:
@@ -106,8 +88,7 @@ class IPC:
 def steady(role, ids): return f"[vid{ids[role]}]null[vo]"
 def blend(weights, target, ids, frames):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
-    if len(active) == 1:
-        return steady(target, ids)
+    if len(active) == 1: return steady(target, ids)
     total = sum(weights.get(r, 0) for r in active) or 1
     start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
@@ -151,19 +132,16 @@ def launch(cfg, initial):
     log = LOG.open("a", buffering=1)
     xww = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT)
     for _ in range(160):
-        if xww.poll() is not None:
-            fail(f"renderer exited {xww.returncode}; inspect {LOG}")
+        if xww.poll() is not None: fail(f"renderer exited {xww.returncode}; inspect {LOG}")
         if SOCK.exists():
             ipc = IPC()
             tracks = [t for t in ipc.call("get_property", "track-list") if t.get("type") == "video"]
             ids = {}
             for track in tracks:
                 filename = Path(track.get("external-filename", "")).name
-                if not track.get("external") and not track.get("albumart"):
-                    ids[initial] = track.get("id")
+                if not track.get("external") and not track.get("albumart"): ids[initial] = track.get("id")
                 for role in order[1:]:
-                    if filename == video(role).name:
-                        ids[role] = track.get("id")
+                    if filename == video(role).name: ids[role] = track.get("id")
             if set(ids) != set(ROLES) or len(set(ids.values())) != 3:
                 fail(f"could not map mpv video tracks: {tracks}")
             ipc.call("set_property", "lavfi-complex", steady(initial, ids)); return xww, ipc, ids, log
@@ -183,6 +161,7 @@ def run(replace):
     except BlockingIOError: fail("controller already running")
     PID.write_text(f"{os.getpid()}\n")
     signal.signal(signal.SIGTERM, lambda *_: globals().__setitem__("stop_now", True))
+    if shutil.which("xfdesktop"): subprocess.run(["xfdesktop", "--quit"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(.5)
     if direct_renderers():
         if not replace: fail("direct wallpaper is live; use start --replace")
         print(f"stopped-direct={stop_direct()}", flush=True)
@@ -258,7 +237,9 @@ def status():
     print(STATE.read_text().strip())
     ipc = IPC()
     for name in ("lavfi-complex", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
-        print(f"{name}={ipc.call('get_property', name)}")
+        try: value = ipc.call("get_property", name)
+        except RuntimeError as error: value = f"UNAVAILABLE ({error})"
+        print(f"{name}={value}")
     ipc.close(); print("XMB_CONTROLLER_STATUS=RUNNING"); return 0
 def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"

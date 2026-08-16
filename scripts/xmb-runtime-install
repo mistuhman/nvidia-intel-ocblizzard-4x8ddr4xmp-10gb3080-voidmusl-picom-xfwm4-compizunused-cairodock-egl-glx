@@ -16,7 +16,7 @@ if [ ! -e "$CONFIG" ]; then
 # Workspace 1..4. Allowed: main-red, work-monochrome, sleep.
 ROLES=(main-red work-monochrome work-monochrome main-red)
 # Crossfade duration in milliseconds. Two decoders run only during this window.
-FADE_MS=700
+FADE_MS=2000
 HWDEC=nvdec-copy
 CONF
 fi

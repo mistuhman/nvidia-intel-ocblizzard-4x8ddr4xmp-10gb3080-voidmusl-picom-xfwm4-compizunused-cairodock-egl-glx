@@ -8986,3 +8986,22 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-3] Architecture visually accepted; rollback was only
   a lowercase-token harness error. Next: set 700 ms, relaunch, measure, persist.
+
+--------------------------------------------------------------------------------
+12.143 700 MS TUNING RUN WORKS; STATUS PROPERTY ABSENT; 2 SECOND + REBOOT GATE
+--------------------------------------------------------------------------------
+  [W-297] 700 ms controller 25334 owned xwinwrap 25343 + mpv 25344; role reached
+    work-monochrome and steady graph `[vid2]null[vo]`, proving switching again.
+    Decoder measured 20-22% in transition / 11-13% steady, SM 17-22%, memory
+    engine 5-6%. Requested 2-second fade is tuning, not renderer rejection.
+  [X-151] STATUS TREATED AN OPTIONAL MPV PROPERTY AS FATAL. lavfi-complex read
+    succeeded; the next requested property was absent in target mpv 0.41 and
+    raised `property not found`. The renderer itself remained live. Harness
+    then conservatively restored direct main-red 26611/26613 at 11% decoder;
+    Compiz remained SAFE b94b49e0.... Status must print UNAVAILABLE and continue.
+  [U-075] Defaults changed to 2000 ms per operator. Status now tolerates missing
+    metrics. Controller also quits xfdesktop before launch, required so XFCE's
+    Desktop windows cannot cover XMB after reboot. Next: deploy, set target
+    config 2000, leave live, collect RSS/status; then enable the still-hidden
+    autostart, reboot, and verify controller + one xwinwrap/mpv + Compiz SAFE.
+[2026-08-16][M17-XMB-IPC-4] Two-second live gate next; reboot proof before merge.
