@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import fcntl, json, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
+import collections, fcntl, json, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
 from pathlib import Path
 ROOT = Path(os.getenv("XMB_BAKE_ROOT", "/mnt/games/xmb-wave-bake"))
 CFG = Path(os.getenv("XMB_CONFIG", Path.home() / ".config/xmb-wallpaper.conf"))
@@ -78,6 +78,11 @@ class IPC:
                 return reply.get("data")
     def close(self): self.file.close(); self.sock.close()
 def steady(role, ids): return f"[vid{ids[role]}]null[vo]"
+def hold(role, ids, warm):
+    source, chains = f"[vid{ids[role]}]", []
+    for index, other in enumerate((r for r in warm if r != role), 1):
+        output = "[vo]" if index == len(warm) - 1 else f"[hold{index}]"; chains.append(f"[vid{ids[other]}]{source}blend=all_opacity=0{output}"); source = output
+    return ";".join(chains) if chains else steady(role, ids)
 def blend(weights, target, ids, frames):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
     if len(active) == 1: return steady(target, ids)
@@ -121,7 +126,7 @@ def launch(cfg, initial):
                 for role in order[1:]:
                     if filename == video(role).name: ids[role] = track.get("id")
             if set(ids) == set(ROLES) and len(set(ids.values())) == 3:
-                ipc.call("set_property", "lavfi-complex", steady(initial, ids)); return xww, ipc, ids, log
+                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"])))); return xww, ipc, ids, log
         time.sleep(.05)
     (ipc and ipc.close()); kill(xww.pid, "xwinwrap"); fail(f"track map timeout: {tracks}; inspect {LOG}")
 def state_write(xww, role):
@@ -141,30 +146,26 @@ def run(replace):
     initial, xww, ipc, log, watch = role_at_viewport(cfg), None, None, None, None
     try:
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
-        watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], text=True, stdout=subprocess.PIPE)
-        duration, blur_duration = cfg["fade"] / 1000, cfg["blur"] / 1000
-        fade, pending = ({}, initial, time.monotonic(), duration), None
-        blur_on, blur_deadline = False, 0.0
+        watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], stdout=subprocess.PIPE); os.set_blocking(watch.stdout.fileno(), False)
+        duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
+        fade, events, event_buf = ({}, initial, time.monotonic(), duration), collections.deque(), b""; blur_on, blur_deadline = False, 0.0
         while not stop_now and xww.poll() is None:
-            ready, _, _ = select.select([watch.stdout], [], [], .05)
-            if ready:
-                line = watch.stdout.readline()
-                if not line: fail("xprop watcher exited")
-                pending = role_at_viewport(cfg, line)
-                while select.select([watch.stdout], [], [], 0)[0]:
-                    line = watch.stdout.readline()
-                    if not line: fail("xprop watcher exited")
-                    pending = role_at_viewport(cfg, line)
+            if select.select([watch.stdout], [], [], .05)[0]:
+                chunk = os.read(watch.stdout.fileno(), 65536); chunk or fail("xprop watcher exited")
+                event_buf += chunk; lines = event_buf.split(b"\n"); event_buf = lines.pop()
+                for raw in lines:
+                    desired = role_at_viewport(cfg, raw.decode(errors="replace")); planned = events[-1] if events else fade[1]
+                    if desired != planned: events.append(desired)
             now, active = time.monotonic(), bool(fade[0])
             if active and now - fade[2] >= fade[3]:
                 current = fade[1]; fade, active = ({}, current, now, duration), False
-                if pending == current: pending = None
-                if pending is None: ipc.call("set_property", "lavfi-complex", steady(current, ids))
-            if not active and pending:
-                current, target, pending = fade[1], pending, None
+                print(f"complete role={current} queued={len(events)}", flush=True)
+                if not events: ipc.call("set_property", "lavfi-complex", hold(current, ids, warm))
+            if not active and events:
+                current, target = fade[1], events.popleft()
                 if target != current:
                     if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
-                    blur_deadline = now + blur_duration
+                    blur_deadline = now + blur_duration; print(f"start {current}->{target} queued={len(events)}", flush=True)
                     ipc.call("set_property", "lavfi-complex", blend({current: 1.}, target, ids, round(duration * 60)))
                     fade = ({current: 1.}, target, now, duration); state_write(xww, target)
             if blur_on and now >= blur_deadline:

@@ -9017,3 +9017,4 @@ What worked, in order, when the box went black before lightdm with no TTY.
   [X-153] Complete-fade target start hit an IPC readiness race: socket existed before mpv populated track-list, so the first read was `[]`; no switch ran. Rollback restored direct 26452/26454 at 9%, Compiz SAFE.
   [W-299] Launcher now retries track metadata on the same IPC connection for up to 8 seconds and maps only when all three unique roles exist. Mock returned five empty lists before nonsequential IDs and passed start/status/stop.
 [2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
+  [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
