@@ -165,6 +165,7 @@ def run(replace):
         fade_frames, delay_frames = round(duration * 60), round(pulse * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
+        last_tick = time.monotonic()
         while not stop_now and xww.poll() is None:
             if select.select([watch.stdout], [], [], .016 if blur_on or active else .05)[0]:
                 chunk = os.read(watch.stdout.fileno(), 65536); chunk or fail("xprop watcher exited")
@@ -174,7 +175,7 @@ def run(replace):
                     if desired != planned:
                         if len(events) >= 2: events.pop()
                         if not events or events[-1] != desired: events.append(desired)
-            now = time.monotonic()
+            now = time.monotonic(); dt = min(now - last_tick, 0.1)
             if active and now - started >= total_time:
                 current_slot, current_role, active = target_slot, target_role, False
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
@@ -191,10 +192,10 @@ def run(replace):
                 if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, delay_frames))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if events or (active and now - started < pulse):
-                    target = peak * blur_rise((now - burst_start) / rise_time)
+                if active and now - started < pulse:
+                    target = min(peak, strength_last + peak * dt / rise_time)
                 else:
-                    if not idle_at: idle_at = started + pulse
+                    if not idle_at: idle_at = started + pulse if active else now
                     target = peak * blur_fall((now - idle_at) / fall_time)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):
@@ -207,6 +208,7 @@ def run(replace):
                 if idle_at and now - idle_at >= fall_time:
                     blur_on, strength_last = False, 0.0
                     print(f"blur burst hops={burst_hops} peak={peak:.3f} max={burst_max:.3f} steps={burst_steps} rise_ms={round(rise_time * 1000)} fall_ms={round(fall_time * 1000)} state={'OK' if blur_fail == 0 else 'DEGRADED'}", flush=True)
+            last_tick = now
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
         if watch: watch.terminate()

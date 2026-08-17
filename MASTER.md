@@ -9314,3 +9314,41 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-12] Blur punches, dissolve follows clean. Next:
   reinstall + first visible-crossfade verdict; same-role hops still pulse.
+
+--------------------------------------------------------------------------------
+12.151 CROSSFADE FIRST SEEN; CHASE ENVELOPE FOR FAST-SWITCH PERSISTENCE
+--------------------------------------------------------------------------------
+
+  [W-314] U-088 TRIAL: CROSSFADE FIRST SEEN ON TARGET. Gates green (2330 B +
+    17296 B, shas 14f7d143.../9cd6ee3f... exact, compile PASS, check
+    350/500/6.0). Pulse-then-dissolve delivered the first visible crossfade —
+    operator: "crossfade appears". Slow hops each ran a clean burst
+    (peak=6.000 rise_ms=75 fall_ms=210 state=OK); the fast section showed
+    the flood cap holding (queued<=2) with 5- and 3-hop bursts. New
+    complaint: at fast switching the effect stops working; wants way
+    stronger persistence. Rollback applied; desktop SAFE. RECEIPT: operator
+    paste 2026-08-17.
+
+  [X-160] FAST-SWITCH FAILURE MODE WAS THE PEAK-HOLD ITSELF. During bursts
+    the u088 envelope pinned strength at peak for the whole burst, so every
+    in-burst dissolve ran under full 6.0 blur and read as a smear wall; the
+    crossfade only reappeared on the final release. Persistence built as
+    "never drop" had become "never reveal" (steps=7 across a 5-hop burst =
+    flat hold, log evidence). RECEIPT: burst log + arithmetic.
+
+  [U-089] OPERATOR DIRECTIVE: effect must keep working at fast switching;
+    way stronger persistence.
+
+  [W-315] CHASE ENVELOPE AUTHORED AND PROVEN IN-REPO. Blur now runs one
+    punch-and-release cycle PER HOP at any speed: the pulse phase chases
+    strength toward peak at peak/rise_time per second from wherever it
+    currently is (rate-based, dt-clamped 0.1 s) — a hop landing mid-release
+    re-punches from the live value with zero dip; release re-anchors at the
+    new pulse end. No burst-wide hold, no resets, no missed hops. SANDBOX:
+    py_compile PASS; scenario 1 PASS — consecutive hops each produce a clean
+    punch-to-6.000-then-release cycle (zero dips), one burst line per hop
+    state=OK; scenario 2 flood PASS (cap intact, ends at true viewport);
+    degraded PASS. RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-13] Crossfade accepted visible; chase envelope makes
+  every hop punch at any speed. Next: controller-only reinstall + fast verdict.

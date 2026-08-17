@@ -92,6 +92,8 @@ Supersedes the 12.148 prompt. This is the 12.149 pre-target edge.
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.151 (W-314 crossfade first seen, X-160 peak-hold masked in-burst fades,
+U-089/W-315 chase envelope per-hop punch, sandbox-proven),
 12.150 (W-312 preload+flood target-proven, X-159 masking physics + same-role
 no-dissolve, U-088/W-313 pulse-then-dissolve + ceiling 8.0, sandbox-proven),
 12.149 (W-310 config-drift receipt, X-158 event flood backlog 23,
