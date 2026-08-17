@@ -7,6 +7,11 @@ SUMMARY= line with p50/p95/p99/stdev and a p1-p99 jitter spread in ms.
 Degrades to FRAMETIME_UNAVAILABLE (exit 0) on any X/GLX failure so callers
 never block. Authored and py_compiled in the sandbox, where X/GPU are absent.
 
+Uses the classic glXChooseVisual path (not glXChooseFBConfig): its attribute
+tokens are GLX_RGBA=4, GLX_DOUBLEBUFFER=5, GLX_RED_SIZE=8, GLX_GREEN_SIZE=9,
+GLX_BLUE_SIZE=10, GLX_DEPTH_SIZE=12, terminated by 0. Mixing those old tokens
+with glXChooseFBConfig returns no configs on NVIDIA.
+
 Usage: xmb-perf-frametime [duration_seconds] [label]
 """
 import ctypes, ctypes.util, os, statistics, sys, time
@@ -25,7 +30,7 @@ def main():
     except OSError as e:
         return fail(f"cannot load libX11/libGL: {e}")
 
-    Dp = ctypes.c_void_p; Win = ctypes.c_ulong
+    Dp = ctypes.c_void_p; Win = ctypes.c_ulong; GCtx = ctypes.c_void_p
     class VI(ctypes.Structure):
         _fields_ = [("visual", ctypes.c_void_p), ("visualid", ctypes.c_ulong),
             ("screen", ctypes.c_int), ("depth", ctypes.c_int), ("x_class", ctypes.c_int),
@@ -49,11 +54,9 @@ def main():
             ctypes.POINTER(SWA)], Win)),
         (x11.XMapWindow, ([Dp, Win], None)), (x11.XFlush, ([Dp], None)),
         (x11.XCloseDisplay, ([Dp], None)), (x11.XStoreName, ([Dp, Win, ctypes.c_char_p], None)),
-        (gl.glXChooseFBConfig, ([Dp, ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)],
-            ctypes.POINTER(ctypes.c_void_p))),
-        (gl.glXGetVisualFromFBConfig, ([Dp, ctypes.c_void_p], ctypes.POINTER(VI))),
-        (gl.glXCreateNewContext, ([Dp, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int], ctypes.c_void_p)),
-        (gl.glXMakeCurrent, ([Dp, Win, ctypes.c_void_p], ctypes.c_int)),
+        (gl.glXChooseVisual, ([Dp, ctypes.c_int, ctypes.POINTER(ctypes.c_int)], ctypes.POINTER(VI))),
+        (gl.glXCreateContext, ([Dp, ctypes.POINTER(VI), GCtx, ctypes.c_int], GCtx)),
+        (gl.glXMakeCurrent, ([Dp, Win, GCtx], ctypes.c_int)),
         (gl.glXSwapBuffers, ([Dp, Win], None)),
         (gl.glXGetProcAddress, ([ctypes.c_char_p], ctypes.c_void_p)),
         (gl.glXQueryExtension, ([Dp, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)], ctypes.c_int)),
@@ -68,25 +71,21 @@ def main():
         ev = ctypes.c_int(); err = ctypes.c_int()
         if not gl.glXQueryExtension(dpy, ctypes.byref(ev), ctypes.byref(err)):
             return fail("no GLX on display")
-        # RGBA double-buffered 24-depth. 1=GLX_USE_GL, 4=RGBA, 5=DOUBLEBUFFER,
-        # 8/9/10=RED/GREEN/BLUE_SIZE, 12=DEPTH_SIZE, 0x8000=none.
-        attrs = [1, 4, 5, 8, 8, 9, 8, 10, 8, 12, 24, 0x8000]
-        arr = (ctypes.c_int * len(attrs))(*attrs); n = ctypes.c_int(0)
-        cfgs = gl.glXChooseFBConfig(dpy, scr, arr, ctypes.byref(n))
-        if not cfgs or n.value < 1:
-            return fail("glXChooseFBConfig returned nothing")
-        vi_p = gl.glXGetVisualFromFBConfig(dpy, cfgs[0])
+        # classic glXChooseVisual token list; 0 terminates.
+        attrs = [4, 5, 8, 8, 9, 8, 10, 8, 12, 24, 0]
+        arr = (ctypes.c_int * len(attrs))(*attrs)
+        vi_p = gl.glXChooseVisual(dpy, scr, arr)
         if not vi_p:
-            return fail("glXGetVisualFromFBConfig NULL")
+            return fail("glXChooseVisual returned NULL (no RGBA/double-buffered visual)")
         vi = vi_p.contents
-        cmap = x11.XCreateColormap(dpy, root, vi.visual, 0)
+        cmap = x11.XCreateColormap(dpy, root, vi.visual, 0)  # AllocNone=0
         swa = SWA(); swa.colormap = cmap; swa.event_mask = 0
         win = x11.XCreateWindow(dpy, root, 10, 10, 160, 90, 0, vi.depth, 1, vi.visual,
-            0x8000, ctypes.byref(swa))  # 0x8000 = CWColormap
+            0x8000, ctypes.byref(swa))  # 0x8000=CWColormap, 1=InputOutput
         if not win:
             return fail("XCreateWindow failed")
         x11.XStoreName(dpy, win, b"xmb-perf-frametime"); x11.XMapWindow(dpy, win); x11.XFlush(dpy)
-        ctx = gl.glXCreateNewContext(dpy, cfgs[0], 0x8004, None, 1)  # GLX_RGBA_TYPE
+        ctx = gl.glXCreateContext(dpy, vi_p, None, 1)  # direct=True
         if not ctx or not gl.glXMakeCurrent(dpy, win, ctx):
             return fail("GL context creation/makecurrent failed")
         p = gl.glXGetProcAddress(b"glXGetSyncValuesOML")

@@ -75,14 +75,21 @@ record() {
   snapshot --quiet >"$OUT/snapshot.txt" 2>&1 || true
   GPU="$OUT/gpu.csv"
   echo "perf: sampling gpu ${DUR}s..."
-  timeout "$DUR" nvidia-smi --query-gpu=timestamp,index,name,utilization.gpu,utilization.memory,utilization.encoder,utilization.decoder,memory.used,temperature.gpu,power.draw,clocks.sm,clocks.mem --format=csv,noheader,nounits -lms "$INT" >"$GPU" 2>"$OUT/gpu.err" || true
+  timeout "$DUR" nvidia-smi --query-gpu=timestamp,index,name,utilization.gpu,utilization.memory,utilization.encoder,utilization.decoder,memory.used,temperature.gpu,power.draw,clocks.sm,clocks.mem --format=csv,nounits -lms "$INT" >"$GPU" 2>"$OUT/gpu.err" || true
   echo "perf: gpu samples=$(wc -l <"$GPU"|tr -d ' ')"
   PROC="$OUT/procs.tsv"; echo -e "sample\tpid\tcomm\tpcpu\tpmem\trss_kb" >"$PROC"
   END=$(($(date +%s)+DUR)); i=0
   while [ "$(date +%s)" -lt "$END" ]; do i=$((i+1)); PIDS=""
     for n in compiz emerald cairo-dock xfdesktop xfce4-panel; do PIDS="$PIDS $(pgrep -x "$n" 2>/dev/null)"; done
     PIDS="$PIDS $(pgrep -x xwinwrap 2>/dev/null) $(pgrep -f 'mpv.*(loop-60s|xmb)' 2>/dev/null)"
-    for pid in $PIDS; do [ -d "/proc/$pid" ] || continue; L=$(ps -o comm=,pcpu=,pmem=,rss= -p "$pid" 2>/dev/null) || continue; echo -e "$i\t$pid\t$L" >>"$PROC"; done
+    for pid in $PIDS; do
+      [ -d "/proc/$pid" ] || continue
+      # ps emits whitespace-separated columns; re-split so the TSV has real
+      # tabs (a space-joined blob in the comm column garbled every numeric
+      # field in the first target run).
+      read -r comm pcpu pmem rss <<<"$(ps -o comm=,pcpu=,pmem=,rss= -p "$pid" 2>/dev/null)" || continue
+      [ -n "${comm:-}" ] && printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$i" "$pid" "$comm" "$pcpu" "$pmem" "$rss" >>"$PROC"
+    done
     sleep 1; done
   MPV="$OUT/mpv.txt"; : >"$MPV"
   if [ -S "$RUNX/mpv.sock" ]; then cat "$RUNX/state.json" 2>/dev/null >>"$MPV"
@@ -94,7 +101,11 @@ def c(*a):
     while True:
         r=json.loads(f.readline())
         if r.get("request_id")==1: return r.get("data",r.get("error"))
-for p in ("estimated-vf-fps","vo-drop-frame-count","decoder-frame-drop-count","frame-drop-count","avsync","mistimed-frame-count","video-codec","hwdec-current"):
+# mpv 0.41 on this target supports a subset of the obvious names (verified):
+# estimated-vf-fps, frame-drop-count, video-codec, video-format, width, height,
+# display-fps. vo-drop-frame-count/decoder-frame-drop-count/avsync/hwdec-current
+# return unavailable here and are skipped rather than spamming ERR lines.
+for p in ("estimated-vf-fps","frame-drop-count","video-codec","video-format","width","height","display-fps","estimated-frame-count"):
     try: print(f"{p}={c('get_property',p)}")
     except Exception as e: print(f"{p}=ERR({e})")
 f.close();s.close()
