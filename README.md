@@ -24,9 +24,9 @@ proven until the target proves it.
 
 ## The operator
 
-Works from a phone. Reads one paste block at a time, on small lines, and
-reports back what the screen actually showed. That constraint shapes every
-delivery: short lines, one block, one verdict word at the end.
+Works from the desktop itself, with a real terminal. Runs what you deliver and
+reports back what actually happened. Deliver the most work that can be safely
+verified in one pass, and name the gate that decides pass or fail.
 
 ## Where the instructions live
 
