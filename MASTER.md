@@ -10,7 +10,8 @@ Five parts, in reading order:
 - **II. Quality control** — the check you run every time, without exception.
 - **III. Constraints** — what is settled and must not be re-litigated.
 - **IV. Ground truth** — verified facts about the two machines.
-- **V. Master context** — what has been built, why, and where it stands.
+- **V. Master context** — what has been built, why, and where it stands. Its
+  "ACTIVE OBJECTIVE" heading is where a new session starts work.
 
 Parts I–III are stable. Part IV grows only when a command produces a new fact.
 Part V is the project's memory: it is edited to stay true, not appended to.
@@ -19,7 +20,7 @@ Part V is the project's memory: it is edited to stay true, not appended to.
 
 ## I. Guidelines
 
-Ten fundamentals. They apply to every agent on every task.
+Eleven fundamentals. They apply to every agent on every task.
 
 ### 1. Optimize relentlessly
 
@@ -104,7 +105,20 @@ from what is inferred, and never invent detail hidden by resolution or
 compression. Machine inspection describes pixels; it does not replace the
 operator's judgement of legibility, depth, motion, or aesthetic success.
 
-### 10. Keep this file optimal
+### 10. Two files, and no more
+
+`README.md` and `MASTER.md` are the entire documentation surface. Do not
+create continuation prompts, session notes, handoff files, summaries, plans,
+or status files — every one of those is a second place to look, and a second
+place to look is a second place to drift. This has happened before: a
+`CONTINUE_PROMPT.md` accumulated beside MASTER.md, went stale, and contradicted
+it about which edge was current.
+
+If something is worth writing down, it belongs in Part V. If it is not worth
+Part V, it is not worth a file. Scratch work stays out of the repository, and
+generated artifacts stay out of git.
+
+### 11. Keep this file optimal
 
 This file is the inheritance of every future session, so its quality compounds
 in both directions. Write to it as an editor, not an accumulator.
@@ -428,12 +442,70 @@ the full approved shape), and tight latest-wins where a new viewport event
 replaces anything pending. Proven in the sandbox harness across slow, fast,
 flood, and degraded cases; unproven on target.
 
-**Next action** — controller-only reinstall from a single SHA via
-`xmb-runtime-install`, with the config heredoc re-issued in the same block.
-Gates: `--check` prints `fade_ms=350 blur_ms=500 peak=6.0`; every burst logs
+Pending target trial: controller-only reinstall from a single SHA via
+`xmb-runtime-install`, config heredoc re-issued in the same block. Gates:
+`--check` prints `fade_ms=350 blur_ms=500 peak=6.0`; every burst logs
 `state=OK` at `rise_ms=75 fall_ms=210`; pending never exceeds 1; crossfade
 visible on role-changing hops. Any failure rolls back controller and config
-together. Autostart stays hidden until acceptance.
+together. Autostart stays hidden until acceptance. **This trial is currently
+behind Phase 6** — do not tune the switcher on a desktop that is already
+dropping frames, or you will be tuning against the wrong baseline.
+
+### Phase 6 — desktop performance (ACTIVE OBJECTIVE)
+
+The operator reports FPS dipping and general jitter across the desktop. Every
+phase above is functionally "complete" and none was ever optimized as a whole:
+each was accepted on its own gate, in isolation, and the accumulated cost has
+never been measured together. That is the defect. Treat this as one system,
+not five features.
+
+**What is known to be relevant, before measuring anything**
+
+- Smoothness on this box was hard-won once already, via `__GL_YIELD=USLEEP`
+  in the Compiz launch environment. Verify it is still in the running
+  process's environ (`/proc/<pid>/environ`) before theorizing about anything
+  else. It has silently vanished from the profile before.
+- The display settings that must hold: `detect_outputs=false` with the two
+  explicit output rectangles, `detect_refresh_rate=false`, `refresh_rate=120`,
+  `sync_to_vblank=true`. CCSM has discarded every one of these before, more
+  than once. Read the live profile, not the intended one.
+- Heavy eyecandy plugins — `water`, `wobbly`, `cube`, `3d`, `gears`,
+  `animationplus`, and especially `blur`, `mblur`, `reflex`, `bench`,
+  `showmouse`, `mousepoll` — were the original choppiness suspects and have
+  crept back into the active plugin list before on their own.
+  `compiz-profile-repair` deliberately does not police the plugin list, so
+  nothing is guarding this.
+- The wallpaper is a permanent GPU tenant: one mpv decoding a 4480x1440 HEVC
+  loop continuously at 10-11%. It is not free, and it now shares the GPU with
+  a compositor, a dock, and whatever the operator is actually doing.
+- Compositing a full-width dual-monitor surface interacts with NVIDIA
+  `ForceFullCompositionPipeline`, which is a real lever here and has been
+  observed on this box.
+
+**Method — measure first, one variable at a time**
+
+Do not ship a settings bundle. The failure mode this project has already lived
+through is exactly that: many simultaneous changes, no attribution, and a
+profile nobody can reason about. Sequence:
+
+1. **Baseline, numerically.** Capture frame timing, GPU and CPU utilization,
+   VRAM, clocks and power under three conditions — idle desktop, wallpaper
+   only, and the operator's real workload. Distinguish a low average from
+   frame-time spikes; "jittery" and "low FPS" are different faults with
+   different causes.
+2. **Attribute before fixing** (Part II, check 9). Establish whether the cost
+   is the compositor, the plugin set, the wallpaper decode, the dock, or
+   thermal and clock behaviour. One A/B per suspect, each reversible.
+3. **Fix the cause, then re-measure** against the same baseline. A change that
+   cannot be shown to move a number does not ship.
+
+**Gate** — a measured improvement in frame-time consistency, plus the
+operator's own verdict that the desktop feels smooth. Both, not either. Every
+change carries its inverse, and the accepted state is re-verified SAFE and
+persistent afterward.
+
+**Then** — return to the Phase 5 switcher trial against the new, faster
+baseline, and merge.
 
 ### Parked
 
