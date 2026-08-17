@@ -9191,3 +9191,45 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-9] Reveal envelope makes the crossfade visible under
   a 4.0-peak burst blur. Next: reinstall + visibility verdict.
+
+--------------------------------------------------------------------------------
+12.148 CROSSFADE MASKING SOLVED NUMERICALLY; PUNCH-AND-REVEAL ENVELOPE
+--------------------------------------------------------------------------------
+
+  [W-308] U-085 REVEAL TRIAL: ALL GATES GREEN INCLUDING THE NEW
+    WHITESPACE-TOLERANT SHA (1f3e39cb... exact match); check 350/500/4.0;
+    start PASS. Bursts ran exactly as designed on target: singles peak=4.000
+    max=3.997/3.999 steps=22/25, and an 8-hop queued burst max=4.000
+    steps=29, all rise_ms=175 fall_ms=325 state=OK. Operator verdict:
+    crossfade still never appears; unacceptable; directed a docs-first root
+    fix. Rollback applied at paste end; desktop SAFE. RECEIPT: operator
+    paste 2026-08-16.
+
+  [X-157] ROOT CAUSE PROVEN NUMERICALLY; MECHANISM AGAIN HEALTHY. User
+    shaders hook the composited MAIN output (libplacebo docs re-verified) —
+    blur cannot be limited to one blend layer, so any blur alive during the
+    fade masks the dissolve. A cosine fall spends ~84% of its time above 25%
+    of peak; at fade end the u085 strength was still 4.0*cos(pi/2*175/325)
+    ~ 2.7, so every dissolve completed buried and the only clean moment came
+    after the switch had ended. The eased (1-cos)/2 blend compounded it by
+    concentrating dissolve motion mid-fade, exactly where blur is strongest.
+    RECEIPT: arithmetic + doc re-check this session.
+
+  [U-086] OPERATOR DIRECTIVE: make the crossfade appear; best way; docs-first.
+
+  [W-309] PUNCH-AND-REVEAL ENVELOPE AUTHORED AND PROVEN IN-REPO. Blur now
+    punches 0->peak in FADE_MS/4 (~88 ms at 350), holds at peak while hops
+    queue (burst persistence unchanged), then releases over the remaining
+    3*FADE_MS/4 on a cos^4 fast-release curve, hitting exact 0 exactly when
+    the fade completes — blur can no longer outlive or mask the switch.
+    BLUR_MS is now a pulse window capped at FADE_MS (config 500 clamps to
+    350; validation unchanged). Blend motion returned to linear
+    min(N/F,1): the cos easing buried mix motion under peak blur; linear
+    puts ~40% of the motion in the clean tail (strength < 1.0 for the last
+    ~130 ms of the fade at 350/500/4.0). SANDBOX: py_compile PASS; mock
+    run() PASS — rise_ms=88 fall_ms=262 state=OK with capped window,
+    unimodal 0->4.000->0 with exact zero, one set+clr per burst, linear u
+    in the generated graph; degraded path PASS. RECEIPT: sandbox harness.
+
+[2026-08-16][M17-XMB-IPC-10] Masking solved by geometry: punch in, reveal
+  out, linear dissolve. Next: reinstall + first clean-crossfade verdict.

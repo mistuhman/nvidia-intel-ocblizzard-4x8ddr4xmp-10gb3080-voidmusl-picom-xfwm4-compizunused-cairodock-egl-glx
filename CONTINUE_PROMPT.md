@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.146 prompt. This is the 12.147 pre-target edge.
+Supersedes the 12.147 prompt. This is the 12.148 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -67,12 +67,16 @@ Supersedes the 12.146 prompt. This is the 12.147 pre-target edge.
    (W-304/W-306). Timings operator-directed: FADE_MS=350, BLUR_MS=500 = total
    blur window (U-084/W-305). X-156 found the peak-hold blur masked the
    crossfade; W-307 REVEAL envelope releases from the fade midpoint so the
-   dissolve is visible as blur lifts, BLUR_PEAK raised to 4.0 (U-085). NEXT:
-   reinstall controller AND rewrite target config with 350/500 + peak=4.0
-   (live config overrides defaults); --check must print fade_ms=350
-   blur_ms=500 peak=4.0; switch slow + fast; burst lines must read
-   rise_ms=175 fall_ms=325 state=OK and the crossfade must be VISIBLE as the
-   blur releases. Verdict word; any failure: rollback block (controller +
+   X-157 then proved the masking numerically (blur at fade end still ~2.7;
+   cos fall stays >25% of peak ~84% of its time); U-086/W-309 punch-and-
+   reveal: blur punches to peak in FADE_MS/4, holds during queued bursts,
+   releases on a cos^4 fast curve to exact 0 exactly at fade end; BLUR_MS
+   capped at FADE_MS; blend motion back to linear so mix motion lands in the
+   clean tail. NEXT: reinstall controller (config stays 350/500/4.0),
+   --check must print fade_ms=350 blur_ms=500 peak=4.0; switch slow + fast;
+   burst lines must read rise_ms=88 fall_ms=262 state=OK; the crossfade
+   must be VISIBLE on different-role hops (same-role hops pulse blur only,
+   by design). Verdict word; any failure: rollback block (controller +
    config). Autostart remains Hidden/false until accept. Never run target's
    old SHA 7484d253 controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
@@ -81,9 +85,10 @@ Supersedes the 12.146 prompt. This is the 12.147 pre-target edge.
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.148 (W-308 gates green at peak 4.0, X-157 masking proven numerically,
+U-086/W-309 punch-and-reveal + linear dissolve, sandbox-proven),
 12.147 (X-156 crossfade masked by peak-hold blur, U-085/W-307 reveal envelope
 + BLUR_PEAK 4.0, sandbox-proven),
-12.146 (W-304/W-306 burst blur target-proven, U-084/W-305 timing 350/500),
 12.145 (W-301 crossfade target-accepted, X-155 blur-at-speed fail,
 W-302/U-083 persistent burst blur, sandbox-proven),
 12.144 (X-154/W-300/U-082 blur peak + eased crossfade, sandbox-proven),

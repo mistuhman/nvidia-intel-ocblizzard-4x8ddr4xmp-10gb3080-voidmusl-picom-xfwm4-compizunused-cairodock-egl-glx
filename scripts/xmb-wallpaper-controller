@@ -90,7 +90,7 @@ def blend(weights, target, ids, frames):
     if len(active) == 1: return steady(target, ids)
     total = sum(weights.get(r, 0) for r in active) or 1; start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
-    u = f"(1-cos(PI*min(N/{frames}\\\\,1)))/2"
+    u = f"min(N/{frames}\\\\,1)"
     for index, role in enumerate(active[1:], 1):
         cumulative += start[role]
         initial = start[role] / cumulative
@@ -105,7 +105,7 @@ def blend(weights, target, ids, frames):
 def blur_rise(t):
     t = max(0.0, min(t, 1.0)); return 1.0 if t == 1.0 else math.sin(math.pi / 2.0 * t)
 def blur_fall(t):
-    t = max(0.0, min(t, 1.0)); return 0.0 if t == 1.0 else math.cos(math.pi / 2.0 * t)
+    t = max(0.0, min(t, 1.0)); return 0.0 if t == 1.0 else math.cos(math.pi / 2.0 * t) ** 4
 def slot_at_viewport(line=None):
     if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
     match = re.search(r"=\s*(-?\d+)", line); return max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
@@ -156,7 +156,7 @@ def run(replace):
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
-        rise_time, fall_time = duration / 2, max(blur_duration - duration / 2, 0.1)
+        window = min(blur_duration, duration); rise_time, fall_time = window / 4, max(3 * window / 4, 0.1)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         while not stop_now and xww.poll() is None:
@@ -185,10 +185,10 @@ def run(replace):
                 if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if events or (active and now - started < duration / 2):
+                if events or (active and now - started < rise_time):
                     target = peak * blur_rise((now - burst_start) / rise_time)
                 else:
-                    if not idle_at: idle_at = started + duration / 2
+                    if not idle_at: idle_at = started + rise_time
                     target = peak * blur_fall((now - idle_at) / fall_time)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):
