@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import collections, fcntl, json, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
+import collections, fcntl, json, math, os, re, select, shlex, shutil, signal, socket, subprocess, sys, time
 from pathlib import Path
 ROOT = Path(os.getenv("XMB_BAKE_ROOT", "/mnt/games/xmb-wave-bake"))
 CFG = Path(os.getenv("XMB_CONFIG", Path.home() / ".config/xmb-wallpaper.conf"))
@@ -12,7 +12,7 @@ ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 500, "blur": 700, "hwdec": "nvdec-copy"}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 6.0}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -22,10 +22,12 @@ def config():
             elif line.startswith("FADE_MS="): out["fade"] = int(line.split("=", 1)[1])
             elif line.startswith("BLUR_MS="): out["blur"] = int(line.split("=", 1)[1])
             elif line.startswith("HWDEC="): out["hwdec"] = line.split("=", 1)[1].strip()
+            elif line.startswith("BLUR_PEAK="): out["peak"] = float(line.split("=", 1)[1])
             else: fail(f"unsupported config line: {raw}")
     if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
     if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
     if not out["fade"] <= out["blur"] <= 10000: fail("BLUR_MS must be FADE_MS..10000")
+    if not 0.0 <= out["peak"] <= 8.0: fail("BLUR_PEAK must be 0.0..8.0")
     if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"): fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 def check():
@@ -83,12 +85,12 @@ def hold(role, ids, warm):
     for index, other in enumerate((r for r in warm if r != role), 1):
         output = "[vo]" if index == len(warm) - 1 else f"[hold{index}]"; chains.append(f"[vid{ids[other]}]{source}blend=all_opacity=0{output}"); source = output
     return ";".join(chains) if chains else steady(role, ids)
-def blend(weights, target, ids, frames):
+def blend(weights, target, ids, frames, delay=0):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
     if len(active) == 1: return steady(target, ids)
     total = sum(weights.get(r, 0) for r in active) or 1; start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
-    u = f"min(N/{frames}\\\\,1)"
+    u = f"min(max((N-{delay})/{frames}\\\\,0)\\\\,1)" if delay else f"min(N/{frames}\\\\,1)"
     for index, role in enumerate(active[1:], 1):
         cumulative += start[role]
         initial = start[role] / cumulative
@@ -100,6 +102,10 @@ def blend(weights, target, ids, frames):
         source = output
     command = ",".join(commands)
     return ";".join(chains) + f";[premix]sendcmd=c='0-999999 {command}'[vo]"
+def blur_rise(t):
+    t = max(0.0, min(t, 1.0)); return 1.0 if t == 1.0 else math.sin(math.pi / 2.0 * t)
+def blur_fall(t):
+    t = max(0.0, min(t, 1.0)); return 0.0 if t == 1.0 else math.cos(math.pi / 2.0 * t) ** 4
 def slot_at_viewport(line=None):
     if line is None: line = subprocess.run(["xprop", "-root", "_NET_DESKTOP_VIEWPORT"], text=True, capture_output=True, check=True).stdout
     match = re.search(r"=\s*(-?\d+)", line); return max(0, min(3, (int(match.group(1)) + 2240) // 4480)) if match else 0
@@ -126,7 +132,11 @@ def launch(cfg, initial):
                 for role in order[1:]:
                     if filename == video(role).name: ids[role] = track.get("id")
             if set(ids) == set(ROLES) and len(set(ids.values())) == 3:
-                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"])))); return xww, ipc, ids, log
+                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"]))))
+                try:
+                    ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000")
+                except RuntimeError: print("blur shader preload failed; crossfade continues", flush=True)
+                return xww, ipc, ids, log
         time.sleep(.05)
     (ipc and ipc.close()); kill(xww.pid, "xwinwrap"); fail(f"track map timeout: {tracks}; inspect {LOG}")
 def state_write(xww, role):
@@ -148,28 +158,61 @@ def run(replace):
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], stdout=subprocess.PIPE); os.set_blocking(watch.stdout.fileno(), False)
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
+        peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
+        burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
+        cur_duration, cur_rise, cur_fall = duration, max(duration * 0.214, 0.03), max(duration * 0.6, 0.1)
+        fade_frames = round(duration * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
-        active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on, blur_deadline = False, 0.0
+        active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
+        last_tick = time.monotonic()
         while not stop_now and xww.poll() is None:
-            if select.select([watch.stdout], [], [], .05)[0]:
+            if select.select([watch.stdout], [], [], .016 if blur_on or active else .05)[0]:
                 chunk = os.read(watch.stdout.fileno(), 65536); chunk or fail("xprop watcher exited")
                 event_buf += chunk; lines = event_buf.split(b"\n"); event_buf = lines.pop()
                 for raw in lines:
                     desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (target_slot if active else current_slot)
-                    if desired != planned: events.append(desired)
-            now = time.monotonic()
-            if active and now - started >= duration:
+                    if desired != planned:
+                        events.clear(); events.append(desired)
+            now = time.monotonic(); dt = min(now - last_tick, 0.1)
+            if active and now - started >= cur_duration:
                 current_slot, current_role, active = target_slot, target_role, False
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
                 if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
             if not active and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
-                if not blur_on: ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
-                blur_deadline = now + blur_duration; print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
+                if target_slot == current_slot: continue
+                frac = min(max(strength_last / peak, 0.0), 1.0) if blur_on else 0.0
+                burst_start = now - math.asin(frac) / (math.pi / 2.0) * cur_rise
+                if not blur_on:
+                    blur_on = True
+                    strength_last, blur_fail, idle_at = 0.0, 0, 0.0
+                    burst_hops, burst_steps, burst_max = 1, 0, 0.0
+                else:
+                    burst_hops += 1; idle_at = 0.0
+                print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
+                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, 0))
                 active, started = True, now; state_write(xww, target_role)
-            if blur_on and now >= blur_deadline:
-                ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on = False
+            if blur_on:
+                if active and now - burst_start < cur_rise:
+                    target = peak * blur_rise((now - burst_start) / cur_rise)
+                else:
+                    if not idle_at:
+                        idle_at = burst_start + cur_rise if active else now
+                        target = peak
+                    else:
+                        target = peak * blur_fall((now - idle_at) / cur_fall)
+                burst_max = max(burst_max, target)
+                if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):
+                    try:
+                        ipc.call("set_property", "glsl-shader-opts", f"xmb_strength={target:.3f}")
+                        strength_last, burst_steps = target, burst_steps + 1
+                    except RuntimeError:
+                        blur_fail += 1
+                        if blur_fail == 3: print("blur animation disabled: glsl-shader-opts unsupported; crossfade continues", flush=True)
+                if idle_at and now - idle_at >= cur_fall:
+                    blur_on, strength_last = False, 0.0
+                    print(f"blur burst hops={burst_hops} peak={peak:.3f} max={burst_max:.3f} steps={burst_steps} rise_ms={round(cur_rise * 1000)} fall_ms={round(cur_fall * 1000)} state={'OK' if blur_fail == 0 else 'DEGRADED'}", flush=True)
+            last_tick = now
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
         if watch: watch.terminate()
@@ -223,7 +266,7 @@ def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
     if action == "run": run("--replace" in sys.argv)
     elif action == "start": check(); start("--replace" in sys.argv)
-    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
+    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} peak={cfg['peak']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
     elif action == "--status": raise SystemExit(status())
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)

@@ -9019,3 +9019,454 @@ What worked, in order, when the box went black before lightdm with no TTY.
 [2026-08-16][M17-XMB-IPC-5] Track race fixed in sandbox; complete-every-fade target retry next. Autostart remains disabled.
   [U-080] Exact-order raw X-event queue + warm workspace decoders authored after human rapid-return failure; burst mock completed main->work->main->work->main in order. Target unproven.
   [U-081] Target exact-role queue ran at 59.99955 fps/SAFE, but human requires every viewport boundary including same-role 2->3 and 4->1 plus stronger blur; per-slot queue + double Gaussian authored, target unproven.
+
+--------------------------------------------------------------------------------
+12.144 TARGET PATCH-ABORT DIAGNOSED; BLUR PEAK + EASED CROSSFADE LANDED IN-REPO
+--------------------------------------------------------------------------------
+
+  [X-154] TARGET PATCH ABORTED ON A DIVERGENT ANCHOR; THE ATOMIC GUARD SAVED
+    THE FILE. The strength-animation patch was authored against repo HEAD, but
+    the installed target controller is an older SHA: anchor 7
+    (peak/strength_last init) matched 0 times and the script exited before
+    os.replace, so nothing was written. --check printing the pre-patch line
+    (no peak=) is the proof. The separately installed 2330 B double-Gaussian
+    shader defaults xmb_strength=0.0, which is mathematically identity (its
+    taps sum to 1.0 and collapse onto the center pixel), and same-role
+    viewport hops build no blend graph at all; an unpatched controller on top
+    of that shader therefore shows no visible transition on those hops — the
+    reported "no fade or blur". The restart itself was clean
+    (31046/31066/31067, main-red). Standing rule: never re-patch an installed
+    copy whose SHA diverges from repo HEAD; re-install whole files from one
+    SHA via xmb-runtime-install. RECEIPT: operator paste 2026-08-16 22:53
+    (PATCH ABORT + clean restart).
+
+  [W-300] BLUR PEAK ANIMATION + EASED CROSSFADE AUTHORED AND PROVEN IN-REPO.
+    Shader: repo now carries the exact 2330 B xmb_strength double-Gaussian the
+    target already runs (wc -c identical), so xmb-runtime-install keeps both
+    sides equal. Controller: BLUR_PEAK config line (default 2.0, validated
+    0.0..4.0, printed by --check); blur_envelope helper (sin rise across the
+    first half of FADE_MS, cos fall to BLUR_MS); per-tick glsl-shader-opts
+    animation quantized to >=0.02 steps; strength zeroed before shader load
+    and state reset after unload; and the crossfade mix eased from linear
+    min(N/F,1) to (1-cos(PI*min(N/F,1)))/2 so blend weight no longer drives
+    at constant slope into its hold — the crossfade-persistence fix.
+    Installer config template documents BLUR_PEAK. SANDBOX: py_compile PASS;
+    envelope unit tests PASS (0/peak/0 endpoints, monotone rise+fall, clamp
+    past deadline); eased blend graph escaping PASS incl. three-role retarget;
+    full mock xwinwrap/mpv/xprop run() PASS — nonsequential track IDs mapped,
+    shader set+clr once per transition, strength 0->1.999->0, same-role hop
+    pulsed blur with zero blend graphs, --check prints peak=2.0. Target
+    remains the acceptance gate. RECEIPT: sandbox harness this session.
+
+  [U-082] RETRY GATE: one-SHA re-install of controller+shader via
+    xmb-runtime-install, then the U-073 trial order: --check must print
+    peak=2.0 (the install-correctness token), --stop, start --replace, switch
+    1->2->3->4->1 including same-role hops 2->3 and 4->1 (the blur pulse is
+    their visible transition now), --status, collect counters, human verdict
+    word. Any black frame/lag/launch error: --restore. Autostart stays
+    Hidden/false until accept. BLUR_PEAK in ~/.config/xmb-wallpaper.conf tunes
+    strength 0.0..4.0. Target unproven.
+
+[2026-08-16][M17-XMB-IPC-6] Divergent-anchor abort diagnosed; blur peak +
+  eased crossfade sandbox-proven in-repo. Next: single-SHA re-install trial.
+
+--------------------------------------------------------------------------------
+12.145 TARGET CROSSFADE ACCEPTED; BLUR PULSE FAILED AT SPEED; PERSISTENT BURST BLUR
+--------------------------------------------------------------------------------
+
+  [W-301] U-082 REINSTALL TRIAL PASSED ITS GATES ON TARGET. Heredoc delivery
+    matched all tokens (15645 B, sha256 47e83631..., compile PASS), --check
+    printed peak=2.0, start PASS (27888/27907/27908), and the controller log
+    recorded start/complete cycles for every hop with one fade queued under
+    fast switching — viewport events flow, blends run, and the crossfade WORKS
+    on target for the first time since the retired shell path. This also
+    proves the earlier no-crossfade symptom was the divergent 15025 B
+    controller, not the XMB architecture. mpv held 60.0 fps; the
+    "mpv-xwinwrap-shim died, exit status 4" log lines are history from
+    pre-install runs, not this renderer. Operator verdict: works, blur fails.
+    Operator then rolled back to the pre-u082 backup; desktop SAFE.
+    RECEIPT: operator paste 2026-08-16 23:15.
+
+  [X-155] BLUR PULSE DESIGN DIED AT SWITCHING SPEED. The per-hop strength
+    reset to 0 plus per-hop shader unload/reload churn kept the blur near
+    zero during rapid switching and reloaded the Gaussian passes constantly.
+    Operator: "it needs to be persistent, very persistent". RECEIPT: same
+    paste (rollback + verdict).
+
+  [W-302] PERSISTENT BURST BLUR AUTHORED AND PROVEN IN-REPO (U-083). One
+    shader load per burst; no strength reset between hops. Envelope: sin rise
+    over FADE_MS/2 on cold start, HOLD AT PEAK while transitions are active
+    or queued (fast switching now sustains the blur), cos fall over
+    BLUR_MS-FADE_MS/2 after the last completion, then unload. Definite steps:
+    >=0.02 quantized emission with exact peak and exact 0.000 endpoints
+    always emitted; loop tick 16 ms while active/blur, 50 ms idle.
+    Utilization logged once per burst: hops/peak/max/steps/rise_ms/fall_ms/
+    state. glsl-shader-opts failures degrade gracefully (3-strike disable
+    line) and can never kill the crossfade. Default BLUR_PEAK 2.0 -> 3.0.
+    SANDBOX: py_compile PASS; shape units PASS; full mock run() PASS — one
+    shader set+clr across a two-hop burst with a fast same-role hop, unimodal
+    strength 0->3.000->0 with zero mid-burst resets, hops=2 state=OK line,
+    --check prints peak=3.0. RECEIPT: sandbox harness this session.
+
+  [U-083] RETRY GATE: heredoc reinstall (new tokens), --check must print
+    peak=3.0, switch slowly AND in a fast burst; the log must show one
+    "blur burst ... state=OK" line per burst with hops>1 on fast runs and
+    the blur must stay strong through the whole burst. Verdict word; any
+    failure: rollback block. Target unproven.
+
+[2026-08-16][M17-XMB-IPC-7] Crossfade accepted on target; blur rebuilt as a
+  persistent burst envelope. Next: heredoc reinstall + fast-burst trial.
+
+--------------------------------------------------------------------------------
+12.146 BURST BLUR PERSISTS ON TARGET; TIMING DIRECTIVE 350/500 APPLIED
+--------------------------------------------------------------------------------
+
+  [W-304] U-083 PERSISTENT BURST BLUR PROVED ON TARGET. Gates matched (16887 B,
+    sha256 8759a442..., compile PASS), --check printed peak=3.0, start PASS,
+    and the log recorded an 8-hop fast burst as ONE burst — hops=8 peak=3.000
+    max=3.000 steps=46 state=OK — plus clean single/triple bursts afterwards.
+    Blur persisted through rapid switching exactly as designed; operator:
+    "the blur persists". The "mpv-xwinwrap-shim died, exit status 4" +
+    "xwinwrap: window type - override" pair is now confirmed as a run-boundary
+    artifact (previous renderer shutting down as the next starts), not a
+    runtime fault; fps stayed 60.0. Operator rolled back to pre-u083 after
+    testing; desktop SAFE. RECEIPT: operator paste 2026-08-16.
+
+  [U-084] OPERATOR TIMING DIRECTIVE: crossfade "doesnt persist and needs to be
+    0.35 seconds"; blur "stays for way too long ... needs to be 0.5 seconds".
+    Root of the long blur: fall_time was BLUR_MS - FADE_MS/2, stretching a
+    single hop to ~0.95 s total. Redefined BLUR_MS as the TOTAL blur window
+    from the first hop: fall = BLUR_MS - FADE_MS. Template defaults now
+    FADE_MS=350, BLUR_MS=500; the target's existing config file is rewritten
+    with the same values on reinstall (controller reads live config).
+
+  [W-305] TIMING FIX AUTHORED AND PROVEN IN-REPO. One-line envelope change
+    (fall_time = max(blur_duration - duration, 0.1)); installer template
+    carries FADE_MS=350/BLUR_MS=500 with a BLUR_MS semantics comment.
+    SANDBOX: py_compile PASS; full mock run() PASS with the new config —
+    burst line rise_ms=175 fall_ms=150 state=OK (total window 0.50 s),
+    unimodal strength 0->3.000->0 with exact endpoints; degraded-path PASS
+    unchanged. RECEIPT: sandbox harness this session.
+
+[2026-08-16][M17-XMB-IPC-8] Persistent blur target-proven; timings cut to
+  operator spec. Next: reinstall with 350/500 config + verdict.
+
+--------------------------------------------------------------------------------
+12.147 CROSSFADE WAS MASKED BY PEAK-HOLD BLUR; REVEAL ENVELOPE + PEAK 4.0
+--------------------------------------------------------------------------------
+
+  [W-306] U-084 TRIAL RECEIPTS. Gates 1/3 PASS; GATE 2 sha mismatched on a
+    length-neutral paste-whitespace drift — py_compile + --check + the log
+    behavior (rise_ms=175 fall_ms=150, burst formatting) prove the delivered
+    file was functionally exact. Config rewrite to 350/500 confirmed live.
+    Operator ran an 11-hop fast burst: hops=11 max=3.000 state=OK with deep
+    queuing (queued=4), then clean single hops — persistent blur and new
+    speeds confirmed on target ("speed changed"). Operator also ran ccsm-safe
+    mid-trial: snapshot taken, plugin list before == after, enforced keys
+    7/7, VERDICT: SAFE, active hash 6e9cede0..., 4 changed lines vs snapshot
+    (receipt kept at Default.ini.pre-ccsm.1786924111). Rollback to pre-u084
+    at paste end; desktop SAFE. RECEIPT: operator paste 2026-08-16.
+
+  [X-156] CROSSFADE INVISIBLE BY ENVELOPE DESIGN FLAW, NOT GRAPH FAILURE.
+    The u084 envelope held blur at full peak through the entire fade and
+    released only after completion, so the dissolve was always masked and
+    read as blur-pulse-then-snap; operator: "the crossfade hasnt appeared
+    once". Blend graphs ran correctly on every different-role hop (log
+    evidence). Blur intensity also below operator preference at peak 3.0.
+
+  [U-085] OPERATOR DIRECTIVE: blur more intense; crossfade must be visible
+    and persistent.
+
+  [W-307] REVEAL ENVELOPE AUTHORED AND PROVEN IN-REPO. Fall now anchors at
+    the fade midpoint (fall_time = BLUR_MS - FADE_MS/2 = 325 ms at 350/500):
+    rise 175, hold at peak while hops are queued or the fade is in its first
+    half, then release across the fade's second half so the crossfade becomes
+    visible as the blur lifts; total blur window still BLUR_MS from the hop.
+    Burst peak-hold persistence unchanged. BLUR_PEAK default 3.0 -> 4.0;
+    repo defaults now 350/500/4.0, matching target config. Delivery gate 2
+    switched to a whitespace-tolerant normalized sha (per-line rstrip) after
+    the W-306 false alarm. SANDBOX: py_compile PASS; mock run() PASS —
+    hops=2 state=OK, rise_ms=175 fall_ms=325, unimodal 0->4.000->0 with exact
+    endpoints, one set+clr per burst; degraded path PASS. RECEIPT: sandbox.
+
+[2026-08-16][M17-XMB-IPC-9] Reveal envelope makes the crossfade visible under
+  a 4.0-peak burst blur. Next: reinstall + visibility verdict.
+
+--------------------------------------------------------------------------------
+12.148 CROSSFADE MASKING SOLVED NUMERICALLY; PUNCH-AND-REVEAL ENVELOPE
+--------------------------------------------------------------------------------
+
+  [W-308] U-085 REVEAL TRIAL: ALL GATES GREEN INCLUDING THE NEW
+    WHITESPACE-TOLERANT SHA (1f3e39cb... exact match); check 350/500/4.0;
+    start PASS. Bursts ran exactly as designed on target: singles peak=4.000
+    max=3.997/3.999 steps=22/25, and an 8-hop queued burst max=4.000
+    steps=29, all rise_ms=175 fall_ms=325 state=OK. Operator verdict:
+    crossfade still never appears; unacceptable; directed a docs-first root
+    fix. Rollback applied at paste end; desktop SAFE. RECEIPT: operator
+    paste 2026-08-16.
+
+  [X-157] ROOT CAUSE PROVEN NUMERICALLY; MECHANISM AGAIN HEALTHY. User
+    shaders hook the composited MAIN output (libplacebo docs re-verified) —
+    blur cannot be limited to one blend layer, so any blur alive during the
+    fade masks the dissolve. A cosine fall spends ~84% of its time above 25%
+    of peak; at fade end the u085 strength was still 4.0*cos(pi/2*175/325)
+    ~ 2.7, so every dissolve completed buried and the only clean moment came
+    after the switch had ended. The eased (1-cos)/2 blend compounded it by
+    concentrating dissolve motion mid-fade, exactly where blur is strongest.
+    RECEIPT: arithmetic + doc re-check this session.
+
+  [U-086] OPERATOR DIRECTIVE: make the crossfade appear; best way; docs-first.
+
+  [W-309] PUNCH-AND-REVEAL ENVELOPE AUTHORED AND PROVEN IN-REPO. Blur now
+    punches 0->peak in FADE_MS/4 (~88 ms at 350), holds at peak while hops
+    queue (burst persistence unchanged), then releases over the remaining
+    3*FADE_MS/4 on a cos^4 fast-release curve, hitting exact 0 exactly when
+    the fade completes — blur can no longer outlive or mask the switch.
+    BLUR_MS is now a pulse window capped at FADE_MS (config 500 clamps to
+    350; validation unchanged). Blend motion returned to linear
+    min(N/F,1): the cos easing buried mix motion under peak blur; linear
+    puts ~40% of the motion in the clean tail (strength < 1.0 for the last
+    ~130 ms of the fade at 350/500/4.0). SANDBOX: py_compile PASS; mock
+    run() PASS — rise_ms=88 fall_ms=262 state=OK with capped window,
+    unimodal 0->4.000->0 with exact zero, one set+clr per burst, linear u
+    in the generated graph; degraded path PASS. RECEIPT: sandbox harness.
+
+[2026-08-16][M17-XMB-IPC-10] Masking solved by geometry: punch in, reveal
+  out, linear dissolve. Next: reinstall + first clean-crossfade verdict.
+
+--------------------------------------------------------------------------------
+12.149 WHY IT "STOPPED WORKING": CONFIG DRIFT + EVENT FLOOD; ALWAYS-READY BLUR
+--------------------------------------------------------------------------------
+
+  [W-310] U-086 TRIAL RECEIPTS. Gates all green (16949 B, normalized sha
+    05b256f7... exact, compile PASS). The trial actually ran FADE_MS=500
+    BLUR_MS=700: the u085 rollback had restored the original 500/700 config
+    and the u086 delivery block omitted the config heredoc — delivery bug,
+    agent-side; standing fix is that every block re-issues the config. Even
+    so the trial proved v6 mechanics on target: burst lines rise_ms=125
+    fall_ms=375 state=OK at those timings; --status caught a live blend
+    graph with the linear u expression mid-transition; shader list loaded;
+    60.000179 fps. RECEIPT: operator paste 2026-08-17.
+
+  [X-158] EVENT FLOOD OUTRAN THE STRICT-ORDER QUEUE. Fast switching drove
+    queued= to 12-23 and rising: every intermediate viewport event replayed
+    as a full fade, so the wallpaper lagged the real viewport by many
+    seconds while blur held at peak across the churn — the overlap reported.
+    With the queue deep, effects look absent at the moment of switching even
+    though every graph is healthy. Combined with X-157 masking and the
+    config drift, this is the complete answer to "why did the crossfade
+    first work and not now": the mechanism never broke; its envelope, timing
+    config, and event policy did. RECEIPT: same paste log.
+
+  [U-087] OPERATOR DIRECTIVE: activate every single time no matter what;
+    persistence without overlap; load efficiently.
+
+  [W-311] ALWAYS-READY BLUR + FLOOD CAP AUTHORED AND PROVEN IN-REPO. Shader
+    preloads once at launch at strength 0.000 (two-pass weights sum to 1.0 =
+    mathematical identity) and is never unloaded: zero set/clr churn, zero
+    load latency, the effect cannot miss a switch; burst lifecycle is
+    strength-only. Queue capped at depth 2 with latest-wins beyond it: fast
+    back-and-forth still animates (U-080 kept at depth <= 2), deep floods
+    collapse to the latest destination instead of replaying history.
+    Preload failure degrades gracefully; blur never blocks the crossfade.
+    SANDBOX: py_compile PASS; scenario 1 PASS (preload once, zero unloads,
+    unimodal 0->4.000->0, rise_ms=88 fall_ms=262 state=OK); scenario 2 flood
+    PASS (5 events -> 3 transitions, backlog never above 2, ends at the true
+    viewport, all complete, state=OK); degraded PASS (preload-fail notice,
+    blend still runs, state=DEGRADED). RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-11] Blur always-ready, flood capped, config
+  restored. Next: full-block reinstall (config INCLUDED) + verdict.
+
+--------------------------------------------------------------------------------
+12.150 PULSE-THEN-DISSOLVE: STRONG BLUR AND VISIBLE CROSSFADE IN ONE WINDOW
+--------------------------------------------------------------------------------
+
+  [W-312] U-087 TRIAL RECEIPTS. Gates green (17099 B, sha a58ebf00... exact,
+    compile PASS, check 350/500/4.0). Preload proven live: glsl-shaders
+    resident at steady state; flood cap proven live: queued= never above 2
+    (was 23); every burst state=OK rise_ms=88 fall_ms=262 including 2- and
+    4-hop bursts. Operator verdict: blur consistent but needs strength;
+    crossfade still never appears. Rollback applied; desktop SAFE.
+    RECEIPT: operator paste 2026-08-17.
+
+  [X-159] CROSSFADE INVISIBILITY WAS PHYSICS, NOT CODE. At peak 4.0 the
+    release still left strength ~2.3 at fade midpoint; any dissolve under
+    strength >= ~2 at 4480 px is imperceptible (both frames smear into the
+    same wash). Strong blur and a visible dissolve cannot share a moment.
+    Second finding: with roles red/work/work/red, hops 2<->3 and 4<->1 are
+    same-role and carry no dissolve by definition — half the adjacent
+    switches can never crossfade. RECEIPT: arithmetic + role map.
+
+  [U-088] OPERATOR DIRECTIVE: stronger blur; crossfade visible every switch.
+
+  [W-313] PULSE-THEN-DISSOLVE AUTHORED AND PROVEN IN-REPO. Window = BLUR_MS
+    split: pulse = BLUR_MS-FADE_MS (150 ms at 350/500) of pure blur over the
+    OLD image while the blend mix is held (u=0 via delay_frames), then the
+    dissolve runs its full FADE_MS while blur releases fast (fall =
+    0.6*FADE_MS, gone before the fade ends), leaving a fully clean dissolve
+    tail (~140 ms). Blend expr gains min(max((N-d)/F,0),1); completion uses
+    pulse+duration. Blur ceiling 4.0 -> 8.0 (shader MAXIMUM + validation),
+    default BLUR_PEAK 6.0. Preload, flood cap, latest-wins unchanged.
+    SANDBOX: py_compile PASS; scenario 1 PASS (delayed blend in graph,
+    preload once, zero unloads, unimodal 0->6.000->0, rise_ms=75 fall_ms=210
+    state=OK); scenario 2 flood PASS; degraded PASS. RECEIPT: sandbox.
+
+[2026-08-17][M17-XMB-IPC-12] Blur punches, dissolve follows clean. Next:
+  reinstall + first visible-crossfade verdict; same-role hops still pulse.
+
+--------------------------------------------------------------------------------
+12.151 CROSSFADE FIRST SEEN; CHASE ENVELOPE FOR FAST-SWITCH PERSISTENCE
+--------------------------------------------------------------------------------
+
+  [W-314] U-088 TRIAL: CROSSFADE FIRST SEEN ON TARGET. Gates green (2330 B +
+    17296 B, shas 14f7d143.../9cd6ee3f... exact, compile PASS, check
+    350/500/6.0). Pulse-then-dissolve delivered the first visible crossfade —
+    operator: "crossfade appears". Slow hops each ran a clean burst
+    (peak=6.000 rise_ms=75 fall_ms=210 state=OK); the fast section showed
+    the flood cap holding (queued<=2) with 5- and 3-hop bursts. New
+    complaint: at fast switching the effect stops working; wants way
+    stronger persistence. Rollback applied; desktop SAFE. RECEIPT: operator
+    paste 2026-08-17.
+
+  [X-160] FAST-SWITCH FAILURE MODE WAS THE PEAK-HOLD ITSELF. During bursts
+    the u088 envelope pinned strength at peak for the whole burst, so every
+    in-burst dissolve ran under full 6.0 blur and read as a smear wall; the
+    crossfade only reappeared on the final release. Persistence built as
+    "never drop" had become "never reveal" (steps=7 across a 5-hop burst =
+    flat hold, log evidence). RECEIPT: burst log + arithmetic.
+
+  [U-089] OPERATOR DIRECTIVE: effect must keep working at fast switching;
+    way stronger persistence.
+
+  [W-315] CHASE ENVELOPE AUTHORED AND PROVEN IN-REPO. Blur now runs one
+    punch-and-release cycle PER HOP at any speed: the pulse phase chases
+    strength toward peak at peak/rise_time per second from wherever it
+    currently is (rate-based, dt-clamped 0.1 s) — a hop landing mid-release
+    re-punches from the live value with zero dip; release re-anchors at the
+    new pulse end. No burst-wide hold, no resets, no missed hops. SANDBOX:
+    py_compile PASS; scenario 1 PASS — consecutive hops each produce a clean
+    punch-to-6.000-then-release cycle (zero dips), one burst line per hop
+    state=OK; scenario 2 flood PASS (cap intact, ends at true viewport);
+    degraded PASS. RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-13] Crossfade accepted visible; chase envelope makes
+  every hop punch at any speed. Next: controller-only reinstall + fast verdict.
+
+--------------------------------------------------------------------------------
+12.152 BLUR ACCEPTED + FROZEN; CROSSFADE UN-DELAYED, FIRES INSTANTLY EVERY HOP
+--------------------------------------------------------------------------------
+
+  [W-316] U-089 TRIAL RECEIPTS. Gates green (2330/17399 B, shas exact,
+    compile PASS, check 350/500/6.0). Every hop fired a clean burst
+    (peak=6.000, rise_ms=75 fall_ms=210, state=OK) across 12 switches
+    including fast alternation; fps 59.999994. Operator verdict: blur is
+    right ("more blur ... stop adjusting blur" — blur FROZEN at this exact
+    shape); crossfade "terrible" and "not working everytime". Rollback
+    applied; desktop SAFE. RECEIPT: operator paste 2026-08-17.
+
+  [X-161] CROSSFADE LATENCY WAS THE 150 MS BLEND DELAY. Pulse-then-dissolve
+    held the mix frozen (u=0) for the whole pulse before the dissolve could
+    move: every switch paid 150 ms of dead time, chained switches stacked
+    it, and the wallpaper choreography lagged the operator's actual
+    viewport — reading as terrible/unreliable. Secondary finding: hops 2<->3
+    and 4<->1 are same-role under the current ROLES (work/work, red/red) and
+    can never dissolve — they pulse only, by physics; distinct adjacent
+    roles are the only way to put a dissolve on every single hop.
+
+  [U-090] OPERATOR DIRECTIVE: blur stays exactly as-is; crossfade must work
+    every time.
+
+  [W-317] NO-DELAY CROSSFADE AUTHORED AND PROVEN IN-REPO. Blend delay
+    removed entirely: the dissolve starts the same tick the hop is taken and
+    completes in FADE_MS (350 ms; the dead phase took total to 500 ms); the
+    blur chase envelope is byte-untouched (same punch, same release) and
+    rides the dissolve — punch overlaps the first 75 ms, release done by
+    285 ms, clean tail to the end. SANDBOX: py_compile PASS; s1 PASS (blend
+    fires with zero delay); s2 PASS (every role-change hop got its own
+    zero-delay crossfade, bursts state=OK); s3 flood PASS (bounded, no
+    stuck, ends at true viewport); degraded PASS. Infra note: /tmp sandbox
+    wiped between turns and a stale local rewind briefly corrupted the
+    working copy; recovered byte-exact from origin 325a011 before re-edit.
+    RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-14] Blur frozen accepted; crossfade un-delayed.
+  Next: controller-only reinstall + verdict; same-role hops still pulse-only.
+
+--------------------------------------------------------------------------------
+12.153 ADAPTIVE CATCH-UP: CONSISTENCY HELD WHEN OPERATOR OUTPACES THE FADE
+--------------------------------------------------------------------------------
+
+  [W-318] U-090 TRIAL RECEIPTS. Gates green (17330 B sha 7524941a... exact,
+    compile PASS, check 350/500/6.0). No-delay crossfades fired on every
+    role-change hop (log shows blends on all of them), bursts state=OK at
+    rise_ms=75 fall_ms=210. Operator verdict: "sort of works ... when i do
+    it very slowly but the moment i slightly outpace it all consistency
+    disappears". No rollback this time; controller left live. RECEIPT:
+    operator paste 2026-08-17.
+
+  [X-162] OUTPACING THE FIXED 350 MS FADE BUILT BACKLOG FASTER THAN IT
+    DRAINED. Each transition cost a full 350 ms regardless of queue depth, so
+    switching faster than ~3/s piled hops into the capped queue; the
+    wallpaper replayed catch-up transitions far behind the operator's real
+    viewport and the choreography read as random. Blur shape itself was
+    untouched and healthy throughout (every burst state=OK). RECEIPT: same
+    paste log (queued=1..2 sustained through fast section).
+
+  [U-091] OPERATOR DIRECTIVE: consistency must hold when slightly outpacing
+    the fade.
+
+  [W-319] ADAPTIVE CATCH-UP AUTHORED AND PROVEN IN-REPO. Per-transition
+    timing now scales with backlog at hop start: queue empty = the full
+    approved 350 ms shape (rise 75 / fall 210, byte-unchanged blur math);
+    backlog 1 = 45% duration (~158 ms, rise 34 / fall 94); backlog >= 2 =
+    30% (~105 ms, rise 30 / fall 63). Blend frame count scales with the
+    compressed duration, so the dissolve always finishes exactly when the
+    transition retires; the chase envelope re-punches through every
+    compressed hop with zero dips. SANDBOX: py_compile PASS; s1/s2/s3
+    re-PASS (slow shape unchanged, zero-delay blends, flood bounded); new s4
+    fast-switch PASS — catch-up engaged (rise_ms=34 fall_ms=94 lines),
+    backlog never above 2, no stuck transitions, ends at the true viewport,
+    slow hops keep rise_ms=75 fall_ms=210; degraded PASS. RECEIPT: sandbox.
+
+[2026-08-17][M17-XMB-IPC-15] Full shape when keeping up, compressed when
+  behind. Next: controller-only reinstall + fast-switch verdict.
+
+--------------------------------------------------------------------------------
+12.154 CONSISTENCY BY CONSTRUCTION: DETERMINISTIC PUNCH + TIGHT LATEST-WINS
+--------------------------------------------------------------------------------
+
+  [W-320] U-091 ADAPTIVE-CATCH-UP TRIAL RECEIPTS. Gates green (17523 B sha
+    65b1127e... exact, compile PASS, check 350/500/6.0); catch-up engaged in
+    the log (rise_ms=34 fall_ms=94 lines). Operator verdict: "it just doesnt
+    work consistently". Rollback applied; desktop SAFE. RECEIPT: operator
+    paste 2026-08-17.
+
+  [X-163] ADAPTIVE COMPRESSION WAS ITSELF THE INCONSISTENCY, AND THE CHASE
+    PUNCH WAS NON-DETERMINISTIC. Compressed catch-up hops played weak
+    irregular flickers (max=4.328/3.819) between full-shape hops — a chaotic
+    rhythm. Separately, the rate-limited chase ran out of ticks before peak
+    depending on tick phase, so punch height varied hop to hop
+    (max=5.778..6.000). Two independent defects, one visual chaos.
+    RECEIPT: same paste log + arithmetic.
+
+  [U-092] OPERATOR DIRECTIVE: make it consistent.
+
+  [U-093] OPERATOR DIRECTIVE (post-paste): merge the pull request.
+
+  [W-321] CONSISTENCY-BY-CONSTRUCTION AUTHORED AND PROVEN IN-REPO. Three
+    changes: (1) deterministic punch — time-based rise anchored per hop;
+    mid-release hops back-solve the anchor and continue smoothly (no dips);
+    the fall branch emits the exact apex so every burst logs max=peak.
+    (2) Compression removed — every transition the wallpaper plays is the
+    full approved shape (350 ms, rise 75 / fall 210), always. (3) Tight
+    latest-wins — a new viewport event replaces anything pending, so the
+    wallpaper always heads for the operator's latest position one
+    full-quality transition at a time; popped events already at the current
+    slot are skipped as no-ops. SANDBOX: py_compile PASS; s1/s2/s3 re-PASS;
+    s4 fast PASS — pending never above 1, every transition full shape, every
+    punch max=6.000, all state=OK, ends at the true viewport; degraded
+    PASS. RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-16] Deterministic punch + tight latest-wins shipped;
+  PR merged on operator directive. Next: post-merge target trial of 12.154.
