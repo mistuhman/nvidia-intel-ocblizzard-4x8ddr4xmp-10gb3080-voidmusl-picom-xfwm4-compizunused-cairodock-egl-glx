@@ -161,6 +161,7 @@ def run(replace):
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
         cur_duration, cur_rise, cur_fall = duration, max(duration * 0.214, 0.03), max(duration * 0.6, 0.1)
+        fade_frames = round(duration * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         last_tick = time.monotonic()
@@ -171,8 +172,7 @@ def run(replace):
                 for raw in lines:
                     desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (target_slot if active else current_slot)
                     if desired != planned:
-                        if len(events) >= 2: events.pop()
-                        if not events or events[-1] != desired: events.append(desired)
+                        events.clear(); events.append(desired)
             now = time.monotonic(); dt = min(now - last_tick, 0.1)
             if active and now - started >= cur_duration:
                 current_slot, current_role, active = target_slot, target_role, False
@@ -180,24 +180,27 @@ def run(replace):
                 if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
             if not active and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
-                backlog = len(events)
-                cur_duration = duration if backlog == 0 else max(duration * (0.45 if backlog == 1 else 0.3), 0.1)
-                cur_rise, cur_fall = max(cur_duration * 0.214, 0.03), max(cur_duration * 0.6, 0.05)
+                if target_slot == current_slot: continue
+                frac = min(max(strength_last / peak, 0.0), 1.0) if blur_on else 0.0
+                burst_start = now - math.asin(frac) / (math.pi / 2.0) * cur_rise
                 if not blur_on:
                     blur_on = True
-                    burst_start, strength_last, blur_fail, idle_at = now, 0.0, 0, 0.0
+                    strength_last, blur_fail, idle_at = 0.0, 0, 0.0
                     burst_hops, burst_steps, burst_max = 1, 0, 0.0
                 else:
                     burst_hops += 1; idle_at = 0.0
-                print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={backlog}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(cur_duration * 60), 0))
+                print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
+                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, 0))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if active and now - started < cur_rise:
-                    target = min(peak, strength_last + peak * dt / cur_rise)
+                if active and now - burst_start < cur_rise:
+                    target = peak * blur_rise((now - burst_start) / cur_rise)
                 else:
-                    if not idle_at: idle_at = started + cur_rise if active else now
-                    target = peak * blur_fall((now - idle_at) / cur_fall)
+                    if not idle_at:
+                        idle_at = burst_start + cur_rise if active else now
+                        target = peak
+                    else:
+                        target = peak * blur_fall((now - idle_at) / cur_fall)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):
                     try:

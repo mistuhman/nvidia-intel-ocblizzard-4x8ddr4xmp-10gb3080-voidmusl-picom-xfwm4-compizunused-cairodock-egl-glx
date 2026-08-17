@@ -9431,3 +9431,42 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-15] Full shape when keeping up, compressed when
   behind. Next: controller-only reinstall + fast-switch verdict.
+
+--------------------------------------------------------------------------------
+12.154 CONSISTENCY BY CONSTRUCTION: DETERMINISTIC PUNCH + TIGHT LATEST-WINS
+--------------------------------------------------------------------------------
+
+  [W-320] U-091 ADAPTIVE-CATCH-UP TRIAL RECEIPTS. Gates green (17523 B sha
+    65b1127e... exact, compile PASS, check 350/500/6.0); catch-up engaged in
+    the log (rise_ms=34 fall_ms=94 lines). Operator verdict: "it just doesnt
+    work consistently". Rollback applied; desktop SAFE. RECEIPT: operator
+    paste 2026-08-17.
+
+  [X-163] ADAPTIVE COMPRESSION WAS ITSELF THE INCONSISTENCY, AND THE CHASE
+    PUNCH WAS NON-DETERMINISTIC. Compressed catch-up hops played weak
+    irregular flickers (max=4.328/3.819) between full-shape hops — a chaotic
+    rhythm. Separately, the rate-limited chase ran out of ticks before peak
+    depending on tick phase, so punch height varied hop to hop
+    (max=5.778..6.000). Two independent defects, one visual chaos.
+    RECEIPT: same paste log + arithmetic.
+
+  [U-092] OPERATOR DIRECTIVE: make it consistent.
+
+  [U-093] OPERATOR DIRECTIVE (post-paste): merge the pull request.
+
+  [W-321] CONSISTENCY-BY-CONSTRUCTION AUTHORED AND PROVEN IN-REPO. Three
+    changes: (1) deterministic punch — time-based rise anchored per hop;
+    mid-release hops back-solve the anchor and continue smoothly (no dips);
+    the fall branch emits the exact apex so every burst logs max=peak.
+    (2) Compression removed — every transition the wallpaper plays is the
+    full approved shape (350 ms, rise 75 / fall 210), always. (3) Tight
+    latest-wins — a new viewport event replaces anything pending, so the
+    wallpaper always heads for the operator's latest position one
+    full-quality transition at a time; popped events already at the current
+    slot are skipped as no-ops. SANDBOX: py_compile PASS; s1/s2/s3 re-PASS;
+    s4 fast PASS — pending never above 1, every transition full shape, every
+    punch max=6.000, all state=OK, ends at the true viewport; degraded
+    PASS. RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-16] Deterministic punch + tight latest-wins shipped;
+  PR merged on operator directive. Next: post-merge target trial of 12.154.

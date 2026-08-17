@@ -92,6 +92,8 @@ Supersedes the 12.148 prompt. This is the 12.149 pre-target edge.
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.154 (X-163 compression+chase chaos, U-092/U-093, W-321 deterministic
+punch + tight latest-wins MERGED via PR #20),
 12.153 (W-318 no-delay trial, X-162 outpace backlog, U-091/W-319 adaptive
 catch-up, sandbox-proven),
 12.152 (W-316 blur frozen accepted, X-161 blend-delay latency, U-090/W-317
