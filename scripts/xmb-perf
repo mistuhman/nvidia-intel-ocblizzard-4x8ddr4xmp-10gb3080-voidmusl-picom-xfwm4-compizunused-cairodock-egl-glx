@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+# xmb-perf: Phase 6 read-only measurement. Changes no settings, restarts no
+# services, stops by itself.
+#   xmb-perf snapshot                    audit known perf preconditions
+#   xmb-perf record [dur] [int] [label]  time-series + percentile summary
+#   xmb-perf frametime [dur] [label]     raw presented-frame intervals
+set -uo pipefail
+HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+FRAME="$HERE/xmb-perf-frametime"
+CFG="$HOME/.config/compiz/compizconfig/Default.ini"
+GOLD="$HOME/.local/share/compiz-guard/Default.ini.golden"
+CTRL="$HOME/.local/bin/xmb-wallpaper-controller"
+RUNX="${XDG_RUNTIME_DIR:-/tmp}/xmb-wallpaper-$(id -u)"
+
+core_val() { awk -v k="$1" '/^\[core\]/{f=1;next} /^\[/{f=0} f && $0 ~ "^[ \t]*"k"[ \t]*="{line=$0; sub("^[ \t]*"k"[ \t]*=[ \t]*","",line); sub(/[ \t]+$/,"",line); print line; exit}' "$CFG" 2>/dev/null; }
+say() { [ "${QUIET:-0}" = 1 ] || echo "$@"; }
+
+snapshot() {
+  QUIET=0; [ "${1:-}" = "--quiet" ] && QUIET=1; V=PERF_OK
+  demote(){ case "$1:$V" in PERF_FAIL:*) ;; PERF_WARN:PERF_OK) V=PERF_WARN;; esac; }
+  say "== xmb-perf snapshot ==  host $(uname -sr)  $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  say "disk:"; df -h / /mnt/games 2>/dev/null | sed 's/^/  /' || df -h / | sed 's/^/  /'
+  CPID=$(pgrep -x compiz|head -1); [ -n "$CPID" ] && say "ok    compiz pid $CPID" || { say "FAIL compiz not running"; demote PERF_FAIL; }
+  command -v wmctrl >/dev/null && say "      $(wmctrl -m 2>/dev/null|head -1)"
+  PIC=$(pgrep -x picom|head -1); [ -z "$PIC" ] && say "ok    picom not running" || { say "FAIL picom pid $PIC (must stay masked)"; demote PERF_FAIL; }
+  EPID=$(pgrep -x emerald|head -1); [ -n "$EPID" ] && say "note  emerald pid $EPID"
+  if [ -n "$CPID" ] && [ -r "/proc/$CPID/environ" ]; then
+    Y=$(tr '\0' '\n' </proc/$CPID/environ 2>/dev/null|grep '^__GL_YIELD='|head -1|cut -d= -f2-)
+    case "$Y" in USLEEP) say "ok    __GL_YIELD=USLEEP";; "") say "WARN __GL_YIELD unset"; demote PERF_WARN;; *) say "WARN __GL_YIELD=$Y"; demote PERF_WARN;; esac
+  else say "WARN cannot read compiz environ"; demote PERF_WARN; fi
+  if [ ! -r "$CFG" ]; then say "FAIL cannot read $CFG"; demote PERF_FAIL
+  else
+    chk(){ g=$(core_val "$1"); [ "$g" = "$2" ] && say "ok    $3=$g" || { say "FAIL $3='$g' want '$2'"; demote PERF_FAIL; }; }
+    chk s0_detect_refresh_rate false detect_refresh_rate; chk s0_refresh_rate 120 refresh_rate
+    chk s0_detect_outputs false detect_outputs; chk s0_sync_to_vblank true sync_to_vblank
+    O=$(core_val s0_outputs); [ -n "$O" ] && say "ok    outputs=$O" || { say "FAIL s0_outputs empty"; demote PERF_FAIL; }
+    say "      texture_filter=$(core_val as_texture_filter) (0=fast)  active_sha=$(sha256sum "$CFG"|cut -c1-16)"
+    [ -r "$GOLD" ] && say "      golden_sha=$(sha256sum "$GOLD"|cut -c1-16) (expect af457926)"
+  fi
+  PL=$(core_val as_active_plugins)
+  if [ -z "$PL" ]; then say "WARN as_active_plugins unreadable"; demote PERF_WARN
+  else say "      plugins: $PL"
+    for p in core ccp move resize place decoration; do case ";$PL;" in *";$p;"*) ;; *) say "FAIL floor missing $p (compiz-profile-repair --floor)"; demote PERF_FAIL;; esac; done
+    for p in water wobbly cube cubeaddon 3d gears animationplus blur mblur reflex bench showmouse mousepoll; do case ";$PL;" in *";$p;"*) say "WARN heavy plugin: $p"; demote PERF_WARN;; esac; done
+  fi
+  if command -v nvidia-smi >/dev/null 2>&1; then
+    nvidia-smi --query-gpu=driver_version,name,temperature.gpu,utilization.gpu,utilization.memory,memory.used,memory.total,power.draw,power.limit,clocks.sm,clocks.mem --format=csv,noheader 2>/dev/null|sed 's/^/  /'
+    say "      decoder=$(nvidia-smi --query-gpu=utilization.decoder --format=csv,noheader 2>/dev/null)%"
+  else say "WARN nvidia-smi not found"; demote PERF_WARN; fi
+  if command -v nvidia-settings >/dev/null 2>&1; then
+    MM=$(nvidia-settings -q CurrentMetaMode -t 2>/dev/null|head -1)
+    case "$MM" in *ForceFullCompositionPipeline*) say "note  ForceFullCompositionPipeline PRESENT";; "") say "note  MetaMode unreadable";; *) say "note  ForceFullCompositionPipeline NOT set";; esac
+    [ -n "$MM" ] && say "      $(echo "$MM"|cut -c1-160)"
+  fi
+  [ -x "$CTRL" ] && [ -n "${DISPLAY:-}" ] && "$CTRL" --status 2>/dev/null|sed 's/^/  /' || say "  wallpaper controller stopped / no DISPLAY"
+  pgrep -a -x xwinwrap 2>/dev/null|sed 's/^/  xwinwrap: /' || true
+  pgrep -a -f 'mpv.*(loop-60s|xmb)' 2>/dev/null|sed 's/^/  mpv: /' || true
+  CD=$(pgrep -x cairo-dock|head -1); [ -n "$CD" ] && say "note  cairo-dock pid $CD rss=$(ps -o rss= -p $CD 2>/dev/null|tr -d ' ')kB" || say "note  cairo-dock not running"
+  ps -eo pid,comm,%cpu --sort=-%cpu 2>/dev/null|head -6|sed 's/^/  /'
+  echo "VERDICT: $V"; [ "$V" = PERF_FAIL ] && return 1 || return 0
+}
+
+record() {
+  DUR="${1:-30}"; INT="${2:-1000}"; LABEL="${3:-baseline}"; TS=$(date +%Y%m%d-%H%M%S)
+  OUT="${XDG_RUNTIME_DIR:-/tmp}/xmb-perf/$TS-$LABEL"; mkdir -p "$OUT"
+  echo "perf: label=$LABEL dur=${DUR}s int=${INT}ms out=$OUT"
+  command -v nvidia-smi >/dev/null 2>&1 || { echo "perf: nvidia-smi required" >&2; exit 2; }
+  snapshot --quiet >"$OUT/snapshot.txt" 2>&1 || true
+  GPU="$OUT/gpu.csv"
+  echo "perf: sampling gpu ${DUR}s..."
+  timeout "$DUR" nvidia-smi --query-gpu=timestamp,index,name,utilization.gpu,utilization.memory,utilization.encoder,utilization.decoder,memory.used,temperature.gpu,power.draw,clocks.sm,clocks.mem --format=csv,noheader,nounits -lms "$INT" >"$GPU" 2>"$OUT/gpu.err" || true
+  echo "perf: gpu samples=$(wc -l <"$GPU"|tr -d ' ')"
+  PROC="$OUT/procs.tsv"; echo -e "sample\tpid\tcomm\tpcpu\tpmem\trss_kb" >"$PROC"
+  END=$(($(date +%s)+DUR)); i=0
+  while [ "$(date +%s)" -lt "$END" ]; do i=$((i+1)); PIDS=""
+    for n in compiz emerald cairo-dock xfdesktop xfce4-panel; do PIDS="$PIDS $(pgrep -x "$n" 2>/dev/null)"; done
+    PIDS="$PIDS $(pgrep -x xwinwrap 2>/dev/null) $(pgrep -f 'mpv.*(loop-60s|xmb)' 2>/dev/null)"
+    for pid in $PIDS; do [ -d "/proc/$pid" ] || continue; L=$(ps -o comm=,pcpu=,pmem=,rss= -p "$pid" 2>/dev/null) || continue; echo -e "$i\t$pid\t$L" >>"$PROC"; done
+    sleep 1; done
+  MPV="$OUT/mpv.txt"; : >"$MPV"
+  if [ -S "$RUNX/mpv.sock" ]; then cat "$RUNX/state.json" 2>/dev/null >>"$MPV"
+    python3 - "$RUNX/mpv.sock" >>"$MPV" 2>&1 <<'PY' || true
+import json,socket,sys
+s=socket.socket(socket.AF_UNIX);s.settimeout(3);s.connect(sys.argv[1]);f=s.makefile("rwb",0)
+def c(*a):
+    f.write((json.dumps({"command":list(a),"request_id":1})+"\n").encode())
+    while True:
+        r=json.loads(f.readline())
+        if r.get("request_id")==1: return r.get("data",r.get("error"))
+for p in ("estimated-vf-fps","vo-drop-frame-count","decoder-frame-drop-count","frame-drop-count","avsync","mistimed-frame-count","video-codec","hwdec-current"):
+    try: print(f"{p}={c('get_property',p)}")
+    except Exception as e: print(f"{p}=ERR({e})")
+f.close();s.close()
+PY
+  else echo "mpv_ipc=unavailable" >>"$MPV"; fi
+  FT="$OUT/frametime.txt"
+  if [ -x "$FRAME" ] && [ -n "${DISPLAY:-}" ]; then FTD=$((DUR<15?DUR:15)); echo "perf: frame intervals ${FTD}s"; "$FRAME" "$FTD" "$LABEL" >"$FT" 2>&1 || true
+  else echo "FRAMETIME_UNAVAILABLE" >"$FT"; fi
+  { echo "== xmb-perf summary =="; echo "label=$LABEL started=$TS dur=$DUR int=$INT"
+    echo; echo "-- gpu percentiles --"
+    python3 - "$GPU" <<'PY'
+import csv,statistics,sys
+rows=list(csv.reader(open(sys.argv[1])))
+if len(rows)<2: print("  (no samples)"); sys.exit(0)
+h=[x.strip() for x in rows[0]]; cols={c:[] for c in range(3,len(h))}
+for r in rows[1:]:
+    for c in cols:
+        if c<len(r):
+            s="".join(ch for ch in r[c] if ch.isdigit() or ch in ".-")
+            if s not in("","-","."):
+                try: cols[c].append(float(s))
+                except ValueError: pass
+def pc(a,p):
+    if not a: return float("nan")
+    a=sorted(a); return a[min(max(round((len(a)-1)*p),0),len(a)-1)]
+for c,v in cols.items():
+    if v: print(f"  {h[c]:<26} n={len(v):<5} mean={statistics.fmean(v):9.2f} p50={pc(v,.5):9.2f} p95={pc(v,.95):9.2f} p99={pc(v,.99):9.2f} min={min(v):9.2f} max={max(v):9.2f}")
+PY
+    echo; echo "-- per-process avg cpu --"
+    python3 - "$PROC" <<'PY'
+import csv,sys
+from collections import defaultdict
+s,c,r=defaultdict(float),defaultdict(int),{}
+for row in csv.DictReader(open(sys.argv[1]),delimiter="\t"):
+    k=row["comm"];c[k]+=1
+    try:s[k]+=float(row["pcpu"])
+    except:pass
+    try:r[k]=int(float(row["rss_kb"]))
+    except:pass
+print(f"  {'comm':<18}{'samples':<8}{'avg_%cpu':<10}{'last_rss_kb':<12}")
+for k in sorted(c): print(f"  {k:<18}{c[k]:<8}{s[k]/c[k]:<10.2f}{r.get(k,0):<12}")
+PY
+    echo; echo "-- mpv --"; sed 's/^/  /' "$MPV"
+    echo; echo "-- frame time --"; grep '^SUMMARY' "$FT"|sed 's/^/  /' || { echo "  (no summary)"; tail -3 "$FT"|sed 's/^/  /'; }
+    echo; echo "PERF_RECORD=PASS"
+  } | tee "$OUT/summary.txt"
+  echo; echo "perf: artifacts in $OUT"; ls -l "$OUT"|sed 's/^/  /'
+}
+
+case "${1:-snapshot}" in
+  snapshot)  snapshot "${2:-}" ;;
+  record)    shift; record "$@" ;;
+  frametime) shift; exec "$FRAME" "$@" ;;
+  *) echo "usage: xmb-perf {snapshot|record [dur] [int] [label]|frametime [dur] [label]}" >&2; exit 2 ;;
+esac

@@ -499,6 +499,39 @@ profile nobody can reason about. Sequence:
 3. **Fix the cause, then re-measure** against the same baseline. A change that
    cannot be shown to move a number does not ship.
 
+**Measurement toolchain (authored, sandbox-verified, pending target trial)**
+
+- `scripts/xmb-perf` — one bash entry point, read-only, three subcommands:
+  - `snapshot` audits every known precondition: `__GL_YIELD` in the running
+    compiz `/proc/<pid>/environ`, the 7 enforced `[core]` display keys, the
+    6-plugin floor, heavy eyecandy plugins (water, wobbly, cube, 3d, gears,
+    animationplus, blur/mblur, reflex, bench, showmouse, mousepoll), picom
+    presence, one-shot GPU util/clocks/power/VRAM/temp, decoder util,
+    `ForceFullCompositionPipeline` in CurrentMetaMode, wallpaper controller/mpv
+    state, and cairo-dock. Verdict `PERF_OK` / `PERF_WARN` / `PERF_FAIL`.
+  - `record [dur] [int_ms] [label]` samples the fixed window: `nvidia-smi
+    --query-gpu ... -lms` for util/memory/encoder/decoder/VRAM/temp/power/SM
+    clock/mem clock, per-second `ps` for compiz/emerald/cairo-dock/xfdesktop/
+    xfce4-panel/xwinwrap/the xmb mpv, one mpv IPC pull of estimated-vf-fps /
+    vo-drop-frame-count / decoder-drop / avsync / hwdec, then calls the
+    frametime probe and writes `summary.txt` plus raw CSV/TSV artifacts under
+    `$XDG_RUNTIME_DIR/xmb-perf/`.
+  - `frametime` dispatches to the probe below.
+- `scripts/xmb-perf-frametime` — Python/ctypes probe that opens a 160x90 mapped
+  window, swaps for N seconds, and reads UST/MSC via `GLX_OML_sync_control` to
+  produce real presented-frame intervals + p50/p95/p99/stdev + a p1–p99 jitter
+  spread in ms. Degrades to `FRAMETIME_UNAVAILABLE` (exit 0) if the extension
+  or display is missing, so it never blocks a record.
+- `scripts/xmb-perf-install` — byte-copy install of both files into
+  `~/.local/bin` with hash gates, matching `compiz-guard-install`. Uninstall
+  is two `rm`s. Summary math is in python3, not awk — mawk (Void's default)
+  lacks `asort`.
+
+Sandbox verification: `bash -n`/`py_compile` clean; percentile summary correct
+on synthetic CSV; installer hashes match round-trip; snapshot degrades
+gracefully with no DISPLAY. The X/GLX probe is authored but cannot be
+exercised in the sandbox — that is the first target gate, not an assumed pass.
+
 **Gate** — a measured improvement in frame-time consistency, plus the
 operator's own verdict that the desktop feels smooth. Both, not either. Every
 change carries its inverse, and the accepted state is re-verified SAFE and
