@@ -9392,3 +9392,42 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-14] Blur frozen accepted; crossfade un-delayed.
   Next: controller-only reinstall + verdict; same-role hops still pulse-only.
+
+--------------------------------------------------------------------------------
+12.153 ADAPTIVE CATCH-UP: CONSISTENCY HELD WHEN OPERATOR OUTPACES THE FADE
+--------------------------------------------------------------------------------
+
+  [W-318] U-090 TRIAL RECEIPTS. Gates green (17330 B sha 7524941a... exact,
+    compile PASS, check 350/500/6.0). No-delay crossfades fired on every
+    role-change hop (log shows blends on all of them), bursts state=OK at
+    rise_ms=75 fall_ms=210. Operator verdict: "sort of works ... when i do
+    it very slowly but the moment i slightly outpace it all consistency
+    disappears". No rollback this time; controller left live. RECEIPT:
+    operator paste 2026-08-17.
+
+  [X-162] OUTPACING THE FIXED 350 MS FADE BUILT BACKLOG FASTER THAN IT
+    DRAINED. Each transition cost a full 350 ms regardless of queue depth, so
+    switching faster than ~3/s piled hops into the capped queue; the
+    wallpaper replayed catch-up transitions far behind the operator's real
+    viewport and the choreography read as random. Blur shape itself was
+    untouched and healthy throughout (every burst state=OK). RECEIPT: same
+    paste log (queued=1..2 sustained through fast section).
+
+  [U-091] OPERATOR DIRECTIVE: consistency must hold when slightly outpacing
+    the fade.
+
+  [W-319] ADAPTIVE CATCH-UP AUTHORED AND PROVEN IN-REPO. Per-transition
+    timing now scales with backlog at hop start: queue empty = the full
+    approved 350 ms shape (rise 75 / fall 210, byte-unchanged blur math);
+    backlog 1 = 45% duration (~158 ms, rise 34 / fall 94); backlog >= 2 =
+    30% (~105 ms, rise 30 / fall 63). Blend frame count scales with the
+    compressed duration, so the dissolve always finishes exactly when the
+    transition retires; the chase envelope re-punches through every
+    compressed hop with zero dips. SANDBOX: py_compile PASS; s1/s2/s3
+    re-PASS (slow shape unchanged, zero-delay blends, flood bounded); new s4
+    fast-switch PASS — catch-up engaged (rise_ms=34 fall_ms=94 lines),
+    backlog never above 2, no stuck transitions, ends at the true viewport,
+    slow hops keep rise_ms=75 fall_ms=210; degraded PASS. RECEIPT: sandbox.
+
+[2026-08-17][M17-XMB-IPC-15] Full shape when keeping up, compressed when
+  behind. Next: controller-only reinstall + fast-switch verdict.
