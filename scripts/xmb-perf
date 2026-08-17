@@ -20,6 +20,13 @@ snapshot() {
   demote(){ case "$1:$V" in PERF_FAIL:*) ;; PERF_WARN:PERF_OK) V=PERF_WARN;; esac; }
   say "== xmb-perf snapshot ==  host $(uname -sr)  $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   say "disk:"; df -h / /mnt/games 2>/dev/null | sed 's/^/  /' || df -h / | sed 's/^/  /'
+  # A full root filesystem has caused greeter/boot faults on this box before;
+  # 97% is not a note, it is a fault class. WARN >=90, FAIL >=98.
+  USE=$(df -P / 2>/dev/null | awk 'NR==2{sub(/%/,"",$5);print $5}')
+  case "$USE" in ''|*[!0-9]*) ;;
+    *) [ "$USE" -ge 98 ] && { say "FAIL root fs ${USE}% used (full root has caused boot/greeter faults here)"; demote PERF_FAIL; }
+       [ "$USE" -ge 90 ] && { say "WARN root fs ${USE}% used (headroom tight; can cause blocking writes/jitter)"; demote PERF_WARN; } ;;
+  esac
   CPID=$(pgrep -x compiz|head -1); [ -n "$CPID" ] && say "ok    compiz pid $CPID" || { say "FAIL compiz not running"; demote PERF_FAIL; }
   command -v wmctrl >/dev/null && say "      $(wmctrl -m 2>/dev/null|head -1)"
   PIC=$(pgrep -x picom|head -1); [ -z "$PIC" ] && say "ok    picom not running" || { say "FAIL picom pid $PIC (must stay masked)"; demote PERF_FAIL; }
