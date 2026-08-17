@@ -12,7 +12,7 @@ ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 4.0}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 6.0}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -27,7 +27,7 @@ def config():
     if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
     if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
     if not out["fade"] <= out["blur"] <= 10000: fail("BLUR_MS must be FADE_MS..10000")
-    if not 0.0 <= out["peak"] <= 4.0: fail("BLUR_PEAK must be 0.0..4.0")
+    if not 0.0 <= out["peak"] <= 8.0: fail("BLUR_PEAK must be 0.0..8.0")
     if out["hwdec"] not in ("nvdec-copy", "cuda-copy", "no"): fail("HWDEC must be nvdec-copy, cuda-copy, or no")
     return out
 def check():
@@ -85,12 +85,12 @@ def hold(role, ids, warm):
     for index, other in enumerate((r for r in warm if r != role), 1):
         output = "[vo]" if index == len(warm) - 1 else f"[hold{index}]"; chains.append(f"[vid{ids[other]}]{source}blend=all_opacity=0{output}"); source = output
     return ";".join(chains) if chains else steady(role, ids)
-def blend(weights, target, ids, frames):
+def blend(weights, target, ids, frames, delay=0):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
     if len(active) == 1: return steady(target, ids)
     total = sum(weights.get(r, 0) for r in active) or 1; start = {r: weights.get(r, 0) / total for r in active}
     source, chains, commands, cumulative = f"[vid{ids[target]}]", [], [], start[target]
-    u = f"min(N/{frames}\\\\,1)"
+    u = f"min(max((N-{delay})/{frames}\\\\,0)\\\\,1)" if delay else f"min(N/{frames}\\\\,1)"
     for index, role in enumerate(active[1:], 1):
         cumulative += start[role]
         initial = start[role] / cumulative
@@ -160,7 +160,9 @@ def run(replace):
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
-        window = min(blur_duration, duration); rise_time, fall_time = window / 4, max(3 * window / 4, 0.1)
+        pulse = max(blur_duration - duration, 0.0); total_time = duration + pulse
+        rise_time, fall_time = max(pulse / 2, 0.03), max(duration * 0.6, 0.1)
+        fade_frames, delay_frames = round(duration * 60), round(pulse * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         while not stop_now and xww.poll() is None:
@@ -173,7 +175,7 @@ def run(replace):
                         if len(events) >= 2: events.pop()
                         if not events or events[-1] != desired: events.append(desired)
             now = time.monotonic()
-            if active and now - started >= duration:
+            if active and now - started >= total_time:
                 current_slot, current_role, active = target_slot, target_role, False
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
                 if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
@@ -186,13 +188,13 @@ def run(replace):
                 else:
                     burst_hops += 1; idle_at = 0.0
                 print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, round(duration * 60)))
+                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, delay_frames))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if events or (active and now - started < rise_time):
+                if events or (active and now - started < pulse):
                     target = peak * blur_rise((now - burst_start) / rise_time)
                 else:
-                    if not idle_at: idle_at = started + rise_time
+                    if not idle_at: idle_at = started + pulse
                     target = peak * blur_fall((now - idle_at) / fall_time)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):

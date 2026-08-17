@@ -9277,3 +9277,40 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-11] Blur always-ready, flood capped, config
   restored. Next: full-block reinstall (config INCLUDED) + verdict.
+
+--------------------------------------------------------------------------------
+12.150 PULSE-THEN-DISSOLVE: STRONG BLUR AND VISIBLE CROSSFADE IN ONE WINDOW
+--------------------------------------------------------------------------------
+
+  [W-312] U-087 TRIAL RECEIPTS. Gates green (17099 B, sha a58ebf00... exact,
+    compile PASS, check 350/500/4.0). Preload proven live: glsl-shaders
+    resident at steady state; flood cap proven live: queued= never above 2
+    (was 23); every burst state=OK rise_ms=88 fall_ms=262 including 2- and
+    4-hop bursts. Operator verdict: blur consistent but needs strength;
+    crossfade still never appears. Rollback applied; desktop SAFE.
+    RECEIPT: operator paste 2026-08-17.
+
+  [X-159] CROSSFADE INVISIBILITY WAS PHYSICS, NOT CODE. At peak 4.0 the
+    release still left strength ~2.3 at fade midpoint; any dissolve under
+    strength >= ~2 at 4480 px is imperceptible (both frames smear into the
+    same wash). Strong blur and a visible dissolve cannot share a moment.
+    Second finding: with roles red/work/work/red, hops 2<->3 and 4<->1 are
+    same-role and carry no dissolve by definition — half the adjacent
+    switches can never crossfade. RECEIPT: arithmetic + role map.
+
+  [U-088] OPERATOR DIRECTIVE: stronger blur; crossfade visible every switch.
+
+  [W-313] PULSE-THEN-DISSOLVE AUTHORED AND PROVEN IN-REPO. Window = BLUR_MS
+    split: pulse = BLUR_MS-FADE_MS (150 ms at 350/500) of pure blur over the
+    OLD image while the blend mix is held (u=0 via delay_frames), then the
+    dissolve runs its full FADE_MS while blur releases fast (fall =
+    0.6*FADE_MS, gone before the fade ends), leaving a fully clean dissolve
+    tail (~140 ms). Blend expr gains min(max((N-d)/F,0),1); completion uses
+    pulse+duration. Blur ceiling 4.0 -> 8.0 (shader MAXIMUM + validation),
+    default BLUR_PEAK 6.0. Preload, flood cap, latest-wins unchanged.
+    SANDBOX: py_compile PASS; scenario 1 PASS (delayed blend in graph,
+    preload once, zero unloads, unimodal 0->6.000->0, rise_ms=75 fall_ms=210
+    state=OK); scenario 2 flood PASS; degraded PASS. RECEIPT: sandbox.
+
+[2026-08-17][M17-XMB-IPC-12] Blur punches, dissolve follows clean. Next:
+  reinstall + first visible-crossfade verdict; same-role hops still pulse.

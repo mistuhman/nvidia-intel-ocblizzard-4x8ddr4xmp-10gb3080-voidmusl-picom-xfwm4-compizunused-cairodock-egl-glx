@@ -2,7 +2,7 @@
 //!DESC XMB transition blur strength (0 = off, 1 = base, higher = stronger)
 //!TYPE DYNAMIC float
 //!MINIMUM 0.0
-//!MAXIMUM 4.0
+//!MAXIMUM 8.0
 0.0
 
 //!HOOK MAIN
