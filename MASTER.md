@@ -532,6 +532,52 @@ on synthetic CSV; installer hashes match round-trip; snapshot degrades
 gracefully with no DISPLAY. The X/GLX probe is authored but cannot be
 exercised in the sandbox — that is the first target gate, not an assumed pass.
 
+**First target measurement (2026-08-17, target 66, 120 Hz)**
+
+The toolchain ran on target. Snapshot verdicts:
+
+- Healthy: compiz the WM (pid 1193), picom masked, `__GL_YIELD=USLEEP` in the
+  live environ, all 7 `[core]` display keys correct, golden hash af457926,
+  GPU 51 C / 97-105 W / 1710 SM clock (not thermally or power limited),
+  cairo-dock 176 MB RSS. mpv `frame-drop-count=0` in both states (no decode
+  drops).
+- **The Phase 5 controller was left running** (xmb-wallpaper-controller pid
+  7246/20453, role main-red), even though its autostart is Hidden by design
+  and the switcher trial is gated behind Phase 6. In its idle hold state it
+  decodes all three HEVC tracks to keep them warm for crossfade (lavfi
+  `[vid2][vid1]blend=all_opacity=0[vo]`), which costs, vs the accepted bare
+  wallpaper:
+
+  | metric (p50 / p99) | bare wallpaper | controller on | delta |
+  |---|---|---|---|
+  | GPU util %        | 22 / 25  | 31 / 39   | +9 / +14 |
+  | NVDEC decoder %   | 11 / 12  | 25 / 27   | more than doubled |
+  | VRAM MiB          | 2354     | 3170      | +816 |
+  | power W           | 97 / 97  | 104 / 105 | +7 |
+  | mpv CPU %         | ~30      | ~172      | ~5.7x |
+
+  That is the cost of three always-on decoders. The controller should not be
+  the running state while Phase 6 is measuring; stop it for the baseline and
+  only re-run it as the Phase 5 A/B after the new baseline is established.
+- **Root filesystem is 97% full** (139 G / 152 G, 4.8 G free). A full root has
+  caused boot/greeter faults on this box before. Large consumers identified:
+  `/var/lib` 15 G, `~/.var` 43 G (Flatpak/app data), `~/.local` 30 G,
+  `~/.themes` 277 M, `~/.icons` 296 M. Drill-down one more level before
+  touching anything; delete nothing blind. `/mnt/games` is 84%, fine.
+- `wobbly` is the one heavy eyecandy plugin active. Not yet A/B'd.
+- `ForceFullCompositionPipeline` is NOT set in the current MetaMode. This is a
+  real lever and also not yet A/B'd.
+
+Three tool defects found and fixed from this run: (a) the frametime probe used
+`glXChooseVisual` attribute tokens with `glXChooseFBConfig`, which returns no
+configs on NVIDIA — switched to the classic `glXChooseVisual` path; (b) the GPU
+summary used `csv,noheader` but treated row 0 as headers, eating the first
+sample and mislabeling columns; (c) the per-process sampler wrote ps's
+space-joined columns into one TSV field, garbling every number. All three
+fixed in commit 265a57d and re-verified in the sandbox against synthetic data.
+Frame-time jitter is therefore still unmeasured on target — the probe needs a
+clean re-run before any "feels smooth" verdict is possible.
+
 **Gate** — a measured improvement in frame-time consistency, plus the
 operator's own verdict that the desktop feels smooth. Both, not either. Every
 change carries its inverse, and the accepted state is re-verified SAFE and
