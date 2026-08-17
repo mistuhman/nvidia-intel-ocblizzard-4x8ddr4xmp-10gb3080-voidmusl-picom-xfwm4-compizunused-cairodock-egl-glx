@@ -9470,3 +9470,70 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-16] Deterministic punch + tight latest-wins shipped;
   PR merged on operator directive. Next: post-merge target trial of 12.154.
+
+--------------------------------------------------------------------------------
+12.155 RESOURCE LIFECYCLE FIX: ONE IDLE DECODER + FULLSCREEN GAME HANDOFF
+--------------------------------------------------------------------------------
+
+  [W-322] PERFORMANCE ROOT CAUSES ISOLATED WITHOUT ALTERING THE ACCEPTED
+    12.154 CHOREOGRAPHY. The steady `lavfi-complex` graph referenced all
+    three 4480x1440 HEVC tracks and hid two at opacity zero; mpv selects and
+    decodes every track referenced by that graph, so idle paid for three
+    decoders and retained their frame state (historical controller receipts
+    were ~850-875 MiB RSS). Both always-loaded Gaussian passes also lacked a
+    zero-strength stage guard, and same-role viewport hops still launched a
+    visually pointless blur pulse. Wallpaper rendering continued under a
+    fullscreen game, while Compiz fullscreen unredirection remained a risky
+    NVIDIA/dual-monitor tradeoff rather than something safe to force.
+    RECEIPT: controller/bake/profile audit + prior target receipts + official
+    mpv/libplacebo option documentation; no live X/GPU available in sandbox.
+
+  [W-323] WALLPAPER RESOURCE LIFECYCLE FIX AUTHORED. Idle and post-fade graphs
+    now reference exactly one video track; a role-changing 350 ms transition
+    references only source+target and returns to one immediately; same-role
+    moves update state with `effect=skipped` (no second decoder, blend, or
+    blur). Both Gaussian stages carry `//!WHEN xmb_strength 0 >`, retaining
+    the accepted preload/no-compilation-churn design while skipping all 34
+    taps at zero. A failed blur reset falls back to removing the shader so a
+    costly pass cannot remain stuck on. BLUR_PEAK=0 is division-safe. The
+    accepted 12.154 fade and deterministic punch timing are otherwise
+    unchanged.
+
+  [W-324] GAME HANDOFF + OBSERVABILITY AUTHORED. `PAUSE_FULLSCREEN=1` is a
+    strict, documented default and the installer adds it once to old configs.
+    At idle the controller probes the focused EWMH window once per second and
+    pauses mpv while it is fullscreen, returning wallpaper decode/render time
+    to the game; probes are deferred during fade/blur, and an indeterminate
+    xprop result cannot wake an already-paused renderer. State writes cache
+    the validated mpv child PID instead of rescanning all of /proc on each
+    transition. Status now reports mode, fullscreen pause, selected/loaded
+    video tracks, mpv CPU/RSS, hardware decoder, pause, shader/filter graph,
+    FPS/drop counters, and NVIDIA GPU/decoder/VRAM totals.
+
+  [W-325] COMPIZ CHANGE KEPT EXPLICIT AND REVERSIBLE. New executable
+    `compiz-game-performance` status-checks, backs up, atomically enables only
+    `[composite] s0_unredirect_fullscreen_windows = true`, verifies the write,
+    and restores the newest pre-apply backup; it never restarts Compiz and
+    refuses root profile edits. `compiz-guard-install` installs and hashes it.
+    Because NVIDIA tearing and multi-monitor fullscreen transitions can
+    regress, this remains opt-in and requires logout/login plus both-monitor
+    testing. `PERFORMANCE_TRIAL.md` gives target receipts and both rollback
+    paths (`xmb-wallpaper-controller --restore` and the Compiz tool restore).
+
+  [W-326] SANDBOX GATES PASS. 12 pure/mock regressions cover idle/transition
+    track selection, selected-track reporting, strict fullscreen config,
+    fullscreen parser + indeterminate failure behavior, boolean pause IPC,
+    zero-opacity hold removal, both shader guards, one-key Compiz editing,
+    duplicate canonicalization, and installer exposure. Python compilation,
+    shell syntax, `git diff --check`, a two-run temporary-HOME runtime install
+    idempotence receipt, and a real temporary-profile Compiz apply/check/
+    byte-exact restore receipt all PASS. LIMIT: no live X server/NVIDIA GPU or
+    game exists in the sandbox, so actual CPU/RSS/decoder gains, frame-time/FPS,
+    focused-window behavior, tearing, and dual-monitor behavior remain target
+    receipts rather than claims.
+
+[2026-08-17][M17-XMB-PERF-01] Idle decoder fan-out and zero-strength shader
+  work removed; fullscreen games receive a wallpaper pause handoff; Compiz
+  unredirection is reversible opt-in. Next: run PERFORMANCE_TRIAL.md on the
+  target and keep/restore each layer from measured FPS, frame-time, and
+  dual-monitor receipts.

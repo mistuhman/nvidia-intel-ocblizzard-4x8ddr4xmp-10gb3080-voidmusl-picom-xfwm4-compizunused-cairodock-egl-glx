@@ -25,6 +25,16 @@ BLUR_MS=500
 # Transition blur strength 0.0..8.0 (0 = off, 1 = base, higher = stronger).
 BLUR_PEAK=6.0
 HWDEC=nvdec-copy
+# Freeze mpv decoding/rendering while the active application is fullscreen.
+# This returns wallpaper CPU/GPU time to games; set 0 to disable.
+PAUSE_FULLSCREEN=1
+CONF
+elif ! grep -q '^[[:space:]]*PAUSE_FULLSCREEN=' "$CONFIG"; then
+  printf '\n' >>"$CONFIG"
+  cat >>"$CONFIG" <<'CONF'
+# Freeze mpv decoding/rendering while the active application is fullscreen.
+# This returns wallpaper CPU/GPU time to games; set 0 to disable.
+PAUSE_FULLSCREEN=1
 CONF
 fi
 cat >"$AUTOSTART/xmb-wallpaper-controller.desktop" <<EOF

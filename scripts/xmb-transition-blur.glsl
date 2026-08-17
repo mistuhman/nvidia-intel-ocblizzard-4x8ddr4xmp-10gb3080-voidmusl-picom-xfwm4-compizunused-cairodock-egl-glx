@@ -7,6 +7,7 @@
 
 //!HOOK MAIN
 //!BIND HOOKED
+//!WHEN xmb_strength 0 >
 //!DESC XMB blur - horizontal Gaussian
 vec4 hook() {
     vec4 c = 0.103154 * HOOKED_texOff(vec2(0.0, 0.0));
@@ -23,6 +24,7 @@ vec4 hook() {
 
 //!HOOK MAIN
 //!BIND HOOKED
+//!WHEN xmb_strength 0 >
 //!DESC XMB blur - vertical Gaussian
 vec4 hook() {
     vec4 c = 0.103154 * HOOKED_texOff(vec2(0.0, 0.0));

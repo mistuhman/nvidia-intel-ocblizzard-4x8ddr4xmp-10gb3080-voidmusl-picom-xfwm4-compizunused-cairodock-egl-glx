@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""Reversibly enable Compiz fullscreen unredirection for game performance.
+
+This tool owns one setting only:
+  [composite] s0_unredirect_fullscreen_windows = true
+
+It deliberately does not force an unredirect match and never restarts Compiz.
+Use logout/login after applying, then test fullscreen games on both monitors.
+
+  compiz-game-performance --status   # read-only detail
+  compiz-game-performance --check    # exit 0 only when enabled
+  compiz-game-performance --apply    # backup + atomic one-key edit
+  compiz-game-performance --restore  # restore newest pre-apply backup
+"""
+from __future__ import annotations
+
+import hashlib
+import os
+from pathlib import Path
+import re
+import shutil
+import stat
+import sys
+import time
+
+CFG = Path(os.getenv("COMPIZ_PROFILE", Path.home() / ".config/compiz/compizconfig/Default.ini"))
+STATE = Path(os.getenv("COMPIZ_GAME_STATE", Path.home() / ".local/state/compiz-game-performance"))
+SECTION = "composite"
+KEY = "s0_unredirect_fullscreen_windows"
+VALUE = "true"
+
+
+def die(message, code=1):
+    print(f"compiz-game-performance: FAIL  {message}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def section_bounds(lines, name=SECTION):
+    marker = f"[{name}]"
+    try:
+        start = lines.index(marker)
+    except ValueError:
+        return None, None
+    end = len(lines)
+    for index in range(start + 1, len(lines)):
+        if lines[index].startswith("[") and lines[index].endswith("]"):
+            end = index
+            break
+    return start, end
+
+
+def setting(lines):
+    start, end = section_bounds(lines)
+    if start is None:
+        return None
+    found = None
+    for line in lines[start + 1:end]:
+        match = re.match(rf"^\s*{re.escape(KEY)}\s*=\s*(.*?)\s*$", line)
+        if match:
+            found = match.group(1).lower()
+    return found
+
+
+def enable_unredirect(lines):
+    """Return canonicalized lines and whether they differ from the input."""
+    out = list(lines)
+    start, end = section_bounds(out)
+    if start is None:
+        if out and out[-1].strip():
+            out.append("")
+        out.extend([f"[{SECTION}]", f"{KEY} = {VALUE}"])
+        return out, True
+
+    matches = []
+    for index in range(start + 1, end):
+        if re.match(rf"^\s*{re.escape(KEY)}\s*=", out[index]):
+            matches.append(index)
+    wanted = f"{KEY} = {VALUE}"
+    if not matches:
+        out.insert(end, wanted)
+    else:
+        out[matches[0]] = wanted
+        for index in reversed(matches[1:]):
+            del out[index]
+    return out, out != lines
+
+
+def backup(tag="pre-apply"):
+    STATE.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path = STATE / f"Default.ini.{tag}.{int(time.time())}.{os.getpid()}"
+    shutil.copy2(CFG, path)
+    if not path.is_file():
+        die(f"backup missing after copy: {path}")
+    return path
+
+
+def newest_backup():
+    if not STATE.is_dir():
+        return None
+    candidates = sorted(STATE.glob("Default.ini.pre-apply.*"), key=lambda path: path.stat().st_mtime, reverse=True)
+    return candidates[0] if candidates else None
+
+
+def write_atomic(lines):
+    mode = stat.S_IMODE(CFG.stat().st_mode)
+    temp = CFG.with_name(CFG.name + f".tmp.{os.getpid()}")
+    try:
+        temp.write_text("\n".join(lines) + "\n")
+        temp.chmod(mode)
+        temp.replace(CFG)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def require_profile():
+    if not CFG.is_file():
+        die(f"profile missing: {CFG}", 2)
+
+
+def cmd_status():
+    print("== compiz-game-performance status ==")
+    if not CFG.is_file():
+        print(f"profile: MISSING  {CFG}")
+        return 1
+    value = setting(CFG.read_text().splitlines())
+    print(f"profile: {CFG}")
+    print(f"hash:    {digest(CFG)}")
+    print(f"{KEY}: {value if value is not None else '(unset)'}")
+    print(f"desired: {'YES' if value == VALUE else 'no'}")
+    print(f"backup:  {newest_backup() or '(none yet)'}")
+    return 0
+
+
+def cmd_check():
+    require_profile()
+    value = setting(CFG.read_text().splitlines())
+    print(f"{KEY}={value if value is not None else 'unset'}")
+    print(f"VERDICT: {'ENABLED' if value == VALUE else 'NOT-ENABLED'}")
+    return 0 if value == VALUE else 1
+
+
+def cmd_apply():
+    if os.geteuid() == 0:
+        die("refusing to edit a user profile as root", 2)
+    require_profile()
+    lines = CFG.read_text().splitlines()
+    updated, changed = enable_unredirect(lines)
+    if not changed:
+        print("compiz-game-performance: OK    already enabled")
+        print(f"compiz-game-performance: hash  {digest(CFG)}")
+        return 0
+    saved = backup()
+    print(f"compiz-game-performance: backup {saved}")
+    write_atomic(updated)
+    if setting(CFG.read_text().splitlines()) != VALUE:
+        shutil.copy2(saved, CFG)
+        die(f"post-write verify failed; automatically restored {saved}")
+    print(f"compiz-game-performance: wrote  {CFG}")
+    print(f"compiz-game-performance: hash   {digest(CFG)}")
+    print("compiz-game-performance: OK     fullscreen unredirection enabled")
+    print("compiz-game-performance: NOTE   logout/login to make Compiz reread the profile")
+    print("compiz-game-performance: TEST   fullscreen games and both monitors before keeping it")
+    print("compiz-game-performance: undo   compiz-game-performance --restore")
+    return 0
+
+
+def cmd_restore():
+    if os.geteuid() == 0:
+        die("refusing to edit a user profile as root", 2)
+    require_profile()
+    saved = newest_backup()
+    if not saved:
+        die(f"no pre-apply backup under {STATE}", 2)
+    safety = backup("pre-restore")
+    shutil.copy2(saved, CFG)
+    print(f"compiz-game-performance: restored {saved}")
+    print(f"compiz-game-performance: safety   {safety}")
+    print("compiz-game-performance: NOTE     logout/login to activate the restored profile")
+    return 0
+
+
+def main():
+    action = sys.argv[1] if len(sys.argv) > 1 else "--status"
+    if action in ("-h", "--help"):
+        print(__doc__)
+        return 0
+    if action == "--status":
+        return cmd_status()
+    if action == "--check":
+        return cmd_check()
+    if action in ("--apply", "apply"):
+        return cmd_apply()
+    if action == "--restore":
+        return cmd_restore()
+    die(f"unknown argument {action!r}; use --status|--check|--apply|--restore", 2)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

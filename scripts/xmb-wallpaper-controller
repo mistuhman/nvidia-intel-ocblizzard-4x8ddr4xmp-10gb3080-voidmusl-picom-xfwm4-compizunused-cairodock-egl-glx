@@ -12,7 +12,7 @@ ROLES = ("main-red", "work-monochrome", "sleep"); stop_now = False
 def fail(text): print(f"xmb-controller: {text}", file=sys.stderr); raise SystemExit(2)
 def video(role): return ROOT / "out" / role / f"{role}.loop-60s.mp4"
 def config():
-    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 6.0}
+    out = {"roles": ["main-red", "work-monochrome", "work-monochrome", "main-red"], "fade": 350, "blur": 500, "hwdec": "nvdec-copy", "peak": 6.0, "pause_fullscreen": True}
     if CFG.is_file():
         for raw in CFG.read_text().splitlines():
             line = raw.split("#", 1)[0].strip()
@@ -23,6 +23,10 @@ def config():
             elif line.startswith("BLUR_MS="): out["blur"] = int(line.split("=", 1)[1])
             elif line.startswith("HWDEC="): out["hwdec"] = line.split("=", 1)[1].strip()
             elif line.startswith("BLUR_PEAK="): out["peak"] = float(line.split("=", 1)[1])
+            elif line.startswith("PAUSE_FULLSCREEN="):
+                value = line.split("=", 1)[1].strip().lower()
+                if value not in ("0", "1", "false", "true", "no", "yes"): fail("PAUSE_FULLSCREEN must be 0/1, false/true, or no/yes")
+                out["pause_fullscreen"] = value in ("1", "true", "yes")
             else: fail(f"unsupported config line: {raw}")
     if len(out["roles"]) != 4 or any(r not in ROLES for r in out["roles"]): fail("ROLES must contain four allowed roles")
     if not 100 <= out["fade"] <= 10000: fail("FADE_MS must be 100..10000")
@@ -80,11 +84,51 @@ class IPC:
                 return reply.get("data")
     def close(self): self.file.close(); self.sock.close()
 def steady(role, ids): return f"[vid{ids[role]}]null[vo]"
-def hold(role, ids, warm):
-    source, chains = f"[vid{ids[role]}]", []
-    for index, other in enumerate((r for r in warm if r != role), 1):
-        output = "[vo]" if index == len(warm) - 1 else f"[hold{index}]"; chains.append(f"[vid{ids[other]}]{source}blend=all_opacity=0{output}"); source = output
-    return ";".join(chains) if chains else steady(role, ids)
+def set_steady(ipc, role, ids):
+    graph = steady(role, ids)
+    ipc.call("set_property", "lavfi-complex", graph)
+    return graph
+def selected_video_tracks(tracks):
+    return [track.get("id") for track in tracks if track.get("type") == "video" and track.get("selected")]
+def active_window_id(line):
+    match = re.search(r"window id #\s*(0x[0-9a-fA-F]+)", line)
+    return match.group(1).lower() if match and match.group(1) != "0x0" else ""
+def fullscreen_state(line): return "_NET_WM_STATE_FULLSCREEN" in line
+def active_fullscreen():
+    try:
+        root = subprocess.run(["xprop", "-root", "_NET_ACTIVE_WINDOW"], text=True, capture_output=True, timeout=.4, check=False)
+        if root.returncode != 0: return None, ""
+        window = active_window_id(root.stdout)
+        if not window: return False, ""
+        state = subprocess.run(["xprop", "-id", window, "_NET_WM_STATE"], text=True, capture_output=True, timeout=.4, check=False)
+        if state.returncode != 0: return None, window
+        return fullscreen_state(state.stdout), window
+    except (OSError, subprocess.TimeoutExpired):
+        # A transient X/property failure must not wake a paused renderer.
+        return None, ""
+def set_pause(ipc, enabled): ipc.call("set_property", "pause", bool(enabled))
+def rss_kib(pid):
+    try:
+        match = re.search(r"^VmRSS:\s+(\d+)\s+kB$", (Path("/proc") / str(pid) / "status").read_text(), re.MULTILINE)
+        return int(match.group(1)) if match else 0
+    except OSError: return 0
+def cpu_percent(pid, interval=.2):
+    def ticks():
+        try:
+            fields = (Path("/proc") / str(pid) / "stat").read_text().split()
+            return int(fields[13]) + int(fields[14])
+        except (OSError, ValueError, IndexError): return None
+    first = ticks()
+    if first is None: return 0.0
+    before = time.monotonic(); time.sleep(interval); after = time.monotonic(); second = ticks()
+    if second is None or after <= before: return 0.0
+    return (second - first) / os.sysconf("SC_CLK_TCK") / (after - before) * 100.0
+def nvidia_snapshot():
+    if not shutil.which("nvidia-smi"): return "UNAVAILABLE (nvidia-smi missing)"
+    try:
+        result = subprocess.run(["nvidia-smi", "--query-gpu=utilization.gpu,utilization.decoder,memory.used", "--format=csv,noheader,nounits"], text=True, capture_output=True, timeout=1, check=False)
+        return result.stdout.strip().replace("\n", ";") if result.returncode == 0 else f"UNAVAILABLE (rc={result.returncode})"
+    except (OSError, subprocess.TimeoutExpired): return "UNAVAILABLE (query failed)"
 def blend(weights, target, ids, frames, delay=0):
     active = [target] + [r for r in ROLES if r != target and weights.get(r, 0) > .0001]
     if len(active) == 1: return steady(target, ids)
@@ -132,15 +176,29 @@ def launch(cfg, initial):
                 for role in order[1:]:
                     if filename == video(role).name: ids[role] = track.get("id")
             if set(ids) == set(ROLES) and len(set(ids.values())) == 3:
-                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"]))))
+                # Keep exactly one video track selected while idle. mpv selects
+                # every track referenced by lavfi-complex, even at opacity 0.
+                set_steady(ipc, initial, ids)
                 try:
                     ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000")
                 except RuntimeError: print("blur shader preload failed; crossfade continues", flush=True)
                 return xww, ipc, ids, log
         time.sleep(.05)
     (ipc and ipc.close()); kill(xww.pid, "xwinwrap"); fail(f"track map timeout: {tracks}; inspect {LOG}")
-def state_write(xww, role):
-    children = [int(p.name) for p in Path("/proc").glob("[0-9]*") if proc(int(p.name))[2] == xww.pid and proc(int(p.name))[0] == "mpv"]; data = {"controller": os.getpid(), "xwinwrap": xww.pid, "mpv": children[0] if children else 0, "role": role}
+def state_write(xww, role, mode="idle", fullscreen_paused=False):
+    mpv_pid = 0
+    try:
+        previous = json.loads(STATE.read_text())
+        candidate = int(previous.get("mpv", 0))
+        comm, _, parent = proc(candidate)
+        if comm == "mpv" and parent == xww.pid: mpv_pid = candidate
+    except (OSError, ValueError, json.JSONDecodeError): pass
+    if not mpv_pid:
+        for path in Path("/proc").glob("[0-9]*"):
+            pid = int(path.name); comm, _, parent = proc(pid)
+            if parent == xww.pid and comm == "mpv": mpv_pid = pid; break
+    data = {"controller": os.getpid(), "xwinwrap": xww.pid, "mpv": mpv_pid,
+            "role": role, "mode": mode, "fullscreen_paused": fullscreen_paused}
     temp = STATE.with_suffix(".tmp"); temp.write_text(json.dumps(data) + "\n"); temp.replace(STATE)
 def run(replace):
     global stop_now
@@ -157,14 +215,14 @@ def run(replace):
     try:
         xww, ipc, ids, log = launch(cfg, initial); state_write(xww, initial)
         watch = subprocess.Popen(["xprop", "-root", "-spy", "_NET_DESKTOP_VIEWPORT"], stdout=subprocess.PIPE); os.set_blocking(watch.stdout.fileno(), False)
-        duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
+        duration = cfg["fade"] / 1000
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
         cur_duration, cur_rise, cur_fall = duration, max(duration * 0.214, 0.03), max(duration * 0.6, 0.1)
         fade_frames = round(duration * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
-        last_tick = time.monotonic()
+        fullscreen_paused, fullscreen_window, fullscreen_poll = False, "", 0.0
         while not stop_now and xww.poll() is None:
             if select.select([watch.stdout], [], [], .016 if blur_on or active else .05)[0]:
                 chunk = os.read(watch.stdout.fileno(), 65536); chunk or fail("xprop watcher exited")
@@ -173,15 +231,32 @@ def run(replace):
                     desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (target_slot if active else current_slot)
                     if desired != planned:
                         events.clear(); events.append(desired)
-            now = time.monotonic(); dt = min(now - last_tick, 0.1)
+            now = time.monotonic()
+            if cfg["pause_fullscreen"] and now >= fullscreen_poll and not active and not blur_on:
+                should_pause, window = active_fullscreen(); fullscreen_poll = now + 1.0
+                if should_pause is not None and should_pause != fullscreen_paused:
+                    set_pause(ipc, should_pause); fullscreen_paused, fullscreen_window = should_pause, window
+                    mode = "fullscreen-paused" if should_pause else ("transition" if active else ("blur-release" if blur_on else "idle"))
+                    state_write(xww, target_role if active else current_role, mode, fullscreen_paused)
+                    print(f"fullscreen-pause={'on' if should_pause else 'off'} window={window or fullscreen_window or 'none'}", flush=True)
             if active and now - started >= cur_duration:
                 current_slot, current_role, active = target_slot, target_role, False
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
-                if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
+                if not events: set_steady(ipc, current_role, ids)
+                mode = "fullscreen-paused" if fullscreen_paused else ("blur-release" if blur_on else "idle")
+                state_write(xww, current_role, mode, fullscreen_paused)
             if not active and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
                 if target_slot == current_slot: continue
-                frac = min(max(strength_last / peak, 0.0), 1.0) if blur_on else 0.0
+                if target_role == current_role:
+                    # A viewport move with identical content needs no second
+                    # decoder, blend, or blur pass.
+                    current_slot = target_slot; set_steady(ipc, current_role, ids)
+                    mode = "fullscreen-paused" if fullscreen_paused else ("blur-release" if blur_on else "idle")
+                    state_write(xww, current_role, mode, fullscreen_paused)
+                    print(f"same-role slot={current_slot + 1} role={current_role} effect=skipped", flush=True)
+                    continue
+                frac = min(max(strength_last / peak, 0.0), 1.0) if blur_on and peak > 0 else 0.0
                 burst_start = now - math.asin(frac) / (math.pi / 2.0) * cur_rise
                 if not blur_on:
                     blur_on = True
@@ -190,8 +265,9 @@ def run(replace):
                 else:
                     burst_hops += 1; idle_at = 0.0
                 print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, 0))
-                active, started = True, now; state_write(xww, target_role)
+                ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, 0))
+                active, started = True, now
+                state_write(xww, target_role, "fullscreen-paused" if fullscreen_paused else "transition", fullscreen_paused)
             if blur_on:
                 if active and now - burst_start < cur_rise:
                     target = peak * blur_rise((now - burst_start) / cur_rise)
@@ -210,9 +286,18 @@ def run(replace):
                         blur_fail += 1
                         if blur_fail == 3: print("blur animation disabled: glsl-shader-opts unsupported; crossfade continues", flush=True)
                 if idle_at and now - idle_at >= cur_fall:
+                    if strength_last != 0.0:
+                        try:
+                            ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000")
+                        except RuntimeError:
+                            # Never leave a costly/visible pass stuck on after
+                            # repeated option failures. Crossfade can continue.
+                            try: ipc.call("set_property", "glsl-shaders", [])
+                            except RuntimeError: pass
                     blur_on, strength_last = False, 0.0
+                    mode = "fullscreen-paused" if fullscreen_paused else ("transition" if active else "idle")
+                    state_write(xww, target_role if active else current_role, mode, fullscreen_paused)
                     print(f"blur burst hops={burst_hops} peak={peak:.3f} max={burst_max:.3f} steps={burst_steps} rise_ms={round(cur_rise * 1000)} fall_ms={round(cur_fall * 1000)} state={'OK' if blur_fail == 0 else 'DEGRADED'}", flush=True)
-            last_tick = now
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:
         if watch: watch.terminate()
@@ -255,9 +340,26 @@ def stop(restore=False):
     print("XMB_CONTROLLER_RESTORE=PASS" if restore else "XMB_CONTROLLER_STOP=PASS")
 def status():
     if not live_pid(): print("XMB_CONTROLLER_STATUS=STOPPED"); return 1
-    print(STATE.read_text().strip())
+    raw = STATE.read_text().strip(); print(raw)
+    try: data = json.loads(raw)
+    except json.JSONDecodeError: data = {}
+    mpv_pid = int(data.get("mpv", 0) or 0)
+    print(f"mode={data.get('mode', 'unknown')}")
+    print(f"fullscreen-paused={str(bool(data.get('fullscreen_paused'))).lower()}")
+    print(f"mpv-rss-kib={rss_kib(mpv_pid)}")
+    print(f"mpv-cpu-percent={cpu_percent(mpv_pid):.1f}")
+    print(f"nvidia-gpu-percent,decoder-percent,memory-used-mib={nvidia_snapshot()}")
     ipc = IPC()
-    for name in ("lavfi-complex", "glsl-shaders", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
+    try:
+        tracks = ipc.call("get_property", "track-list")
+        selected = selected_video_tracks(tracks)
+        videos = [track for track in tracks if track.get("type") == "video"]
+        print(f"selected-video-track-count={len(selected)}")
+        print(f"selected-video-track-ids={','.join(map(str, selected)) or 'none'}")
+        print(f"loaded-video-track-count={len(videos)}")
+    except RuntimeError as error:
+        print(f"selected-video-track-count=UNAVAILABLE ({error})")
+    for name in ("lavfi-complex", "glsl-shaders", "pause", "hwdec-current", "vo-drop-frame-count", "decoder-frame-drop-count", "estimated-vf-fps"):
         try: value = ipc.call("get_property", name)
         except RuntimeError as error: value = f"UNAVAILABLE ({error})"
         print(f"{name}={value}")
@@ -266,7 +368,7 @@ def main():
     action = sys.argv[1] if len(sys.argv) > 1 else "start"
     if action == "run": run("--replace" in sys.argv)
     elif action == "start": check(); start("--replace" in sys.argv)
-    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} peak={cfg['peak']} hwdec={cfg['hwdec']}"); print("XMB_CONTROLLER_CHECK=PASS")
+    elif action == "--check": cfg = check(); print(f"roles={' '.join(cfg['roles'])} fade_ms={cfg['fade']} blur_ms={cfg['blur']} peak={cfg['peak']} hwdec={cfg['hwdec']} pause_fullscreen={str(cfg['pause_fullscreen']).lower()}"); print("XMB_CONTROLLER_CHECK=PASS")
     elif action == "--status": raise SystemExit(status())
     elif action == "--stop": stop()
     elif action == "--restore": stop(True)
