@@ -1,7 +1,7 @@
 # Continuation prompt — U-070 one-mpv IPC switcher target trial; U-055 closed
 
 Live reversible desktop project in `mistuhman/nvidia-intel-ocblizzard-...-egl-glx`.
-Supersedes the 12.147 prompt. This is the 12.148 pre-target edge.
+Supersedes the 12.148 prompt. This is the 12.149 pre-target edge.
 (X-126 lesson: a stale prompt costs real work.)
 
 ## Mandatory init
@@ -52,6 +52,9 @@ Supersedes the 12.147 prompt. This is the 12.148 pre-target edge.
 - Deliver by heredoc or git checkout, never curl (X-097). No unanchored `pgrep -f` (X-128).
 - CCSM gtk.css/pixbuf warnings benign (X-135). Never destabilize WM for wallpaper (W-282).
 - One objective per PR (X-147). Ceiling 405.
+- Every delivery block re-issues the target config heredoc: rollbacks
+  restore the config too, so an omitted config silently retunes the trial
+  (W-310 lesson).
 - Never re-patch an installed copy whose SHA diverges from repo HEAD;
   re-install whole files from one SHA via xmb-runtime-install (X-154).
 
@@ -67,24 +70,30 @@ Supersedes the 12.147 prompt. This is the 12.148 pre-target edge.
    (W-304/W-306). Timings operator-directed: FADE_MS=350, BLUR_MS=500 = total
    blur window (U-084/W-305). X-156 found the peak-hold blur masked the
    crossfade; W-307 REVEAL envelope releases from the fade midpoint so the
-   X-157 then proved the masking numerically (blur at fade end still ~2.7;
-   cos fall stays >25% of peak ~84% of its time); U-086/W-309 punch-and-
-   reveal: blur punches to peak in FADE_MS/4, holds during queued bursts,
-   releases on a cos^4 fast curve to exact 0 exactly at fade end; BLUR_MS
-   capped at FADE_MS; blend motion back to linear so mix motion lands in the
-   clean tail. NEXT: reinstall controller (config stays 350/500/4.0),
-   --check must print fade_ms=350 blur_ms=500 peak=4.0; switch slow + fast;
-   burst lines must read rise_ms=88 fall_ms=262 state=OK; the crossfade
-   must be VISIBLE on different-role hops (same-role hops pulse blur only,
-   by design). Verdict word; any failure: rollback block (controller +
-   config). Autostart remains Hidden/false until accept. Never run target's
-   old SHA 7484d253 controller or revive X-143.
+   X-157 proved masking numerically; W-309 punch-and-reveal (rise FADE_MS/4,
+   cos^4 release to exact 0 at fade end, linear blend motion). W-310 then
+   found the u086 trial ran stale 500/700 config (rollback restored it;
+   block omitted the config heredoc) and X-158 found the event flood:
+   strict-order queue replayed every intermediate viewport event, backlog
+   hit 23, wallpaper lagged reality and blur overlapped everything. U-087
+   fix (W-311): shader preloaded once at launch (identity at 0.000, never
+   unloaded — zero churn, cannot miss a switch) + queue capped at depth 2
+   latest-wins (U-080 back-and-forth kept at depth<=2). NEXT: reinstall
+   block MUST include the config heredoc (350/500/4.0); --check must print
+   fade_ms=350 blur_ms=500 peak=4.0; switch slow + fast + a fast burst;
+   burst lines rise_ms=88 fall_ms=262 state=OK; queued= never above 2;
+   crossfade VISIBLE on different-role hops (same-role hops pulse blur
+   only). Verdict word; any failure: rollback block (controller + config).
+   Autostart remains Hidden/false until accept. Never run target's old SHA
+   7484d253 controller or revive X-143.
 4. M18 icons/sound after switcher direction is clear.
 5. Optional later: obs menu opacity retry (fixed tool) — operator go-ahead only.
 6. Tier-2 USB when convenient. **Tier-3 `~/.bitcoin`: never delete, never
    glob-move, only with client stopped (U-063).**
 
 ## Anchors
+12.149 (W-310 config-drift receipt, X-158 event flood backlog 23,
+U-087/W-311 preload-at-launch + queue cap 2 latest-wins, sandbox-proven),
 12.148 (W-308 gates green at peak 4.0, X-157 masking proven numerically,
 U-086/W-309 punch-and-reveal + linear dissolve, sandbox-proven),
 12.147 (X-156 crossfade masked by peak-hold blur, U-085/W-307 reveal envelope

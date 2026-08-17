@@ -132,7 +132,11 @@ def launch(cfg, initial):
                 for role in order[1:]:
                     if filename == video(role).name: ids[role] = track.get("id")
             if set(ids) == set(ROLES) and len(set(ids.values())) == 3:
-                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"])))); return xww, ipc, ids, log
+                ipc.call("set_property", "lavfi-complex", hold(initial, ids, tuple(dict.fromkeys(cfg["roles"]))))
+                try:
+                    ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000")
+                except RuntimeError: print("blur shader preload failed; crossfade continues", flush=True)
+                return xww, ipc, ids, log
         time.sleep(.05)
     (ipc and ipc.close()); kill(xww.pid, "xwinwrap"); fail(f"track map timeout: {tracks}; inspect {LOG}")
 def state_write(xww, role):
@@ -165,7 +169,9 @@ def run(replace):
                 event_buf += chunk; lines = event_buf.split(b"\n"); event_buf = lines.pop()
                 for raw in lines:
                     desired = slot_at_viewport(raw.decode(errors="replace")); planned = events[-1] if events else (target_slot if active else current_slot)
-                    if desired != planned: events.append(desired)
+                    if desired != planned:
+                        if len(events) >= 2: events.pop()
+                        if not events or events[-1] != desired: events.append(desired)
             now = time.monotonic()
             if active and now - started >= duration:
                 current_slot, current_role, active = target_slot, target_role, False
@@ -174,11 +180,9 @@ def run(replace):
             if not active and events:
                 target_slot = events.popleft(); target_role = cfg["roles"][target_slot]
                 if not blur_on:
-                    ipc.call("change-list", "glsl-shaders", "set", str(SHADER)); blur_on = True
+                    blur_on = True
                     burst_start, strength_last, blur_fail, idle_at = now, 0.0, 0, 0.0
                     burst_hops, burst_steps, burst_max = 1, 0, 0.0
-                    try: ipc.call("set_property", "glsl-shader-opts", "xmb_strength=0.000")
-                    except RuntimeError: blur_fail += 1
                 else:
                     burst_hops += 1; idle_at = 0.0
                 print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
@@ -199,7 +203,7 @@ def run(replace):
                         blur_fail += 1
                         if blur_fail == 3: print("blur animation disabled: glsl-shader-opts unsupported; crossfade continues", flush=True)
                 if idle_at and now - idle_at >= fall_time:
-                    ipc.call("change-list", "glsl-shaders", "clr", ""); blur_on, strength_last = False, -1.0
+                    blur_on, strength_last = False, 0.0
                     print(f"blur burst hops={burst_hops} peak={peak:.3f} max={burst_max:.3f} steps={burst_steps} rise_ms={round(rise_time * 1000)} fall_ms={round(fall_time * 1000)} state={'OK' if blur_fail == 0 else 'DEGRADED'}", flush=True)
         if xww.poll() is not None: fail(f"renderer exited; inspect {LOG}")
     finally:

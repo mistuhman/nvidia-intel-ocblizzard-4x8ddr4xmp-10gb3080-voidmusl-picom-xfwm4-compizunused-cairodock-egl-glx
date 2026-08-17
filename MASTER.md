@@ -9233,3 +9233,47 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-16][M17-XMB-IPC-10] Masking solved by geometry: punch in, reveal
   out, linear dissolve. Next: reinstall + first clean-crossfade verdict.
+
+--------------------------------------------------------------------------------
+12.149 WHY IT "STOPPED WORKING": CONFIG DRIFT + EVENT FLOOD; ALWAYS-READY BLUR
+--------------------------------------------------------------------------------
+
+  [W-310] U-086 TRIAL RECEIPTS. Gates all green (16949 B, normalized sha
+    05b256f7... exact, compile PASS). The trial actually ran FADE_MS=500
+    BLUR_MS=700: the u085 rollback had restored the original 500/700 config
+    and the u086 delivery block omitted the config heredoc — delivery bug,
+    agent-side; standing fix is that every block re-issues the config. Even
+    so the trial proved v6 mechanics on target: burst lines rise_ms=125
+    fall_ms=375 state=OK at those timings; --status caught a live blend
+    graph with the linear u expression mid-transition; shader list loaded;
+    60.000179 fps. RECEIPT: operator paste 2026-08-17.
+
+  [X-158] EVENT FLOOD OUTRAN THE STRICT-ORDER QUEUE. Fast switching drove
+    queued= to 12-23 and rising: every intermediate viewport event replayed
+    as a full fade, so the wallpaper lagged the real viewport by many
+    seconds while blur held at peak across the churn — the overlap reported.
+    With the queue deep, effects look absent at the moment of switching even
+    though every graph is healthy. Combined with X-157 masking and the
+    config drift, this is the complete answer to "why did the crossfade
+    first work and not now": the mechanism never broke; its envelope, timing
+    config, and event policy did. RECEIPT: same paste log.
+
+  [U-087] OPERATOR DIRECTIVE: activate every single time no matter what;
+    persistence without overlap; load efficiently.
+
+  [W-311] ALWAYS-READY BLUR + FLOOD CAP AUTHORED AND PROVEN IN-REPO. Shader
+    preloads once at launch at strength 0.000 (two-pass weights sum to 1.0 =
+    mathematical identity) and is never unloaded: zero set/clr churn, zero
+    load latency, the effect cannot miss a switch; burst lifecycle is
+    strength-only. Queue capped at depth 2 with latest-wins beyond it: fast
+    back-and-forth still animates (U-080 kept at depth <= 2), deep floods
+    collapse to the latest destination instead of replaying history.
+    Preload failure degrades gracefully; blur never blocks the crossfade.
+    SANDBOX: py_compile PASS; scenario 1 PASS (preload once, zero unloads,
+    unimodal 0->4.000->0, rise_ms=88 fall_ms=262 state=OK); scenario 2 flood
+    PASS (5 events -> 3 transitions, backlog never above 2, ends at the true
+    viewport, all complete, state=OK); degraded PASS (preload-fail notice,
+    blend still runs, state=DEGRADED). RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-11] Blur always-ready, flood capped, config
+  restored. Next: full-block reinstall (config INCLUDED) + verdict.
