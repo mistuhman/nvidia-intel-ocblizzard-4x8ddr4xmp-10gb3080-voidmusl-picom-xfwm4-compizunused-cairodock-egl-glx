@@ -160,9 +160,9 @@ def run(replace):
         duration, blur_duration, warm = cfg["fade"] / 1000, cfg["blur"] / 1000, tuple(dict.fromkeys(cfg["roles"]))
         peak, strength_last, blur_fail = cfg["peak"], -1.0, 0
         burst_start, burst_hops, burst_steps, burst_max, idle_at = 0.0, 0, 0, 0.0, 0.0
-        pulse = max(blur_duration - duration, 0.0); total_time = duration + pulse
+        pulse = max(blur_duration - duration, 0.0)
         rise_time, fall_time = max(pulse / 2, 0.03), max(duration * 0.6, 0.1)
-        fade_frames, delay_frames = round(duration * 60), round(pulse * 60)
+        fade_frames = round(duration * 60)
         current_slot, current_role, target_slot, target_role = initial_slot, initial, initial_slot, initial
         active, started, events, event_buf = False, 0.0, collections.deque(), b""; blur_on = False
         last_tick = time.monotonic()
@@ -176,7 +176,7 @@ def run(replace):
                         if len(events) >= 2: events.pop()
                         if not events or events[-1] != desired: events.append(desired)
             now = time.monotonic(); dt = min(now - last_tick, 0.1)
-            if active and now - started >= total_time:
+            if active and now - started >= duration:
                 current_slot, current_role, active = target_slot, target_role, False
                 print(f"complete slot={current_slot + 1} role={current_role} queued={len(events)}", flush=True)
                 if not events: ipc.call("set_property", "lavfi-complex", hold(current_role, ids, warm))
@@ -189,13 +189,13 @@ def run(replace):
                 else:
                     burst_hops += 1; idle_at = 0.0
                 print(f"start slot={current_slot + 1}->{target_slot + 1} role={current_role}->{target_role} queued={len(events)}", flush=True)
-                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, delay_frames))
+                if target_role != current_role: ipc.call("set_property", "lavfi-complex", blend({current_role: 1.}, target_role, ids, fade_frames, 0))
                 active, started = True, now; state_write(xww, target_role)
             if blur_on:
-                if active and now - started < pulse:
+                if active and now - started < rise_time:
                     target = min(peak, strength_last + peak * dt / rise_time)
                 else:
-                    if not idle_at: idle_at = started + pulse if active else now
+                    if not idle_at: idle_at = started + rise_time if active else now
                     target = peak * blur_fall((now - idle_at) / fall_time)
                 burst_max = max(burst_max, target)
                 if blur_fail < 3 and (abs(target - strength_last) >= 0.02 or (target != strength_last and target in (0.0, peak))):

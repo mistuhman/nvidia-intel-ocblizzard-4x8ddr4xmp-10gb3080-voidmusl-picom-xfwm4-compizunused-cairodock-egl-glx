@@ -9352,3 +9352,43 @@ What worked, in order, when the box went black before lightdm with no TTY.
 
 [2026-08-17][M17-XMB-IPC-13] Crossfade accepted visible; chase envelope makes
   every hop punch at any speed. Next: controller-only reinstall + fast verdict.
+
+--------------------------------------------------------------------------------
+12.152 BLUR ACCEPTED + FROZEN; CROSSFADE UN-DELAYED, FIRES INSTANTLY EVERY HOP
+--------------------------------------------------------------------------------
+
+  [W-316] U-089 TRIAL RECEIPTS. Gates green (2330/17399 B, shas exact,
+    compile PASS, check 350/500/6.0). Every hop fired a clean burst
+    (peak=6.000, rise_ms=75 fall_ms=210, state=OK) across 12 switches
+    including fast alternation; fps 59.999994. Operator verdict: blur is
+    right ("more blur ... stop adjusting blur" — blur FROZEN at this exact
+    shape); crossfade "terrible" and "not working everytime". Rollback
+    applied; desktop SAFE. RECEIPT: operator paste 2026-08-17.
+
+  [X-161] CROSSFADE LATENCY WAS THE 150 MS BLEND DELAY. Pulse-then-dissolve
+    held the mix frozen (u=0) for the whole pulse before the dissolve could
+    move: every switch paid 150 ms of dead time, chained switches stacked
+    it, and the wallpaper choreography lagged the operator's actual
+    viewport — reading as terrible/unreliable. Secondary finding: hops 2<->3
+    and 4<->1 are same-role under the current ROLES (work/work, red/red) and
+    can never dissolve — they pulse only, by physics; distinct adjacent
+    roles are the only way to put a dissolve on every single hop.
+
+  [U-090] OPERATOR DIRECTIVE: blur stays exactly as-is; crossfade must work
+    every time.
+
+  [W-317] NO-DELAY CROSSFADE AUTHORED AND PROVEN IN-REPO. Blend delay
+    removed entirely: the dissolve starts the same tick the hop is taken and
+    completes in FADE_MS (350 ms; the dead phase took total to 500 ms); the
+    blur chase envelope is byte-untouched (same punch, same release) and
+    rides the dissolve — punch overlaps the first 75 ms, release done by
+    285 ms, clean tail to the end. SANDBOX: py_compile PASS; s1 PASS (blend
+    fires with zero delay); s2 PASS (every role-change hop got its own
+    zero-delay crossfade, bursts state=OK); s3 flood PASS (bounded, no
+    stuck, ends at true viewport); degraded PASS. Infra note: /tmp sandbox
+    wiped between turns and a stale local rewind briefly corrupted the
+    working copy; recovered byte-exact from origin 325a011 before re-edit.
+    RECEIPT: sandbox harness.
+
+[2026-08-17][M17-XMB-IPC-14] Blur frozen accepted; crossfade un-delayed.
+  Next: controller-only reinstall + verdict; same-role hops still pulse-only.
