@@ -50,6 +50,7 @@ post() {
   N=$(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" 2>/dev/null | grep -cE \
     '^(s0_detect_refresh_rate|s0_refresh_rate|s0_detect_outputs|s0_outputs|s0_sync_to_vblank|s0_lighting|as_texture_filter) ')
   echo "ccsm-safe: [core] enforced keys now $N/7"
+  echo "ccsm-safe: s0_outputs now: $(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" | grep -E '^s0_outputs *=' | head -1)"
 
   # 3. Show what CCSM actually changed, so nothing lands unseen.
   echo "ccsm-safe: plugin list before:"

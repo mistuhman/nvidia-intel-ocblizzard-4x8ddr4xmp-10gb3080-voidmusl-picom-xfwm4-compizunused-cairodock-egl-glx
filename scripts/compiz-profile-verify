@@ -67,7 +67,7 @@ if [ -r "$CFG" ]; then
       ;;
     *)
       say "WARN  s0_outputs not the dual-head pair: $OUTS"
-      say "      login hook will restore last wanted (fallback +197)"
+      say "      login hook will restore last wanted (fallback +0)"
       demote REPAIRABLE
       ;;
   esac

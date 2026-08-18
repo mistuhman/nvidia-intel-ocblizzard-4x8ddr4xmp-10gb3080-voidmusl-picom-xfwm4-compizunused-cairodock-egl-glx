@@ -9,7 +9,8 @@ monitor's Y used to be nailed to +197, which made CCSM's own edit and
 every login hook undo any alignment the operator tried. Y is now
 operator-owned (0..360). A valid value in the profile is kept and
 remembered; a missing or garbage value is restored from that memory,
-falling back to +197 only when nothing valid has ever been stored.
+falling back to +0 (XFCE top-align) only when nothing valid has ever
+been stored. +197 was the old nailed value and is no longer the default.
 """
 import sys, os, re, shutil, time, subprocess
 
@@ -34,7 +35,7 @@ ENFORCE = [
 ]
 
 Y_MIN, Y_MAX = 0, 360          # 1440 - 1080; keeps the X screen 4480x1440
-DEFAULT_Y = 197                # last hardware-measured alignment
+DEFAULT_Y = 0                  # XFCE display-settings top-align (operator 2026-08-18)
 DEFAULT_OUTPUTS = "2560x1440+0+0;1920x1080+2560+%d;" % DEFAULT_Y
 
 # X-130a. The plugin floor. NOT an allow-list: W-252 settled that the guard
@@ -125,7 +126,7 @@ def resolve_outputs(current, override_y=None, remember=True):
     """Pick the outputs string to enforce.
 
     Priority: explicit --set-outputs-y, then a valid value already in the
-    profile (remembered), then the last remembered value, then +197.
+    profile (remembered), then the last remembered value, then +0.
     --check sets remember=False so it writes nothing.
     """
     if override_y is not None:

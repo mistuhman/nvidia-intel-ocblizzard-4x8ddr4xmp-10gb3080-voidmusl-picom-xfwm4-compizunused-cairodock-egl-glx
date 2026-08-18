@@ -225,7 +225,8 @@ direction (Guideline 7).
   CCSM is open, and never leave CCSM open at logout.
 - Output sizes and X positions are hardware-fixed
   (`2560x1440+0+0;1920x1080+2560+Y`). Second-monitor Y is operator-owned
-  (0..360). The guard must keep a valid Y, never slam it back to +197.
+  (0..360) and matches XFCE display settings at +0. The guard must keep a
+  valid Y, never slam it back to +197. Empty-memory fallback is +0.
 - After any `compiz-revert --xfwm4`, `xfce-wm-recover`, or session-XML
   restore, persistence is OFF until `compiz-persist-arm` runs and verifies
   SAFE.
@@ -534,27 +535,40 @@ the wrong place.
 left, `1920x1080+2560+Y` on the right, refresh 120, vsync on. **What is now
 operator-owned:** Y in 0..360 (keeps the X screen 4480x1440). A valid Y in
 the profile is kept and remembered in `~/.local/share/compiz-guard/outputs.wanted`.
-Garbage or a missing key restores that memory; +197 is only the empty-memory
-fallback.
+Garbage or a missing key restores that memory; +0 (XFCE top-align) is the
+empty-memory fallback. +197 is no longer the default.
+
+**Target trial (2026-08-18)** — the first block ran from `~`, which is not a
+checkout. `git checkout`, `sha256sum scripts/…`, and `compiz-guard-install`
+all failed. PATH still had the old `~/.local/bin` tools: `--show`,
+`--set-outputs-y N`, and `--sync-from-xrandr` printed only
+`repair: OK, all 7 enforced keys already correct` (old repair ignores
+unknown flags). Two `ccsm-safe` sessions then proved the slam: CCSM wrote a
+new `s0_outputs`, repair said `1 key(s) wrong or missing: s0_outputs`, and
+the post-diff vs the pre-ccsm snapshot was 0 lines — file put back to +197.
+gtk.css warnings only; those stay benign. Verify was the old one (no Y line)
+and said SAFE, which is correct for "keys present" and does not mean Y=0.
+
+Operator direction, quoted: reset 197 to 0 to match XFCE display settings,
+"permanent, since it disappears after i close ccsm." Chosen Y is 0. The
+next block must install the new binaries from a clone under
+`~/.local/src` (home is not the repo) and then `--set-outputs-y 0`. A
+valid +197 already in the file would otherwise be kept.
 
 **Method**
 
-1. Reinstall the guard from this SHA via `scripts/compiz-guard-install`.
-2. `compiz-profile-repair --show` — report Compiz Y and xrandr Y. They may
-   already disagree; that disagreement is itself a finding.
-3. Operator picks Y. Typical: `0` top-align, `180` centre, `360` bottom,
-   `197` the old measured alignment. Set Compiz with
-   `--set-outputs-y N`. If the pixels themselves must move, add
-   `--apply-xrandr`. `--sync-from-xrandr` copies X into Compiz when Compiz
-   is the one that is wrong.
-4. Reload with `setsid $HOME/.local/bin/compiz-session` only after the
-   operator says the file is right. Inverse is `--set-outputs-y` of the
-   previous Y (and the printed `xrandr --pos` undo if xrandr was applied).
+1. Clone or update `~/.local/src/ocblizzard` to the session SHA, then
+   `sh scripts/compiz-guard-install`. Gate: `compiz-profile-repair --show`
+   prints `== outputs ==`. If it prints only `OK, all 7 enforced keys`,
+   PATH is still the old binary.
+2. `compiz-profile-repair --set-outputs-y 0` — file + wanted. Inverse:
+   `--set-outputs-y 197`.
+3. Confirm with `--show` and `grep s0_outputs ~/.config/compiz/compizconfig/Default.ini`.
+4. A `ccsm-safe` close must leave `+2560+0`. Reload
+   `setsid $HOME/.local/bin/compiz-session` only after the file is right.
 
-**Gate** — `--show` prints the chosen Y; a CCSM session through `ccsm-safe`
-leaves that Y in the file; `compiz-profile-verify` says SAFE; the operator
-judges that desktop and CCSM sit on the monitors correctly. Both the number
-and the eye, not either.
+**Gate** — file and `--show` say +0; closing CCSM leaves +0; verify says
+SAFE and prints `second Y=+0`; desktop matches XFCE. All four.
 
 ### Parked
 
