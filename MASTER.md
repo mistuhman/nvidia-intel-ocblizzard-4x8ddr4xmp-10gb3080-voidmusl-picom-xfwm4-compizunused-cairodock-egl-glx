@@ -260,6 +260,8 @@ direction (Guideline 7).
 
 **Target** — Void Linux, musl libc, user `sd`. Intel CPU + NVIDIA RTX 3080
 10GB, 32GB DDR4 (4x8) with XMP. X11, dual monitor, combined 4480x1440.
+xrandr (2026-08-18 `--show`): `DP-2 2560x1440+0+0 primary`,
+`DP-0 1920x1080+2560+0`. Compiz had been carrying a false +197 on DP-0.
 Kernel 6.18.x tkg-bore. Workspace `/home/sd/.local/share/xmb-wave/`, bake
 output on `/mnt/games`.
 
@@ -516,7 +518,7 @@ persistent afterward.
 **Then** — return to the Phase 5 switcher trial against the new, faster
 baseline, and merge.
 
-### Phase 7 — second-monitor Y unlock (ACTIVE OBJECTIVE)
+### Phase 7 — second-monitor Y unlock (accepted)
 
 CCSM shows the second output as `1920x1080+2560+197` and the operator cannot
 change that +197. That is not a CCSM widget bug. `compiz-profile-repair`
@@ -538,37 +540,18 @@ the profile is kept and remembered in `~/.local/share/compiz-guard/outputs.wante
 Garbage or a missing key restores that memory; +0 (XFCE top-align) is the
 empty-memory fallback. +197 is no longer the default.
 
-**Target trial (2026-08-18)** — the first block ran from `~`, which is not a
-checkout. `git checkout`, `sha256sum scripts/…`, and `compiz-guard-install`
-all failed. PATH still had the old `~/.local/bin` tools: `--show`,
-`--set-outputs-y N`, and `--sync-from-xrandr` printed only
-`repair: OK, all 7 enforced keys already correct` (old repair ignores
-unknown flags). Two `ccsm-safe` sessions then proved the slam: CCSM wrote a
-new `s0_outputs`, repair said `1 key(s) wrong or missing: s0_outputs`, and
-the post-diff vs the pre-ccsm snapshot was 0 lines — file put back to +197.
-gtk.css warnings only; those stay benign. Verify was the old one (no Y line)
-and said SAFE, which is correct for "keys present" and does not mean Y=0.
+**Accepted 2026-08-18**, operator: "ts worked." First block ran from `~`
+and hit the old `~/.local/bin` tools (unknown flags printed only
+`OK, all 7 enforced keys`). Two `ccsm-safe` sessions proved the slam:
+repair rewrote `s0_outputs`, post-diff vs snapshot was 0 lines. Second
+block cloned `~/.local/src/ocblizzard` at `971c7a1`, installed repair
+`dc091dd1`. `--show` found Compiz `+197` against live xrandr
+`DP-0 1920x1080+2560+0`. `--set-outputs-y 0` wrote the file and wanted;
+verify `SAFE` `second Y=+0`; then `setsid compiz-session`. Inverse:
+`--set-outputs-y 197`. Checkout lives at `~/.local/src/ocblizzard`, not `~`.
 
-Operator direction, quoted: reset 197 to 0 to match XFCE display settings,
-"permanent, since it disappears after i close ccsm." Chosen Y is 0. The
-next block must install the new binaries from a clone under
-`~/.local/src` (home is not the repo) and then `--set-outputs-y 0`. A
-valid +197 already in the file would otherwise be kept.
-
-**Method**
-
-1. Clone or update `~/.local/src/ocblizzard` to the session SHA, then
-   `sh scripts/compiz-guard-install`. Gate: `compiz-profile-repair --show`
-   prints `== outputs ==`. If it prints only `OK, all 7 enforced keys`,
-   PATH is still the old binary.
-2. `compiz-profile-repair --set-outputs-y 0` — file + wanted. Inverse:
-   `--set-outputs-y 197`.
-3. Confirm with `--show` and `grep s0_outputs ~/.config/compiz/compizconfig/Default.ini`.
-4. A `ccsm-safe` close must leave `+2560+0`. Reload
-   `setsid $HOME/.local/bin/compiz-session` only after the file is right.
-
-**Gate** — file and `--show` say +0; closing CCSM leaves +0; verify says
-SAFE and prints `second Y=+0`; desktop matches XFCE. All four.
+No ACTIVE OBJECTIVE. Phase 6 stays parked on "everything is fine." Do not
+start the Phase 5 switcher trial until the operator names it.
 
 ### Parked
 
