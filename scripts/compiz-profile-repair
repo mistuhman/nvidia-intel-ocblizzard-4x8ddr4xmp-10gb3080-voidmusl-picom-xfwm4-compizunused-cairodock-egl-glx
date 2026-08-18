@@ -1,20 +1,41 @@
 #!/usr/bin/env python3
 """compiz-profile-repair: enforce the hardware-fixed [core] display keys in
 the active Compiz profile. Idempotent. Exit 0 = file is correct (possibly
-after repair), 1 = could not repair."""
-import sys, os, re, shutil, time
+after repair), 1 = could not repair.
 
-CFG = os.path.expanduser("~/.config/compiz/compizconfig/Default.ini")
-# The ONLY keys this tool owns. Hardware facts, verified W-016/W-018/W-026.
+s0_outputs is two rectangles. Sizes and X positions are hardware facts
+(W-016/W-018/W-026): 2560x1440+0+0 and 1920x1080+2560+Y. The second
+monitor's Y used to be nailed to +197, which made CCSM's own edit and
+every login hook undo any alignment the operator tried. Y is now
+operator-owned (0..360). A valid value in the profile is kept and
+remembered; a missing or garbage value is restored from that memory,
+falling back to +197 only when nothing valid has ever been stored.
+"""
+import sys, os, re, shutil, time, subprocess
+
+CFG = os.environ.get(
+    "COMPIZ_PROFILE",
+    os.path.expanduser("~/.config/compiz/compizconfig/Default.ini"),
+)
+GUARD = os.environ.get(
+    "COMPIZ_GUARD",
+    os.path.expanduser("~/.local/share/compiz-guard"),
+)
+WANTED = os.path.join(GUARD, "outputs.wanted")
+
+# Hardware-fixed keys. s0_outputs is resolved separately (Y is not fixed).
 ENFORCE = [
     ("s0_detect_refresh_rate", "false"),
     ("s0_refresh_rate",        "120"),
     ("s0_detect_outputs",      "false"),
-    ("s0_outputs",             "2560x1440+0+0;1920x1080+2560+197;"),
     ("s0_sync_to_vblank",      "true"),
     ("s0_lighting",            "true"),
     ("as_texture_filter",      "0"),
 ]
+
+Y_MIN, Y_MAX = 0, 360          # 1440 - 1080; keeps the X screen 4480x1440
+DEFAULT_Y = 197                # last hardware-measured alignment
+DEFAULT_OUTPUTS = "2560x1440+0+0;1920x1080+2560+%d;" % DEFAULT_Y
 
 # X-130a. The plugin floor. NOT an allow-list: W-252 settled that the guard
 # does not police as_active_plugins, because W-191 wants water/wobbly freely
@@ -24,6 +45,104 @@ ENFORCE = [
 # breaks the desktop. --floor therefore only ever ADDS missing members and
 # never removes or reorders anything the operator chose.
 FLOOR = ["core", "ccp", "move", "resize", "place", "decoration"]
+
+
+def parse_outputs(raw):
+    """Return [(w,h,x,y), ...] or None if the string is not Compiz outputs."""
+    if raw is None:
+        return None
+    parts = [p.strip() for p in raw.strip().split(";") if p.strip()]
+    recs = []
+    for p in parts:
+        m = re.match(r"^(\d+)x(\d+)\+(\d+)\+(\d+)$", p)
+        if not m:
+            return None
+        recs.append(tuple(int(x) for x in m.groups()))
+    return recs or None
+
+
+def second_y(recs):
+    """Y of the 1920x1080+2560 output, or None if the pair is not ours."""
+    if not recs or len(recs) != 2:
+        return None
+    second = None
+    saw_primary = False
+    for w, h, x, y in recs:
+        if (w, h, x) == (2560, 1440, 0) and y == 0:
+            saw_primary = True
+        elif (w, h, x) == (1920, 1080, 2560) and Y_MIN <= y <= Y_MAX:
+            second = y
+        else:
+            return None
+    if saw_primary and second is not None:
+        return second
+    return None
+
+
+def format_outputs(y):
+    return "2560x1440+0+0;1920x1080+2560+%d;" % int(y)
+
+
+def valid_outputs_string(raw):
+    return second_y(parse_outputs(raw)) is not None
+
+
+def read_wanted():
+    try:
+        with open(WANTED) as f:
+            val = f.read().strip()
+    except OSError:
+        return None
+    return val if valid_outputs_string(val) else None
+
+
+def write_wanted(val):
+    os.makedirs(GUARD, exist_ok=True)
+    tmp = WANTED + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(val if val.endswith("\n") else val + "\n")
+    os.replace(tmp, WANTED)
+
+
+def current_outputs(lines):
+    try:
+        ci = lines.index("[core]")
+    except ValueError:
+        return None
+    end = len(lines)
+    for i in range(ci + 1, len(lines)):
+        if lines[i].startswith("[") and lines[i].endswith("]"):
+            end = i
+            break
+    for ln in lines[ci + 1:end]:
+        m = re.match(r"^\s*s0_outputs\s*=\s*(.*)$", ln)
+        if m:
+            return m.group(1).strip()
+    return None
+
+
+def resolve_outputs(current, override_y=None, remember=True):
+    """Pick the outputs string to enforce.
+
+    Priority: explicit --set-outputs-y, then a valid value already in the
+    profile (remembered), then the last remembered value, then +197.
+    --check sets remember=False so it writes nothing.
+    """
+    if override_y is not None:
+        val = format_outputs(override_y)
+        if remember:
+            write_wanted(val)
+        return val
+    y = second_y(parse_outputs(current))
+    if y is not None:
+        val = format_outputs(y)
+        if remember:
+            write_wanted(val)
+        return val
+    stored = read_wanted()
+    if stored:
+        return format_outputs(second_y(parse_outputs(stored)))
+    return DEFAULT_OUTPUTS
 
 
 def floor_repair(lines):
@@ -65,17 +184,18 @@ def parse(path):
     with open(path) as f:
         return f.read().splitlines()
 
-def repair(lines):
+def repair(lines, override_y=None, remember=True):
     """Return (newlines, changed_keys). Only touches the [core] section."""
-    out, changed = [], []
+    want_outputs = resolve_outputs(current_outputs(lines), override_y, remember)
+    enforce = list(ENFORCE) + [("s0_outputs", want_outputs)]
     # locate [core]
     try:
         ci = lines.index("[core]")
     except ValueError:
         ci = None
     if ci is None:
-        return ["[core]"] + ["%s = %s" % kv for kv in ENFORCE] + lines, \
-               [k for k, _ in ENFORCE]
+        return ["[core]"] + ["%s = %s" % kv for kv in enforce] + lines, \
+               [k for k, _ in enforce]
     # find end of the core section
     end = len(lines)
     for i in range(ci + 1, len(lines)):
@@ -88,7 +208,8 @@ def repair(lines):
         m = re.match(r"^\s*([A-Za-z0-9_]+)\s*=\s*(.*)$", ln)
         if m:
             seen[m.group(1)] = i
-    for key, val in ENFORCE:
+    changed = []
+    for key, val in enforce:
         want = "%s = %s" % (key, val)
         if key in seen:
             if core[seen[key]].strip() != want:
@@ -100,13 +221,177 @@ def repair(lines):
     out = lines[:ci + 1] + core + lines[end:]
     return out, changed
 
+
+def parse_xrandr(text):
+    """Return [{'name','w','h','x','y','primary'}, ...] from `xrandr` text."""
+    recs = []
+    for ln in text.splitlines():
+        m = re.match(
+            r"^(\S+) connected(?: primary)? (\d+)x(\d+)\+(\d+)\+(\d+)",
+            ln,
+        )
+        if m:
+            recs.append({
+                "name": m.group(1),
+                "w": int(m.group(2)), "h": int(m.group(3)),
+                "x": int(m.group(4)), "y": int(m.group(5)),
+                "primary": " connected primary " in ln,
+            })
+    return recs
+
+
+def read_xrandr():
+    try:
+        out = subprocess.check_output(
+            ["xrandr"], stderr=subprocess.STDOUT, text=True
+        )
+    except (OSError, subprocess.CalledProcessError) as e:
+        return None, str(e)
+    return parse_xrandr(out), out
+
+
+def find_second_output(recs):
+    for r in recs:
+        if (r["w"], r["h"], r["x"]) == (1920, 1080, 2560):
+            return r
+    for r in recs:
+        if (r["w"], r["h"]) == (1920, 1080):
+            return r
+    return None
+
+
+def apply_xrandr_y(y):
+    recs, err = read_xrandr()
+    if recs is None:
+        print("repair: FAIL  xrandr unreadable: %s" % err)
+        return 1, None
+    second = find_second_output(recs)
+    if second is None:
+        print("repair: FAIL  no 1920x1080 output in xrandr")
+        for r in recs:
+            print("repair:       %s %dx%d+%d+%d" % (
+                r["name"], r["w"], r["h"], r["x"], r["y"]))
+        return 1, None
+    prev = (second["name"], second["x"], second["y"])
+    if second["x"] == 2560 and second["y"] == y:
+        print("repair: xrandr %s already at 2560x%d" % (second["name"], y))
+        return 0, prev
+    cmd = ["xrandr", "--output", second["name"], "--pos", "2560x%d" % y]
+    print("repair: running %s" % " ".join(cmd))
+    try:
+        subprocess.check_call(cmd)
+    except (OSError, subprocess.CalledProcessError) as e:
+        print("repair: FAIL  xrandr --pos: %s" % e)
+        return 1, prev
+    print("repair: xrandr undo: xrandr --output %s --pos %dx%d" % prev)
+    return 0, prev
+
+
+def show():
+    print("== outputs ==")
+    if os.path.exists(CFG):
+        cur = current_outputs(parse(CFG))
+        y = second_y(parse_outputs(cur))
+        print("compiz s0_outputs  %s" % (cur if cur is not None else "(missing)"))
+        if y is not None:
+            print("compiz second Y    +%d  (operator-owned, 0..%d)" % (y, Y_MAX))
+        else:
+            print("compiz second Y    INVALID or missing")
+    else:
+        print("compiz profile     MISSING  %s" % CFG)
+    stored = read_wanted()
+    print("remembered         %s" % (stored if stored else "(none, fallback +%d)" % DEFAULT_Y))
+    recs, err = read_xrandr()
+    if recs is None:
+        print("xrandr             (unavailable: %s)" % err)
+        return 0
+    if not recs:
+        print("xrandr             no connected outputs parsed")
+        return 0
+    for r in recs:
+        tag = " primary" if r["primary"] else ""
+        print("xrandr             %s %dx%d+%d+%d%s" % (
+            r["name"], r["w"], r["h"], r["x"], r["y"], tag))
+    return 0
+
+
+def parse_y_arg(argv):
+    if "--set-outputs-y" not in argv:
+        return None
+    i = argv.index("--set-outputs-y")
+    if i + 1 >= len(argv) or argv[i + 1].startswith("--"):
+        print("repair: FAIL  --set-outputs-y needs an integer 0..%d" % Y_MAX)
+        sys.exit(2)
+    try:
+        y = int(argv[i + 1], 10)
+    except ValueError:
+        print("repair: FAIL  --set-outputs-y %r is not an integer" % argv[i + 1])
+        sys.exit(2)
+    if y < Y_MIN or y > Y_MAX:
+        print("repair: FAIL  Y=%d out of range %d..%d" % (y, Y_MIN, Y_MAX))
+        sys.exit(2)
+    return y
+
+
+def sync_y_from_xrandr():
+    recs, err = read_xrandr()
+    if recs is None:
+        print("repair: FAIL  xrandr unreadable: %s" % err)
+        sys.exit(1)
+    second = find_second_output(recs)
+    if second is None:
+        print("repair: FAIL  no 1920x1080 output in xrandr")
+        sys.exit(1)
+    y = second["y"]
+    if y < Y_MIN or y > Y_MAX:
+        print("repair: FAIL  xrandr Y=%d out of range %d..%d" % (y, Y_MIN, Y_MAX))
+        sys.exit(2)
+    print("repair: xrandr %s is +%d; will write that into Compiz" % (
+        second["name"], y))
+    return y
+
+
 def main():
-    check = "--check" in sys.argv
+    argv = sys.argv[1:]
+    if "--help" in argv or "-h" in argv:
+        print(
+            "compiz-profile-repair [--check] [--floor] [--show]\n"
+            "                      [--set-outputs-y N] [--apply-xrandr]\n"
+            "                      [--sync-from-xrandr]\n"
+            "  --check              report drift, write nothing\n"
+            "  --floor              also restore plugin floor (additive)\n"
+            "  --show               print Compiz outputs and xrandr geometry\n"
+            "  --set-outputs-y N    set second-monitor Y (0..%d) and remember it\n"
+            "  --apply-xrandr       with --set-outputs-y, also xrandr --pos\n"
+            "  --sync-from-xrandr   copy second-monitor Y from live xrandr"
+            % Y_MAX
+        )
+        return 0
+    if "--show" in argv:
+        return show()
+    check = "--check" in argv
+    do_floor = "--floor" in argv
+    apply_xr = "--apply-xrandr" in argv
+    override_y = parse_y_arg(argv)
+    if "--sync-from-xrandr" in argv:
+        if override_y is not None:
+            print("repair: FAIL  use either --set-outputs-y or --sync-from-xrandr")
+            return 2
+        override_y = sync_y_from_xrandr()
+    if apply_xr and override_y is None:
+        print("repair: FAIL  --apply-xrandr requires --set-outputs-y N")
+        return 2
+
     if not os.path.exists(CFG):
         print("repair: no profile at %s" % CFG); return 1
-    do_floor = "--floor" in sys.argv
+
+    if apply_xr and not check:
+        rc, _prev = apply_xrandr_y(override_y)
+        if rc != 0:
+            return rc
+
     lines = parse(CFG)
-    new, changed = repair(lines)
+    new, changed = repair(lines, override_y, remember=not check)
     added = []
     if do_floor:
         new, added = floor_repair(new)
@@ -114,8 +399,11 @@ def main():
             print("repair: plugin floor restored: %s" % ", ".join(added))
         else:
             print("repair: plugin floor OK, nothing added")
+    y = second_y(parse_outputs(current_outputs(new)))
+    if y is not None:
+        print("repair: s0_outputs second Y = +%d (operator-owned)" % y)
     if not changed and not added:
-        print("repair: OK, all %d enforced keys already correct" % len(ENFORCE))
+        print("repair: OK, all %d enforced keys already correct" % (len(ENFORCE) + 1))
         return 0
     if changed:
         print("repair: %d key(s) wrong or missing: %s" % (len(changed), ", ".join(changed)))

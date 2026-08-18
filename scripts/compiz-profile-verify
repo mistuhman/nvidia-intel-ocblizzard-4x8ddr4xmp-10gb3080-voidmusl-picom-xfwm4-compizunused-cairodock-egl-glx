@@ -52,6 +52,25 @@ if [ -r "$CFG" ]; then
     say "WARN  [core] enforced keys $N/7 -> login hook will repair"
     demote REPAIRABLE
   fi
+  # Second-monitor Y is operator-owned. Report it; only the shape is load-bearing.
+  OUTS=$(awk '/^\[core\]/{f=1;next} /^\[/{f=0} f' "$CFG" \
+         | grep -E '^s0_outputs *=' | head -1 | sed 's/^[^=]*= *//')
+  case "$OUTS" in
+    2560x1440+0+0\;1920x1080+2560+[0-9]*\;)
+      Y=${OUTS##*+2560+}
+      Y=${Y%;}
+      say "ok    s0_outputs $OUTS  (second Y=+$Y, operator-owned)"
+      ;;
+    "")
+      say "WARN  s0_outputs missing -> login hook will restore last wanted"
+      demote REPAIRABLE
+      ;;
+    *)
+      say "WARN  s0_outputs not the dual-head pair: $OUTS"
+      say "      login hook will restore last wanted (fallback +197)"
+      demote REPAIRABLE
+      ;;
+  esac
 fi
 
 # 2b. PLUGIN FLOOR (X-130a). The 7 [core] keys can be perfect while the desktop
