@@ -108,6 +108,7 @@ cp -a "$CFG" "$SNAP" || { echo "ccsm-safe: snapshot failed (disk full?)"; exit 2
 ls -l "$SNAP" || exit 2
 echo "ccsm-safe: snapshot taken. Launching CCSM in the foreground."
 echo "ccsm-safe: REMINDERS -- leave Detect Outputs and Detect Refresh Rate OFF."
+echo "ccsm-safe: second-monitor Y is operator-owned (0..360). A valid edit is kept."
 echo "ccsm-safe: close the CCSM window to finish; repair runs automatically."
 
 # ---- guarded run -------------------------------------------------------

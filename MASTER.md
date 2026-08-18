@@ -223,6 +223,9 @@ direction (Guideline 7).
 - Reach CCSM through `scripts/ccsm-safe` only. "Detect Outputs" and "Detect
   Refresh Rate" stay off. Never tick "Save session for future logins" while
   CCSM is open, and never leave CCSM open at logout.
+- Output sizes and X positions are hardware-fixed
+  (`2560x1440+0+0;1920x1080+2560+Y`). Second-monitor Y is operator-owned
+  (0..360). The guard must keep a valid Y, never slam it back to +197.
 - After any `compiz-revert --xfwm4`, `xfce-wm-recover`, or session-XML
   restore, persistence is OFF until `compiz-persist-arm` runs and verifies
   SAFE.
@@ -451,13 +454,17 @@ together. Autostart stays hidden until acceptance. **This trial is currently
 behind Phase 6** — do not tune the switcher on a desktop that is already
 dropping frames, or you will be tuning against the wrong baseline.
 
-### Phase 6 — desktop performance (ACTIVE OBJECTIVE)
+### Phase 6 — desktop performance (parked)
 
 The operator reports FPS dipping and general jitter across the desktop. Every
 phase above is functionally "complete" and none was ever optimized as a whole:
 each was accepted on its own gate, in isolation, and the accumulated cost has
 never been measured together. That is the defect. Treat this as one system,
 not five features.
+
+**Parked by operator direction** this session: "everything is fine." Do not
+spend the next pass measuring frame times. Return here after the outputs-Y
+unlock is accepted.
 
 **What is known to be relevant, before measuring anything**
 
@@ -466,9 +473,10 @@ not five features.
   process's environ (`/proc/<pid>/environ`) before theorizing about anything
   else. It has silently vanished from the profile before.
 - The display settings that must hold: `detect_outputs=false` with the two
-  explicit output rectangles, `detect_refresh_rate=false`, `refresh_rate=120`,
-  `sync_to_vblank=true`. CCSM has discarded every one of these before, more
-  than once. Read the live profile, not the intended one.
+  explicit output rectangles (second-monitor Y operator-owned, 0..360),
+  `detect_refresh_rate=false`, `refresh_rate=120`, `sync_to_vblank=true`.
+  CCSM has discarded every one of these before, more than once. Read the
+  live profile, not the intended one. Never treat +197 as immutable.
 - Heavy eyecandy plugins — `water`, `wobbly`, `cube`, `3d`, `gears`,
   `animationplus`, and especially `blur`, `mblur`, `reflex`, `bench`,
   `showmouse`, `mousepoll` — were the original choppiness suspects and have
@@ -506,6 +514,47 @@ persistent afterward.
 
 **Then** — return to the Phase 5 switcher trial against the new, faster
 baseline, and merge.
+
+### Phase 7 — second-monitor Y unlock (ACTIVE OBJECTIVE)
+
+CCSM shows the second output as `1920x1080+2560+197` and the operator cannot
+change that +197. That is not a CCSM widget bug. `compiz-profile-repair`
+treated the entire `s0_outputs` string as a hardware fact (W-016/W-018/W-026)
+and `ccsm-safe` plus the login `--floor` hook wrote it back on every exit and
+every login. Live Compiz could accept a CCSM edit via `ccp`; the file, and
+therefore the next session, could not.
+
+Cause, attributed before the fix (Part II check 9): the guard owned a value
+the operator needs to tune. Desktop placement and CCSM's own window follow
+Compiz's output rectangles. If those rectangles do not match the alignment
+the operator wants — or do not match xrandr — windows and the desktop sit in
+the wrong place.
+
+**What stays hardware-fixed:** `detect_outputs=false`, `2560x1440+0+0` on the
+left, `1920x1080+2560+Y` on the right, refresh 120, vsync on. **What is now
+operator-owned:** Y in 0..360 (keeps the X screen 4480x1440). A valid Y in
+the profile is kept and remembered in `~/.local/share/compiz-guard/outputs.wanted`.
+Garbage or a missing key restores that memory; +197 is only the empty-memory
+fallback.
+
+**Method**
+
+1. Reinstall the guard from this SHA via `scripts/compiz-guard-install`.
+2. `compiz-profile-repair --show` — report Compiz Y and xrandr Y. They may
+   already disagree; that disagreement is itself a finding.
+3. Operator picks Y. Typical: `0` top-align, `180` centre, `360` bottom,
+   `197` the old measured alignment. Set Compiz with
+   `--set-outputs-y N`. If the pixels themselves must move, add
+   `--apply-xrandr`. `--sync-from-xrandr` copies X into Compiz when Compiz
+   is the one that is wrong.
+4. Reload with `setsid $HOME/.local/bin/compiz-session` only after the
+   operator says the file is right. Inverse is `--set-outputs-y` of the
+   previous Y (and the printed `xrandr --pos` undo if xrandr was applied).
+
+**Gate** — `--show` prints the chosen Y; a CCSM session through `ccsm-safe`
+leaves that Y in the file; `compiz-profile-verify` says SAFE; the operator
+judges that desktop and CCSM sit on the monitors correctly. Both the number
+and the eye, not either.
 
 ### Parked
 
