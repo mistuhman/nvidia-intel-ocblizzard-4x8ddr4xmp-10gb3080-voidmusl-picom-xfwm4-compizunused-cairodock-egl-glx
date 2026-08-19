@@ -259,6 +259,11 @@ direction (Guideline 7).
 Kernel 6.18.x tkg-bore. Workspace `/home/sd/.local/share/xmb-wave/`, bake
 output on `/mnt/games`.
 
+**Disk (operator `df -h`, 2026-08-19)** — `/` on `nvme0n1p5` 152G, 142G used,
+**1.7G free (99%)**. `/mnt/games` on `nvme0n1p2` 656G, 102G free. Do not
+clone, log, or prefix-create on `/`. Proton `compatdata` and `PROTON_LOG_DIR`
+must live under `/mnt/games` until `/` is cleaned.
+
 **Sandbox** — ephemeral container, git checkout only. Present: node, npm,
 python3, git, gh (authenticated), jq. Absent: ffmpeg, chromium, xvfb-run, GPU,
 X server. Egress is filtered: `repology.org` and the Void mirrors are

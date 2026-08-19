@@ -131,7 +131,7 @@ print_launch_options() {
   # - PROTON_NO_ESYNC / NO_FSYNC: musl + tkg can wedge CEF on eventfd.
   # - SteamDeck=0: do not pretend this is a Deck.
   # - %command% then Windows CEF flags consumed by the UI process.
-  printf '%s\n' 'PROTON_LOG=1 PROTON_LOG_DIR=/tmp PROTON_NO_ESYNC=1 PROTON_NO_FSYNC=1 SteamDeck=0 DXVK_FILTER_DEVICE_NAME=NVIDIA PROTON_ENABLE_NVAPI=1 %command% -disable-gpu-sandbox'
+  printf '%s\n' 'PROTON_LOG=1 PROTON_LOG_DIR=/mnt/games/beamng-proton-logs PROTON_NO_ESYNC=1 PROTON_NO_FSYNC=1 SteamDeck=0 DXVK_FILTER_DEVICE_NAME=NVIDIA PROTON_ENABLE_NVAPI=1 %command% -disable-gpu-sandbox'
 }
 
 print_official_launch() {
@@ -222,8 +222,8 @@ cmd_rollback() {
 
 cmd_logs() {
   echo "=== proton log ==="
-  ls -l /tmp/steam-*.log "$HOME/steam-"*.log 2>/dev/null || true
-  latest=$(ls -t /tmp/steam-284160.log /tmp/proton-*.log 2>/dev/null | head -n 1 || true)
+  ls -l /mnt/games/beamng-proton-logs/* /tmp/steam-*.log "$HOME/steam-"*.log 2>/dev/null || true
+  latest=$(ls -t /mnt/games/beamng-proton-logs/* /tmp/steam-284160.log 2>/dev/null | head -n 1 || true)
   if [ -n "${latest:-}" ]; then
     echo "--- tail $latest ---"
     tail -n 80 "$latest"
