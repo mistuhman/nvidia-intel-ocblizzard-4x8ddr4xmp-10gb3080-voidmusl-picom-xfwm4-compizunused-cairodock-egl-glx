@@ -1,0 +1,256 @@
+#!/bin/sh
+# BeamNG.drive on Void (musl) via Steam Proton Hotfix.
+# AppID 284160. Authored for user sd. Unexecuted until the operator runs it.
+#
+# Official Linux page (fetched 2026-08-19):
+#   https://documentation.beamng.com/support/troubleshooting/steamdeck_linux/
+# Native is the Steam default since Jan 2026. Proton path they still test:
+#   Proton 10.0-4 or Proton Experimental only (Steamworks SDK).
+# Operator asked for Proton Hotfix. This script prepares that prefix and the
+# CEF / dual-GPU knobs that produce "Unresponsive UI Process".
+# If Hotfix still dies on the UI exe, flip --proton-official.
+#
+# Usage:
+#   scripts/beamng-proton-hotfix --check
+#   scripts/beamng-proton-hotfix --apply-hotfix
+#   scripts/beamng-proton-hotfix --proton-official
+#   scripts/beamng-proton-hotfix --native
+#   scripts/beamng-proton-hotfix --rollback
+#   scripts/beamng-proton-hotfix --logs
+
+set -eu
+
+APPID=284160
+STEAM_ROOT="${STEAM_ROOT:-$HOME/.local/share/Steam}"
+if [ ! -d "$STEAM_ROOT/steamapps" ] && [ -d "$HOME/.steam/steam/steamapps" ]; then
+  STEAM_ROOT="$HOME/.steam/steam"
+fi
+COMMON="$STEAM_ROOT/steamapps/common"
+COMPAT="$STEAM_ROOT/steamapps/compatdata/$APPID"
+GAME=""
+for d in "$COMMON/BeamNG.drive" "$COMMON/BeamNG.drive"/*; do
+  :
+done
+for cand in \
+  "$COMMON/BeamNG.drive" \
+  "$HOME/.steam/steam/steamapps/common/BeamNG.drive" \
+  /mnt/games/SteamLibrary/steamapps/common/BeamNG.drive \
+  /mnt/games/steamapps/common/BeamNG.drive
+do
+  if [ -d "$cand" ]; then
+    GAME="$cand"
+    break
+  fi
+done
+
+LOCALCFG="$STEAM_ROOT/userdata"
+BACKUP_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/beamng-proton-hotfix"
+LAUNCH_MARK="$BACKUP_DIR/launch-options.prev"
+MODE_MARK="$BACKUP_DIR/mode"
+
+# Proton user folder vs native (official).
+PROTON_USER="$COMPAT/pfx/drive_c/users/steamuser/AppData/Local/BeamNG/BeamNG.drive"
+NATIVE_USER="${XDG_DATA_HOME:-$HOME/.local/share}/BeamNG/BeamNG.drive"
+
+die() { printf '%s\n' "$*" >&2; exit 1; }
+
+need_df() {
+  df -h / /mnt/games 2>/dev/null || df -h /
+}
+
+find_game() {
+  if [ -n "$GAME" ] && [ -d "$GAME" ]; then
+    printf '%s\n' "$GAME"
+    return 0
+  fi
+  # Last resort: scan steam libraryfolders.vdf
+  vdf="$STEAM_ROOT/steamapps/libraryfolders.vdf"
+  if [ -f "$vdf" ]; then
+    # shellcheck disable=SC2013
+    for p in $(grep -o '"path"[[:space:]]*"[^"]*"' "$vdf" | sed 's/.*"\([^"]*\)"$/\1/'); do
+      if [ -d "$p/steamapps/common/BeamNG.drive" ]; then
+        printf '%s\n' "$p/steamapps/common/BeamNG.drive"
+        return 0
+      fi
+    done
+  fi
+  return 1
+}
+
+proton_user_settings() {
+  # Current + versioned trees both exist; write both if present.
+  for root in "$PROTON_USER/current" "$PROTON_USER"; do
+    [ -d "$root" ] || continue
+    printf '%s\n' "$root"
+  done
+}
+
+write_settings_ini() {
+  # cefWorkaroundMultiGPU: official dual-GPU CEF hang (Intel iGPU + 3080).
+  # disableHardwareAcceleration / cefDisableGpu: last-resort UI process.
+  root="$1"
+  ini="$root/settings/settings.json"
+  mkdir -p "$root/settings"
+  if [ -f "$ini" ] && [ ! -f "$ini.bak-beamng-hotfix" ]; then
+    cp -a "$ini" "$ini.bak-beamng-hotfix"
+  fi
+  # Do not rewrite a JSON we do not fully model (Part III). Append a sidecar
+  # the game also reads: startup.ini next to the Windows exe.
+  :
+}
+
+write_startup_ini() {
+  game="$1"
+  ini="$game/startup.ini"
+  if [ -f "$ini" ] && [ ! -f "$BACKUP_DIR/startup.ini.bak" ]; then
+    mkdir -p "$BACKUP_DIR"
+    cp -a "$ini" "$BACKUP_DIR/startup.ini.bak"
+  fi
+  # BeamNG startup.ini keys (ASCII). Dual-GPU CEF workaround.
+  cat >"$ini" <<'EOF'
+[General]
+UserPath=
+[Misc]
+cefWorkaroundMultiGPU = true
+EOF
+}
+
+restore_startup_ini() {
+  game="$1"
+  if [ -f "$BACKUP_DIR/startup.ini.bak" ]; then
+    cp -a "$BACKUP_DIR/startup.ini.bak" "$game/startup.ini"
+  else
+    rm -f "$game/startup.ini"
+  fi
+}
+
+print_launch_options() {
+  # Steam launch options for Proton Hotfix + NVIDIA 3080 + Intel iGPU.
+  # - PROTON_LOG: next fail has a file, not a guess.
+  # - DXVK_FILTER_DEVICE_NAME: keep CEF/D3D off the Intel iGPU.
+  # - PROTON_NO_ESYNC / NO_FSYNC: musl + tkg can wedge CEF on eventfd.
+  # - SteamDeck=0: do not pretend this is a Deck.
+  # - %command% then Windows CEF flags consumed by the UI process.
+  printf '%s\n' 'PROTON_LOG=1 PROTON_LOG_DIR=/tmp PROTON_NO_ESYNC=1 PROTON_NO_FSYNC=1 SteamDeck=0 DXVK_FILTER_DEVICE_NAME=NVIDIA PROTON_ENABLE_NVAPI=1 %command% -disable-gpu-sandbox'
+}
+
+print_official_launch() {
+  printf '%s\n' 'PROTON_LOG=1 PROTON_LOG_DIR=/tmp SteamDeck=0 DXVK_FILTER_DEVICE_NAME=NVIDIA %command%'
+}
+
+cmd_check() {
+  need_df
+  echo "STEAM_ROOT=$STEAM_ROOT"
+  echo "compatdata=$COMPAT $([ -d "$COMPAT" ] && echo PRESENT || echo ABSENT)"
+  if g=$(find_game); then
+    echo "GAME=$g"
+    ls -l "$g/Bin64/BeamNG.drive.x64.exe" "$g/Bin64/BeamNG.drive.x64.ui.exe" 2>/dev/null || \
+      echo "MISSING Windows Bin64 exes (Proton cannot start)"
+    ls -l "$g/BinLinux/BeamNG.drive.x64" 2>/dev/null || echo "no native BinLinux binary"
+  else
+    echo "GAME=NOT FOUND — install BeamNG.drive (284160) in Steam first"
+  fi
+  echo "PROTON_USER=$PROTON_USER $([ -d "$PROTON_USER" ] && echo PRESENT || echo ABSENT)"
+  echo "NATIVE_USER=$NATIVE_USER $([ -d "$NATIVE_USER" ] && echo PRESENT || echo ABSENT)"
+  echo "--- proton tools ---"
+  ls -d "$STEAM_ROOT/steamapps/common/Proton Hotfix" \
+        "$STEAM_ROOT/steamapps/common/Proton 10.0" \
+        "$STEAM_ROOT/steamapps/common/Proton - Experimental" \
+        2>/dev/null || echo "no Proton trees under $STEAM_ROOT (Steam may use another library)"
+  echo "--- ulimit nofile ---"
+  ulimit -n
+  echo "--- vulkan (unverified if missing) ---"
+  command -v vulkaninfo >/dev/null && vulkaninfo --summary 2>/dev/null | head -n 40 || echo "vulkaninfo not in PATH"
+  echo "--- recommended Steam Compatibility ---"
+  echo "Force tool: Proton Hotfix  (operator request)"
+  echo "If UI process times out: Proton 10.0-4 or Experimental (BeamNG official)"
+  echo "--- paste into Steam → BeamNG.drive → Properties → Launch Options ---"
+  print_launch_options
+}
+
+cmd_apply_hotfix() {
+  mkdir -p "$BACKUP_DIR"
+  g=$(find_game) || die "BeamNG.drive not installed. Install via Steam, then re-run --check."
+  write_startup_ini "$g"
+  print_launch_options >"$BACKUP_DIR/launch-options.wanted"
+  echo hotfix >"$MODE_MARK"
+  echo "Wrote $g/startup.ini (cefWorkaroundMultiGPU=true)"
+  echo "ls:"; ls -l "$g/startup.ini"
+  echo
+  echo "OPERATOR (Steam GUI, cannot be done from this script):"
+  echo "  1. Steam → BeamNG.drive → Properties → Compatibility"
+  echo "     Enable: Force the use of a specific Steam Play compatibility tool"
+  echo "     Select: Proton Hotfix"
+  echo "  2. Properties → General → Launch Options, replace with exactly:"
+  print_launch_options
+  echo "  3. Disable Steam Overlay for this game (Properties → General)."
+  echo "  4. Play. First boot of a new prefix can take minutes."
+  echo "PASS: main menu, UI clickable, no 'Unresponsive UI Process'."
+  echo "FAIL: that dialog, or Bin64/BeamNG.drive.x64.ui.exe never stays up."
+  echo "On FAIL: run --logs, then --proton-official."
+  echo "Rollback: --rollback"
+}
+
+cmd_official() {
+  mkdir -p "$BACKUP_DIR"
+  g=$(find_game) || die "game missing"
+  write_startup_ini "$g"
+  echo official >"$MODE_MARK"
+  echo "OPERATOR: Compatibility tool = Proton 10.0-4 (preferred) or Experimental."
+  echo "Launch Options:"
+  print_official_launch
+}
+
+cmd_native() {
+  mkdir -p "$BACKUP_DIR"
+  echo native >"$MODE_MARK"
+  echo "OPERATOR: Compatibility → uncheck Force Steam Play."
+  echo "Launch Options (native CEF + NVIDIA):"
+  echo 'SDL_VIDEODRIVER=x11 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json %command%'
+  echo "If Steam still injects Proton, use:"
+  echo './BinLinux/BeamNG.drive.x64 %command%'
+}
+
+cmd_rollback() {
+  if g=$(find_game); then
+    restore_startup_ini "$g"
+    echo "startup.ini restored or removed"
+  fi
+  echo "OPERATOR: clear Launch Options; uncheck Force compatibility (or restore your previous tool)."
+  echo "Prefix $COMPAT was not deleted."
+}
+
+cmd_logs() {
+  echo "=== proton log ==="
+  ls -l /tmp/steam-*.log "$HOME/steam-"*.log 2>/dev/null || true
+  latest=$(ls -t /tmp/steam-284160.log /tmp/proton-*.log 2>/dev/null | head -n 1 || true)
+  if [ -n "${latest:-}" ]; then
+    echo "--- tail $latest ---"
+    tail -n 80 "$latest"
+  fi
+  echo "=== proton user beamng.log ==="
+  if [ -f "$PROTON_USER/current/beamng.log" ]; then
+    tail -n 80 "$PROTON_USER/current/beamng.log"
+  elif [ -f "$PROTON_USER/beamng.log" ]; then
+    tail -n 80 "$PROTON_USER/beamng.log"
+  else
+    echo "no proton beamng.log yet"
+  fi
+  echo "=== native beamng.log ==="
+  if [ -f "$NATIVE_USER/current/beamng.log" ]; then
+    tail -n 40 "$NATIVE_USER/current/beamng.log"
+  fi
+}
+
+case "${1:-}" in
+  --check) cmd_check ;;
+  --apply-hotfix) cmd_apply_hotfix ;;
+  --proton-official) cmd_official ;;
+  --native) cmd_native ;;
+  --rollback) cmd_rollback ;;
+  --logs) cmd_logs ;;
+  *)
+    echo "usage: $0 --check | --apply-hotfix | --proton-official | --native | --rollback | --logs"
+    exit 2
+    ;;
+esac

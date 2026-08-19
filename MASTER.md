@@ -451,7 +451,42 @@ together. Autostart stays hidden until acceptance. **This trial is currently
 behind Phase 6** — do not tune the switcher on a desktop that is already
 dropping frames, or you will be tuning against the wrong baseline.
 
-### Phase 6 — desktop performance (ACTIVE OBJECTIVE)
+### Operator-directed — BeamNG.drive Proton Hotfix (ACTIVE OBJECTIVE)
+
+Quoted request: get BeamNG working, quick, Void Linux, Proton Hotfix on Steam,
+with the official “Unresponsive UI Process” page.
+
+**Verified (sandbox fetch, 2026-08-19), not yet run on target**
+
+- Official Linux page: native Vulkan is the Steam default since January 2026.
+  The Proton versions they still test for Steamworks are **Proton 10.0-4** and
+  **Proton Experimental** only. Proton Hotfix is the operator’s choice, not
+  that list.
+- “Unresponsive UI Process” is the CEF UI helper (`Bin64/BeamNG.drive.x64.ui.exe`)
+  missing its heartbeat. Official write-up points at incompatible overlay /
+  AV software. On this box the analogous causes are: CEF picking the Intel
+  iGPU beside the 3080, Steam Overlay, and esync/fsync on musl.
+- Dual-GPU CEF workaround they document elsewhere: `cefWorkaroundMultiGPU = true`
+  in `startup.ini`.
+
+**Method** — one reversible Steam-side apply, then measure the UI process.
+
+Tool: `scripts/beamng-proton-hotfix` (`--check`, `--apply-hotfix`,
+`--proton-official`, `--native`, `--rollback`, `--logs`). Writes
+`$game/startup.ini` only; Steam Compatibility and Launch Options stay
+operator-gated (Steam GUI). Inverse: `--rollback` restores the previous
+`startup.ini` and tells the operator to clear Launch Options.
+
+**Gate**
+
+- Pass: main menu, UI clickable, no Unresponsive UI Process dialog.
+- Fail: that dialog, or `BeamNG.drive.x64.ui.exe` exits. Then `--logs` and
+  `--proton-official` (10.0-4), not another Hotfix tweak.
+
+Phase 6 desktop-performance work is paused until this gate or an explicit
+return. Do not retune Compiz against a BeamNG CEF hang.
+
+### Phase 6 — desktop performance (paused)
 
 The operator reports FPS dipping and general jitter across the desktop. Every
 phase above is functionally "complete" and none was ever optimized as a whole:
