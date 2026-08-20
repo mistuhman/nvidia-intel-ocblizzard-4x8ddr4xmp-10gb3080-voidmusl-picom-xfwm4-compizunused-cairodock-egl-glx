@@ -1,0 +1,10 @@
+id
+df -h /
+ls -l /etc/doas.conf
+sudo chmod 644 /etc/doas.conf
+ls -l /etc/doas.conf
+sudo cat /etc/doas.conf
+doas -C /etc/doas.conf
+doas id
+doas -n id
+doas -n /usr/bin/nvidia-settings --version
