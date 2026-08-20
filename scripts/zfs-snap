@@ -1,0 +1,19 @@
+#!/bin/sh
+# zfs-snap — snapshot a work dataset with rolling retention.
+# Usage: zfs-snap [pool/dataset] [keep]
+# Defaults: zroot/ROOT/void, keep 24 auto-named snapshots.
+set -e
+DS="${1:-zroot/ROOT/void}"
+KEEP="${2:-24}"
+if ! zfs list -H -o name "$DS" >/dev/null 2>&1; then
+    echo "zfs-snap: dataset $DS not found" >&2
+    exit 1
+fi
+SNAP="$(date +%Y%m%d-%H%M%S)"
+zfs snapshot "$DS@$SNAP"
+echo "took $DS@$SNAP"
+zfs list -H -t snapshot -o name -s creation "$DS" \
+    | grep -E "@20[0-9]{6}-[0-9]{6}$" \
+    | head -n -"$KEEP" \
+    | xargs -r -n1 zfs destroy
+zfs list -t snapshot "$DS"
