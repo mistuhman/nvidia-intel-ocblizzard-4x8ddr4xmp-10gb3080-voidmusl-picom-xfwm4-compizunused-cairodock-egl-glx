@@ -649,6 +649,29 @@ Current state:
   rd.driver.blackllist (no-op, dropped). Pending before reboot: set
   org.zfsbootmenu:commandline (real args) and org.zfsbootmenu:kernel
   (6.18.35-tkg-bore — else ZBM version-sorts to 6.18.41_1).
+- B6 boot gate ATTEMPT 1 FAILED, HANDOFF POINT (2026-08-20): first
+  reboot landed in void_grub on the bore kernel but root still
+  /dev/nvme0n1p5 ext4 — `efibootmgr -v` showed the firmware PRUNED
+  Boot0007 (ZFSBootMenu) from NVRAM (also dropped the CD/network
+  entries; board silently deletes third-party entries pointing at a
+  second disk's ESP). BootOrder reverted to 0006,0000,0001,0003. Props
+  were set before reboot: org.zfsbootmenu:commandline = "ro quiet
+  loglevel=7 split_lock_detect=off intel_pstate=active",
+  org.zfsbootmenu:kernel = 6.18.35-tkg-bore. Fix handed to operator
+  (NOT yet confirmed executed): mount /dev/sda2, copy EFI/zbm/vmlinuz.EFI
+  to EFI/BOOT/BOOTX64.EFI (fallback path every firmware honors),
+  re-add Boot entry via efibootmgr, reboot; if still grub, BIOS setup →
+  put the 2TB HDD "UEFI OS" entry first in boot priority (board-native
+  table, not prunable). BOOT GATE = `findmnt /` shows zroot/ROOT/void
+  zfs on uname 6.18.35-tkg-bore. NEXT SESSION: ask operator for the gate
+  output first. After gate passes: NVMe wipe (p3 Windows + p4 INSTALL
+  operator-ordered "FULLY WIPE THAT SHIT", delete p2/p5/p6 — keep p1 ESP
+  + p5 root UNTIL gate passes as fallback; identify mystery p6 2G ext4
+  first), one big pool `data` mounted /mnt/games, games tar
+  (tar --acls --xattrs) from old GAMEDRIVE staged in sda1 free space
+  (~880G) then restored into `data`. Console rules stand: sudo -i as
+  separate step, no  redirects/ampersands/quotes in pastes (web console
+  HTML-escapes), xbps-install always -y, id -u at top of every block.
 - Operator direction (2026-08-20): "tar archive, and we could just boot
   off of the 2tb hdd". Revised end state: **OS root moves to sda**
   (shrink sda1 NTFS to ~1000G, new sda2 ESP, sda3 = ZFS root pool `zroot`
