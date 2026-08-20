@@ -254,10 +254,19 @@ direction (Guideline 7).
 
 ## IV. Ground truth
 
+**Target disks** (receipt: Stage-0 run transcript, 2026-08-20; kernel
+`6.18.35-tkg-bore`) — `nvme0n1` 953.9G WDC PC SN530 SDBPNPZ-1T00-1: p1
+512M vfat `/boot/efi`, p2 667.4G ext4 `/mnt/games` (GAMEDRIVE), p3
+121.2G ntfs (Windows), p4 8G vfat (INSTALL), p5 154.8G ext4 `/`, p6 2G
+ext4 unmounted (purpose unknown — identify before any merge). `sda` 1.8T
+"Disk Device" serial 00000000458C: single unmounted ntfs partition
+labeled `50` — spare/pool candidate. Boot: `BootCurrent 0006`
+(void_grub), Windows Boot Manager entry `0001` present.
+
 **Target** — Void Linux, musl libc, user `sd`. Intel CPU + NVIDIA RTX 3080
 10GB, 32GB DDR4 (4x8) with XMP. X11, dual monitor, combined 4480x1440.
-Kernel 6.18.x tkg-bore. Workspace `/home/sd/.local/share/xmb-wave/`, bake
-output on `/mnt/games`.
+Kernel 6.18.35-tkg-bore (dkms also knows 6.18.34_1–6.18.41_1 stock).
+Workspace `/home/sd/.local/share/xmb-wave/`, bake output on `/mnt/games`.
 
 **Sandbox** — ephemeral container, git checkout only. Present: node, npm,
 python3, git, gh (authenticated), jq. Absent: ffmpeg, chromium, xvfb-run, GPU,
@@ -277,9 +286,17 @@ unreachable; resolve package facts through the GitHub API against
 | chromium | 151.x | built with `is_musl=true` — headless bake is viable |
 | nvidia | 595.84 | nonfree repo; `nvidia-libs` is a subpackage, not standalone |
 | xfwm4 / xfdesktop | 4.20.0 / 4.20.2 | mesa 26.1.7, libglvnd 1.7.0 |
+| zfs | 2.4.3 | DKMS kernel module, dracut integration, no libc guard; ships only the `zfs-zed` runit service (`vsv zed`) |
+| zfsbootmenu | 3.1.0 | dracut-based root-on-ZFS bootloader |
+| opendoas | 6.8.2 | portable OpenBSD doas; a `doas` package does not exist |
+| nftables | 1.1.5 | default-deny firewall path |
+| suricata | 8.0.6 | IDS path; orphaned in void-packages, built `--disable-suricata-update` |
+| audit | 4.2.1 | musl build uses `--disable-zos-remote` |
+| fail2ban | 1.1.0 | |
+| snort / doas | absent | use suricata / opendoas instead |
 
 Absent from the repo: plain `compiz`, `fusion-icon`, `ffmpeg7`, `x11-utils`
-(Void splits these into `xorg-*`).
+(Void splits these into `xorg-*`), `snort`, and any package named `doas`.
 
 **Why the WM swap precedes the wallpaper** — a video wallpaper on X11 draws
 either to the root window or to a wrapped override-redirect window behind
@@ -451,7 +468,7 @@ together. Autostart stays hidden until acceptance. **This trial is currently
 behind Phase 6** — do not tune the switcher on a desktop that is already
 dropping frames, or you will be tuning against the wrong baseline.
 
-### Phase 6 — desktop performance (ACTIVE OBJECTIVE)
+### Phase 6 — desktop performance (parked — a separate objective per operator)
 
 The operator reports FPS dipping and general jitter across the desktop. Every
 phase above is functionally "complete" and none was ever optimized as a whole:
@@ -506,6 +523,178 @@ persistent afterward.
 
 **Then** — return to the Phase 5 switcher trial against the new, faster
 baseline, and merge.
+
+### Phase 7 — ZFS, doas, hardening (ACTIVE OBJECTIVE)
+
+Operator direction, quoted: "currently i need to set this up for work" —
+the desktop-performance objective is separate and parked; this phase is the
+work-infrastructure campaign: ZFS filesystem, doas replacing sudo, and full
+hardening with network interception, control, and machine logging. Tracked
+in `ToDo.md` (the only exception to the two-file rule, operator-directed).
+
+Operator decisions, quoted: "both, staged" — a work data pool first, then
+the root-on-ZFS migration once the pool is proven — was superseded the same
+day by: "lets not work on pools, waste of time. lets just get zfs working
+for the entirety of the bore kernel and delete windows". Also: "i have a
+spare disk, and i want to delete my windows partition. i also need to
+merge my nvme partitions" — the NVMe reorg belongs to the root-migration
+stage. Root-disk answer: NVMe in-place ("one big zfs nvme, this is what i
+told you explicitly. only listen to me"); Windows partitions: "FULLY WIPE
+THAT SHIT". End state: the whole NVMe except the ESP becomes one ZFS pool —
+root and data both on ZFS.
+
+Current state:
+
+- Delivery lesson: pasting `sudo -i` at the top of a big block stalls the
+  whole paste at the password prompt (happened twice, 2026-08-20). Root
+  shell entry is now delivered as its own separate step; the block after
+  it is root-only commands.
+- Delivery lesson 2: the operator's web console HTML-escapes pastes
+  (`&gt;`, `&amp;&amp;` appeared inside commands, breaking redirects and
+  chained `&&`; a paste also stopped right after `ls -d`). Blocks are now
+  written with no `<`, `>`, or `&` characters, one command per line, no
+  chaining.
+- B1 partial: `id -u`=0 confirmed root; `/usr/src/linux-6.18.35-tkg-bore`
+  confirmed present (the bore headers tree). zfs/gptfdisk install state
+  unconfirmed — re-verified idempotently in the next block.
+- B1 run 3 (green): `xbps-install -S -y zfs gptfdisk` succeeded. dkms
+  built `zfs/2.4.3` against **all** installed kernels in one pass —
+  6.18.35-tkg-bore, 6.18.36_1, 6.18.38_1, 6.18.39-tkg-bore, 6.18.40_1,
+  6.18.41_1 — each `installed`, including the bore kernel (the
+  compatibility risk is retired). `zpool version` = `zfs-2.4.3-1` /
+  `zfs-kmod-2.4.3-1`. dracut regenerated every initramfs with the zfs
+  module. `zfs-zed` service link present in /var/service. Root: 748M
+  free, 100%.
+- B2 checks (2026-08-20): root shell works (`[root@66 sd]#`). sda1 not
+  mounted. `ntfsfix /dev/sda1` OK — MFT, MFTMirr, alternate boot sector
+  all verified; volume version 3.1. `ntfsresize --info /dev/sda1`
+  refused: "Volume is scheduled for check" — NTFS dirty flag still set
+  (Windows unclean shutdown; not corruption). Next: `ntfsfix -d` to clear
+  the flag, then re-run `ntfsresize --info`. Sizing decision (sda 2000GB):
+  shrink sda1 to ~1150G (278G data + ~870G free for the games tar),
+  sda2 = ESP (~1G), sda3 = ZFS root pool (~700G+, OS 144G fits with
+  headroom). Games tar (~667G) rides inside sda1's free space, verified,
+  then the NVMe is rebuilt as one big ZFS pool.
+- B2c mishap and recovery (2026-08-20): the `--no-action` ntfsresize test
+  passed clean (no writes). But the sgdisk block was wrong: `--new=1:0:0`
+  recreated partition 1 at gdisk's 1MiB default (sector 2048) instead of
+  preserving the original start (sector 34), where the NTFS boot sector
+  actually lives (parted showed 17.4kB start; lsblk flagged the leftover
+  gap 34–2047 as `ntfs` — proof). `--new=2:0:+1G` failed (overlap), and
+  the gap became a 1007K BF00 partition 3. Data untouched; only the GPT
+  changed. Lesson: when recreating a partition that holds an existing
+  filesystem, pass the original start sector explicitly — never rely on
+  gdisk defaults; shrink the filesystem first, then the partition.
+  Recovery: delete p3 + p1, recreate p1 = 34 → 3907029134 (original
+  extent), verify ntfs + mount before any further writes.
+- B2c repair attempt (2026-08-20): the recovery block ran as `sd`, not
+  root — all Permission denied, no changes. Then run correctly as root:
+  `sgdisk --delete=3` and `--delete=1` completed, table now has one
+  partition (1, start 2048, end 3907029134, code 0700). **gdisk still
+  forced start to 2048** ("Moved requested sector from 34 to 2048 ... to
+  align on 2048-sector boundaries") even when asked for 34 — so partition
+  1 begins at 2048 while the NTFS boot sector is at sector 34, outside
+  the partition. `mount` fails: `wrong fs type, bad option, bad
+  superblock`. NTFS data intact on disk. Recovery (verified via web):
+  keep partition 1 at start 2048 (gdisk alignment is immutable), rebuild
+  the NTFS boot sector at the partition start using TestDisk
+  `RebuildBS` (scans the backup boot sector, rewrites the primary at the
+  partition start, `List` to verify before `Write`) — cgsecurity forum
+  "NTFS Error: size boot_sector > partition" confirms this exact
+  recovery. Do NOT re-create the partition or use ntfsfix to relocate.
+- B2c RESOLVED (2026-08-20): TestDisk 7.2, EFI GPT mode, Quick Search
+  found the original partition (`MS Data 34 3907028991 [50]`, Structure:
+  Ok) — better than RebuildBS: it restored the partition table entry to
+  the original start (sector 34), boot sector untouched. Written, reboot,
+  verified: `lsblk -f` shows sda1 ntfs label 50 UUID 26E1196F4676D1DE;
+  ro-mount succeeded; Games/, Videos/, 666.mp4, Temp/, $RECYCLE.BIN,
+  .Trash-1000, System Volume Information all present. Data loss: none.
+  Lesson recorded: TestDisk writes partition starts gdisk refuses
+  (alignment); alternatively `sgdisk -a 1` disables the 2048 alignment —
+  the repartition block MUST use `-a 1` when re-creating p1 at sector 34.
+- B3 shrink + repartition COMPLETE (2026-08-20): `ntfsresize --no-action
+  --size 1177600M` passed (24096540 relocations / 98700 MB predicted);
+  real `ntfsresize --force --size 1177600M` succeeded ("Successfully
+  resized NTFS"). New volume 1177599996416 bytes = 2299999993 sectors
+  from sector 34 → last FS sector 2300000026. Repartition with `sgdisk
+  -a 1` worked (no "Moved requested sector"; only a benign 4096-physical
+  alignment warning). Final sda table: p1 `50` 0700 34–2300002303
+  (1.1 TiB NTFS, ~880G free inside for the games tar), p2 `ESP` EF00
+  2300002304–2302099455 (1024 MiB), p3 `zroot` BF00 2302099456–3907029134
+  (765.3 GiB). Gate passed: sda1 ro-mounted after partprobe, all files
+  listed. NTFS carries the "chkdsk scheduled" flag from ntfsresize —
+  acceptable, Windows is being deleted; ntfsfix -d clears it if mount
+  ever refuses.
+- B4 pool + OS copy COMPLETE (2026-08-20): sda2 formatted vfat -F 32
+  label ZBMESP. `zroot` created on sda3 (ashift=12, lz4, xattr=sa,
+  posixacl, atime=off, mountpoint=none), datasets zroot/ROOT (none) +
+  zroot/ROOT/void (mountpoint=/, canmount=noauto), bootfs=zroot/ROOT/void,
+  pool ONLINE 740G avail. Root staged: mounted via `mount -o zfsutil -t
+  zfs` at /mnt/newroot (df gate passed: 741G), then `rsync -aHAX
+  --one-file-system --info=progress2 --exclude=/swapfile / /mnt/newroot/`
+  — 148.9 GB, ~40 min, exit code 24 only (vanished zen-browser cache
+  entries; harmless). Next: fix the COPY's fstab (live fstab untouched
+  per constraint), chroot install zfsbootmenu + efibootmgr, generate-zbm
+  onto sda2 ESP, EFI entry, boot gate.
+- Operator direction (2026-08-20): "tar archive, and we could just boot
+  off of the 2tb hdd". Revised end state: **OS root moves to sda**
+  (shrink sda1 NTFS to ~1000G, new sda2 ESP, sda3 = ZFS root pool `zroot`
+  on the remaining ~850G, boot via zfsbootmenu from sda's ESP); games
+  staged as a tar archive inside sda1's NTFS free space; the NVMe is
+  rebuilt as **one big ZFS pool** (`data`, mount /mnt/games) after Windows
+  (p3/p4) and the old root (p5) and p2/p6 are deleted. The old NVMe root
+  stays bootable until the sda root boots — the migration's safety net.
+  NTFS can't store Linux ownership, so the games backup is a tar archive
+  (GNU tar `--acls --xattrs` as root), not a file copy.
+- Work-pool staging is dropped. The path is NVMe in-place root-on-ZFS on
+  the bore kernel, then the full-NVMe merge. Windows deletion (p3 121.2G
+  ntfs + p4 8G vfat INSTALL) is operator-ordered ("FULLY WIPE THAT SHIT")
+  and has no inverse — it is the only irreversible step, so the old root
+  p5 and the ESP/grub entry p1 stay untouched as the boot fallback until
+  the ZFS root is accepted.
+- **Headers correction:** Void headers install to `/usr/src/kernel-headers-
+  <ver>` (per linux6.12 template `hdrdest`), not `linux-headers-*`; the
+  earlier NO-HEADERS-FOUND was likely a false negative. Gate re-checks
+  `/usr/src/kernel-headers-$(uname -r)` and `/lib/modules/$(uname -r)/build`.
+- zfsbootmenu 3.1.0 verified from source: the void package ships only the
+  example config (post_install `vcopy` to `/usr/share/examples/
+  zfsbootmenu/config.yaml`); the operator creates `/etc/zfsbootmenu/
+  config.yaml`. Upstream keys: `Global.BootMountPoint: /boot/efi`,
+  `Components.ImageDir: /boot/efi/EFI/zbm`, `EFI.Enabled: false` by
+  default (enable for the EFI stub), `Kernel.CommandLine: ro quiet
+  loglevel=0`. Generator binary is `generate-zbm`.
+- `nvme0n1p6` 2G ext4 unmounted — purpose unknown, must be identified
+  before any merge (open question; forensics in the A0 block).
+
+Plan (revised after B0 data): the freed Windows space (p3 121.2G + p4 8G
+= ~129G) cannot hold the running root (144G used, `df -h /` 100% full,
+537M free) — the hole-then-merge staging cannot fit the data. Route to
+the operator's end state (one big ZFS NVMe) is single-stage:
+
+- **B1** — make room on `/` (root is at 100%; du diagnosis, xbps-remove
+  -O, target ≥2G free), install `zfs` + `gptfdisk`, prove the module on
+  6.18.35-tkg-bore.
+- **B2** — stage the whole NVMe on sda (1.8T): peek sda1's NTFS `50`
+  first, reformat sda1 ext4, `rsync -a` `/` and `/mnt/games` (~811G
+  total) to sda, verify byte counts. sda becomes the full backup/fallback.
+- **B3** — keep p1 ESP; delete p2–p6; one ZFS partition (~933G);
+  `zpool create zroot /dev/nvme0n1p2`; restore root + games from sda;
+  zfsbootmenu; boot gate. Old root p5 is gone before the new root boots,
+  but the full sda copy is the safety net (worse fallback than in-place,
+  safer than the un-sizable 129G pool).
+
+Verified state (B0 run): root `id -u`=0 (root shell works when entered
+separately); headers for the bore kernel live at `/usr/src/linux-
+6.18.35-tkg-bore` (the `/lib/modules/6.18.35-tkg-bore/build` target —
+dkms built nvidia/yeetmouse against it, so the tree exists); zfs and
+gptfdisk NOT installed; parted + ntfs-3g preinstalled; no pools exist;
+`/var/service` zfs-zed line from the paste was ambiguous (re-check in
+B1).
+
+Risks: OpenZFS 2.4.3 dkms building against tkg-bore 6.18.35 (unverified
+until GATE Z1); root `/` is 100% full (537M free) — the zfs dkms build
+and initramfs need free space, so B1's make-room step precedes the
+install; sda's NTFS `50` contents unknown until the B2 peek.
 
 ### Parked
 
