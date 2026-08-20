@@ -1,0 +1,13 @@
+id
+df -h /
+ls -l /etc/doas.conf
+doas cp /etc/doas.conf /root/doas.conf.20260820.bak
+doas ls -l /root/doas.conf.20260820.bak
+printf %s\n permit nopass sd as root cmd /usr/bin/nvidia-settings
+printf %s\n permit nopass sd as root cmd /usr/bin/nvidia-settings | doas tee -a /etc/doas.conf
+doas chmod 600 /etc/doas.conf
+ls -l /etc/doas.conf
+doas cat /etc/doas.conf
+doas -C /etc/doas.conf
+doas -n id
+doas -n /usr/bin/nvidia-settings --version
