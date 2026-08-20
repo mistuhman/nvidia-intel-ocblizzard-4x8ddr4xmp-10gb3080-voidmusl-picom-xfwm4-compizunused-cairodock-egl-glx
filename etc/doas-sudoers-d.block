@@ -1,0 +1,6 @@
+id
+df -h /
+ls -l /etc/sudoers.d
+doas cat /etc/sudoers.d/wheel
+doas cat /etc/sudoers.d/nvidia-oc
+doas -n id

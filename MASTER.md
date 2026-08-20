@@ -232,7 +232,7 @@
             "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; efibootmgr Boot0007 was pruned by firmware on reboot",
             "Boot attempt 1 landed in void_grub on nvme ext4 root; ZFS root not yet booted",
             "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
-            "opendoas 6.8.2_2 installed on live nvme as sd; /etc/doas.conf permit persist keepenv :wheel; doas id returned uid=0(root); doas without a command is usage not a shell; sudo still present; sudoers inventory pending"
+            "opendoas 6.8.2_2 installed; /etc/doas.conf permit persist keepenv :wheel; doas id uid=0; sudo-1.9.17p2_1 still installed hashed /usr/bin/sudo; /etc/sudoers stock with %wheel commented; live sudo is drop-ins /etc/sudoers.d/wheel (25B 2026-06-06) and /etc/sudoers.d/nvidia-oc (51B 2026-06-14) contents not yet pasted; nvme0n1p5 root 152G 143G used 1.2G avail Use% 100%; xbps-query sudo/opendoas report glibc x86_64 not musl"
         ],
         "nextGateAskFirst": "Ask operator for output from the handed-off boot gate before changing disks.",
         "handoffFixUnconfirmed": [
