@@ -1,0 +1,17 @@
+id
+df -h /
+doas id
+ls -l /etc/doas.conf
+cat /etc/doas.conf
+doas -C /etc/doas.conf
+ls -l /etc/sudoers
+ls -ld /etc/sudoers.d
+ls -l /etc/sudoers.d
+doas cat /etc/sudoers
+doas ls -la /etc/sudoers.d
+xbps-query sudo
+xbps-query opendoas
+type sudo
+type doas
+which sudo
+which doas
