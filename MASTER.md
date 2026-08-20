@@ -232,7 +232,7 @@
             "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; efibootmgr Boot0007 was pruned by firmware on reboot",
             "Boot attempt 1 landed in void_grub on nvme ext4 root; ZFS root not yet booted",
             "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
-            "opendoas 6.8.2_2 installed; sudo-1.9.17p2_1 still present; sudoers.d/wheel is %wheel ALL=(ALL:ALL) ALL; sudoers.d/nvidia-oc is sd ALL=(root) NOPASSWD: /usr/bin/nvidia-settings *; doas persist keepenv :wheel already matches wheel; nvidia-settings nopass not yet in live doas.conf; persist keepenv is looser than sudo secure_path; doas -n id was uid=0; nvme0n1p5 Use% 100% 1.2G avail; xbps reports glibc x86_64 not musl"
+            "doas.conf install FAIL 2026-08-20: unquoted printf became format %sn; tee wrote smashed nvidia-settings line; every later doas is syntax error at line 2; bak via doas likely never ran; sudo still hashed and is the repair path; sudoers.d/wheel is %wheel ALL; sudoers.d/nvidia-oc is NOPASSWD nvidia-settings; nvme0n1p5 Use% 100%"
         ],
         "nextGateAskFirst": "Ask operator for output from the handed-off boot gate before changing disks.",
         "handoffFixUnconfirmed": [
