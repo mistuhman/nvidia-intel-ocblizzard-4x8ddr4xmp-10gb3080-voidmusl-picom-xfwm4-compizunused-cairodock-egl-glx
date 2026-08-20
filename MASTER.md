@@ -636,6 +636,19 @@ Current state:
   entries; harmless). Next: fix the COPY's fstab (live fstab untouched
   per constraint), chroot install zfsbootmenu + efibootmgr, generate-zbm
   onto sda2 ESP, EFI entry, boot gate.
+- B5 zfsbootmenu install COMPLETE (2026-08-20): copy's fstab fixed (root
+  + GAMEDRIVE lines deleted, ESP UUID 97EB-159F changed to E1B4-7577 =
+  sda2; live fstab untouched). chroot: zfsbootmenu-3.1.0_1 +
+  systemd-boot-efistub-256.6_2 (+ kexec-tools fzf pigz mbuffer perl deps)
+  installed; config.yaml fetched from repo branch (EFI bundle mode,
+  ImageDir /boot/efi/EFI/zbm); generate-zbm built vmlinuz.EFI (48.5 MB,
+  from kernel 6.18.41_1) onto sda2; efibootmgr created Boot0007
+  ZFSBootMenu, BootOrder now 0007,0006,... — void_grub 0006 intact as
+  fallback. Live /proc/cmdline captured: intel_pstate=passive+active
+  (active wins), split_lock_detect=off, ro, loglevel=7, misspelled
+  rd.driver.blackllist (no-op, dropped). Pending before reboot: set
+  org.zfsbootmenu:commandline (real args) and org.zfsbootmenu:kernel
+  (6.18.35-tkg-bore — else ZBM version-sorts to 6.18.41_1).
 - Operator direction (2026-08-20): "tar archive, and we could just boot
   off of the 2tb hdd". Revised end state: **OS root moves to sda**
   (shrink sda1 NTFS to ~1000G, new sda2 ESP, sda3 = ZFS root pool `zroot`
