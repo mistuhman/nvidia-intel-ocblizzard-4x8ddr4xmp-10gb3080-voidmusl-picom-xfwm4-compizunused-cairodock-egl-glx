@@ -1,4 +1,4 @@
-id
+id -u
 df -h /
 echo rollback: doas xbps-install -y sudo
 ls -l /etc/doas.conf

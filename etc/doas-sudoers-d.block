@@ -1,4 +1,4 @@
-id
+id -u
 df -h /
 ls -l /etc/sudoers.d
 doas cat /etc/sudoers.d/wheel
