@@ -233,20 +233,23 @@
             "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; firmware prunes third-party NVRAM entries on the HDD ESP",
             "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
             "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines",
-            "boot probe 2026-08-21 FAIL: findmnt / is /dev/nvme0n1p5 ext4; uname 6.18.35-tkg-bore; BootCurrent 0006 void_grub; BootOrder 0006,0000,0001,0003,0007,0002,0004,0005; all HD NVRAM loaders use GPT 72b9a798-afbb-4d97-a277-6fcd57cd6490; Boot0007 is UEFI Sabrent USB not ZBM; no sda2 loader",
-            "zroot ONLINE on sda3, errors none, zroot/ROOT/void 98.4G refer intended mountpoint / but not live root; / is 100 percent with 1.1G avail",
-            "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted; identify nvme0n1p6 during ESP inspect"
+            "boot probe 2026-08-21 FAIL: findmnt / is /dev/nvme0n1p5 ext4; uname 6.18.35-tkg-bore; BootCurrent 0006 void_grub; BootOrder 0006,0000,0001,0003,0007,0002,0004,0005",
+            "ESP inspect 2026-08-21: sda2 vfat ZBMESP PARTUUID 336511ad-2bab-4730-8c05-17cc5853081a has EFI/zbm/vmlinuz.EFI 48533504 Aug 20 10:42 and EFI/BOOT/BOOTX64.EFI 48533504 Aug 20 10:52; NVMe ESP has GRUB Microsoft boot cachyos void_grub, no zbm",
+            "Boot0007 UEFI Sabrent USB HD(2,GPT,336511ad-2bab-4730-8c05-17cc5853081a,0x89174000,0x200000) is sda2 ESP as USB BBS, not a named ZFSBootMenu loader; no NVRAM entry for /dev/sda",
+            "zfs get without commas failed; canmount and org.zfsbootmenu props still unverified; zroot mountpoint none; zroot/ROOT/void mountpoint /; pool ONLINE",
+            "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
+            "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-inspect.block before writing EFI fallback or changing disks.",
+        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-nvram.block before changing BootOrder or rebooting.",
         "handoffFixUnconfirmed": [
-            "mount /dev/sda2",
-            "copy EFI/zbm/vmlinuz.EFI to EFI/BOOT/BOOTX64.EFI fallback path",
-            "re-add efibootmgr entry",
-            "reboot; if still grub, set 2TB HDD UEFI OS first in BIOS boot priority"
+            "sda2 fallback BOOTX64.EFI already present same size as vmlinuz.EFI; confirm sha256 then leave it",
+            "re-add efibootmgr zfsbootmenu loader on /dev/sda -p 2",
+            "put new zfsbootmenu entry and Boot0007 ahead of void_grub 0006",
+            "reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
         ],
         "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
         "afterBootGate": [
-            "identify nvme0n1p6 before merge",
+            "nvme0n1p6 ISOBRIDGE 2G ext4 identified; keep until operator says wipe",
             "keep nvme p1 ESP and p5 old root until ZFS root accepted",
             "operator-ordered irreversible wipe: nvme Windows p3 and INSTALL p4",
             "stage games as GNU tar --acls --xattrs in sda1 NTFS free space",
@@ -255,8 +258,8 @@
         ],
         "knownRisks": [
             "firmware prunes third-party boot entries on second disk ESP unless fallback path or BIOS disk priority works",
-            "nvme0n1p6 purpose unknown",
-            "root filesystem was 100% full earlier; check df -h / before rc=1 diagnosis"
+            "sda is Sabrent USB; firmware may prune PCI-path EFI entries and only honor USB BBS Boot0007 plus BOOTX64.EFI",
+            "root filesystem is 100% full now with 1.1G avail; check df -h / before rc=1 diagnosis"
         ]
     },
     "parked": [

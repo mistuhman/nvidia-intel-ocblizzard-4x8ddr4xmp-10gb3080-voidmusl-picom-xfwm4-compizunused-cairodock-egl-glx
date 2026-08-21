@@ -1,0 +1,19 @@
+id
+df -h /
+findmnt /
+uname -r
+doas zpool get bootfs zroot
+doas zfs get -r mountpoint,canmount,org.zfsbootmenu:commandline,org.zfsbootmenu:kernel zroot
+ls -ld /mnt/sda2esp
+doas mount /dev/sda2 /mnt/sda2esp
+findmnt /mnt/sda2esp
+ls -l /mnt/sda2esp/EFI/zbm/vmlinuz.EFI
+ls -l /mnt/sda2esp/EFI/BOOT/BOOTX64.EFI
+doas sha256sum /mnt/sda2esp/EFI/zbm/vmlinuz.EFI /mnt/sda2esp/EFI/BOOT/BOOTX64.EFI
+doas umount /mnt/sda2esp
+findmnt /mnt/sda2esp
+echo rollback doas efibootmgr -o 0006,0000,0001,0003,0007,0002,0004,0005
+echo rollback doas efibootmgr -B the new zfsbootmenu BootXXXX
+doas efibootmgr -c -d /dev/sda -p 2 -L zfsbootmenu -l \\EFI\\zbm\\vmlinuz.EFI
+doas efibootmgr
+df -h /
