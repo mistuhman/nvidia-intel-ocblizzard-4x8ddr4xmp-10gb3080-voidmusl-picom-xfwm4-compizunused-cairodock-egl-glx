@@ -1,10 +1,10 @@
 {
     "schema": "arena-master-context.v1",
-    "updated": "2026-08-20",
+    "updated": "2026-08-21",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a01ef1-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "7fccbb61a6c2133bf312ff6aa59b9c07a8fa87b0",
+        "branchFixed": "arena/01a021a4-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "8b95623c08ce44b172a51d2fcdd04f5151368076",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -230,12 +230,14 @@
             "zfs and gptfdisk installed; dkms built zfs/2.4.3 for all installed kernels including 6.18.35-tkg-bore; zpool version zfs-2.4.3-1/zfs-kmod-2.4.3-1; zfs-zed linked",
             "sda1 NTFS label 50 was shrunk to about 1.1TiB and verified ro-mounted; p2 ESP 1024MiB; p3 zroot 765.3GiB",
             "zroot created on sda3 with lz4 xattr=sa posixacl atime=off; root copied to zroot/ROOT/void; rsync exit 24 only vanished browser cache entries",
-            "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; efibootmgr Boot0007 was pruned by firmware on reboot",
-            "Boot attempt 1 landed in void_grub on nvme ext4 root; ZFS root not yet booted",
+            "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; firmware prunes third-party NVRAM entries on the HDD ESP",
             "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
-            "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines; next is read-only ZFS boot probe then EFI fallback if still on nvme ext4"
+            "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines",
+            "boot probe 2026-08-21 FAIL: findmnt / is /dev/nvme0n1p5 ext4; uname 6.18.35-tkg-bore; BootCurrent 0006 void_grub; BootOrder 0006,0000,0001,0003,0007,0002,0004,0005; all HD NVRAM loaders use GPT 72b9a798-afbb-4d97-a277-6fcd57cd6490; Boot0007 is UEFI Sabrent USB not ZBM; no sda2 loader",
+            "zroot ONLINE on sda3, errors none, zroot/ROOT/void 98.4G refer intended mountpoint / but not live root; / is 100 percent with 1.1G avail",
+            "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted; identify nvme0n1p6 during ESP inspect"
         ],
-        "nextGateAskFirst": "Ask operator for output from the handed-off boot gate before changing disks.",
+        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-inspect.block before writing EFI fallback or changing disks.",
         "handoffFixUnconfirmed": [
             "mount /dev/sda2",
             "copy EFI/zbm/vmlinuz.EFI to EFI/BOOT/BOOTX64.EFI fallback path",
