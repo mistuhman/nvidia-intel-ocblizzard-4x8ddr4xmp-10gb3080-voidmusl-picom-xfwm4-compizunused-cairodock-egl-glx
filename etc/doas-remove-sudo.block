@@ -1,0 +1,13 @@
+id
+df -h /
+echo rollback: doas xbps-install -y sudo
+ls -l /etc/doas.conf
+xbps-query sudo
+doas xbps-query -X sudo
+doas xbps-remove -y sudo
+type sudo
+type doas
+which doas
+doas -n id
+doas -n /usr/bin/nvidia-settings --version
+xbps-query sudo
