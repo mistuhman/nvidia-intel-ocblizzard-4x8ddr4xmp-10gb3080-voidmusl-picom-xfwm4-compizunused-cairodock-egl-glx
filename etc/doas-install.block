@@ -1,4 +1,4 @@
-id
+id -u
 df -h /
 ls -l /etc/doas.conf
 doas cp /etc/doas.conf /root/doas.conf.20260820.bak

@@ -1,0 +1,21 @@
+id -u
+df -h /
+findmnt /
+uname -r
+ls -l /sys/firmware/efi/efivars | grep -i boot | head -n 30
+doas cat /sys/firmware/efi/efivars/Boot0008-*
+doas ls -l /sys/firmware/efi/efivars/BootNext-*
+doas cat /sys/firmware/efi/efivars/BootCurrent-*
+doas efibootmgr
+echo --- Boot0008 may have been pruned - recreate it ---
+doas efibootmgr -c -d /dev/sda -p 2 -L zfsbootmenu -l \\EFI\\zbm\\vmlinuz.EFI
+doas efibootmgr
+echo --- set BootNext to 0008 one-time boot ---
+doas efibootmgr -n 0008
+doas efibootmgr
+doas cat /sys/firmware/efi/efivars/BootNext-*
+echo rollback doas efibootmgr -n 0006
+echo rollback doas efibootmgr -B 0008
+echo reboot now via init 6 or systemctl reboot
+echo do NOT undo BootNext manually before reboot - the firmware consumes it once
+df -h /

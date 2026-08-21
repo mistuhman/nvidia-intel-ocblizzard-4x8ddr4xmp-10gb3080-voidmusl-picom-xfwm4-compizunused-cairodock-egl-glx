@@ -1,0 +1,13 @@
+id -u
+df -h /
+findmnt /
+uname -r
+doas efibootmgr
+ls -l /sys/firmware/efi/efivars | grep -i boot | head -n 30
+cat /sys/firmware/efi/efivars/BootCurrent-*
+echo enter BIOS Setup on next reboot hold F2 Del or F10 on this board
+echo make Boot Option 1 the USB Sabrent 2TB
+echo use Hard Drive BBS Priorities submenu or Boot Priority if present
+echo save and exit firmware and let it auto-boot once
+echo do NOT run doas efibootmgr from inside booted Void for this lever
+df -h /

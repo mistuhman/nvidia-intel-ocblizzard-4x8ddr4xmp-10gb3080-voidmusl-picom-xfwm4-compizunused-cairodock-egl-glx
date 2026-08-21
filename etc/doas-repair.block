@@ -1,4 +1,4 @@
-id
+id -u
 df -h /
 sudo ls -l /etc/doas.conf
 sudo cat /etc/doas.conf

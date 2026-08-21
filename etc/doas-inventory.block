@@ -1,4 +1,4 @@
-id
+id -u
 df -h /
 doas id
 ls -l /etc/doas.conf
