@@ -1,0 +1,15 @@
+id -u
+df -h /
+findmnt /
+hostid
+cat /sys/module/spl/parameters/spl_hostid
+od -An -tx1 /etc/hostid
+zgenhostid -f 0x67fe1a52
+hostid
+od -An -tx1 /etc/hostid
+zpool status
+dracut -f --regenerate-all
+generate-zbm
+sync
+ls -l /etc/hostid /etc/zfs/zpool.cache /boot/efi/EFI/zbm/vmlinuz.EFI
+df -h /

@@ -1,0 +1,6 @@
+id -u
+command -v doas
+doas -C /etc/doas.conf
+doas -n /usr/bin/nvidia-settings --version
+command -v sudo
+df -h /
