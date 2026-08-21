@@ -158,7 +158,7 @@
                 "bakeOutput": "/mnt/games"
             },
             "disks": {
-                "nvme0n1": "953.9G: p1 ESP, p2 games ext4, p3 Windows ntfs, p4 INSTALL vfat, p5 root ext4, p6 2G ext4 unknown",
+                "nvme0n1": "953.9G: p1 ESP, p2 GAMEDRIVE ext4 /mnt/games, p3 Windows ntfs, p4 INSTALL vfat WINSTALL, p5 VOID ext4 live root, p6 ISOBRIDGE 2G ext4 unmounted",
                 "sda": "1.8T disk serial 00000000458C; p1 NTFS label 50; now also p2 ESP and p3 zroot after staging"
             }
         }
@@ -235,16 +235,16 @@
             "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines",
             "boot probe 2026-08-21 FAIL: findmnt / is /dev/nvme0n1p5 ext4; uname 6.18.35-tkg-bore; BootCurrent 0006 void_grub; BootOrder 0006,0000,0001,0003,0007,0002,0004,0005",
             "ESP inspect 2026-08-21: sda2 vfat ZBMESP PARTUUID 336511ad-2bab-4730-8c05-17cc5853081a has EFI/zbm/vmlinuz.EFI 48533504 Aug 20 10:42 and EFI/BOOT/BOOTX64.EFI 48533504 Aug 20 10:52; NVMe ESP has GRUB Microsoft boot cachyos void_grub, no zbm",
-            "Boot0007 UEFI Sabrent USB HD(2,GPT,336511ad-2bab-4730-8c05-17cc5853081a,0x89174000,0x200000) is sda2 ESP as USB BBS, not a named ZFSBootMenu loader; no NVRAM entry for /dev/sda",
-            "zfs get without commas failed; canmount and org.zfsbootmenu props still unverified; zroot mountpoint none; zroot/ROOT/void mountpoint /; pool ONLINE",
+            "NVRAM create 2026-08-21 PASS: Boot0008 zfsbootmenu HD(2,GPT,336511ad-2bab-4730-8c05-17cc5853081a)/EFI/zbm/vmlinuz.EFI; BootOrder already 0008,0006,0000,0001,0003,0007,0002,0004,0005; live root still nvme ext4",
+            "zroot bootfs zroot/ROOT/void; void canmount=noauto; org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
+            "EFI sha256 match 93954747289fb19b0c67fb94d2678730ba0f57cb5c22ea6c570a85b16cd63bc7 for vmlinuz.EFI and BOOTX64.EFI",
             "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
             "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-nvram.block before changing BootOrder or rebooting.",
+        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-bootorder.block before reboot.",
         "handoffFixUnconfirmed": [
-            "sda2 fallback BOOTX64.EFI already present same size as vmlinuz.EFI; confirm sha256 then leave it",
-            "re-add efibootmgr zfsbootmenu loader on /dev/sda -p 2",
-            "put new zfsbootmenu entry and Boot0007 ahead of void_grub 0006",
+            "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
+            "Boot0008 zfsbootmenu exists and is first; still put Boot0007 USB Sabrent second ahead of void_grub 0006",
             "reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
         ],
         "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
