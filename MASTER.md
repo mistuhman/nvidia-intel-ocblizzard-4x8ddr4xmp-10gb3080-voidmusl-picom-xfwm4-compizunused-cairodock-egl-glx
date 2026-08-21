@@ -246,7 +246,7 @@
             "BootOrder write 2026-08-21: 0007,0006,0000,0001,0003 confirmed; live root still nvme ext4",
             "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator to reboot, then paste etc/zfs-boot-probe.block. If still grub, BIOS Sabrent USB first.",
+        "nextGateAskFirst": "Next chat starts with operator reboot output from etc/zfs-boot-probe.block. NVMe disk merge still HOLD until bootGate PASS. If still grub, BIOS Sabrent USB first.",
         "handoffFixUnconfirmed": [
             "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
             "BootOrder now 0007,0006,0000,0001,0003; firmware may still ignore USB BBS",
