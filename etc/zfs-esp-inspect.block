@@ -1,0 +1,29 @@
+id
+df -h /
+findmnt /
+uname -r
+lsblk -o NAME,SIZE,FSTYPE,LABEL,UUID,PARTLABEL,PARTTYPE,MOUNTPOINTS
+cat /proc/cmdline
+ls -l /boot/efi
+ls -l /boot/efi/EFI
+ls -l /mnt
+doas blkid
+doas fdisk -l /dev/nvme0n1
+doas fdisk -l /dev/sda
+doas zpool status
+doas zfs get mountpoint canmount org.zfsbootmenu:commandline org.zfsbootmenu:kernel zroot
+doas zfs get mountpoint canmount org.zfsbootmenu:commandline org.zfsbootmenu:kernel zroot/ROOT
+doas zfs get mountpoint canmount org.zfsbootmenu:commandline org.zfsbootmenu:kernel zroot/ROOT/void
+doas mkdir -p /mnt/sda2esp
+ls -ld /mnt/sda2esp
+doas mount /dev/sda2 /mnt/sda2esp
+findmnt /mnt/sda2esp
+ls -l /mnt/sda2esp
+doas find /mnt/sda2esp
+ls -l /mnt/sda2esp/EFI
+ls -l /mnt/sda2esp/EFI/zbm
+ls -l /mnt/sda2esp/EFI/BOOT
+doas umount /mnt/sda2esp
+findmnt /mnt/sda2esp
+df -h /
+doas efibootmgr

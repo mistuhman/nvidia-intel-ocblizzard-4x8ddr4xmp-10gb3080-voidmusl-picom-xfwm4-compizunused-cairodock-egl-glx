@@ -1,0 +1,19 @@
+id
+df -h /
+findmnt /
+uname -r
+cat /etc/os-release
+ls -l /lib/ld-musl-x86_64.so.1
+ls -l /lib/ld-linux-x86-64.so.2
+ldd /usr/bin/ntfs-3g
+echo rollback doas efibootmgr -o 0006,0000,0001,0003,0007
+doas efibootmgr -o 0007,0006,0000,0001,0003
+doas efibootmgr
+doas mkdir -p /mnt/ntfs50
+ls -ld /mnt/ntfs50
+doas mount -t ntfs-3g -o ro /dev/sda1 /mnt/ntfs50
+findmnt /mnt/ntfs50
+ls -l /mnt/ntfs50
+doas umount /mnt/ntfs50
+findmnt /mnt/ntfs50
+df -h /

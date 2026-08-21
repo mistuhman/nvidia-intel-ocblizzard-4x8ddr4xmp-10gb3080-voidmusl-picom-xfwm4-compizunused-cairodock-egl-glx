@@ -1,10 +1,10 @@
 {
     "schema": "arena-master-context.v1",
-    "updated": "2026-08-20",
+    "updated": "2026-08-21",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a01ef1-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "7fccbb61a6c2133bf312ff6aa59b9c07a8fa87b0",
+        "branchFixed": "arena/01a021a4-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "8b95623c08ce44b172a51d2fcdd04f5151368076",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -145,7 +145,7 @@
         },
         "target": {
             "user": "sd",
-            "os": "Void Linux musl",
+            "os": "Void Linux glibc (live boot 2026-08-21; repo name still musl)",
             "kernel": "6.18.35-tkg-bore",
             "hardware": [
                 "Intel CPU",
@@ -158,7 +158,7 @@
                 "bakeOutput": "/mnt/games"
             },
             "disks": {
-                "nvme0n1": "953.9G: p1 ESP, p2 games ext4, p3 Windows ntfs, p4 INSTALL vfat, p5 root ext4, p6 2G ext4 unknown",
+                "nvme0n1": "953.9G: p1 ESP, p2 GAMEDRIVE ext4 /mnt/games, p3 Windows ntfs, p4 INSTALL vfat WINSTALL, p5 VOID ext4 live root, p6 ISOBRIDGE 2G ext4 unmounted",
                 "sda": "1.8T disk serial 00000000458C; p1 NTFS label 50; now also p2 ESP and p3 zroot after staging"
             }
         }
@@ -230,21 +230,31 @@
             "zfs and gptfdisk installed; dkms built zfs/2.4.3 for all installed kernels including 6.18.35-tkg-bore; zpool version zfs-2.4.3-1/zfs-kmod-2.4.3-1; zfs-zed linked",
             "sda1 NTFS label 50 was shrunk to about 1.1TiB and verified ro-mounted; p2 ESP 1024MiB; p3 zroot 765.3GiB",
             "zroot created on sda3 with lz4 xattr=sa posixacl atime=off; root copied to zroot/ROOT/void; rsync exit 24 only vanished browser cache entries",
-            "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; efibootmgr Boot0007 was pruned by firmware on reboot",
-            "Boot attempt 1 landed in void_grub on nvme ext4 root; ZFS root not yet booted",
+            "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; firmware prunes third-party NVRAM entries on the HDD ESP",
             "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
-            "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines; next is read-only ZFS boot probe then EFI fallback if still on nvme ext4"
+            "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines",
+            "boot probe 2026-08-21 FAIL: findmnt / is /dev/nvme0n1p5 ext4; uname 6.18.35-tkg-bore; BootCurrent 0006 void_grub; BootOrder 0006,0000,0001,0003,0007,0002,0004,0005",
+            "ESP inspect 2026-08-21: sda2 vfat ZBMESP PARTUUID 336511ad-2bab-4730-8c05-17cc5853081a has EFI/zbm/vmlinuz.EFI 48533504 Aug 20 10:42 and EFI/BOOT/BOOTX64.EFI 48533504 Aug 20 10:52; NVMe ESP has GRUB Microsoft boot cachyos void_grub, no zbm",
+            "NVRAM create 2026-08-21 PASS: Boot0008 zfsbootmenu HD(2,GPT,336511ad-2bab-4730-8c05-17cc5853081a)/EFI/zbm/vmlinuz.EFI; BootOrder already 0008,0006,0000,0001,0003,0007,0002,0004,0005; live root still nvme ext4",
+            "zroot bootfs zroot/ROOT/void; void canmount=noauto; org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
+            "EFI sha256 match 93954747289fb19b0c67fb94d2678730ba0f57cb5c22ea6c570a85b16cd63bc7 for vmlinuz.EFI and BOOTX64.EFI",
+            "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
+            "BootOrder write 2026-08-21 PASS: 0008,0007,0006,0000,0001,0003,0002,0004,0005; Boot0008 zfsbootmenu and Boot0007 Sabrent USB ahead of void_grub 0006; live root still nvme ext4",
+            "Operator 2026-08-21: booted from grub. bootGate FAIL. Post-grub probe: BootCurrent 0006; BootOrder 0006,0000,0001,0003,0007; Boot0008 zfsbootmenu pruned; Boot0007 Sabrent USB BBS remains last; zroot ONLINE on sda3; sda1 NTFS 50 UUID 26E1196F4676D1DE present",
+            "live userspace is glibc: no ld-musl, ld-linux-x86-64.so.2 present, ntfs-3g links libc.so.6; MASTER os musl does not match this boot",
+            "ntfs-3g ro mount of sda1 PASS fuseblk at /mnt/ntfs50 then umounted; Thunar fail is udisks/ntfs3 not a dead disk or missing ntfs-3g",
+            "BootOrder write 2026-08-21: 0007,0006,0000,0001,0003 confirmed; live root still nvme ext4",
+            "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator for output from the handed-off boot gate before changing disks.",
+        "nextGateAskFirst": "Next chat starts with operator reboot output from etc/zfs-boot-probe.block. NVMe disk merge still HOLD until bootGate PASS. If still grub, BIOS Sabrent USB first.",
         "handoffFixUnconfirmed": [
-            "mount /dev/sda2",
-            "copy EFI/zbm/vmlinuz.EFI to EFI/BOOT/BOOTX64.EFI fallback path",
-            "re-add efibootmgr entry",
-            "reboot; if still grub, set 2TB HDD UEFI OS first in BIOS boot priority"
+            "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
+            "BootOrder now 0007,0006,0000,0001,0003; firmware may still ignore USB BBS",
+            "reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
         ],
         "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
         "afterBootGate": [
-            "identify nvme0n1p6 before merge",
+            "nvme0n1p6 ISOBRIDGE 2G ext4 identified; keep until operator says wipe",
             "keep nvme p1 ESP and p5 old root until ZFS root accepted",
             "operator-ordered irreversible wipe: nvme Windows p3 and INSTALL p4",
             "stage games as GNU tar --acls --xattrs in sda1 NTFS free space",
@@ -253,8 +263,8 @@
         ],
         "knownRisks": [
             "firmware prunes third-party boot entries on second disk ESP unless fallback path or BIOS disk priority works",
-            "nvme0n1p6 purpose unknown",
-            "root filesystem was 100% full earlier; check df -h / before rc=1 diagnosis"
+            "sda is Sabrent USB; firmware may prune PCI-path EFI entries and only honor USB BBS Boot0007 plus BOOTX64.EFI",
+            "root filesystem is 100% full now with 1.1G avail; check df -h / before rc=1 diagnosis"
         ]
     },
     "parked": [
