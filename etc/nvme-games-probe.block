@@ -1,0 +1,13 @@
+id -u
+df -h /
+findmnt /
+findmnt /mnt/games
+ls -ld /mnt/games
+mount -o ro /dev/nvme0n1p2 /mnt/games
+findmnt /mnt/games
+df -h /mnt/games
+du -sh /mnt/games
+ls -la /mnt/games
+umount /mnt/games
+findmnt /mnt/games
+df -h /

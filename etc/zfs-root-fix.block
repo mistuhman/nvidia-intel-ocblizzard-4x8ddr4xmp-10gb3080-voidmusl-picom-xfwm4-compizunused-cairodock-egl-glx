@@ -1,0 +1,28 @@
+id -u
+df -h /
+findmnt /
+ls -ld /etc/zfs /boot/efi
+ls -l /etc/doas.conf
+cp -p /etc/doas.conf /root/doas.conf.pre-zfs-root-fix
+ls -l /root/doas.conf.pre-zfs-root-fix
+xbps-install -y opendoas
+command -v doas
+install -m 600 -o root -g root /dev/null /etc/doas.conf
+printf %s\n permit persist keepenv :wheel | tee /etc/doas.conf
+printf %s\n permit nopass sd as root cmd /usr/bin/nvidia-settings | tee -a /etc/doas.conf
+ls -l /etc/doas.conf
+cat /etc/doas.conf
+doas -C /etc/doas.conf
+zgenhostid
+ls -l /etc/hostid
+zpool set cachefile=/etc/zfs/zpool.cache zroot
+ls -l /etc/zfs/zpool.cache
+zfs set org.zfsbootmenu:commandline="ro quiet loglevel=4 split_lock_detect=off intel_pstate=active" zroot
+zfs get org.zfsbootmenu:commandline zroot
+dracut -f --regenerate-all
+generate-zbm
+sync
+findmnt /boot/efi
+ls -l /boot/efi/EFI/zbm/vmlinuz.EFI
+doas -n /usr/bin/nvidia-settings --version
+df -h /

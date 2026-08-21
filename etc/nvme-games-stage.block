@@ -1,0 +1,19 @@
+id -u
+df -h /
+mount -o ro /dev/nvme0n1p2 /mnt/games
+mount -t ntfs-3g -o rw /dev/sda1 /mnt/ntfs50
+findmnt /mnt/games
+findmnt /mnt/ntfs50
+df -h /mnt/games
+df -h /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+tar --acls --xattrs --numeric-owner --one-file-system -cf /mnt/ntfs50/nvme-games.tar -C /mnt/games .
+sync
+ls -lh /mnt/ntfs50/nvme-games.tar
+tar -tf /mnt/ntfs50/nvme-games.tar | head -n 20
+df -h /mnt/ntfs50
+umount /mnt/games
+umount /mnt/ntfs50
+findmnt /mnt/games
+findmnt /mnt/ntfs50
+df -h /

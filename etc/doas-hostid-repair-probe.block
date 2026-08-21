@@ -1,0 +1,17 @@
+id -u
+df -h /
+findmnt /
+echo permit persist keepenv :wheel | tee /etc/doas.conf
+echo permit nopass sd as root cmd /usr/bin/nvidia-settings | tee -a /etc/doas.conf
+chown root:root /etc/doas.conf
+chmod 600 /etc/doas.conf
+ls -l /etc/doas.conf
+cat /etc/doas.conf
+doas -C /etc/doas.conf
+doas -n /usr/bin/nvidia-settings --version
+hostid
+cat /sys/module/spl/parameters/spl_hostid
+od -An -tx1 /etc/hostid
+zpool status
+zpool get bootfs zroot
+ls -l /etc/hostid /etc/zfs/zpool.cache
