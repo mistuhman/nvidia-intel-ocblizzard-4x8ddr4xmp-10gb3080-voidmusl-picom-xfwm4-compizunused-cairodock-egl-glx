@@ -145,7 +145,7 @@
         },
         "target": {
             "user": "sd",
-            "os": "Void Linux glibc (live boot 2026-08-21; repo name still musl)",
+            "os": "Void Linux glibc (ZFS root zroot/ROOT/void via ZBM 2026-08-21; repo name still musl)",
             "kernel": "6.18.35-tkg-bore",
             "hardware": [
                 "Intel CPU",
@@ -258,18 +258,24 @@
             "AGENT FAILURE 2026-08-21: agent second-waved commands (chroot / /proc /sys mount, then chroot /sbin/runit-init, then a fallback /sbin/init) WITHOUT confirming first wave took; agent assumed systemd /sbin/init instead of inspecting Void runit layout first; dracut's loop printing prevented operator interaction; agent broke pause-and-confirm protocol. Operator quote 2026-08-21: 'unacceptable behavior. assuming i use systemd, uninformed before proceeding, and i cant type while it keeps printing. lets just merge and fix this in a new chat upon physical reboot.'",
             "ROOT CAUSE ANALYSIS 2026-08-21: the auto-import failure is the missing cachefile + hostid step from the rsync stage. When rsync copied live Void rootfs into zroot/ROOT/void, the source system's /etc/zfs/zpool.cache (with original hostid) overwrote the ZFS hostid, and the new zpool never wrote a new cachefile because we never ran zpool set cachefile + dracut --regenerate. Fix in next chat BEFORE returning to ZBM boot: in live Void root after reboot, run zpool set cachefile=/etc/zfs/zpool.cache zroot, zgenhostid, dracut -f --regenerate-all.",
             "REBOOT EVIDENCE 2026-08-21: at end of last chat, operator is still on physical console at dracut debug shell on sda; ZBM was actually booted; live Void root on nvme unmounted this session; live boot order in NVRAM still 0006,0000,0001,0003,0007 from before BIOS change; on power-on the firmware may either repeat the BIOS change (USB first) and re-enter ZBM, OR revert to NVMe ESP GRUB via BootOrder*. Next chat must resolve by power-cycle plus verification at console.",
-            "HARD RULE FOR NEXT CHAT 2026-08-21: never send a second wave of commands without confirming the first wave output arrived. If output is partial or interrupted, STOP and request operator input. Do not assume /sbin/init path - read /sysroot/sbin/ first if pivot is needed. Never solder Void specifics incorrectly (runit not systemd, OpenRC vs runit vs s6 init paths are different)."
+            "HARD RULE FOR NEXT CHAT 2026-08-21: never send a second wave of commands without confirming the first wave output arrived. If output is partial or interrupted, STOP and request operator input. Do not assume /sbin/init path - read /sysroot/sbin/ first if pivot is needed. Never solder Void specifics incorrectly (runit not systemd, OpenRC vs runit vs s6 init paths are different).",
+            "ZBM BOOT VERIFIED 2026-08-21: operator booted into ZFS root from zbm successfully. bootGate PASS: findmnt / = zroot/ROOT/void zfs rw,noatime,xattr,posixacl,casesensitive; uname 6.18.35-tkg-bore; df / 741G 14% 642G avail (old 100% full issue gone).",
+            "ZFS root is STALE vs live root: doas missing (bash: doas: command not found); ZFS copy predates opendoas install on live root; sudo presence unconfirmed. opendoas must be installed into ZFS root.",
+            "probe gaps 2026-08-21: lsblk 'transport' column invalid (use TRAN); sv status without args prints usage (use ls /var/service); doas-gated lines (zpool list/status, zfs list, dmesg) produced no output; USB speed of sda and zpool props UNVERIFIED.",
+            "desktop receipts 2026-08-21: Xorg :0 tty7, compiz --replace ccp, lightdm, zen browser + contentprocs (heavy), easyeffects, dotline electron, Fleasion python launcher; loadavg 3.95/3.56/1.57 at 225s uptime and falling; nothing pathological; boot-to-desktop approx 4 min.",
+            "operator 2026-08-21: 'why is it so slow, when do we move to the cleared zfs nvme' - root-on-NVMe vs data-only question open; slow boot attributed to ZFS root on Sabrent USB HDD sda plus loglevel=7 console flood.",
+            "opendoas fix on ZFS root requires root entry without doas: try sudo -i (sd in wheel), fallback su -; verify with id -u before root block (consolePaste rule)."
         ],
-        "nextGateAskFirst": "Next chat opens POST-REBOOT: physical power cycle; resolve boot to either live Void (via GRUB shortcut) or back-to-ZBM. Fresh state. First probe: uname -r, findmnt /, lsblk, doas efibootmgr, doas zpool status. Then proceed to fix cachefile/hostid/dracut so future ZBM boots auto-import.",
+        "nextGateAskFirst": "2026-08-21 POST-ZBM-BOOT: bootGate PASS. Open decision: (A) move daily-driver root to merged NVMe as one big ZFS pool (HDD zroot becomes backup) vs (B) keep root on HDD, NVMe becomes data pool /mnt/games. Then fix pass on ZFS root: install opendoas (ZFS root is stale, doas missing), zpool set cachefile=/etc/zfs/zpool.cache zroot, zgenhostid, dracut -f --regenerate-all, cmdline loglevel 7 to 4. Then NVMe rebuild: stage games tar into sda1 NTFS free space, wipe p3+p4, merge, create pool, migrate root (zfs send) or data, install ZBM on NVMe ESP, NVRAM entry, reboot; HDD zroot stays as backup until accepted.",
         "handoffFixUnconfirmed": [
             "BIOS Setup Boot Option 1 = USB Flash Drive WORKS (verified by ZBM actually loading)",
             "sda2 ESP /EFI/BOOT/BOOTX64.EFI is sha256-identical to EFI/zbm/vmlinuz.EFI - firmware BBS path works",
-            "zroot auto-import in dracut fails because pool was imported on the live Void during rsync; missing cachefile + new hostid",
-            "fix sequence in next chat from live Void: doas zpool set cachefile=/etc/zfs/zpool.cache zroot; doas zgenhostid; doas dracut -f --regenerate-all; doas shutdown -r now",
-            "if ZBM auto-import still fails after cachefile fix: add 'zfs.zpool_cache_load=0 rd.zfs.boot.zpool=zroot rd.zfs.boot.be=' to kernel cmdline in /etc/zfsbootmenu/config.yaml",
+            "zroot AUTO-IMPORT WORKED 2026-08-21 without the cachefile fix (manual dracut import in last chat stamped pool with the right hostid); still run zpool set cachefile=/etc/zfs/zpool.cache zroot + zgenhostid + dracut -f --regenerate-all for durable auto-import",
+            "if ZBM auto-import fails later: add 'zfs.zpool_cache_load=0 rd.zfs.boot.zpool=zroot rd.zfs.boot.be=' to Kernel.CommandLine in /etc/zfsbootmenu/config.yaml",
+            "ZFS root is STALE vs live root: opendoas missing; re-apply late live-root changes (chroot) before trusting ZFS root as daily driver; verify sudo presence",
             "if pivot /sbin/init still fails after entering ZFS root: read /sysroot/sbin/, /sysroot/lib/runit/, /sysroot/etc/runit/ to confirm Void runit path; correctly invoke runit-init equivalent"
         ],
-        "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
+        "bootGate": "PASS 2026-08-21 operator-pasted receipts: findmnt / = zroot/ROOT/void zfs rw,noatime,xattr,posixacl,casesensitive; uname 6.18.35-tkg-bore; df / 741G 14% 642G avail",
         "afterBootGate": [
             "if operator picks efibootmgr -n Boot0008: run etc/zfs-bootnext-once.block, reboot, paste back full block of lines from doas cat /sys/firmware/efi/efivars/BootNext-* plus findmnt / uname -r ls -l /sys/firmware/efi/efivars/dump* Boot0008",
             "if operator picks BIOS Setup: enter firmware, ensure Boot Option #1 = 'Sabrent ...' (USB), save+exit, let firmware auto-boot once to confirm; then paste etc/zfs-boot-probe.block return without shaving lines",
@@ -281,9 +287,10 @@
             "restore games tar into data"
         ],
         "knownRisks": [
-            "firmware prunes third-party boot entries on second disk ESP unless fallback path or BIOS disk priority works",
-            "sda is Sabrent USB; firmware may prune PCI-path EFI entries and only honor USB BBS Boot0007 plus BOOTX64.EFI",
-            "root filesystem is 100% full now with 1.1G avail; check df -h / before rc=1 diagnosis"
+            "firmware prunes third-party boot entries on second disk ESP unless fallback path or BIOS disk priority works; NVMe PCI-path entries historically persist (Boot0000-0005)",
+            "sda is Sabrent USB HDD: ZFS root on spinning USB disk is the slow-boot cause; USB2 vs USB3 speed UNVERIFIED (lsusb -t pending); ESP for boot also lives on same USB disk",
+            "ZFS root booted but STALE: opendoas missing; confirm sudo/su root entry before root blocks",
+            "root filesystem on ZFS now 741G 14% used 642G avail; df -h / before rc=1 diagnosis"
         ]
     },
     "parked": [

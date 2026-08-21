@@ -1,0 +1,9 @@
+id -u
+uname -r
+findmnt /
+df -h /
+lsblk -o NAME,SIZE,FSTYPE,TRAN,ROTA,MOUNTPOINT
+lsusb -t
+command -v sudo
+command -v doas
+ls /var/service
