@@ -1,0 +1,24 @@
+id
+df -h /
+findmnt /
+uname -r
+cat /proc/cmdline
+lsblk -o NAME,SIZE,FSTYPE,LABEL,UUID,PARTLABEL,MOUNTPOINTS
+doas blkid
+doas zpool list
+doas zpool status
+doas zfs list
+doas efibootmgr
+xbps-query ntfs-3g
+xbps-query fuse
+ls -l /usr/bin/ntfs-3g
+ls -l /sbin/mount.ntfs
+ls -l /sbin/mount.ntfs-3g
+ls -l /usr/sbin/mount.ntfs
+ls -l /usr/sbin/mount.ntfs-3g
+cat /proc/filesystems
+ls -l /dev/sda
+ls -l /dev/sda1
+ls -l /dev/sda2
+ls -l /dev/sda3
+df -h /

@@ -240,9 +240,10 @@
             "EFI sha256 match 93954747289fb19b0c67fb94d2678730ba0f57cb5c22ea6c570a85b16cd63bc7 for vmlinuz.EFI and BOOTX64.EFI",
             "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
             "BootOrder write 2026-08-21 PASS: 0008,0007,0006,0000,0001,0003,0002,0004,0005; Boot0008 zfsbootmenu and Boot0007 Sabrent USB ahead of void_grub 0006; live root still nvme ext4",
+            "Operator 2026-08-21: booted from grub. bootGate FAIL after BootOrder 0008,0007,0006. Screenshot: udisks failed to mount sda1 NTFS label 50 at /run/media/sd/50 wrong fs type or missing helper; zroot still listed in Thunar so Sabrent is not dead",
             "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator to reboot, then paste etc/zfs-boot-probe.block. Do not change disks.",
+        "nextGateAskFirst": "Ask operator for etc/zfs-postgrub-probe.block output before BIOS or NTFS writes. Do not change disks.",
         "handoffFixUnconfirmed": [
             "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
             "BootOrder 0008,0007,0006,0000,0001,0003,0002,0004,0005 confirmed before reboot",
