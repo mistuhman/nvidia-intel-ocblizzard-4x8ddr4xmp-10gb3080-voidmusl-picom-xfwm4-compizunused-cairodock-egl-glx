@@ -240,14 +240,15 @@
             "EFI sha256 match 93954747289fb19b0c67fb94d2678730ba0f57cb5c22ea6c570a85b16cd63bc7 for vmlinuz.EFI and BOOTX64.EFI",
             "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
             "BootOrder write 2026-08-21 PASS: 0008,0007,0006,0000,0001,0003,0002,0004,0005; Boot0008 zfsbootmenu and Boot0007 Sabrent USB ahead of void_grub 0006; live root still nvme ext4",
-            "Operator 2026-08-21: booted from grub. bootGate FAIL after BootOrder 0008,0007,0006. Screenshot: udisks failed to mount sda1 NTFS label 50 at /run/media/sd/50 wrong fs type or missing helper; zroot still listed in Thunar so Sabrent is not dead",
+            "Operator 2026-08-21: booted from grub. bootGate FAIL. Post-grub probe: BootCurrent 0006; BootOrder 0006,0000,0001,0003,0007; Boot0008 zfsbootmenu pruned; Boot0007 Sabrent USB BBS remains last; zroot ONLINE on sda3; sda1 NTFS 50 UUID 26E1196F4676D1DE present",
+            "ntfs-3g-2022.10.3_1 and fuse-2.9.9_1 installed with mount.ntfs helpers; filesystems include ntfs and ntfs3; udisks fail is not a missing package; xbps metadata lists glibc run_depends for ntfs-3g unverified until ldd",
             "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator for etc/zfs-postgrub-probe.block output before BIOS or NTFS writes. Do not change disks.",
+        "nextGateAskFirst": "Ask operator for etc/zfs-usb-next.block output before reboot or BIOS.",
         "handoffFixUnconfirmed": [
             "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
-            "BootOrder 0008,0007,0006,0000,0001,0003,0002,0004,0005 confirmed before reboot",
-            "reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
+            "firmware pruned Boot0008 and reset BootOrder to 0006,0000,0001,0003,0007; Boot0007 Sabrent USB BBS survived last",
+            "put Boot0007 first in NVRAM then reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
         ],
         "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
         "afterBootGate": [
