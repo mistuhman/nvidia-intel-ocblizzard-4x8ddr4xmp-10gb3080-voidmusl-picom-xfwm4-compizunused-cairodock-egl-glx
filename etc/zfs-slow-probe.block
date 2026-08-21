@@ -1,0 +1,14 @@
+id -u
+uname -r
+findmnt /
+df -h /
+cat /proc/uptime
+cat /proc/loadavg
+lsblk -o name,size,fstype,transport,mountpoint
+doas zpool list
+doas zpool status
+doas zfs list -o name,used,avail,mountpoint
+sv status
+doas dmesg | grep -i usb | tail -n 25
+doas dmesg | tail -n 40
+ps aux --sort=-%cpu | head -n 12
