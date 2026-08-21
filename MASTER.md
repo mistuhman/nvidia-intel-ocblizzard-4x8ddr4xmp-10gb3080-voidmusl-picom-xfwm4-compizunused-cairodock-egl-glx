@@ -221,7 +221,8 @@
             "i have a spare disk, and i want to delete my windows partition. i also need to merge my nvme partitions",
             "one big zfs nvme, this is what i told you explicitly. only listen to me",
             "FULLY WIPE THAT SHIT",
-            "tar archive, and we could just boot off of the 2tb hdd"
+            "tar archive, and we could just boot off of the 2tb hdd",
+            "if we need that stuff removed for doas > sudo, then sure. though, if we need it for transferring to zfs, then we keep it until thats finished. lets verify everything, then merge, and get to working on zfs"
         ],
         "currentState": [
             "Operator workflow clarified (2026-08-20): agents must listen literally, examine thoroughly, orchestrate large pre-verified command blocks, and use operator-pasted target output for main-model problem solving.",
@@ -231,7 +232,8 @@
             "zroot created on sda3 with lz4 xattr=sa posixacl atime=off; root copied to zroot/ROOT/void; rsync exit 24 only vanished browser cache entries",
             "zfsbootmenu 3.1.0 installed in copied root; generate-zbm built vmlinuz.EFI to sda2; efibootmgr Boot0007 was pruned by firmware on reboot",
             "Boot attempt 1 landed in void_grub on nvme ext4 root; ZFS root not yet booted",
-            "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore"
+            "props set: org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
+            "doas daily-driver PASS; sudo package KEPT until ZFS root accepted (operator 2026-08-21): base-system-0.114_2 and testdisk-7.2_1 reverse-depend sudo; doas persist uid=0; nvidia-settings 595.84 nopass; conf 644 two lines; next is read-only ZFS boot probe then EFI fallback if still on nvme ext4"
         ],
         "nextGateAskFirst": "Ask operator for output from the handed-off boot gate before changing disks.",
         "handoffFixUnconfirmed": [

@@ -1,0 +1,17 @@
+id
+df -h /
+sudo ls -l /etc/doas.conf
+sudo cat /etc/doas.conf
+sudo ls -l /root/doas.conf.20260820.bak
+sudo cat /root/doas.conf.20260820.bak
+echo permit persist keepenv :wheel
+echo permit nopass sd as root cmd /usr/bin/nvidia-settings
+echo permit persist keepenv :wheel | sudo tee /etc/doas.conf
+echo permit nopass sd as root cmd /usr/bin/nvidia-settings | sudo tee -a /etc/doas.conf
+sudo chmod 600 /etc/doas.conf
+sudo chown root:root /etc/doas.conf
+ls -l /etc/doas.conf
+sudo cat /etc/doas.conf
+doas -C /etc/doas.conf
+doas -n id
+doas -n /usr/bin/nvidia-settings --version

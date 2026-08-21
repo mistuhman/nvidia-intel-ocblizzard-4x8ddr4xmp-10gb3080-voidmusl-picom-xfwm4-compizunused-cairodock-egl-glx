@@ -1,0 +1,10 @@
+id
+df -h /
+findmnt /
+uname -r
+lsblk
+doas zpool list
+doas zpool status
+doas zfs list
+doas efibootmgr
+ls -l /boot
