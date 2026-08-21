@@ -239,12 +239,13 @@
             "zroot bootfs zroot/ROOT/void; void canmount=noauto; org.zfsbootmenu:commandline ro quiet loglevel=7 split_lock_detect=off intel_pstate=active; org.zfsbootmenu:kernel 6.18.35-tkg-bore",
             "EFI sha256 match 93954747289fb19b0c67fb94d2678730ba0f57cb5c22ea6c570a85b16cd63bc7 for vmlinuz.EFI and BOOTX64.EFI",
             "nvme0n1p6 identified: 2G ext4 PARTLABEL ISOBRIDGE UUID dbe98b77-6aa3-4742-8465-28e447475835 unmounted; p2 GAMEDRIVE /mnt/games; p3 Windows ntfs; p4 INSTALL vfat WINSTALL; p5 VOID live root 100 percent 1.1G avail",
+            "BootOrder write 2026-08-21 PASS: 0008,0007,0006,0000,0001,0003,0002,0004,0005; Boot0008 zfsbootmenu and Boot0007 Sabrent USB ahead of void_grub 0006; live root still nvme ext4",
             "NVMe merge HOLD until bootGate PASS; operator-ordered wipe of Windows p3 and INSTALL p4 stays after ZFS root is accepted"
         ],
-        "nextGateAskFirst": "Ask operator for output from etc/zfs-esp-bootorder.block before reboot.",
+        "nextGateAskFirst": "Ask operator to reboot, then paste etc/zfs-boot-probe.block. Do not change disks.",
         "handoffFixUnconfirmed": [
             "sda2 fallback BOOTX64.EFI sha256 matches vmlinuz.EFI; leave it",
-            "Boot0008 zfsbootmenu exists and is first; still put Boot0007 USB Sabrent second ahead of void_grub 0006",
+            "BootOrder 0008,0007,0006,0000,0001,0003,0002,0004,0005 confirmed before reboot",
             "reboot; if still grub, set Sabrent 2TB USB UEFI first in BIOS boot priority"
         ],
         "bootGate": "findmnt / shows zroot/ROOT/void zfs and uname shows 6.18.35-tkg-bore",
