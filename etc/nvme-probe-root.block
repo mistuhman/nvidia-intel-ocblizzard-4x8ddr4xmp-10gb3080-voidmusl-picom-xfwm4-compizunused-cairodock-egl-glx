@@ -1,0 +1,30 @@
+id -u
+df -h /
+findmnt /
+zpool list
+zpool status
+zfs list -o name,used,avail,compressratio -t all
+zpool get all zroot
+cat /etc/fstab
+cat /etc/zfsbootmenu/config.yaml
+ls /var/service
+ls /boot
+command -v doas
+command -v sudo
+command -v dracut
+command -v generate-zbm
+command -v zgenhostid
+command -v efibootmgr
+command -v xbps-install
+command -v sgdisk
+efibootmgr
+ls -l /etc/hostid
+ls -l /etc/zfs
+ls -l /boot/efi
+du -sh /mnt/games
+du -sh /home/sd
+mkdir -p /mnt/ntfs50
+mount -t ntfs-3g -o ro /dev/sda1 /mnt/ntfs50
+df -h /mnt/ntfs50
+ls /mnt/ntfs50
+umount /mnt/ntfs50

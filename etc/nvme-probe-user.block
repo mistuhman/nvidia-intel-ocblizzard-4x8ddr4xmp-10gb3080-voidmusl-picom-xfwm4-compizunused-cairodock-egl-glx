@@ -1,0 +1,10 @@
+id -u
+uname -r
+findmnt /
+df -h /
+df -h /mnt/games
+command -v sudo
+command -v su
+lsusb -t
+lsblk -o NAME,SIZE,FSTYPE,LABEL,PARTLABEL,MOUNTPOINT
+uptime

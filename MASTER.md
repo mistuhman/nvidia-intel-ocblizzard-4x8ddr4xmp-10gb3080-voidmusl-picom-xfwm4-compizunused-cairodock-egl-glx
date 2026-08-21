@@ -222,7 +222,8 @@
             "one big zfs nvme, this is what i told you explicitly. only listen to me",
             "FULLY WIPE THAT SHIT",
             "tar archive, and we could just boot off of the 2tb hdd",
-            "if we need that stuff removed for doas > sudo, then sure. though, if we need it for transferring to zfs, then we keep it until thats finished. lets verify everything, then merge, and get to working on zfs"
+            "if we need that stuff removed for doas > sudo, then sure. though, if we need it for transferring to zfs, then we keep it until thats finished. lets verify everything, then merge, and get to working on zfs",
+            "operator 2026-08-21 chose nvme-root: 'the entirety of void and zfs has to be on the nvme, no traces of void on the 2tb disk after merging'"
         ],
         "currentState": [
             "Operator workflow clarified (2026-08-20): agents must listen literally, examine thoroughly, orchestrate large pre-verified command blocks, and use operator-pasted target output for main-model problem solving.",
@@ -264,9 +265,10 @@
             "probe gaps 2026-08-21: lsblk 'transport' column invalid (use TRAN); sv status without args prints usage (use ls /var/service); doas-gated lines (zpool list/status, zfs list, dmesg) produced no output; USB speed of sda and zpool props UNVERIFIED.",
             "desktop receipts 2026-08-21: Xorg :0 tty7, compiz --replace ccp, lightdm, zen browser + contentprocs (heavy), easyeffects, dotline electron, Fleasion python launcher; loadavg 3.95/3.56/1.57 at 225s uptime and falling; nothing pathological; boot-to-desktop approx 4 min.",
             "operator 2026-08-21: 'why is it so slow, when do we move to the cleared zfs nvme' - root-on-NVMe vs data-only question open; slow boot attributed to ZFS root on Sabrent USB HDD sda plus loglevel=7 console flood.",
-            "opendoas fix on ZFS root requires root entry without doas: try sudo -i (sd in wheel), fallback su -; verify with id -u before root block (consolePaste rule)."
+            "opendoas fix on ZFS root requires root entry without doas: try sudo -i (sd in wheel), fallback su -; verify with id -u before root block (consolePaste rule).",
+            "operator direction 2026-08-21 (verbatim): 'the entirety of void and zfs has to be on the nvme, no traces of void on the 2tb disk after merging'. NVMe = 512M ESP + one big ZFS pool (name nvme); root + data on NVMe. HDD zroot is TEMPORARY bootable backup only; after NVMe boot accepted: destroy zroot, delete sda2 ESP + sda3 zroot partition. sda1 NTFS 50 stays unless operator says otherwise. /mnt/games ext4 content staged as tar in sda1 free space, restored into nvme pool data dataset."
         ],
-        "nextGateAskFirst": "2026-08-21 POST-ZBM-BOOT: bootGate PASS. Open decision: (A) move daily-driver root to merged NVMe as one big ZFS pool (HDD zroot becomes backup) vs (B) keep root on HDD, NVMe becomes data pool /mnt/games. Then fix pass on ZFS root: install opendoas (ZFS root is stale, doas missing), zpool set cachefile=/etc/zfs/zpool.cache zroot, zgenhostid, dracut -f --regenerate-all, cmdline loglevel 7 to 4. Then NVMe rebuild: stage games tar into sda1 NTFS free space, wipe p3+p4, merge, create pool, migrate root (zfs send) or data, install ZBM on NVMe ESP, NVRAM entry, reboot; HDD zroot stays as backup until accepted.",
+        "nextGateAskFirst": "2026-08-21 NVMe migration campaign (operator direction: ALL of Void+ZFS on NVMe, NO void traces on 2TB after merge). Sequence: (1) probe current ZFS root facts incl sda1 NTFS free space + /mnt/games size + fstab + zpool props; (2) root fix pass on HDD root: install opendoas, zgenhostid, zpool set cachefile, dracut regen, cmdline loglevel 7 to 4; (3) stage games tar into sda1 free space (Gate: tar exit 0 + size match); (4) IRREVERSIBLE (operator-gated, receipts required): sgdisk zap-all nvme0n1, recreate 512M ESP + one big ZFS partition, pool nvme, recv HDD root snapshot, data datasets, restore games, generate-zbm to NVMe ESP + BOOTX64.EFI fallback + NVRAM entry; (5) reboot into NVMe root (bootGate2: findmnt / = nvme/ROOT/void on nvme0n1); (6) after acceptance: zpool destroy HDD zroot, sgdisk delete sda2+sda3 (sda1 NTFS 50 STAYS), verify no void traces on sda.",
         "handoffFixUnconfirmed": [
             "BIOS Setup Boot Option 1 = USB Flash Drive WORKS (verified by ZBM actually loading)",
             "sda2 ESP /EFI/BOOT/BOOTX64.EFI is sha256-identical to EFI/zbm/vmlinuz.EFI - firmware BBS path works",
