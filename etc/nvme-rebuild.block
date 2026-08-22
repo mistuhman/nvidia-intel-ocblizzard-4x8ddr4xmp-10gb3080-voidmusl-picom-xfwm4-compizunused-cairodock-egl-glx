@@ -1,0 +1,32 @@
+id -u
+# Phase 2 AUTHORIZED 2026-08-21: nvme-preflight2 receipts pasted back and verified (nvme-games.tar 555G present on sda1; /proc/cmdline captured; org.zfsbootmenu props LOCAL on zroot/ROOT/void so they replicate via send -R).
+# Wipes nvme0n1 ONLY. Nothing on the 2TB disk is touched. System keeps running and booting from zroot until Phase 3 completes.
+# The zfs send line is SILENT for roughly 45-75 minutes over USB2. Do not type or paste anything until the prompt returns after the final df -h /.
+lsblk -o NAME,SIZE,FSTYPE,LABEL,PARTLABEL,MOUNTPOINT
+zpool status
+findmnt /
+df -h /
+sgdisk --zap-all /dev/nvme0n1
+sgdisk -n 1:0:+512M -t 1:ef00 -c 1:ESP /dev/nvme0n1
+sgdisk -n 2:0:0 -t 2:bf01 -c 2:nvme /dev/nvme0n1
+mkfs.vfat -F32 /dev/nvme0n1p1
+zpool create -f -o ashift=12 -O compression=lz4 -O xattr=sa -O acltype=posixacl -O atime=off nvme /dev/nvme0n1p2
+zfs create nvme/ROOT
+zpool set cachefile=/etc/zfs/zpool.cache nvme
+ls -l /etc/zfs/zpool.cache
+zfs snapshot -r zroot/ROOT/void@nvme-migrate
+zfs send -R zroot/ROOT/void@nvme-migrate | zfs recv -u nvme/ROOT/void
+zfs set mountpoint=none nvme
+zfs set canmount=noauto nvme/ROOT
+zfs set mountpoint=/ nvme/ROOT/void
+zfs set canmount=noauto nvme/ROOT/void
+zfs set org.zfsbootmenu:kernel=6.18.35-tkg-bore nvme/ROOT/void
+zpool set bootfs=nvme/ROOT/void nvme
+zpool status
+zfs list -o name,mountpoint,canmount,compression
+zfs get org.zfsbootmenu:commandline,org.zfsbootmenu:kernel nvme/ROOT/void
+zpool get cachefile,bootfs nvme
+blkid /dev/nvme0n1p1
+ls -l /etc/hostid /etc/zfs/zpool.cache
+df -h /
+# Phase 3 (separate block, delivered after this output is pasted back): mount nvme/ROOT/void, copy current /etc/zfs/zpool.cache into it, fstab ESP -> new nvme0n1p1 UUID from the blkid above, chroot dracut --regenerate-all --force, generate-zbm to the new ESP, efibootmgr + EFI/BOOT fallback, reboot, bootGate2 = findmnt / shows nvme/ROOT/void.

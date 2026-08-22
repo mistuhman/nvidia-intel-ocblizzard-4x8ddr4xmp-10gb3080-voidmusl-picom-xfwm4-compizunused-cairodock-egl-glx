@@ -1,0 +1,20 @@
+id -u
+findmnt /
+cat /proc/cmdline
+lsusb -t
+zfs get org.zfsbootmenu:commandline,org.zfsbootmenu:kernel zroot
+zfs get org.zfsbootmenu:commandline,org.zfsbootmenu:kernel zroot/ROOT
+zfs get org.zfsbootmenu:commandline,org.zfsbootmenu:kernel zroot/ROOT/void
+zpool get cachefile zroot
+blkid /dev/nvme0n1p1
+blkid /dev/sda2
+ls -l /boot/efi/EFI/zbm
+ls -l /boot/efi/EFI/BOOT
+umount /mnt/ntfs50
+mkdir -p /mnt/ntfs50
+mount -t ntfs-3g -o ro /dev/sda1 /mnt/ntfs50
+df -h /mnt/ntfs50
+ls -lh /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+umount /mnt/ntfs50
+df -h /

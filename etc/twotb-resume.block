@@ -1,0 +1,20 @@
+id -u
+# Resume the 2TB restore after the USB3 move. GATE: the Sabrent must appear under the 20000M bus in lsusb -t (5000M or better), NOT under Bus 001 at 480M.
+# If it still shows 480M press Ctrl-C IMMEDIATELY - the abort is safe - then try another port or the enclosure original USB3 cable and repaste this block.
+# The re-extract safely overwrites the interrupted partial restore and converges to the full archive contents.
+lsusb -t
+findmnt /
+zpool status
+df -h /mnt/games
+mkdir -p /mnt/ntfs50
+mount -t ntfs-3g -o ro /dev/sda1 /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+tar -xf /mnt/ntfs50/nvme-games.tar -C /mnt/games
+sync
+df -h /mnt/games
+ls /mnt/games
+umount /mnt/ntfs50
+zpool status
+zfs list -o name,used,avail,mountpoint
+df -h /
+echo END-OF-RESTORE

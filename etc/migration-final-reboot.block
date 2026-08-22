@@ -1,0 +1,5 @@
+id -u
+# FINAL migration reboot: restore complete, machine now single-boot NVMe by design (old Sabrent ZBM partition became tank).
+# The firmware's first BootOrder entry (0007) points at a partition that no longer exists - it will fall through to 0002 NVMe ZBM automatically. Hands off, let it boot.
+sync
+runit-init 6

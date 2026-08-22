@@ -1,0 +1,8 @@
+id -u
+# Boot wave: restore Sabrent-first BootOrder so a failed NVMe boot automatically falls back to the zroot ZBM on the next power cycle.
+# BootNext 0002 makes THIS reboot the one shot at the NVMe ZBM. If it fails, power cycle once and you land back in zroot.
+# After the machine comes back up, open a FRESH root shell for the probe block (etc/nvme-bootgate2-probe.block).
+efibootmgr -o 0007,0002,0006,0000,0001,0003
+efibootmgr -n 0002
+sync
+reboot

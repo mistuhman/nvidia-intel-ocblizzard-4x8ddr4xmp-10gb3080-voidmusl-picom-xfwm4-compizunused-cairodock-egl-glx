@@ -1,0 +1,21 @@
+id -u
+# Recovery after the FUSE wedge: mount the NTFS with the KERNEL ntfs3 driver (no FUSE daemon in the data path). Run this only AFTER the power cycle, from a fresh root shell on the booted nvme system.
+# Gates before the long run: Sabrent still 5000M uas, ntfs3 ro mount succeeds, 1G dd sustains speed. If the ntfs3 mount errors, paste the output - do not substitute ntfs-3g without asking.
+lsusb -t
+lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINT
+findmnt /
+zpool status
+mkdir -p /mnt/ntfs50
+mount -t ntfs3 -o ro /dev/disk/by-label/50 /mnt/ntfs50
+df -h /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+dd if=/mnt/ntfs50/nvme-games.tar of=/dev/null bs=1M count=1024
+tar -xf /mnt/ntfs50/nvme-games.tar -C /mnt/games
+sync
+df -h /mnt/games
+ls /mnt/games
+umount /mnt/ntfs50
+zpool status
+zfs list -o name,used,avail,mountpoint
+df -h /
+echo END-OF-RESTORE

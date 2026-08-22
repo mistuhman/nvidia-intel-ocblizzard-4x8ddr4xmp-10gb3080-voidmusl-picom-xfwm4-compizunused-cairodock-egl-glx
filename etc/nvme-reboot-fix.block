@@ -1,0 +1,10 @@
+id -u
+# reboot executed but the machine stayed up. Diagnose the reboot provider, then trigger runit stage 3 directly.
+# BootNext 0002 is still armed and BootOrder is Sabrent-first - the next real reboot is still the safe one-shot NVMe attempt.
+# After the machine comes back, run etc/nvme-bootgate2-probe.block in a fresh root shell and paste the output.
+cat /proc/1/comm
+command -v runit-init
+command -v reboot
+ls -l /usr/bin/reboot
+sync
+runit-init 6

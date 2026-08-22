@@ -1,0 +1,11 @@
+id -u
+# Migration final check: run in a FRESH root shell after the reboot. PASS = findmnt / shows nvme/ROOT/void AND df -h /mnt/games shows tank/games mounted at boot with the library present.
+# If tank/games is NOT mounted (df shows nothing for it and ls is empty), paste the output - the fix is a one-line fstab entry, do not improvise.
+findmnt /
+df -h /
+df -h /mnt/games
+zpool status
+zfs list -o name,mountpoint,canmount
+ls /mnt/games
+efibootmgr
+echo END-OF-MIGRATION-CHECK

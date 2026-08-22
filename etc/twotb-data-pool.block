@@ -1,0 +1,29 @@
+id -u
+# GATED on the hands-off NVMe boot verification (etc/nvme-nvram-fix.block reboot must auto-boot nvme/ROOT/void with no key presses).
+# Destroys zroot and reuses the freed sda2+sda3 space as one ZFS data pool. sda1 NTFS 50 is NEVER touched - it holds the only games backup.
+# The tar extract line is SILENT for hours on USB2 (roughly 4-6 hours for 555G). Moving the Sabrent to a USB3 port before this block cuts it to under an hour.
+# If you abort after the destroy but before the tar, the rollback forward path is simply rerunning this block from the zpool create line.
+findmnt /
+df -h /
+zpool status
+zpool destroy zroot
+sgdisk -d 2 /dev/sda
+sgdisk -d 3 /dev/sda
+sgdisk -n 2:0:0 -t 2:bf01 -c 2:storage /dev/sda
+zpool create -f -o ashift=12 -O compression=lz4 -O xattr=sa -O acltype=posixacl -O atime=off tank /dev/sda2
+zfs create tank/games
+zfs set mountpoint=/mnt/games tank/games
+zpool set cachefile=/etc/zfs/zpool.cache tank
+mkdir -p /mnt/ntfs50
+mount -t ntfs-3g -o ro /dev/sda1 /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+zfs mount tank/games
+tar -xf /mnt/ntfs50/nvme-games.tar -C /mnt/games
+sync
+df -h /mnt/games
+ls /mnt/games
+umount /mnt/ntfs50
+zpool status
+zfs list -o name,used,avail,mountpoint
+df -h /
+# After this output is pasted back: one reboot, then verify findmnt / is still nvme/ROOT/void and df -h /mnt/games shows tank/games still mounted (boot persistence check).
