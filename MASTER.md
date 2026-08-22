@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "WOUND 2026-08-22 live=xfwm4, persist ARMED. Wave-3: Client0=/home/sd/.local/bin/compiz-session, verify SAFE, SaveOnExit false, SessionName Default, no Default session file. xfce4-session 1527 since 06:43; xfwm4 4183 PPID 1 since 07:31 --sm-client-disable --replace (NOT xfce-wm-recover, which starts xfwm4 --replace only and would disarm persist). clean-room log 0 bytes rc0 at 07:31. Next: wave-4 live relight.",
+        "compiz": "WOUND 2026-08-22. Persist ARMED, profile SAFE. Wave-4: setsid Compiz --debug --replace wrote 0-byte log, no compiz pid, xfwm4 4183 still WM. Self-heal started second xfwm4; operator Ctrl-C; BadWindow; operator: force ending it brought me to a no compositor two desktop screen. Next: restore at most one xfwm4, no Compiz replace.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -244,7 +244,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-4 gate: operator pastes FULL output of etc/compiz-wound-wave4.block (user shell) plus one verdict word COMPIZ_LOOKS_RIGHT or COMPIZ_LOOKS_WRONG or XFWM4_RESTORED. Rollback: xfwm4 --sm-client-disable --replace. Games stay parked.",
+        "nextGateAskFirst": "Wave-5 gate: operator pastes FULL output of etc/compiz-wound-wave5.block plus DESKTOP_OK or DESKTOP_STILL_BROKEN. Restores at most one xfwm4. Does not start Compiz. Games stay parked.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
@@ -252,10 +252,10 @@
             "BO3 Steam registration broken (no final appmanifest_311210.acf) - the t7x path needs a clean Steam-side BO3 state first; approach decided after probe2 dir receipts",
             "CPU x86-64-v3 fitness unconfirmed until lscpu receipt (MASTER says Intel DDR4 so likely fine) - gates which proton-cachyos build survives the declutter",
             "wine 11.15 multilib claim verified in template (single wine package replaces wine-32bit) but unverified on target until the games-prereq-root receipts and a 32-bit exe run",
-            "Compiz live start still unconfirmed: persist and profile are good; wave-4 relight is the first attributed --replace this chat",
-            "Whether login at 06:43 actually ran Compiz until the 07:31 clean-room is unconfirmed (no Compiz lines in .xsession-errors)",
-            "Emerald not started by compiz-session; decorations after relight may need a separate emerald --replace",
-            "setsid -f availability on target unconfirmed until wave-4"
+            "Compiz --replace via setsid produced 0-byte log and never took WM; cause unconfirmed (crash before stdio, exec never happened, or NVIDIA abort). Next start must be foreground on a TTY with visible rc",
+            "Whether login at 06:43 actually ran Compiz until the 07:31 clean-room is unconfirmed",
+            "Emerald not started by compiz-session",
+            "Operator desktop after wave-4 Ctrl-C may have no WM; wave-5 restores at most one xfwm4"
         ],
         "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. games-probe.block RECEIVED 2026-08-22; wave-2 gate = games-probe2 + games-prereq-root receipts before any wave-3 action block.",
         "afterBootGate": [

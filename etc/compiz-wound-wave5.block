@@ -1,0 +1,43 @@
+id -u
+# compiz-wound-wave5.block - USER shell (sd). Restore at most ONE xfwm4. No Compiz.
+# Wave-4: setsid Compiz left a 0-byte log and never replaced xfwm4 4183. The
+# self-heal then started a second xfwm4; Ctrl-C during replace left no compositor.
+# This wave only puts one xfwm4 back if none is running, then inspects why Compiz
+# produced no output. Next Compiz start will be foreground in the same terminal.
+# Rollback is not needed: we will not start Compiz.
+# Gate: paste FULL output plus DESKTOP_OK or DESKTOP_STILL_BROKEN.
+echo SECTION_A_NOW
+df -h /
+date
+echo DISPLAY=$DISPLAY
+echo XAUTHORITY=$XAUTHORITY
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+wmctrl -m
+echo SECTION_B_ONE_XFWM4
+if pgrep -x xfwm4
+then
+echo XFWM4_ALREADY_RUNNING
+else
+echo STARTING_ONE_XFWM4
+setsid -f xfwm4 --sm-client-disable --replace
+sleep 2
+fi
+pgrep -a -x xfwm4
+wmctrl -m
+echo SECTION_C_WHY_SILENT
+file /usr/bin/compiz
+ldd /usr/bin/compiz
+ls -l /tmp/compiz-relight.log /tmp/compiz-clean-room.log /tmp/compiz-clean-room.rc
+wc -c /tmp/compiz-relight.log /tmp/compiz-clean-room.log /tmp/compiz-clean-room.rc
+/usr/bin/compiz --debug --version
+echo COMPIZ_VERSION_RC_$?
+echo SECTION_D_XORG
+ls -l /var/log/Xorg.0.log /home/sd/.local/share/xorg/Xorg.0.log
+tail -n 80 /var/log/Xorg.0.log
+echo ----user-xorg----
+tail -n 80 /home/sd/.local/share/xorg/Xorg.0.log
+echo SECTION_E_DMESG
+dmesg -T | tail -n 40
+echo COMPIZ_WOUND_WAVE5_END
