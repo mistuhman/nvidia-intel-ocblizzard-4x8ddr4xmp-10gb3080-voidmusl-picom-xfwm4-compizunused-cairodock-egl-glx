@@ -3,8 +3,8 @@
     "updated": "2026-08-22",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a0277c-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "5e96c88153636ef6824b63d957c44e214b3c4689",
+        "branchFixed": "arena/01a027e6-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "7a8b9fd7cb26f58098686da46a267a0f90487bce",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -188,7 +188,7 @@
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
         "compiz": "login WM accepted; use ccsm-safe; Detect Outputs and Detect Refresh Rate off; golden profile af457926; post-recovery b94b49e0; __GL_YIELD=USLEEP mattered for smoothness.",
-        "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
+        "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed. 2026-08-22 operator commissioned the Tiger-Gunmetal family: OS X 10.4 Mac4Lin geometry, horizontally brushed black gunmetal top bars, Prussian blue accents replacing every red aspect, blue/dark-grey/white traffic lights; authored scripts/tiger-gunmetal-emerald-theme (Tiger-Gunmetal-Aqua, builds on /usr/share/emerald/themes/Mac4Lin_Aqua) and scripts/tiger-gunmetal-gtk3-theme (Tiger-Gunmetal-3D, layer tiger-3d.css imported after gunmetal-3d.css on top of the accepted Quake-Gunmetal-3D tree), both reusing the sibling gunmetal tools via SourceFileLoader; sandbox-verified 2026-08-22 (18 design pixel checks PASS, deterministic aggregates, CSS braces balanced, url assets resolve, emerald apply/restore wiring on stub HOME); previews committed docs/tiger-gunmetal-previews; target delivery block etc/tiger-theme-install.block (block-lint PASS, paste-proof PASS, git-checkout delivery, no apply); next: operator pastes block output, then visual-judgement gate for apply; rollback paths built into both tools.2026-08-22 operator verdict on Tiger v1+v2: REJECTED (theme did not work out); rolled back to Quake-Gunmetal; new minimal direction: ONLY red accents become Prussian blue, selections keep the black gradient, no white added; scripts/gunmetal-blue-accent scans ~/.themes and ~/.emerald trees (including active ~/.emerald/theme, excluding .pre-* backups) and recolours only red pixels: emerald buttons.close*.png, gtk gunmetal3d/selected-plate.png edge strip, #640c12 css hexes x2 -> #182b54; tree backups + byte-identical restore verified in sandbox on fixtures materialized from the real generator code; delivered as releases/gunmetal-blue-accent-bundle.sh (rollback tiger -> apply blue -> emerald --replace -> status); operator photo attachments still not reaching sandbox (/home/user/uploads absent).",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
         "viewportSwitcher": "in-repo deterministic latest-wins controller is sandbox-proven but target trial waits until desktop performance baseline is fixed.",

@@ -1,0 +1,21 @@
+# tiger-theme-install.block - user-level build of the Tiger-Gunmetal theme pair (2026-08-22)
+# Objective: OS X 10.4 deco in brushed black gunmetal with Prussian blue, dark grey, white.
+# Gate: paste FULL output back. Both builds must print Built: plus aggregates, probe must print PROBE PASS.
+# Nothing is applied by this block: apply/restore stay operator-gated (visual judgement).
+# Rollback: nothing to roll back - this block only installs tools and builds library themes.
+# Emerald escape if a later apply goes wrong: /home/sd/.local/bin/xfce-wm-recover
+df -h /
+rm -rf /tmp/tiger-theme
+git clone -q --depth 1 --branch arena/01a027e6-nvidia-intel-ocblizzard-4x8ddr https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx.git /tmp/tiger-theme
+ls -l /tmp/tiger-theme/scripts/tiger-gunmetal-emerald-theme
+ls -l /tmp/tiger-theme/scripts/tiger-gunmetal-gtk3-theme
+install -m 755 /tmp/tiger-theme/scripts/tiger-gunmetal-emerald-theme /home/sd/.local/bin/
+install -m 755 /tmp/tiger-theme/scripts/tiger-gunmetal-gtk3-theme /home/sd/.local/bin/
+tiger-gunmetal-emerald-theme build
+tiger-gunmetal-gtk3-theme build
+tiger-gunmetal-gtk3-theme probe
+tiger-gunmetal-emerald-theme status
+tiger-gunmetal-gtk3-theme status
+ls -l /home/sd/.emerald/themes/Tiger-Gunmetal-Aqua/theme.screenshot.png
+ls -l /home/sd/.themes/Tiger-Gunmetal-3D/gtk-3.0/tiger3d/preview.png
+rm -rf /tmp/tiger-theme
