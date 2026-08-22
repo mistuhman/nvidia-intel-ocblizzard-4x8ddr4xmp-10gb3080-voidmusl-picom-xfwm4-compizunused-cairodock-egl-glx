@@ -1,0 +1,42 @@
+id -u
+# Phase 3a: make nvme/ROOT/void bootable. Runs entirely on the live zroot system - zroot and the whole 2TB disk are NOT modified. No reboot in this block.
+# Slow step: the chroot dracut line takes roughly 2-5 minutes and prints many lines. generate-zbm takes about a minute.
+# Rollback if aborting mid-block: umount /mnt/nvme-root/boot/efi then umount -R each of dev proc sys under /mnt/nvme-root then zfs unmount nvme/ROOT/void then zfs set mountpoint=/ nvme/ROOT/void
+findmnt /
+df -h /
+zpool status
+zpool set cachefile=/etc/zfs/zpool.cache nvme
+mkdir -p /mnt/nvme-root
+zfs set mountpoint=/mnt/nvme-root nvme/ROOT/void
+zfs mount nvme/ROOT/void
+ls /mnt/nvme-root
+cp /etc/zfs/zpool.cache /mnt/nvme-root/etc/zfs/zpool.cache
+cp /etc/hostid /mnt/nvme-root/etc/hostid
+sed -i s/E1B4-7577/5010-EA01/ /mnt/nvme-root/etc/fstab
+cat /mnt/nvme-root/etc/fstab
+ls -l /etc/zfs/zpool.cache /mnt/nvme-root/etc/zfs/zpool.cache
+mkdir -p /mnt/nvme-root/boot/efi
+mount /dev/nvme0n1p1 /mnt/nvme-root/boot/efi
+mount --rbind /dev /mnt/nvme-root/dev
+mount --rbind /proc /mnt/nvme-root/proc
+mount --rbind /sys /mnt/nvme-root/sys
+chroot /mnt/nvme-root /usr/sbin/dracut --force --kver 6.18.35-tkg-bore
+ls -l /mnt/nvme-root/boot/initramfs-6.18.35-tkg-bore.img
+chroot /mnt/nvme-root /usr/sbin/generate-zbm
+mkdir -p /mnt/nvme-root/boot/efi/EFI/BOOT
+cp /mnt/nvme-root/boot/efi/EFI/zbm/vmlinuz.EFI /mnt/nvme-root/boot/efi/EFI/BOOT/BOOTX64.EFI
+ls -l /mnt/nvme-root/boot/efi/EFI/zbm
+ls -l /mnt/nvme-root/boot/efi/EFI/BOOT
+efibootmgr -c -d /dev/nvme0n1 -p 1 -L zfsbootmenu-nvme -l \\EFI\\zbm\\vmlinuz.EFI
+umount /mnt/nvme-root/boot/efi
+umount -R /mnt/nvme-root/dev
+umount -R /mnt/nvme-root/proc
+umount -R /mnt/nvme-root/sys
+zfs unmount nvme/ROOT/void
+zfs set mountpoint=/ nvme/ROOT/void
+zfs get mountpoint,canmount nvme/ROOT/void
+zpool status
+efibootmgr
+findmnt /
+df -h /
+# Reboot block is delivered separately after this output is pasted back and the new Boot entry number is read.

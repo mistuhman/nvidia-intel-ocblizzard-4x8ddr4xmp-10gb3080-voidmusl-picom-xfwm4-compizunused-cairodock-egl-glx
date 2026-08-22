@@ -1,0 +1,21 @@
+id -u
+# The Sabrent was hot-moved so the kernel renamed the disk: the old /dev/sda1 node vanished and left a dead NTFS mount that lists files but cannot read them.
+# This block clears the dead mount, remounts the NTFS by LABEL (immune to the sda/sdb name lottery), PROVES the tar is readable with a 64MB test read, then resumes the restore.
+# tar may print 'time stamp ... in the future' warnings for cracked-game DLLs - harmless, extraction continues.
+# If the umount line hangs more than a few seconds press Ctrl-C and paste the output back instead of waiting.
+lsusb -t
+lsblk -o NAME,SIZE,FSTYPE,LABEL,MOUNTPOINT
+umount /mnt/ntfs50
+mount -t ntfs-3g -o ro /dev/disk/by-label/50 /mnt/ntfs50
+df -h /mnt/ntfs50
+ls -lh /mnt/ntfs50/nvme-games.tar
+dd if=/mnt/ntfs50/nvme-games.tar of=/dev/null bs=1M count=64
+tar -xf /mnt/ntfs50/nvme-games.tar -C /mnt/games
+sync
+df -h /mnt/games
+ls /mnt/games
+umount /mnt/ntfs50
+zpool status
+zfs list -o name,used,avail,mountpoint
+df -h /
+echo END-OF-RESTORE

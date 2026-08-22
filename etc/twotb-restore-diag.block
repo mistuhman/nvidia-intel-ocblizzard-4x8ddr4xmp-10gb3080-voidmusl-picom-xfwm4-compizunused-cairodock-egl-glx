@@ -1,0 +1,10 @@
+id -u
+# Restore is not progressing (604M used after ~1h vs 4.4G baseline). Diagnose whether tar is dead, stalled, or crawling.
+# READ THE OUTPUT: STAT column D = stuck in kernel IO. wchan shows where. dmesg err/warn lines expose USB resets or uas IO errors.
+ps -o pid,stat,wchan:30,etime,cmd -C tar
+pidof tar
+lsusb -t
+dmesg -l err,warn
+df -h /mnt/games /mnt/ntfs50
+zpool iostat tank 2 3
+echo DIAG-END

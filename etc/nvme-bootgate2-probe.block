@@ -1,0 +1,11 @@
+id -u
+# Post-reboot probe: run in a FRESH root shell after the machine comes back up. bootGate2 PASS = findmnt / shows nvme/ROOT/void.
+# If ZBM shows a boot environment menu, pick nvme/ROOT/void. If the machine booted zroot instead, paste the output anyway.
+findmnt /
+uname -r
+cat /proc/cmdline
+df -h /
+zpool status
+zfs list -o name,mountpoint,canmount
+ls -l /etc/hostid /etc/zfs/zpool.cache
+efibootmgr

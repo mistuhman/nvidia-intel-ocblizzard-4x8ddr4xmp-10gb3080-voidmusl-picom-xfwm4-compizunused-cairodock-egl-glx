@@ -1,0 +1,9 @@
+id -u
+# bootGate2 attempt 1 landed on zroot (fallback worked as designed). Capture the cut receipts, then reboot for a MANUAL ZBM menu pick.
+# AT THE ZBM MENU: use the arrow keys, select nvme/ROOT/void, press Enter. If the menu shows ONLY zroot entries, let it auto-boot zroot and paste that fact.
+# If the machine stays up instead of rebooting, hold the power button 5 seconds, power back on, and pick nvme/ROOT/void in the ZBM menu.
+efibootmgr
+uptime
+df -h /
+sync
+runit-init 6

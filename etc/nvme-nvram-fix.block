@@ -1,0 +1,15 @@
+id -u
+# bootGate2 PASS - running on nvme/ROOT/void. Make the NVMe ZBM the permanent boot default, then one hands-off reboot to PROVE the chain before any 2TB destruction.
+# Watch the first efibootmgr output: Boot0002 zfsbootmenu-nvme must be listed. If it is missing the block still runs safely - worst case you land at a ZBM menu, pick nvme/ROOT/void, and paste the outcome.
+# Clearing zroot bootfs makes every ZBM auto-default to nvme/ROOT/void (only pool left with a bootfs). Reversible with zpool set bootfs=zroot/ROOT/void zroot.
+findmnt /
+df -h /
+df -h /boot/efi
+efibootmgr
+zpool set bootfs= zroot
+zpool get bootfs zroot
+zpool get bootfs nvme
+efibootmgr -o 0002,0007,0006,0000,0001,0003
+efibootmgr
+sync
+runit-init 6
