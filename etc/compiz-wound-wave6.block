@@ -1,0 +1,24 @@
+id -u
+# compiz-wound-wave6.block - USER shell (sd). FOREGROUND Compiz. No second WM.
+# Wave-5 restored xfwm4 20836. Compiz ELF/libs/--version are fine. Detached
+# starts left 0-byte logs and never became WM. This runs Compiz on the TTY.
+# If the prompt NEVER comes back, Compiz is up. Look at the desktop.
+#   Verdict: COMPIZ_LOOKS_RIGHT or COMPIZ_LOOKS_WRONG
+# If the prompt comes back, Compiz died. Paste everything including the RC line.
+# Rollback if the desktop is wrong: open a NEW terminal and run:
+#   xfwm4 --sm-client-disable --replace
+echo SECTION_A
+df -h /
+date
+echo DISPLAY=$DISPLAY
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+wmctrl -m
+echo SECTION_B_FOREGROUND_COMPIZ
+env __GL_YIELD=USLEEP /usr/bin/compiz --debug --replace ccp
+echo COMPIZ_FG_RC_$?
+echo SECTION_C_AFTER_DEATH
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+wmctrl -m
+echo COMPIZ_WOUND_WAVE6_END

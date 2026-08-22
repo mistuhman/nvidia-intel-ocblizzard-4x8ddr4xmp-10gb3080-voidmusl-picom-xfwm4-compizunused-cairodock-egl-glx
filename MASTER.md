@@ -244,7 +244,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-5 gate: operator pastes FULL output of etc/compiz-wound-wave5.block plus DESKTOP_OK or DESKTOP_STILL_BROKEN. Restores at most one xfwm4. Does not start Compiz. Games stay parked.",
+        "nextGateAskFirst": "Wave-6: operator runs etc/compiz-wound-wave6.block. If prompt never returns, Compiz is up — send COMPIZ_LOOKS_RIGHT or COMPIZ_LOOKS_WRONG. If prompt returns, paste full output including COMPIZ_FG_RC. Rollback: xfwm4 --sm-client-disable --replace in a NEW terminal.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
