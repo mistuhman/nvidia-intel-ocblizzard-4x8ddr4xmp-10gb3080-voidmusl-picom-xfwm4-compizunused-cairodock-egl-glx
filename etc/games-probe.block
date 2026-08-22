@@ -1,0 +1,39 @@
+id -u
+# games-probe.block - user-level target probe for the games objective (2026-08-22)
+# Gate: paste full output back; install blocks are authored only after this receipt.
+uname -r
+ls -l /dev/ntsync
+xbps-query -s steam
+xbps-query -s wine
+xbps-query -s winetricks
+xbps-query -s lutris
+xbps-query -s protonplus
+xbps-query -s gamescope
+xbps-query -s gamemode
+xbps-query -s mangohud
+xbps-query -s dxvk
+xbps-query -s vkd3d
+xbps-query -s umu-launcher
+xbps-query -s lib32-vulkan-loader
+xbps-query -s nvidia
+command -v wine
+wine --version
+command -v steam
+command -v lutris
+command -v protonplus
+nvidia-smi
+vulkaninfo --summary
+df -h /
+df -h /mnt/games
+findmnt /mnt/games
+zfs list
+ls /mnt/games
+ls /mnt/games/SteamLibrary
+ls /mnt/games/SteamLibrary/steamapps
+ls /mnt/games/SteamLibrary/steamapps/common
+ls /mnt/games/SteamLibrary/steamapps/appmanifest_\*
+ls /home/sd/.local/share/Steam/compatibilitytools.d
+ls /home/sd/.steam/steam/compatibilitytools.d
+ls /home/sd/.lunarclient
+ls /home/sd/Applications
+find /home/sd -maxdepth 3 -iname \*lunar\*
