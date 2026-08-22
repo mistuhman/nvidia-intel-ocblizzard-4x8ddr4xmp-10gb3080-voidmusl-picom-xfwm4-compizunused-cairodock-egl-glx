@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "CAUSE 2026-08-22: __GL_YIELD=USLEEP makes this NVIDIA 595.84 Compiz exit rc0 without staying WM. Wave-6 used that env and died silent; operator-proven /usr/bin/compiz --debug --replace ccp (no yield) worked. Login launcher still had the yield so reboot flashes Compiz then no WM (wave-9: no compiz, no xfwm4). Next: rewrite launcher without yield, start the proven command.",
+        "compiz": "ACCEPTED live 2026-08-22 operator quote compiz working after wave-10. Cause: __GL_YIELD=USLEEP on NVIDIA 595.84 made compiz --replace exit rc0. Launcher rewritten to exec /usr/bin/compiz --replace ccp; backup ~/.local/bin/compiz-session.bak.noneyield; persist still Client0=compiz-session. Emerald 6454 up. Do not close the start TTY. Next reboot is the login gate.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -247,7 +247,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-9: operator pastes FULL etc/compiz-wound-wave9.block plus COMPIZ_STILL_RIGHT or COMPIZ_DIED. Forensics of post-login WM steal, then setsid recover of the known-good command. Rollback: xfwm4 --sm-client-disable --replace.",
+        "nextGateAskFirst": "Compiz live accepted 2026-08-22 (operator: compiz working). Leave the start terminal open. Optional reboot later to confirm login without __GL_YIELD. Games stay parked until the operator says otherwise.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
@@ -275,7 +275,8 @@
             "firmware self-prunes dead-ESP NVRAM entries and self-enumerates EFI/BOOT fallback; efibootmgr -o order is advisory on this firmware",
             "hard rule from operator 2026-08-21: never send a second wave of target commands until the first wave output has arrived",
             "ZFS lz4 saved about 17pct on the 555G games archive restore",
-            "escaped globs in pasted blocks: backslash-star works for find patterns (find -iname \\*lunar\\*) but defeats ls glob expansion (ls ...appmanifest_\\* returned cannot-access while the plain dir listing held the data) - for ls use a bare unquoted glob like Call\\* or list the parent dir"
+            "escaped globs in pasted blocks: backslash-star works for find patterns (find -iname \\*lunar\\*) but defeats ls glob expansion (ls ...appmanifest_\\* returned cannot-access while the plain dir listing held the data) - for ls use a bare unquoted glob like Call\\* or list the parent dir",
+            "NVIDIA 595.84 + Compiz 0.8.18: __GL_YIELD=USLEEP makes --replace exit silent rc0; proven start is /usr/bin/compiz --replace ccp with no yield"
         ],
         "knownRisks": [
             "Plutonium + DXVK replaces DLLs; Plutonium anti-cheat flags DLL replacement - community reports no bans for stock DXVK, risk remains",
