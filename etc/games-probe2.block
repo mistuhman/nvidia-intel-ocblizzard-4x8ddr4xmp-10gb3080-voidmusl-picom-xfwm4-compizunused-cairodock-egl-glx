@@ -1,0 +1,18 @@
+id -u
+# games-probe2.block - user-level follow-up probe after games-probe receipts (2026-08-22)
+# Read-only. Gate: paste full output back. Wave-3 action blocks (Plutonium prefix, Proton declutter, Lunar fix, CoD4 promod) are authored only after this receipt plus the games-prereq-root receipts.
+lscpu
+flatpak list --app
+flatpak info com.lunarclient.LunarClient
+ls -a /home/sd/.var/app/com.lunarclient.LunarClient
+find /home/sd/.var/app/com.lunarclient.LunarClient -maxdepth 3 -type d
+find /home/sd/.var/app/com.lunarclient.LunarClient -maxdepth 6 -iname \*.log
+ls /mnt/games/SteamLibrary/steamapps/appmanifest_311210.acf
+ls /mnt/games/SteamLibrary/steamapps/common/Call\ of\ Duty\ Black\ Ops\ III
+ls /mnt/games/SteamLibrary/steamapps/common/Call\ of\ Duty\ 4
+ls /mnt/games/Bottles
+ls /mnt/games/steam-compat
+ls /mnt/games/steam-combat
+ls /mnt/games/local_share
+ls /home/sd/Downloads
+df -h /mnt/games
