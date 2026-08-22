@@ -4,7 +4,7 @@ Operator override 2026-08-22: Compiz first. Games stay listed but parked until C
 
 | Goal | Sentence | Done |
 |---|---|---|
-| Compiz daily WM | Compiz must stay up after login, not only after a manual --replace. Reboot 2026-08-22: started then died after a second. | ☐ |
+| Compiz daily WM | Drop __GL_YIELD=USLEEP from login launcher; proven start is /usr/bin/compiz --debug --replace ccp. | ☐ |
 | Call of Duty: World at War | WaW running — Steam + Proton and/or Plutonium T4 client under Wine. PARKED. | ☐ |
 | Call of Duty: Black Ops 1 | BO1 running — Steam + Proton; Plutonium T5 for MP/zombies. | ☐ |
 | Call of Duty: Black Ops 2 | BO2 running via Plutonium (T6) under Wine + DXVK. | ☐ |

@@ -1,0 +1,32 @@
+id -u
+# compiz-wound-wave10.block - USER shell (sd). Fix login launcher, then the
+# EXACT command that worked. No setsid. No __GL_YIELD.
+# Wave-6: env __GL_YIELD=USLEEP /usr/bin/compiz --debug --replace ccp -> silent rc0
+# Operator: /usr/bin/compiz --debug --replace ccp -> COMPIZ WORKING
+# Login launcher was the failing env, so reboot flashes Compiz then no WM.
+# Rollback launcher: cp -a /home/sd/.local/bin/compiz-session.bak.noneyield /home/sd/.local/bin/compiz-session
+# Rollback WM: xfwm4 --sm-client-disable --replace
+# Gate: if the prompt never returns, Compiz is up. Reply COMPIZ_STILL_RIGHT or
+# COMPIZ_LOOKS_WRONG. If the prompt returns, paste everything including RC.
+echo SECTION_A
+df -h /
+date
+ls -l /home/sd/.local/bin/compiz-session
+cat /home/sd/.local/bin/compiz-session
+echo SECTION_B_REWRITE
+cp -a /home/sd/.local/bin/compiz-session /home/sd/.local/bin/compiz-session.bak.noneyield
+ls -l /home/sd/.local/bin/compiz-session.bak.noneyield
+cat > /home/sd/.local/bin/compiz-session << END
+#!/bin/sh
+/home/sd/.local/bin/compiz-profile-repair --floor >>/tmp/compiz-repair.log 2>&1 || true
+exec /usr/bin/compiz --replace ccp
+END
+chmod 0755 /home/sd/.local/bin/compiz-session
+sh -n /home/sd/.local/bin/compiz-session
+ls -l /home/sd/.local/bin/compiz-session
+cat /home/sd/.local/bin/compiz-session
+/home/sd/.local/bin/compiz-persist-arm --check
+echo SECTION_C_WORKING_COMMAND
+/usr/bin/compiz --debug --replace ccp
+echo COMPIZ_FG_RC_$?
+echo COMPIZ_WOUND_WAVE10_END

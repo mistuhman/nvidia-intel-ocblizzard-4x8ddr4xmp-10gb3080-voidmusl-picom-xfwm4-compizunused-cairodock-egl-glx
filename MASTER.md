@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "WOUND-after-reboot 2026-08-22. Operator: something broke, had to reboot; after booting, compiz loaded weirdly and worked for a second; now not working; can run the working command but wants it fixed. Persist is armed so login starts Compiz then something replaces it. Next: wave-9 forensics then setsid recover.",
+        "compiz": "CAUSE 2026-08-22: __GL_YIELD=USLEEP makes this NVIDIA 595.84 Compiz exit rc0 without staying WM. Wave-6 used that env and died silent; operator-proven /usr/bin/compiz --debug --replace ccp (no yield) worked. Login launcher still had the yield so reboot flashes Compiz then no WM (wave-9: no compiz, no xfwm4). Next: rewrite launcher without yield, start the proven command.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -218,6 +218,9 @@
         "operatorQuotes": [
             "read README.md and MASTER.md and get compiz working, it messed up from some unknown error that persisted across reboot, think thoroughly and actually communicate with me. some previous chats have had errors in thinking and its not working out well for me",
             "operator answer 2026-08-22: both screens work under xfwm4",
+            "COMPIZ WORKING",
+            "something broke, had to reboot. after booting, compiz loaded weirdly and worked for a second? also now its not working again but i can open another terminal and run the working command but fixed",
+            "didnt work, apply the prompt i said to you that influenced the other command working",
             "deploy agents to follow and read README.md and MASTER.md in order to add the ToDo.md task of getting waw, bo1, bo2(plutonium), bo3 (boiii or t7x)",
             "aswell as getting launchers for cod4 promod and whatnot working, as a treat for finishing the tasks",
             "also need to fix lunar launcher and proton cachyos as tkg bore is already built with it its just that protonqt has a lot of versions",

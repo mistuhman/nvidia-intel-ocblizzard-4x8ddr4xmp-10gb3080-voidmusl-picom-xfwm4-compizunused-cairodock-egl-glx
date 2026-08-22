@@ -1,0 +1,6 @@
+#!/bin/sh
+# Login launcher. Do not set __GL_YIELD=USLEEP on NVIDIA 595.84 — that makes
+# compiz --replace ccp exit rc0 without staying WM (wave-6 vs operator-proven
+# /usr/bin/compiz --debug --replace ccp).
+/home/sd/.local/bin/compiz-profile-repair --floor >>/tmp/compiz-repair.log 2>&1 || true
+exec /usr/bin/compiz --replace ccp
