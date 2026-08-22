@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "WOUND 2026-08-22 persist ARMED, live xfwm4 20836. Wave-6: foreground /usr/bin/compiz --debug --replace ccp printed nothing, rc0, xfwm4 still WM. Next is wave-7 no --replace plus package/plugin dump. Operator: literally nothing, something is being done wrong.",
+        "compiz": "LIVE 2026-08-22 operator quote COMPIZ WORKING after /usr/bin/compiz --debug --replace ccp. Emerald 23543 started. Debug only: plugin stat misses under ~/.compiz/plugins and /usr/lib64/compiz (normal; plugins load from /usr/lib/compiz). Warn No XI2. Persist still armed from wave-3. Foreground Compiz must be setsid-detached so closing the start terminal does not kill the WM.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",

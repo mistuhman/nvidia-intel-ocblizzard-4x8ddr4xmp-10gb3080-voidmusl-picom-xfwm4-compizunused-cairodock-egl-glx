@@ -1,0 +1,25 @@
+id -u
+# compiz-wound-wave8.block - USER shell (sd). NEW terminal. Detach live Compiz.
+# Operator 2026-08-22: COMPIZ WORKING after foreground --replace. That Compiz is
+# tied to the old terminal. This replaces it with a setsid copy so closing the
+# old terminal does not take the desktop. Persist check only, no xfconf write
+# unless --check says not armed.
+# Rollback: xfwm4 --sm-client-disable --replace
+# Gate: paste FULL output plus COMPIZ_STILL_RIGHT or COMPIZ_DIED.
+echo SECTION_A
+df -h /
+date
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x xfwm4
+wmctrl -m
+echo SECTION_B_DETACH
+setsid -f env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp
+sleep 3
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x xfwm4
+wmctrl -m
+echo SECTION_C_PERSIST
+/home/sd/.local/bin/compiz-persist-arm --check
+echo COMPIZ_WOUND_WAVE8_END

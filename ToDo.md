@@ -4,7 +4,7 @@ Operator override 2026-08-22: Compiz first. Games stay listed but parked until C
 
 | Goal | Sentence | Done |
 |---|---|---|
-| Compiz daily WM | Compiz stays up as XFCE WM after login; cause of the reboot-persistent drop to xfwm4 named from receipts. | ☐ |
+| Compiz daily WM | Live Compiz+emerald accepted 2026-08-22 (operator: COMPIZ WORKING). Detach from the start TTY; persist already armed. | ☐ |
 | Call of Duty: World at War | WaW running — Steam + Proton and/or Plutonium T4 client under Wine. PARKED. | ☐ |
 | Call of Duty: Black Ops 1 | BO1 running — Steam + Proton; Plutonium T5 for MP/zombies. | ☐ |
 | Call of Duty: Black Ops 2 | BO2 running via Plutonium (T6) under Wine + DXVK. | ☐ |
