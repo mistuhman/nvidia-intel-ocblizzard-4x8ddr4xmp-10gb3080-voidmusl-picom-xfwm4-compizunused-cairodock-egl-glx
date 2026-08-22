@@ -1,0 +1,60 @@
+id -u
+# compiz-wound-wave3.block - USER shell (sd). READ-ONLY. Does not start or kill a WM.
+# Wave-2 receipt: WM is xfwm4 --sm-client-disable --replace. That flag pair is the
+# documented escape/rollback, not Compiz SIGSEGV fallback (which execs xfwm4 --replace
+# only, and prints "Launching fallback window manager"). strace was missing so Section H
+# never ran Compiz. This wave answers why reboot still lands on xfwm4.
+# Gate: paste FULL output back, including the word COMPIZ_WOUND_WAVE3_END.
+# Also say in your own words: both screens usable under xfwm4 right now? yes/no.
+echo SECTION_A_LIVE
+df -h /
+date
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+pgrep -a -x picom
+wmctrl -m
+ps -o pid,ppid,lstart,etime,user,args -C xfwm4
+ps -o pid,ppid,lstart,etime,user,args -C xfce4-session
+ps -o pid,ppid,lstart,etime,user,args -C xfce-wm-recover
+ps -o pid,ppid,lstart,etime,user,args -C compiz-session
+echo SECTION_B_PERSIST
+command -v xfconf-query
+xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command
+xfconf-query -c xfce4-session -p /general/SaveOnExit
+xfconf-query -c xfce4-session -p /general/SessionName
+xfconf-query -c xfce4-session -l
+ls -l /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+cat /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+echo SECTION_C_LAUNCHERS
+ls -l /home/sd/.local/bin/compiz-session /home/sd/.local/bin/compiz-revert /home/sd/.local/bin/xfce-wm-recover /home/sd/.local/bin/compiz-persist-arm /home/sd/.local/bin/compiz-profile-verify /home/sd/.local/bin/compiz-profile-repair
+echo ----compiz-session----
+cat /home/sd/.local/bin/compiz-session
+echo ----compiz-revert----
+cat /home/sd/.local/bin/compiz-revert
+echo ----xfce-wm-recover----
+cat /home/sd/.local/bin/xfce-wm-recover
+echo SECTION_D_AUTOSTART
+ls -l /home/sd/.config/autostart
+grep -n -e recover -e revert -e xfwm -e compiz -e Failsafe /home/sd/.config/autostart/*
+ls -l /etc/xdg/autostart
+grep -n -e recover -e revert -e xfwm -e compiz /etc/xdg/autostart/*
+echo SECTION_E_PROFILE
+ls -l /home/sd/.config/compiz/compizconfig/Default.ini /home/sd/.local/share/compiz-guard/Default.ini.golden /home/sd/.config/compiz/compizconfig/config
+cat /home/sd/.config/compiz/compizconfig/config
+awk '/^\[core\]/{f=1;print;next} /^\[/{f=0} f' /home/sd/.config/compiz/compizconfig/Default.ini
+echo ----verify----
+/home/sd/.local/bin/compiz-profile-verify
+echo ----persist-check----
+/home/sd/.local/bin/compiz-persist-arm --check
+echo SECTION_F_SESSION_CACHE
+ls -l /home/sd/.cache/sessions
+find /home/sd/.cache/sessions -maxdepth 2 -type f -ls
+echo ----xfwm4-state----
+cat /home/sd/.cache/sessions/xfwm4-2c43d98dd-4592-4cfe-bcee-16596a6e9053.state
+echo SECTION_G_XSESSION
+grep -n -e compiz -e xfwm -e fallback -e emerald -e recover -e revert -e Compiz -e Xfwm /home/sd/.xsession-errors
+echo SECTION_H_PRIOR_TMP
+ls -l /tmp/compiz-clean-room.log /tmp/compiz-clean-room.rc /tmp/compiz-repair.log /tmp/compiz-strace.txt
+cat /tmp/compiz-clean-room.rc
+echo COMPIZ_WOUND_WAVE3_END

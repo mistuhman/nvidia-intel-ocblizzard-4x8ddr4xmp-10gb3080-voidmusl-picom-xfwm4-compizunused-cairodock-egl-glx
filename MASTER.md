@@ -3,7 +3,7 @@
     "updated": "2026-08-22",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a0277c-nvidia-intel-ocblizzard-4x8ddr",
+        "branchFixed": "arena/01a02884-nvidia-intel-ocblizzard-4x8ddr",
         "baseCommit": "5e96c88153636ef6824b63d957c44e214b3c4689",
         "prLineTarget": 405,
         "docs": [
@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "login WM accepted; use ccsm-safe; Detect Outputs and Detect Refresh Rate off; golden profile af457926; post-recovery b94b49e0; __GL_YIELD=USLEEP mattered for smoothness.",
+        "compiz": "WOUND 2026-08-22: live WM is xfwm4 --sm-client-disable --replace (escape-path flags), not Compiz. Operator 2026-08-22: both screens usable under xfwm4. Binary 0.8.18 --version OK; GLX NVIDIA 595.84 OK; picom masked; profile repair said 7/7 + floor OK. Prior chat claimed persist armed and silent rc0 starts; wave-2 never started Compiz (strace absent). Next: wave-3 read-only persist/launcher dump.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -213,9 +213,11 @@
         "backup every target write to dated /root/*.bak"
     ],
     "activeObjective": {
-        "id": "games-cod-plutonium-launchers",
-        "summary": "Games campaign on the migrated NVMe ZFS root: get WaW, BO1, BO2 (Plutonium), BO3 (boiii or t7x) running; get CoD4 Promod launchers working as the reward; fix Lunar Client (Minecraft) java invoke error; declutter ProtonQT and land the best Proton-CachyOS tuned for the 6.18.35-tkg-bore kernel (fastsync/ntsync feature match), or compile a tuned Proton from source.",
+        "id": "compiz-wound-2026-08-22",
+        "summary": "Restore Compiz as the daily XFCE WM after a reboot-persistent failure. Attribute cause from target receipts before any live --replace. Do not guess a killer. Games campaign is parked until Compiz is back.",
         "operatorQuotes": [
+            "read README.md and MASTER.md and get compiz working, it messed up from some unknown error that persisted across reboot, think thoroughly and actually communicate with me. some previous chats have had errors in thinking and its not working out well for me",
+            "operator answer 2026-08-22: both screens work under xfwm4",
             "deploy agents to follow and read README.md and MASTER.md in order to add the ToDo.md task of getting waw, bo1, bo2(plutonium), bo3 (boiii or t7x)",
             "aswell as getting launchers for cod4 promod and whatnot working, as a treat for finishing the tasks",
             "also need to fix lunar launcher and proton cachyos as tkg bore is already built with it its just that protonqt has a lot of versions",
@@ -232,20 +234,25 @@
             "kernel/game-stack fact: tkg kernels (6.18.35-tkg-bore) carry the ntsync patch - kernel >= 6.14 exposes /dev/ntsync; proton-cachyos gates fastsync/ntsync behind env vars (PROTON_USE_NTSYNC etc); /dev/ntsync presence on target must be confirmed by probe before choosing the tuned Proton build",
             "Lunar Client (Minecraft) java invoke error: candidate causes from research - stale ~/.lunarclient/offline/multiver cache, missing/custom JRE (GraalVM recommended), AppImage support removal reports 2025+, third-party launcher block (LunarAntiAntiAgent.jar for lunar-client-qt); AUR lunar-client notes NVIDIA __GL_THREADED_OPTIMIZATIONS=0 fix; target receipts needed to pick the fix",
             "ProtonQT declutter plan: probe inventories all Proton versions (Steam compatibilitytools.d, steamapps/common, ProtonPlus-managed); prune to one tuned build matching bore kernel features (ntsync/fastsync, DLSS/upscalers, wayland/wow64) or compile proton/wine-tkg from source with bore-tuned config",
+            "OPERATOR OVERRIDE 2026-08-22: Compiz recovery takes the gate. Games wave-2 receipts (games-probe2 + games-prereq-root) are still unpaid and stay parked.",
+            "compiz-wound wave-2 RECEIVED 2026-08-22: xfwm4 pid 4183 --sm-client-disable --replace is WM; no compiz/emerald/picom; wmctrl Name Xfwm4; / 823G free; NVIDIA 595.84 GLX direct yes; compiz --version 0.8.18 rc0; strace absent so live --replace never ran; repair log already 7/7 + floor OK; gamma 1:1:1 DPMS disabled; operator later: both screens work under xfwm4",
+            "compiz-wound source check 2026-08-22 (compiz-reloaded v0.8.18 main.c): startup failures return 1; eventLoop then return 0; SIGTERM/SIGINT set shutDown; SIGSEGV execs xfwm4 --replace after printing Launching fallback window manager. Current xfwm4 flags include --sm-client-disable so this is NOT that fallback.",
             "probe-1 RECEIVED 2026-08-22 (operator paste): kernel 6.18.35-tkg-bore; /dev/ntsync present world-rw (10,262) so the ntsync path is CONFIRMED; installed steam 1.0.0.85, wine 11.14, winetricks 20260125, gamescope 3.16.20, gamemode 1.8.2, MangoHud 0.8.2, nvidia 595.84 full stack incl 32bit libs; NOT installed lutris, protonplus, dxvk, vkd3d, umu-launcher, vulkaninfo; RTX 3080 driver 595.84 CUDA 13.2; / 824G free; tank/games 281G free zfs rw,noatime at /mnt/games",
             "probe-1 game inventory: CoD4 7940 and BO1 42700 fully installed in /mnt/games/SteamLibrary; BO3 311210 has common-dir files but NO final appmanifest (only dozens of appmanifest .acf.NNN.tmp leftovers for 311210/3354750/4000/730/284160 = interrupted Steam manifest writes; clean only with Steam stopped, wave-3); WaW 10090 and BO2 202970 NOT installed; non-Steam MW2 2009 copy at /mnt/games/Call of Duty - Modern Warfare 2; Steam built-in Proton 9.0 Beta + Proton Hotfix present",
             "probe-1 Proton inventory: compatibilitytools.d holds 4 proton-cachyos builds (20260602 x86_64, 20260702 x86_64, 20260702 x86_64_v3, 20260703 x86_64_v3); gh check 2026-08-22: latest CachyOS/proton-cachyos release = cachyos-11.0-20260703-slr published 2026-07-22, so the installed 20260703 x86_64_v3 is ALREADY the newest build - declutter = prune to that one (rm 3 older dirs, user-level, wave-3 after lscpu confirms avx2 for v3)",
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-2 gate: operator pastes outputs of etc/games-probe2.block (user shell) and etc/games-prereq-root.block (root shell entered separately; block starts with id -u). Wave-3 blocks (Plutonium wine prefix + winetricks, proton-cachyos declutter rm, Lunar flatpak fix, CoD4 cod4x+promod, BO3 t7x staging) are authored only after both receipts. Operator-side, no console needed: Steam UI install of WaW 10090 and BO2 202970 into the /mnt/games SteamLibrary can run in parallel.",
+        "nextGateAskFirst": "Wave-3 gate: operator pastes FULL output of etc/compiz-wound-wave3.block (user shell, starts with id -u). READ-ONLY. No Compiz --replace until persist, launcher, and escape-script receipts exist. Games blocks stay parked.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
             "Lunar Client java invoke root cause still unconfirmed, now narrowed to the flatpak variant com.lunarclient.LunarClient - fix picked after probe2 log receipts",
             "BO3 Steam registration broken (no final appmanifest_311210.acf) - the t7x path needs a clean Steam-side BO3 state first; approach decided after probe2 dir receipts",
             "CPU x86-64-v3 fitness unconfirmed until lscpu receipt (MASTER says Intel DDR4 so likely fine) - gates which proton-cachyos build survives the declutter",
-            "wine 11.15 multilib claim verified in template (single wine package replaces wine-32bit) but unverified on target until the games-prereq-root receipts and a 32-bit exe run"
+            "wine 11.15 multilib claim verified in template (single wine package replaces wine-32bit) but unverified on target until the games-prereq-root receipts and a 32-bit exe run",
+            "Compiz silent-rc0 killer unconfirmed: wave-2 never started Compiz; persist Client0_Command unread; ~/.local/bin/compiz-session and xfce-wm-recover unread",
+            "Whether XFCE saved-session (not Failsafe) is what actually starts xfwm4 at login is unconfirmed until wave-3 xml dump"
         ],
         "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. games-probe.block RECEIVED 2026-08-22; wave-2 gate = games-probe2 + games-prereq-root receipts before any wave-3 action block.",
         "afterBootGate": [
@@ -274,6 +281,7 @@
         ]
     },
     "parked": [
+        "games-cod-plutonium-launchers paused 2026-08-22: operator directed Compiz recovery first; last unpaid gate was games-probe2 + games-prereq-root",
         "phase7 leftovers (operator direction only): doas hardening / sudo removal decision (base-system + testdisk reverse-depend sudo), durable machine logging, network control/interception",
         "menu opacity via obs plugin; operator go-ahead only",
         "M18 icon stitching and UI sound after switcher direction",

@@ -1,10 +1,11 @@
 # ToDo
 
-Operator topic 2026-08-22: CoD titles + launchers on the migrated NVMe ZFS root (Void glibc, 6.18.35-tkg-bore, RTX 3080). Durable machine state and agent receipts live in `MASTER.md`; this file is the operator-visible checklist.
+Operator override 2026-08-22: Compiz first. Games stay listed but parked until Compiz is the login WM again.
 
 | Goal | Sentence | Done |
 |---|---|---|
-| Call of Duty: World at War | WaW running — Steam + Proton and/or Plutonium T4 client under Wine. | ☐ |
+| Compiz daily WM | Compiz stays up as XFCE WM after login; cause of the reboot-persistent drop to xfwm4 named from receipts. | ☐ |
+| Call of Duty: World at War | WaW running — Steam + Proton and/or Plutonium T4 client under Wine. PARKED. | ☐ |
 | Call of Duty: Black Ops 1 | BO1 running — Steam + Proton; Plutonium T5 for MP/zombies. | ☐ |
 | Call of Duty: Black Ops 2 | BO2 running via Plutonium (T6) under Wine + DXVK. | ☐ |
 | Call of Duty: Black Ops 3 | BO3 running via community client — t7x (maintained) or boiii. | ☐ |
