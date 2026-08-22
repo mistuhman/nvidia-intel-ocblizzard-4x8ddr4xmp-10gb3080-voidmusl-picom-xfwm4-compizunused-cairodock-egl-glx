@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "LIVE 2026-08-22 operator quote COMPIZ WORKING after /usr/bin/compiz --debug --replace ccp. Emerald 23543 started. Debug only: plugin stat misses under ~/.compiz/plugins and /usr/lib64/compiz (normal; plugins load from /usr/lib/compiz). Warn No XI2. Persist still armed from wave-3. Foreground Compiz must be setsid-detached so closing the start terminal does not kill the WM.",
+        "compiz": "WOUND-after-reboot 2026-08-22. Operator: something broke, had to reboot; after booting, compiz loaded weirdly and worked for a second; now not working; can run the working command but wants it fixed. Persist is armed so login starts Compiz then something replaces it. Next: wave-9 forensics then setsid recover.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -244,7 +244,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-7: operator pastes FULL etc/compiz-wound-wave7.block. NO --replace. Fork: if no-replace is also silent rc0 the binary is not behaving like upstream 0.8.18 addDisplay; if it prints already-has-a-WM then --replace path is the bug. Operator quote: literally nothing, something is being done wrong.",
+        "nextGateAskFirst": "Wave-9: operator pastes FULL etc/compiz-wound-wave9.block plus COMPIZ_STILL_RIGHT or COMPIZ_DIED. Forensics of post-login WM steal, then setsid recover of the known-good command. Rollback: xfwm4 --sm-client-disable --replace.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",

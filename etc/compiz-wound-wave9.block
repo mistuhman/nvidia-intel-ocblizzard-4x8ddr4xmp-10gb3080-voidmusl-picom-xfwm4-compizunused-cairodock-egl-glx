@@ -1,0 +1,44 @@
+id -u
+# compiz-wound-wave9.block - USER shell (sd). Forensics first, then detached recover.
+# Operator after reboot: Compiz loaded weirdly, worked a second, then died.
+# Persist is already armed so login DID start Compiz. Something after login
+# takes the WM. Dump that, then start the known-good command with setsid.
+# Rollback: xfwm4 --sm-client-disable --replace
+# Gate: paste FULL output plus COMPIZ_STILL_RIGHT or COMPIZ_DIED.
+echo SECTION_A_NOW
+df -h /
+date
+echo DISPLAY=$DISPLAY
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+pgrep -a -x picom
+wmctrl -m
+ps -o pid,ppid,lstart,etime,user,args -C xfce4-session
+ps -o pid,ppid,lstart,etime,user,args -C xfwm4
+ps -o pid,ppid,lstart,etime,user,args -C compiz
+ps -o pid,ppid,lstart,etime,user,args -C emerald
+echo SECTION_B_SESSION
+xfconf-query -c xfce4-session -p /sessions/Failsafe/Client0_Command
+xfconf-query -c xfce4-session -p /general/SessionName
+xfconf-query -c xfce4-session -p /general/SaveOnExit
+ls -l /home/sd/.cache/sessions
+find /home/sd/.cache/sessions /home/sd/.config/xfce4 -iname \*session\* -ls
+ls -l /etc/xdg/xfce4/xinitrc /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+echo ----system-session-xml----
+cat /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+echo ----xinitrc-wm----
+grep -n -e xfwm -e compiz -e wm /etc/xdg/xfce4/xinitrc
+echo SECTION_C_LOGIN_LOG
+ls -l /tmp/compiz-repair.log /tmp/compiz-session.log /home/sd/.xsession-errors
+tail -n 40 /tmp/compiz-repair.log
+grep -n -e compiz -e xfwm -e Compiz -e Xfwm -e fallback -e replace /home/sd/.xsession-errors
+echo SECTION_D_RECOVER
+setsid -f env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp
+sleep 3
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x xfwm4
+wmctrl -m
+/home/sd/.local/bin/compiz-persist-arm --check
+echo COMPIZ_WOUND_WAVE9_END
