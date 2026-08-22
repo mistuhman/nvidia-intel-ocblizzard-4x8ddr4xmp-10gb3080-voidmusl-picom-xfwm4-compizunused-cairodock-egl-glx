@@ -19,6 +19,7 @@ import argparse
 import configparser
 import importlib.machinery
 import importlib.util
+import math
 import os
 from pathlib import Path
 import shutil
@@ -52,9 +53,18 @@ base = load_sibling("gunmetal-emerald-theme")
 
 
 def brushed(x: int, y: int, amp: int = 5) -> int:
-    """Horizontal brushed-metal grain: fast along x, slow along y."""
-    value = (x * 2654435761 + (y // 3) * 40503 + (x // 23) * 9176 + 0x17A1) & 0xFFFFFFFF
-    return (value % (amp * 2 + 1)) - amp
+    """Two-scale horizontal brushed grain: fine streaks over coarse bands."""
+    fine = (x * 2654435761 + (y // 4) * 40503 + 0x17A1) & 0xFFFFFFFF
+    coarse = ((x // 31) * 97 + (y // 7) * 7919 + 0x2D17) & 0xFFFF
+    return ((fine % (amp * 2 + 1)) - amp) + ((coarse % 5) - 2)
+
+
+def sweep(x: int, width: int, strength: float = 46.0) -> float:
+    """Soft window reflections travelling across the bar."""
+    t = x / max(1, width - 1)
+    primary = strength * math.exp(-(((t - 0.36) / 0.13) ** 2))
+    secondary = (strength * 0.38) * math.exp(-(((t - 0.82) / 0.10) ** 2))
+    return primary + secondary
 
 
 def blend(shade: int, rgb: tuple[int, int, int], weight: float) -> tuple[int, int, int]:
@@ -76,26 +86,30 @@ def tiger_frame(path: Path) -> None:
         if is_top:
             position = y / max(1, height - 1)
             if active:
+                light = sweep(x, width) * max(0.0, 1.0 - position / 0.42)
                 if y == 0:
-                    rgb, alpha = (96, 96, 96), 246
-                elif y == 1:
-                    rgb, alpha = (64, 64, 64), 240
+                    rgb, alpha = (base.clamp(228 + light * 0.25, 0, 245),) * 3, 246
                 elif y == height - 1:
-                    rgb, alpha = blend(8, PRUSSIAN_RIM, 0.62), 246
+                    rgb, alpha = blend(10, PRUSSIAN_RIM, 0.72), 246
                 elif y == height - 2:
-                    rgb, alpha = (7, 7, 7), 236
+                    rgb, alpha = (22, 22, 22), 236
+                elif position > 0.84:
+                    # Bounce reflection rising out of the black floor.
+                    t = (position - 0.84) / 0.16
+                    value = base.clamp(4 + 16 * t + brushed(x, y, 2))
+                    rgb, alpha = (value,) * 3, 228
                 else:
-                    value = base.clamp(33 - 25 * position + brushed(x, y, 5))
-                    if y % 6 == 0:
-                        value += 2
-                    rgb, alpha = (value, value, value), 228
+                    # Polished chrome rim blending smoothly into blacks.
+                    value = 4 + 234 * (1 - position) ** 2.6
+                    value += light * 0.5 + brushed(x, y, 4 if position < 0.4 else 3)
+                    rgb, alpha = (base.clamp(value, 2, 244),) * 3, 228
             else:
                 if y == 0:
-                    rgb, alpha = (52, 52, 52), 240
+                    rgb, alpha = (58, 58, 58), 240
                 elif y == height - 1:
                     rgb, alpha = (28, 28, 28), 236
                 else:
-                    value = base.clamp(30 - 15 * position + brushed(x, y, 2), 4, 44)
+                    value = base.clamp(44 - 26 * position + brushed(x, y, 2), 4, 46)
                     rgb, alpha = (value, value, value), 224
         elif is_bottom:
             value = base.clamp(5 + source_luma * 0.12, 3, 34)
@@ -111,23 +125,43 @@ def tiger_frame(path: Path) -> None:
 
 
 def recolor_button(path: Path, role: str) -> None:
+    """Sphere-shaded lights: hot specular, sky reflection, bounce, rim light."""
     width, height, pixels = base.read_png(path)
+    cx, cy = (width - 1) / 2, (height - 1) / 2
+    radius = max(1.0, min(width, height) / 2 - 0.5)
     result: list[tuple[int, int, int, int]] = []
-    for r, g, b, a in pixels:
-        light = base.luminance(r, g, b)
+    for index, (r, g, b, a) in enumerate(pixels):
+        x, y = index % width, index // width
+        dx, dy = (x - cx) / radius, (y - cy) / radius
+        distance = dx * dx + dy * dy
+        spec = math.exp(-(pow(dx + 0.34, 2) + pow(dy + 0.42, 2)) * 5.5)
+        sky = max(0.0, -dy - 0.15) * 0.10
+        bounce = max(0.0, dy - 0.50) * 0.12
+        rim_light = 0.14 if distance > 0.86 and (dx - dy) > 0.35 else 0.0
+        light = base.luminance(r, g, b) / 255.0
+        shade = 0.26 + 0.44 * light + spec * 0.85 + sky + bounce + rim_light
+        if distance > 0.78:
+            shade *= 0.62
+        shade = min(1.0, shade)
         if role == "prussian":
-            nr = base.clamp(light * 0.28, 0, 66)
-            ng = base.clamp(12 + light * 0.30, 10, 88)
-            nb = base.clamp(40 + light * 0.50, 36, 172)
+            nr = base.clamp(shade * 74)
+            ng = base.clamp(15 + shade * 88)
+            nb = base.clamp(46 + shade * 132)
         elif role == "white":
-            value = base.clamp(54 + light * 0.78, 50, 248)
+            value = base.clamp(58 + shade * 194)
             nr = ng = nb = value
         elif role == "darkgrey":
-            value = base.clamp(8 + light * 0.55, 6, 152)
+            value = base.clamp(11 + shade * 150)
             nr = ng = nb = value
         else:
-            value = base.clamp(14 + light * 0.52, 12, 164)
+            value = base.clamp(17 + shade * 158)
             nr = ng = nb = value
+        if spec > 0.55 and role == "prussian":
+            # Specular core on blue trends white-blue, not grey.
+            carry = (spec - 0.55) * 2.2
+            nr = base.clamp(nr + carry * 178)
+            ng = base.clamp(ng + carry * 178)
+            nb = base.clamp(nb + carry * 58)
         result.append((nr, ng, nb, a))
     base.write_png(path, width, height, result)
 
@@ -182,73 +216,112 @@ def update_theme_ini(path: Path) -> None:
         parser.write(handle, space_around_delimiters=False)
 
 
-def preview_pixels(width: int = 350, height: int = 102):
+def preview_pixels(width: int = 448, height: int = 144):
+    """Full-bleed deco shot: chrome bar, gloss shelf, content fading to black."""
     pixels = [(0, 0, 0, 0)] * (width * height)
 
     def put(x: int, y: int, rgba):
         if 0 <= x < width and 0 <= y < height:
             pixels[y * width + x] = rgba
 
-    # Window card with soft shadow edge.
-    for y in range(15, 91):
-        for x in range(17, 333):
-            edge = min(x - 17, 332 - x, y - 15, 90 - y)
-            if edge < 0:
+    # Titlebar material: chrome rim blending smoothly into blacks, with sweep.
+    for y in range(31):
+        position = y / 30
+        for x in range(width):
+            light = sweep(x, width) * max(0.0, 1.0 - position / 0.42)
+            if y == 0:
+                v = base.clamp(228 + light * 0.25, 0, 245)
+            elif y == 30:
+                put(x, y, blend(10, PRUSSIAN_RIM, 0.72) + (246,))
                 continue
-            if edge < 2:
-                put(x, y, (54, 54, 54, 235))
-            elif y < 46:
-                if y == 17:
-                    put(x, y, (96, 96, 96, 246))
-                elif y == 18:
-                    put(x, y, (64, 64, 64, 240))
-                elif y == 44:
-                    put(x, y, (7, 7, 7, 236))
-                elif y == 45:
-                    put(x, y, blend(8, PRUSSIAN_RIM, 0.62) + (246,))
-                else:
-                    t = (y - 19) / 24
-                    value = base.clamp(33 - 25 * t + brushed(x, y, 5))
-                    put(x, y, (value, value, value, 228))
+            elif y == 29:
+                v = 22
             else:
-                put(x, y, (0, 0, 0, 245))
+                v = base.clamp(
+                    4 + 234 * (1 - position) ** 2.6 + light * 0.5
+                    + brushed(x, y, 4 if position < 0.4 else 3),
+                    2, 244,
+                )
+            put(x, y, (v, v, v, 228))
 
-    # Title glyph bar and content separators.
-    for x in range(96, 254, 12):
-        for y in range(27, 33):
-            put(x, y, (216, 216, 216, 220))
-    for x in range(32, 210):
-        put(x, 59, (110, 110, 110, 170))
-    for x in range(32, 175):
-        put(x, 70, (72, 72, 72, 150))
-    # Prussian selection row inside content.
-    for y in range(76, 84):
-        for x in range(32, 196):
-            if y in (76, 83) or x in (32, 195):
-                continue
-            t = (y - 76) / 7
+    # Toolbar shelf: sweep-limited gloss line, brushed falloff, bounce.
+    for x in range(width):
+        put(x, 31, (base.clamp(120 + sweep(x, width) * 1.8, 0, 238),) * 3 + (235,))
+        put(x, 32, (88, 88, 88, 232))
+        for y in range(33, 44):
+            t = (y - 33) / 10
+            v = base.clamp(52 - 36 * t + brushed(x, y, 3) + sweep(x, width) * 0.25 * (1 - t))
+            put(x, y, (v, v, v, 245))
+        put(x, 44, (4, 4, 4, 245))
+        put(x, 45, (16, 16, 16, 245))
+
+    # Content: top-lit gradient blending down to black.
+    for y in range(46, height):
+        position = (y - 46) / max(1, height - 47)
+        base_v = 4 + 34 * (1 - position) ** 1.2
+        for x in range(width):
+            put(x, y, (base.clamp(base_v + abs(brushed(x // 3, y // 2, 1)), 3, 40),) * 3 + (255,))
+
+    # Text row (dim silver glyph blocks) then the Prussian selected plate.
+    for y in range(54, 61):
+        for x in range(30, 248):
+            if (x - 30) % 22 < 14:
+                put(x, y, (130, 130, 130, 255))
+    for y in range(62, 75):
+        for x in range(28, 246):
+            t = (y - 62) / 12
+            gloss = 46 if y == 63 else 0
             color = tuple(
-                base.clamp(PRUSSIAN_DEEP[i] + (PRUSSIAN_LIT[i] - PRUSSIAN_DEEP[i]) * (1 - t))
+                base.clamp(PRUSSIAN_DEEP[i] + (PRUSSIAN_LIT[i] - PRUSSIAN_DEEP[i]) * (0.85 - 0.35 * t))
                 for i in range(3)
             )
-            put(x, y, color + (255,))
+            put(x, y, tuple(min(255, c + gloss) for c in color) + (255,))
+    # Faint row separators fading with the content.
+    for y in (78, 94, 110, 126):
+        for x in range(28, width - 28):
+            current = pixels[y * width + x]
+            put(x, y, (current[0] + 8, current[1] + 8, current[2] + 8, 255))
 
-    def circle(cx: int, cy: int, radius: int, fill, ring):
+    # Title glyphs as bright rounded bars.
+    for gx in range(110, 318, 18):
+        for y in range(9, 15):
+            for x in range(gx, gx + 10):
+                put(x, y, (216, 216, 216, 220))
+
+    def circle(cx: int, cy: int, radius: int, role: str):
+        r2 = radius - 0.5
         for y in range(cy - radius - 1, cy + radius + 2):
             for x in range(cx - radius - 1, cx + radius + 2):
-                distance = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
-                if distance > radius + 0.6:
+                dx, dy = (x - cx) / r2, (y - cy) / r2
+                distance = dx * dx + dy * dy
+                if distance > 1.2:
                     continue
-                color = fill
-                if distance > radius - 1.2:
-                    color = ring
-                elif y <= cy - 2:
-                    color = tuple(min(255, c + 38) for c in fill[:3]) + (fill[3],)
-                put(x, y, color)
+                spec = math.exp(-(pow(dx + 0.34, 2) + pow(dy + 0.42, 2)) * 5.5)
+                shade = min(1.0, 0.30 + spec * 0.85 + max(0.0, -dy - 0.15) * 0.10)
+                if distance > 0.78:
+                    shade *= 0.62
+                if role == "prussian":
+                    color = (shade * 74, 15 + shade * 88, 46 + shade * 132)
+                    if spec > 0.55:
+                        carry = (spec - 0.55) * 2.2
+                        color = (
+                            min(255, color[0] + carry * 178),
+                            min(255, color[1] + carry * 178),
+                            min(255, color[2] + carry * 58),
+                        )
+                elif role == "white":
+                    v = 58 + shade * 194
+                    color = (v, v, v)
+                else:
+                    v = 11 + shade * 150
+                    color = (v, v, v)
+                if distance > 0.92:
+                    color = (2, 2, 2)
+                put(x, y, tuple(base.clamp(c) for c in color) + (255,))
 
-    circle(33, 31, 7, PRUSSIAN_BASE + (255,), (0, 16, 30, 255))
-    circle(52, 31, 7, (228, 228, 228, 255), (2, 2, 2, 255))
-    circle(71, 31, 7, (96, 96, 96, 255), (2, 2, 2, 255))
+    circle(40, 15, 9, "prussian")
+    circle(63, 15, 9, "white")
+    circle(86, 15, 9, "darkgrey")
     return width, height, pixels
 
 

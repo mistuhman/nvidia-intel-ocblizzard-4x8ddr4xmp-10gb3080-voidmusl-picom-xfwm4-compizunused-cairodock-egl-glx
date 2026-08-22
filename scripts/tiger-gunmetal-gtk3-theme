@@ -19,6 +19,7 @@ import argparse
 import configparser
 import importlib.machinery
 import importlib.util
+import math
 import os
 from pathlib import Path
 import re
@@ -57,8 +58,18 @@ def clamp(value: float, low: int = 0, high: int = 255) -> int:
 
 
 def brushed(x: int, y: int, amp: int = 4) -> int:
-    value = (x * 2654435761 + (y // 3) * 40503 + (x // 23) * 9176 + 0x17A1) & 0xFFFFFFFF
-    return (value % (amp * 2 + 1)) - amp
+    fine = (x * 2654435761 + (y // 4) * 40503 + 0x17A1) & 0xFFFFFFFF
+    coarse = ((x // 31) * 97 + (y // 7) * 7919 + 0x2D17) & 0xFFFF
+    return ((fine % (amp * 2 + 1)) - amp) + ((coarse % 5) - 2)
+
+
+def sweep(x: int, width: int, strength: float = 46.0) -> float:
+    """Window reflections travelling across a bar."""
+    t = x / max(1, width - 1)
+    return (
+        strength * math.exp(-(((t - 0.36) / 0.13) ** 2))
+        + strength * 0.38 * math.exp(-(((t - 0.82) / 0.10) ** 2))
+    )
 
 
 def gray(value: float, alpha: int = 255):
@@ -77,58 +88,93 @@ def prussian(t: float, alpha: int = 255):
 
 
 def menubar_pixel(x, y, w, h):
-    """10.4 brushed black gunmetal: white rim, horizontal grain, blue hairline."""
+    """10.4 brushed gunmetal: chrome rim blending smoothly into blacks."""
+    position = y / max(1, h - 1)
+    light = sweep(x, w) * max(0.0, 1.0 - position / 0.42)
     if y == 0:
-        return gray(96)
-    if y == 1:
-        return gray(58)
+        return gray(clamp(228 + light * 0.25, 0, 245))
     if y == h - 1:
-        return prussian(0.62)
+        return prussian(0.72)
     if y == h - 2:
-        return gray(6)
-    t = y / max(1, h - 3)
-    value = 32 - 24 * t + brushed(x, y, 4) + (2 if y % 6 == 0 else 0)
-    return gray(value, 232)
+        return gray(22)
+    if position > 0.84:
+        t = (position - 0.84) / 0.16
+        return gray(4 + 16 * t + brushed(x, y, 2), 232)
+    value = 4 + 234 * (1 - position) ** 2.6
+    return gray(value + light * 0.5 + brushed(x, y, 4 if position < 0.4 else 3), 232)
+
+
+def toolbar_pixel(x, y, w, h):
+    """Raised shelf: sweep-limited gloss line, brushed falloff, bounce."""
+    position = y / max(1, h - 1)
+    if y == 0:
+        return gray(clamp(120 + sweep(x, w) * 1.8, 0, 238))
+    if y == 1:
+        return gray(88)
+    if y == h - 1:
+        return gray(4)
+    if y == h - 2:
+        return gray(18)
+    light = sweep(x, w) * 0.25 * max(0.0, 1.0 - position / 0.5)
+    if position < 0.5:
+        t = position / 0.5
+        return gray(62 - 44 * t + light + brushed(x, y, 3))
+    t = (position - 0.5) / 0.5
+    return gray(16 - 10 * t + brushed(x, y, 2))
 
 
 def plate_pixel(x, y, w, h):
-    """Prussian highlight plate for menubar items and menu hover."""
+    """Prussian highlight plate with a specular strip and bounce."""
     if y == 0:
-        return prussian(0.95)
+        return prussian(1.0, 255) if x % 97 < 42 else prussian(0.95)
+    if y == 1:
+        return prussian(0.88)
     if y == h - 1:
         return prussian(0.08)
     t = y / max(1, h - 1)
     color = prussian(0.72 - 0.30 * t)
+    if y == h - 2:
+        color = prussian(0.30)
     return color[0], color[1], color[2], 255
 
 
 def selected_pixel(x, y, w, h):
-    """Selected-row plate: gunmetal body, Prussian edge and wash."""
+    """Selected-row plate: gloss line, Prussian edge, wash, bounce."""
     if x < 3:
         return prussian(0.85)
     if y == 0:
-        return gray(38)
+        return prussian(0.55)
+    if y == 1:
+        return prussian(0.42)
     if y == h - 1:
-        return gray(4)
+        return gray(3)
     t = y / max(1, h - 1)
-    wash = 0.38 - 0.22 * t
+    wash = 0.46 - 0.26 * t
+    bounce = 0.12 * max(0.0, t - 0.7) / 0.3
     return (
-        clamp(12 + (PRUSSIAN_LIT[0] - 12) * wash + brushed(x, y, 2)),
-        clamp(16 + (PRUSSIAN_LIT[1] - 16) * wash + brushed(x, y, 2)),
-        clamp(22 + (PRUSSIAN_LIT[2] - 22) * wash + brushed(x, y, 2)),
+        clamp(12 + (PRUSSIAN_LIT[0] - 12) * (wash + bounce) + brushed(x, y, 2)),
+        clamp(16 + (PRUSSIAN_LIT[1] - 16) * (wash + bounce) + brushed(x, y, 2)),
+        clamp(22 + (PRUSSIAN_LIT[2] - 22) * (wash + bounce) + brushed(x, y, 2)),
         255,
     )
 
 
 def button_hover_pixel(x, y, w, h):
-    """Raised gunmetal cap with a faint Prussian inner rim on hover."""
+    """Raised gunmetal cap: gloss band, Prussian inner rim, bounce."""
     edge = min(x, y, w - 1 - x, h - 1 - y)
+    position = y / max(1, h - 1)
     if y == 0:
-        return gray(62)
+        return gray(96)
+    if y == 1:
+        return gray(70)
     if y == h - 1:
         return gray(4)
-    t = y / max(1, h - 1)
-    value = 42 - 30 * t + brushed(x, y, 2)
+    if position < 0.4:
+        t = position / 0.4
+        value = 66 - 34 * t + brushed(x, y, 2) + (14 if y in (2, 3) else 0)
+    else:
+        t = (position - 0.4) / 0.6
+        value = 22 - 12 * t + brushed(x, y, 2) + (10 if position > 0.85 else 0)
     if edge == 1:
         return (
             clamp(value + (PRUSSIAN_RIM[0] - value) * 0.35),
@@ -140,40 +186,116 @@ def button_hover_pixel(x, y, w, h):
 
 
 def button_active_pixel(x, y, w, h):
-    """Pressed cap sinks into Prussian blue."""
+    """Pressed cap sinks into Prussian with a lit lower rim."""
     if y == 0:
         return prussian(0.05)
+    if y == 1:
+        return prussian(0.02)
     if y == h - 1:
-        return prussian(0.80)
+        return prussian(0.92)
+    if y == h - 2:
+        return prussian(0.65)
     t = y / max(1, h - 1)
     color = prussian(0.10 + 0.55 * t)
     return color[0], color[1], color[2], 255
 
 
 def preview_pixel(x, y, w, h):
-    """Material board: menubar, toolbar, sidebar, list, controls."""
-    if y < 26:
-        return menubar_pixel(x, y, w, 26)
-    if y < 64:
-        if y == 26:
-            return gray(30)
-        value = 22 - 12 * ((y - 27) / 36) + brushed(x, y, 3)
-        return gray(value)
-    if x < 168:
-        edge = 5 * (1 - x / 167)
-        return gray(4 + edge + brushed(x, y, 1))
-    if 74 <= y <= 88 and 176 <= x <= 388:
-        return selected_pixel(x - 176, y - 74, 212, 15)
-    return gray(2 + abs(brushed(x // 3, y // 2, 1)))
+    """HD material board: brushed bars, sidebar, list, popover, controls."""
+    if y < 32:
+        return menubar_pixel(x, y, w, 32)
+    if y < 84:
+        return toolbar_pixel(x, y - 32, w, 52)
+    if x < 320:
+        # Sidebar shelf: brushed, top-lit, fading to near-black at the floor.
+        position = (y - 84) / max(1, h - 84)
+        edge = 7 * (1 - x / 319)
+        return gray(14 + edge + 44 * (1 - position) ** 1.1 + brushed(x, y, 2))
+    content_y = y - 84
+    content_h = h - 84
+    # List rows; row 2 selected (Prussian plate).
+    if 96 <= y < 116:
+        return selected_pixel(x - 320, y - 96, w - 320, 20)
+    if y in (94, 116):
+        return gray(2)
+    # Text bars for rows.
+    for row in range(6):
+        y0 = 120 + row * 24
+        if y0 + 8 <= y <= y0 + 14 and 336 <= x <= 780 and (x - 336) % 520 < 400:
+            return (228, 228, 228, 255) if row != 2 else (246, 246, 246, 255)
+    # Entry well with Prussian focus ring.
+    if 272 <= y <= 300 and 336 <= x <= 700:
+        edge = min(x - 336, 700 - x, y - 272, 300 - y)
+        if edge == 0:
+            return PRUSSIAN_RIM + (255,)
+        if y == 273:
+            return gray(16)
+        return gray(3 + brushed(x // 2, y // 2, 1))
+    if 278 <= y <= 294 and 344 <= x <= 560 and (y - 278) % 16 < 9 and (x - 344) % 22 < 15:
+        return (210, 214, 220, 255)
+    # Buttons: normal, hover, checked.
+    for index, x0 in enumerate((336, 520, 704)):
+        if 320 <= y <= 352 and x0 <= x <= x0 + 160:
+            if index == 0:
+                return button_pixel_normal(x - x0, y - 320, 160, 32)
+            if index == 1:
+                return button_hover_pixel(x - x0, y - 320, 160, 32)
+            return button_active_pixel(x - x0, y - 320, 160, 32)
+        if 326 <= y <= 344 and x0 + 18 <= x <= x0 + 142 and (x - x0 - 18) % 124 < 92 and (y - 326) % 18 < 8:
+            return (236, 236, 236, 255) if index != 2 else (255, 255, 255, 255)
+    # Progress bar with Prussian fill and gloss.
+    if 392 <= y <= 412 and 336 <= x <= 900:
+        if y in (392, 411) or x in (336, 899):
+            return gray(24)
+        if x < 700:
+            color = prussian(0.30 + 0.5 * (1 - (y - 392) / 19))
+            if y == 393:
+                color = (235, 244, 252, 255)
+            return color[0], color[1], color[2], 255
+        return gray(3)
+    # Scrollbar trough and thumb.
+    if x >= w - 26 and 84 <= y < h:
+        if x in (w - 26, w - 4):
+            return gray(20)
+        if x in (w - 25, w - 5):
+            return gray(1)
+        if 260 <= y <= 420:
+            edge = min(x - (w - 24), (w - 6) - x, y - 260, 420 - y)
+            if edge == 0:
+                return gray(2)
+            if edge == 1:
+                return gray(44)
+            value = 16 + 6 * (1 - abs((y - 340) / 80)) + brushed(x, y, 2)
+            return gray(value)
+        return gray(4 + brushed(x, y, 2))
+    # Content floor fades to black.
+    position = content_y / max(1, content_h - 1)
+    return gray(16 - 13 * position ** 0.8 + abs(brushed(x // 3, y // 2, 1)), 255)
+
+
+def button_pixel_normal(x, y, w, h):
+    if y == 0:
+        return gray(78)
+    if y == 1:
+        return gray(56)
+    if y == h - 1:
+        return gray(4)
+    position = y / max(1, h - 1)
+    if position < 0.45:
+        t = position / 0.45
+        return gray(40 - 22 * t + brushed(x, y, 2))
+    t = (position - 0.45) / 0.55
+    return gray(14 - 8 * t + brushed(x, y, 2))
 
 
 ASSETS = {
-    "menubar.png": (512, 24, menubar_pixel),
+    "menubar.png": (1024, 24, menubar_pixel),
+    "toolbar.png": (1024, 40, toolbar_pixel),
     "plate-hover.png": (256, 24, plate_pixel),
     "selected-plate.png": (320, 24, selected_pixel),
     "button-hover.png": (320, 34, button_hover_pixel),
     "button-active.png": (320, 34, button_active_pixel),
-    "preview.png": (640, 320, preview_pixel),
+    "preview.png": (1280, 640, preview_pixel),
 }
 
 
@@ -187,11 +309,27 @@ menubar,
   background-color: #070707;
   background-image: url("tiger3d/menubar.png");
   background-size: 100% 100%;
-  border-top: 1px solid rgba(255,255,255,0.38);
+  border-top: 1px solid rgba(255,255,255,0.55);
   border-bottom: 1px solid #0b4e7c;
-  box-shadow: inset 0 1px rgba(255,255,255,0.10), inset 0 -2px #010101;
+  box-shadow: inset 0 1px rgba(255,255,255,0.32), inset 0 -2px #010101;
   color: #f2f2f2;
 }
+
+/* Reflective shelf under the bar, materially joined. */
+toolbar,
+.primary-toolbar,
+window.thunar.background > grid.horizontal > toolbar.horizontal {
+  min-height: 36px;
+  margin: 0;
+  padding: 3px 5px;
+  background-color: #050505;
+  background-image: url("tiger3d/toolbar.png");
+  background-size: 100% 100%;
+  border-top: 1px solid rgba(255,255,255,0.55);
+  border-bottom: 2px solid #020202;
+  box-shadow: inset 0 1px rgba(255,255,255,0.42), inset 0 -1px #161616;
+}
+
 menubar > menuitem:hover,
 .menubar > menuitem:hover {
   background-image: url("tiger3d/plate-hover.png");
