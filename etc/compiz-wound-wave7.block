@@ -1,0 +1,37 @@
+id -u
+# compiz-wound-wave7.block - USER shell (sd). NO --replace. Does not steal the WM.
+# Wave-6 fact: /usr/bin/compiz --debug --replace ccp printed nothing, rc0, xfwm4
+# 20836 still WM. That is not a killer and not setsid. Upstream addDisplay MUST
+# print "already has a window manager" or "No manageable screens" and return 1
+# when it cannot take a screen. This wave asks a different question: does this
+# binary talk at all, and are the plugins/packages even installed.
+# Gate: paste FULL output including COMPIZ_WOUND_WAVE7_END.
+echo SECTION_A_WM
+df -h /
+date
+echo DISPLAY=$DISPLAY
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+wmctrl -m
+xprop -root _NET_SUPPORTING_WM_CHECK
+echo SECTION_B_PACKAGES
+xbps-query -s compiz
+xbps-query -s emerald
+xbps-query -s libcompizconfig
+echo SECTION_C_PLUGINS
+ls -l /usr/lib/compiz
+ls -l /usr/lib64/compiz
+ls -l /usr/lib/compiz/libccp.so /usr/lib64/compiz/libccp.so
+echo SECTION_D_BINARY
+type -a compiz
+ls -l /proc/$$/fd/1 /proc/$$/fd/2
+strings /usr/bin/compiz | grep -e already has a window -e No manageable -e Another window -e Launching fallback
+echo SECTION_E_NO_REPLACE
+echo ERRTEST_ON_STDERR
+echo ERRTEST_ON_STDERR >&2
+LIBGL_DEBUG=verbose /usr/bin/compiz --debug
+echo COMPIZ_NOREPLACE_RC_$?
+echo SECTION_F_STILL_WM
+pgrep -a -x xfwm4
+wmctrl -m
+echo COMPIZ_WOUND_WAVE7_END

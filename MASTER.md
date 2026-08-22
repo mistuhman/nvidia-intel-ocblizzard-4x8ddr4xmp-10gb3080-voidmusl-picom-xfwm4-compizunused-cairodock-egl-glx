@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "WOUND 2026-08-22. Persist ARMED, profile SAFE. Wave-4: setsid Compiz --debug --replace wrote 0-byte log, no compiz pid, xfwm4 4183 still WM. Self-heal started second xfwm4; operator Ctrl-C; BadWindow; operator: force ending it brought me to a no compositor two desktop screen. Next: restore at most one xfwm4, no Compiz replace.",
+        "compiz": "WOUND 2026-08-22 persist ARMED, live xfwm4 20836. Wave-6: foreground /usr/bin/compiz --debug --replace ccp printed nothing, rc0, xfwm4 still WM. Next is wave-7 no --replace plus package/plugin dump. Operator: literally nothing, something is being done wrong.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -244,7 +244,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-6: operator runs etc/compiz-wound-wave6.block. If prompt never returns, Compiz is up — send COMPIZ_LOOKS_RIGHT or COMPIZ_LOOKS_WRONG. If prompt returns, paste full output including COMPIZ_FG_RC. Rollback: xfwm4 --sm-client-disable --replace in a NEW terminal.",
+        "nextGateAskFirst": "Wave-7: operator pastes FULL etc/compiz-wound-wave7.block. NO --replace. Fork: if no-replace is also silent rc0 the binary is not behaving like upstream 0.8.18 addDisplay; if it prints already-has-a-WM then --replace path is the bug. Operator quote: literally nothing, something is being done wrong.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
