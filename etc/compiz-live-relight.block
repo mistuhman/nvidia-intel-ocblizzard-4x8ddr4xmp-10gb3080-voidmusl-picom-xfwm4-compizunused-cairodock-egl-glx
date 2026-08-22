@@ -1,0 +1,12 @@
+id -u
+# compiz-live-relight.block - USER shell (sd). Paste ONLY after compiz-wound-probe.block has finished printing.
+# ONE live step: start Compiz in the FOREGROUND of this terminal while xfwm4 is still the running WM.
+# Why this is safe: xfwm4 is never killed here. Compiz with --replace only takes the desktop AFTER it initializes, so a failed start prints the REAL error in this terminal and xfwm4 keeps running.
+# Receipt (1) compiz works: the desktop comes up under Compiz and this terminal sits BUSY. That is normal. Do NOT close it. Open a NEW terminal from the working desktop and paste back the few lines this one printed.
+# Receipt (2) compiz fails: the real error text prints here, xfwm4 stays in charge, paste the whole output.
+# Receipt (3) nothing changes for 30+ seconds: open another terminal (xfwm4 is still alive), run pkill -TERM -x compiz, paste back what this terminal shows.
+echo COMPIZ_LIVE_RELIGHT_BEGIN
+pgrep -a -x xfwm4
+env __GL_YIELD=USLEEP /usr/bin/compiz --debug --sm-disable --replace ccp
+echo COMPIZ_LIVE_RELIGHT_RC_$?
+echo COMPIZ_LIVE_RELIGHT_END

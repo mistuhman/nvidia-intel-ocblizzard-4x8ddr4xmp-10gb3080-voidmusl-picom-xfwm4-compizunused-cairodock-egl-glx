@@ -1,0 +1,68 @@
+id -u
+# compiz-wound-probe.block - USER shell (sd), read-only. Incident 2026-08-22: compiz broke after an xfce4-display-settings button click; a previous agent changed more; main screen black; clean-room compiz exited rc0 with an EMPTY debug log.
+# Gate: paste FULL output back. No fix or reboot block is authored until this receipt arrives. The END marker proves nothing was dropped in the paste.
+echo SECTION_A_WHO_WHEN
+id
+date
+uptime
+df -h /
+echo $DISPLAY
+echo $XDG_SESSION_TYPE
+echo SECTION_B_PROCESSES
+pgrep -a -x Xorg
+pgrep -a -x lightdm
+pgrep -a -x xfce4-session
+pgrep -a -x xfsettingsd
+pgrep -a -x xfwm4
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x picom
+pgrep -a -x xfdesktop
+pgrep -a -x xfce4-panel
+pgrep -a -x cairo-dock
+pgrep -a -x mpv
+pgrep -a -x xwinwrap
+wmctrl -m
+echo SECTION_C_COMPIZ_BINARY
+command -v compiz
+ls -l /usr/bin/compiz
+sha256sum /usr/bin/compiz
+od -N 96 -c /usr/bin/compiz
+/usr/bin/compiz --help | head -n 40
+xbps-query compiz-core
+xbps-query -f compiz-core | grep usr/bin
+echo SECTION_D_DISPLAYS
+ls -l /tmp/.X11-unix
+xrandr --listproviders
+xrandr --listmonitors
+xrandr | grep connect
+xrandr --verbose | grep -i brightness
+xrandr
+xfconf-query -c displays -lv
+ls -l /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml
+cat /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/displays.xml
+cat /home/sd/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-session.xml
+ls -l /home/sd/.config/autostart
+echo SECTION_E_COMPIZ_GUARD
+ls -l /home/sd/.local/bin
+ls -l /home/sd/.local/share/compiz-guard
+cat /home/sd/.local/bin/compiz-session
+sh -n /home/sd/.local/bin/compiz-session
+ls -l /home/sd/.config/compiz/compizconfig
+sha256sum /home/sd/.config/compiz/compizconfig/Default.ini
+sha256sum /home/sd/.local/share/compiz-guard/Default.ini.golden
+cat /home/sd/.config/compiz/compizconfig/Default.ini
+/home/sd/.local/bin/compiz-profile-verify
+/home/sd/.local/bin/compiz-persist-arm --check
+echo SECTION_F_WHAT_CHANGED
+find /home/sd/.config/xfce4 /home/sd/.config/compiz /home/sd/.config/autostart /home/sd/.local/bin /home/sd/.local/share/compiz-guard -maxdepth 3 -mmin -480 -ls
+tail -n 40 /home/sd/.bash_history
+tail -n 80 /home/sd/.xsession-errors
+echo SECTION_G_GPU_XLOGS
+nvidia-smi -L
+ls -l /dev/dri
+ls -l /var/log/Xorg.0.log /home/sd/.local/share/xorg/Xorg.0.log
+grep EE /var/log/Xorg.0.log | tail -n 30
+grep WW /var/log/Xorg.0.log | tail -n 20
+grep EE /home/sd/.local/share/xorg/Xorg.0.log | tail -n 30
+echo COMPIZ_WOUND_PROBE_END

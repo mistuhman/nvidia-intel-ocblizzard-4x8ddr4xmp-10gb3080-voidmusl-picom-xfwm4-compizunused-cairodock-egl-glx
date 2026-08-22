@@ -3,8 +3,8 @@
     "updated": "2026-08-22",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a0277c-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "5e96c88153636ef6824b63d957c44e214b3c4689",
+        "branchFixed": "arena/01a02862-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "7a8b9fd7cb26f58098686da46a267a0f90487bce",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -272,6 +272,19 @@
             "Steam library on ZFS tank/games: CoW with heavy writes; keep steamapps and wine prefixes on tank/games, not the nvme root pool",
             "Steam appmanifest .acf.NNN.tmp swarms (311210/3354750/4000/730/284160) are interrupted manifest writes - delete only with Steam fully stopped, wave-3"
         ]
+    },
+    "liveIncident": {
+        "id": "compiz-wound-2026-08-22",
+        "precedence": "operator-ordered interruption of the games campaign; games wave-2 gate stands parked until this incident closes",
+        "operatorReport": "compiz broke from some random button click on the xfce display manager; breakage survived a boot; a previous agent attempt made it worse; main screen black; operator can still paste large command blocks into a terminal",
+        "cleanRoomReceipt": "operator paste 2026-08-22: xfwm4 (pid 2578, --sm-client-disable --replace) TERM'd and gone; setsid env __GL_YIELD=USLEEP /usr/bin/compiz --debug --sm-disable --replace ccp produced NO compiz and NO emerald process, wmctrl -m BadWindow (no WM owning the screen), rc file read 0 within 8s, and the --debug log was EMPTY; unmanaged fallback xfwm4 pid 4183 started after and wmctrl -m then reported Name: Xfwm4",
+        "silentRc0Assessment": "void-packages compiz-core 0.8.18 rev3 (gh api srcpkgs/compiz-core/template, compiz-reloaded/compiz v0.8.18 tarball bb5af1f6...) installs the real compiz ELF at /usr/bin/compiz - a genuine --debug run cannot exit rc0 with an empty log, so binary identity/PATH shadowing/previous-agent damage are the wave-1 unknowns to prove on target",
+        "wave1Blocks": [
+            "etc/compiz-wound-probe.block (user, read-only: identity, processes, compiz binary hash+ident+--help, displays/xrandr/xfconf, guard tools+profile hashes, what-changed-in-8h, GPU and Xorg logs)",
+            "etc/compiz-live-relight.block (user, foreground env __GL_YIELD=USLEEP /usr/bin/compiz --debug --sm-disable --replace ccp while xfwm4 stays alive as fallback; three named receipts)"
+        ],
+        "rebootRule": "no reboot until compiz-profile-verify verdict SAFE and compiz-persist-arm reports armed on target receipts; xfce4-session Failsafe Client0_Command must point at compiz-session for next login",
+        "gate": "paste both block outputs back; no fix wave is authored before receipts arrive (operator hard rule 2026-08-21)"
     },
     "parked": [
         "phase7 leftovers (operator direction only): doas hardening / sudo removal decision (base-system + testdisk reverse-depend sudo), durable machine logging, network control/interception",
