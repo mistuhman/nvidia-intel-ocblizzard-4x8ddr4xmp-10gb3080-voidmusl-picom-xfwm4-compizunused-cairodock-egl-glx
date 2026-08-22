@@ -1,0 +1,66 @@
+id -u
+# compiz-wound-wave2.block - USER shell (sd). Incident compiz-wound-2026-08-22, wave 2: identify what kills compiz, and probe the black main screen.
+# Wave-1 receipts proved: /usr/bin/compiz is the pristine 0.8.18 ELF (sha256 ffc93204...), profile verify SAFE, persist armed - yet compiz exits rc0 with ZERO output in three separate starts (login, setsid clean-room, foreground relight). Verbatim operator verdict on the relight: no diff on visuals.
+# Source review of compiz-reloaded v0.8.18 (main.c, display.c): every startup failure PRINTS a message and returns rc1. The only silent rc0 paths are the event loop ending because shutDown was set - which happens on SIGTERM/SIGINT, or when ANOTHER process steals the WM selection (handleSelectionClear). So something is killing or replacing compiz within seconds of every start.
+# Gate: paste FULL output back. Sections A-G are read-only plus one harmless gamma reset. Section H is ONE live run: compiz under strace WITH --replace. If compiz finally STAYS UP under strace the terminal sits BUSY (normal) - do NOT close it, open a NEW terminal, run the Section I commands there, and paste. If compiz dies again (expected) the block continues by itself and Section I reveals who owns the desktop afterward.
+# Rollback if you want xfwm4 back after a live compiz takeover: pkill -TERM -x compiz then xfwm4 --sm-client-disable --replace
+echo SECTION_A_STATE
+df -h /
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+pgrep -a -x mpv
+pgrep -a -x xwinwrap
+wmctrl -m
+echo SECTION_B_AUTOSTART_SUSPECTS
+cat /home/sd/.config/autostart/fleasion.desktop
+cat /home/sd/.local/bin/fleasion-launch
+cat /home/sd/.config/autostart/lama.desktop
+cat /home/sd/.config/autostart/Dl.desktop
+cat /home/sd/.config/autostart/picom.desktop
+cat /home/sd/.config/autostart/xmb-wallpaper-controller.desktop
+cat /home/sd/.local/bin/Froststrap
+crontab -l
+ls -l /etc/xdg/autostart | grep -i -e xfwm -e compiz -e fleasion
+echo SECTION_C_SESSION_CACHE
+find /home/sd/.cache/sessions -maxdepth 3 -ls
+grep -r -e xfwm4 -e compiz /home/sd/.cache/sessions | head -n 40
+echo SECTION_D_LOGIN_TRACE
+wc -c /tmp/compiz-clean-room.log /tmp/compiz-clean-room.rc /tmp/compiz-repair.log
+tail -n 30 /tmp/compiz-repair.log
+cat /home/sd/.config/compiz/compizconfig/config
+ls -l /etc/ld.so.preload
+ls -l /home/sd/.xsession-errors
+grep -n -i -e fallback -e compiz /home/sd/.xsession-errors | tail -n 20
+echo SECTION_E_GAMMA_DPMS
+xrandr --verbose | grep -i -e gamma -e brightness
+xset q | grep -i -A 3 dpms
+echo GAMMA_NORMALIZE_DP2_BEGIN
+xrandr --output DP-2 --gamma 1:1:1
+echo GAMMA_NORMALIZE_DP2_RC_$?
+xrandr --verbose | grep -i gamma
+# If the main screen became visible right after GAMMA_NORMALIZE_DP2, include the word MAIN_SCREEN_LIT in your paste reply.
+echo SECTION_F_GLX
+command -v xdpyinfo
+xdpyinfo | grep -i -e glx -e composite -e damage | head -n 12
+command -v glxinfo
+glxinfo -B | head -n 20
+echo SECTION_G_VERSION
+/usr/bin/compiz --version
+echo COMPIZ_VERSION_RC_$?
+echo SECTION_H_STRACE_LIVE
+command -v strace
+strace -f -E __GL_YIELD=USLEEP -o /tmp/compiz-strace.txt /usr/bin/compiz --debug --sm-disable --replace ccp
+echo STRACE_COMPIZ_RC_$?
+ls -l /tmp/compiz-strace.txt
+wc -l /tmp/compiz-strace.txt
+grep SIG /tmp/compiz-strace.txt | tail -n 12
+grep -e killed -e exit_group -e execve -e clone -e vfork /tmp/compiz-strace.txt | tail -n 30
+tail -n 40 /tmp/compiz-strace.txt
+echo SECTION_I_AFTERMATH
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+wmctrl -m
+ps -eo pid,ppid,user,args | grep -e [w]atch -e [g]uard -e [f]leasion -e [l]ama -e [m]onit
+echo COMPIZ_WOUND_WAVE2_END
