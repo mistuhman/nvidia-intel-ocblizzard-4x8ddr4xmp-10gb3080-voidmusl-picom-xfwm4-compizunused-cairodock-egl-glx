@@ -59,8 +59,8 @@ def brushed(x: int, y: int, amp: int = 5) -> int:
     return ((fine % (amp * 2 + 1)) - amp) + ((coarse % 5) - 2)
 
 
-def sweep(x: int, width: int, strength: float = 46.0) -> float:
-    """Soft window reflections travelling across the bar."""
+def sweep(x: int, width: int, strength: float = 12.0) -> float:
+    """Soft window reflections travelling across the bar (kept dark)."""
     t = x / max(1, width - 1)
     primary = strength * math.exp(-(((t - 0.36) / 0.13) ** 2))
     secondary = (strength * 0.38) * math.exp(-(((t - 0.82) / 0.10) ** 2))
@@ -88,28 +88,28 @@ def tiger_frame(path: Path) -> None:
             if active:
                 light = sweep(x, width) * max(0.0, 1.0 - position / 0.42)
                 if y == 0:
-                    rgb, alpha = (base.clamp(228 + light * 0.25, 0, 245),) * 3, 246
+                    rgb, alpha = (58,) * 3, 246
                 elif y == height - 1:
                     rgb, alpha = blend(10, PRUSSIAN_RIM, 0.72), 246
                 elif y == height - 2:
-                    rgb, alpha = (22, 22, 22), 236
+                    rgb, alpha = (16, 16, 16), 236
                 elif position > 0.84:
-                    # Bounce reflection rising out of the black floor.
+                    # Faint bounce out of the black floor.
                     t = (position - 0.84) / 0.16
-                    value = base.clamp(4 + 16 * t + brushed(x, y, 2))
+                    value = base.clamp(4 + 8 * t + brushed(x, y, 2))
                     rgb, alpha = (value,) * 3, 228
                 else:
-                    # Polished chrome rim blending smoothly into blacks.
-                    value = 4 + 234 * (1 - position) ** 2.6
+                    # Dark-grey highlight blending into a mostly-black body.
+                    value = 5 + 27 * (1 - position) ** 2.2
                     value += light * 0.5 + brushed(x, y, 4 if position < 0.4 else 3)
-                    rgb, alpha = (base.clamp(value, 2, 244),) * 3, 228
+                    rgb, alpha = (base.clamp(value, 2, 62),) * 3, 228
             else:
                 if y == 0:
-                    rgb, alpha = (58, 58, 58), 240
+                    rgb, alpha = (40, 40, 40), 240
                 elif y == height - 1:
-                    rgb, alpha = (28, 28, 28), 236
+                    rgb, alpha = (24, 24, 24), 236
                 else:
-                    value = base.clamp(44 - 26 * position + brushed(x, y, 2), 4, 46)
+                    value = base.clamp(32 - 18 * position + brushed(x, y, 2), 3, 42)
                     rgb, alpha = (value, value, value), 224
         elif is_bottom:
             value = base.clamp(5 + source_luma * 0.12, 3, 34)
@@ -144,24 +144,24 @@ def recolor_button(path: Path, role: str) -> None:
             shade *= 0.62
         shade = min(1.0, shade)
         if role == "prussian":
-            nr = base.clamp(shade * 74)
-            ng = base.clamp(15 + shade * 88)
-            nb = base.clamp(46 + shade * 132)
+            nr = base.clamp(shade * 56)
+            ng = base.clamp(12 + shade * 64)
+            nb = base.clamp(40 + shade * 100)
         elif role == "white":
-            value = base.clamp(58 + shade * 194)
+            value = base.clamp(28 + shade * 68)
             nr = ng = nb = value
         elif role == "darkgrey":
-            value = base.clamp(11 + shade * 150)
+            value = base.clamp(9 + shade * 82)
             nr = ng = nb = value
         else:
-            value = base.clamp(17 + shade * 158)
+            value = base.clamp(13 + shade * 92)
             nr = ng = nb = value
         if spec > 0.55 and role == "prussian":
-            # Specular core on blue trends white-blue, not grey.
+            # Specular core on blue trends pale blue, never white.
             carry = (spec - 0.55) * 2.2
-            nr = base.clamp(nr + carry * 178)
-            ng = base.clamp(ng + carry * 178)
-            nb = base.clamp(nb + carry * 58)
+            nr = base.clamp(nr + carry * 92)
+            ng = base.clamp(ng + carry * 104)
+            nb = base.clamp(nb + carry * 48)
         result.append((nr, ng, nb, a))
     base.write_png(path, width, height, result)
 
@@ -230,24 +230,26 @@ def preview_pixels(width: int = 448, height: int = 144):
         for x in range(width):
             light = sweep(x, width) * max(0.0, 1.0 - position / 0.42)
             if y == 0:
-                v = base.clamp(228 + light * 0.25, 0, 245)
+                v = 58
             elif y == 30:
                 put(x, y, blend(10, PRUSSIAN_RIM, 0.72) + (246,))
                 continue
             elif y == 29:
-                v = 22
+                v = 16
+            elif position > 0.84:
+                v = base.clamp(4 + 8 * ((position - 0.84) / 0.16) + brushed(x, y, 2))
             else:
                 v = base.clamp(
-                    4 + 234 * (1 - position) ** 2.6 + light * 0.5
+                    5 + 27 * (1 - position) ** 2.2 + light * 0.5
                     + brushed(x, y, 4 if position < 0.4 else 3),
-                    2, 244,
+                    2, 62,
                 )
             put(x, y, (v, v, v, 228))
 
     # Toolbar shelf: sweep-limited gloss line, brushed falloff, bounce.
     for x in range(width):
-        put(x, 31, (base.clamp(120 + sweep(x, width) * 1.8, 0, 238),) * 3 + (235,))
-        put(x, 32, (88, 88, 88, 232))
+        put(x, 31, (44, 44, 44, 235))
+        put(x, 32, (36, 36, 36, 232))
         for y in range(33, 44):
             t = (y - 33) / 10
             v = base.clamp(52 - 36 * t + brushed(x, y, 3) + sweep(x, width) * 0.25 * (1 - t))
@@ -266,7 +268,7 @@ def preview_pixels(width: int = 448, height: int = 144):
     for y in range(54, 61):
         for x in range(30, 248):
             if (x - 30) % 22 < 14:
-                put(x, y, (130, 130, 130, 255))
+                put(x, y, (112, 112, 112, 255))
     for y in range(62, 75):
         for x in range(28, 246):
             t = (y - 62) / 12
@@ -286,7 +288,7 @@ def preview_pixels(width: int = 448, height: int = 144):
     for gx in range(110, 318, 18):
         for y in range(9, 15):
             for x in range(gx, gx + 10):
-                put(x, y, (216, 216, 216, 220))
+                put(x, y, (118, 118, 118, 220))
 
     def circle(cx: int, cy: int, radius: int, role: str):
         r2 = radius - 0.5
@@ -301,19 +303,19 @@ def preview_pixels(width: int = 448, height: int = 144):
                 if distance > 0.78:
                     shade *= 0.62
                 if role == "prussian":
-                    color = (shade * 74, 15 + shade * 88, 46 + shade * 132)
+                    color = (shade * 56, 12 + shade * 64, 40 + shade * 100)
                     if spec > 0.55:
                         carry = (spec - 0.55) * 2.2
                         color = (
-                            min(255, color[0] + carry * 178),
-                            min(255, color[1] + carry * 178),
-                            min(255, color[2] + carry * 58),
+                            color[0] + carry * 92,
+                            color[1] + carry * 104,
+                            color[2] + carry * 48,
                         )
                 elif role == "white":
-                    v = 58 + shade * 194
+                    v = 28 + shade * 68
                     color = (v, v, v)
                 else:
-                    v = 11 + shade * 150
+                    v = 9 + shade * 82
                     color = (v, v, v)
                 if distance > 0.92:
                     color = (2, 2, 2)
