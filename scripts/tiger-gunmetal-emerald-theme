@@ -1,0 +1,405 @@
+#!/usr/bin/env python3
+"""Build and apply the Tiger-Gunmetal-Aqua Emerald theme (OS X 10.4 deco).
+
+Mac4Lin_Aqua geometry (Tiger window shapes, left traffic lights) recoloured
+to horizontally brushed black gunmetal with Prussian-blue / dark-grey /
+white lights and a Prussian hairline under active titlebars. Reuses the
+installed sibling gunmetal-emerald-theme for the PNG codec, library
+installs, rollback and emerald restart. Never writes below /usr/share.
+
+  tiger-gunmetal-emerald-theme build   [--source DIR] [--output DIR] [--force]
+  tiger-gunmetal-emerald-theme apply   [--theme DIR] [--no-restart]
+  tiger-gunmetal-emerald-theme restore [--baseline DIR] [--no-restart]
+  tiger-gunmetal-emerald-theme status
+"""
+
+from __future__ import annotations
+
+import argparse
+import configparser
+import importlib.machinery
+import importlib.util
+import os
+from pathlib import Path
+import shutil
+import sys
+import time
+
+THEME_NAME = "Tiger-Gunmetal-Aqua"
+DEFAULT_SOURCE = Path("/usr/share/emerald/themes/Mac4Lin_Aqua")
+SUGGESTED_GTK = "Tiger-Gunmetal-3D"
+BASELINE_NAME = "Dark-Aqua-Hybrid-Baseline"
+
+# Prussian blue ramp: deep shadow, base, lit body, rim highlight.
+PRUSSIAN_DEEP = (0, 26, 46)
+PRUSSIAN_BASE = (0, 49, 83)
+PRUSSIAN_LIT = (11, 78, 124)
+PRUSSIAN_RIM = (47, 124, 178)
+
+
+def load_sibling(name: str):
+    path = Path(__file__).resolve().parent / name
+    if not path.is_file():
+        raise SystemExit(f"ERROR: required sibling tool missing: {path}")
+    loader = importlib.machinery.SourceFileLoader(name.replace("-", "_"), str(path))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+base = load_sibling("gunmetal-emerald-theme")
+
+
+def brushed(x: int, y: int, amp: int = 5) -> int:
+    """Horizontal brushed-metal grain: fast along x, slow along y."""
+    value = (x * 2654435761 + (y // 3) * 40503 + (x // 23) * 9176 + 0x17A1) & 0xFFFFFFFF
+    return (value % (amp * 2 + 1)) - amp
+
+
+def blend(shade: int, rgb: tuple[int, int, int], weight: float) -> tuple[int, int, int]:
+    return tuple(base.clamp(shade + (channel - shade) * weight) for channel in rgb)
+
+
+def tiger_frame(path: Path) -> None:
+    """Recolour one frame pixmap: brushed gunmetal bar, blue active hairline."""
+    width, height, pixels = base.read_png(path)
+    name = path.name
+    is_top = ".top." in name
+    is_bottom = ".bottom." in name
+    active = ".inactive" not in name
+    result: list[tuple[int, int, int, int]] = []
+
+    for index, (r, g, b, a) in enumerate(pixels):
+        x, y = index % width, index // width
+        source_luma = base.luminance(r, g, b)
+        if is_top:
+            position = y / max(1, height - 1)
+            if active:
+                if y == 0:
+                    rgb, alpha = (96, 96, 96), 246
+                elif y == 1:
+                    rgb, alpha = (64, 64, 64), 240
+                elif y == height - 1:
+                    rgb, alpha = blend(8, PRUSSIAN_RIM, 0.62), 246
+                elif y == height - 2:
+                    rgb, alpha = (7, 7, 7), 236
+                else:
+                    value = base.clamp(33 - 25 * position + brushed(x, y, 5))
+                    if y % 6 == 0:
+                        value += 2
+                    rgb, alpha = (value, value, value), 228
+            else:
+                if y == 0:
+                    rgb, alpha = (52, 52, 52), 240
+                elif y == height - 1:
+                    rgb, alpha = (28, 28, 28), 236
+                else:
+                    value = base.clamp(30 - 15 * position + brushed(x, y, 2), 4, 44)
+                    rgb, alpha = (value, value, value), 224
+        elif is_bottom:
+            value = base.clamp(5 + source_luma * 0.12, 3, 34)
+            if y == 0:
+                value = 26
+            rgb, alpha = (value, value, value), 226
+        else:
+            value = base.clamp(4 + source_luma * 0.10 + abs(brushed(x, y, 2)), 3, 28)
+            rgb, alpha = (value, value, value), 222
+        result.append((rgb[0], rgb[1], rgb[2], a * alpha // 255))
+
+    base.write_png(path, width, height, result)
+
+
+def recolor_button(path: Path, role: str) -> None:
+    width, height, pixels = base.read_png(path)
+    result: list[tuple[int, int, int, int]] = []
+    for r, g, b, a in pixels:
+        light = base.luminance(r, g, b)
+        if role == "prussian":
+            nr = base.clamp(light * 0.28, 0, 66)
+            ng = base.clamp(12 + light * 0.30, 10, 88)
+            nb = base.clamp(40 + light * 0.50, 36, 172)
+        elif role == "white":
+            value = base.clamp(54 + light * 0.78, 50, 248)
+            nr = ng = nb = value
+        elif role == "darkgrey":
+            value = base.clamp(8 + light * 0.55, 6, 152)
+            nr = ng = nb = value
+        else:
+            value = base.clamp(14 + light * 0.52, 12, 164)
+            nr = ng = nb = value
+        result.append((nr, ng, nb, a))
+    base.write_png(path, width, height, result)
+
+
+def update_theme_ini(path: Path) -> None:
+    parser = configparser.ConfigParser(interpolation=None, strict=False)
+    parser.optionxform = str
+    with path.open() as handle:
+        parser.read_file(handle)
+    required = ["theme", "engine", "buttons", "shadow", "titlebar", "pixmap_settings"]
+    missing = [section for section in required if section not in parser]
+    if missing:
+        base.fail(f"theme.ini lacks sections: {', '.join(missing)}")
+
+    parser["engine"]["engine"] = "pixmap"
+    parser["theme"]["creator"] = "Anirudh; Tiger gunmetal composition for sd-rice"
+    parser["theme"]["description"] = (
+        "Tiger Gunmetal Aqua - OS X 10.4 brushed black, Prussian blue lights"
+    )
+    parser["theme"]["theme_version"] = "tiger-gunmetal-1"
+    parser["theme"]["suggested"] = SUGGESTED_GTK
+    parser["theme"]["version"] = "0.8.18"
+
+    parser["buttons"]["use_pixmap_buttons"] = "true"
+    parser["buttons"]["use_button_glow"] = "false"
+    parser["buttons"]["use_button_inactive_glow"] = "false"
+    parser["buttons"]["vertical_offset"] = "2"
+    parser["buttons"]["horizontal_offset"] = "4"
+
+    parser["titlebar"]["active_text"] = "#f4f4f4"
+    parser["titlebar"]["active_text_alpha"] = "1"
+    parser["titlebar"]["active_text_halo"] = "#000000"
+    parser["titlebar"]["active_text_halo_alpha"] = "0.85"
+    parser["titlebar"]["inactive_text"] = "#9c9c9c"
+    parser["titlebar"]["inactive_text_alpha"] = "1"
+    parser["titlebar"]["inactive_text_halo"] = "#000000"
+    parser["titlebar"]["inactive_text_halo_alpha"] = "0.6"
+
+    parser["shadow"]["shadow_color"] = "#000000"
+    parser["shadow"]["shadow_opacity"] = "0.78"
+    parser["shadow"]["shadow_radius"] = "18"
+    parser["shadow"]["shadow_offset_x"] = "1"
+    parser["shadow"]["shadow_offset_y"] = "2"
+
+    parser["pixmap_settings"]["inactive_use_active_pixmaps"] = "false"
+    parser["pixmap_settings"]["active_separator_line"] = "#0b4e7c"
+    parser["pixmap_settings"]["active_separator_line_alpha"] = "0.9"
+    parser["pixmap_settings"]["inactive_separator_line"] = "#000000"
+    parser["pixmap_settings"]["inactive_separator_line_alpha"] = "0.75"
+
+    with path.open("w") as handle:
+        parser.write(handle, space_around_delimiters=False)
+
+
+def preview_pixels(width: int = 350, height: int = 102):
+    pixels = [(0, 0, 0, 0)] * (width * height)
+
+    def put(x: int, y: int, rgba):
+        if 0 <= x < width and 0 <= y < height:
+            pixels[y * width + x] = rgba
+
+    # Window card with soft shadow edge.
+    for y in range(15, 91):
+        for x in range(17, 333):
+            edge = min(x - 17, 332 - x, y - 15, 90 - y)
+            if edge < 0:
+                continue
+            if edge < 2:
+                put(x, y, (54, 54, 54, 235))
+            elif y < 46:
+                if y == 17:
+                    put(x, y, (96, 96, 96, 246))
+                elif y == 18:
+                    put(x, y, (64, 64, 64, 240))
+                elif y == 44:
+                    put(x, y, (7, 7, 7, 236))
+                elif y == 45:
+                    put(x, y, blend(8, PRUSSIAN_RIM, 0.62) + (246,))
+                else:
+                    t = (y - 19) / 24
+                    value = base.clamp(33 - 25 * t + brushed(x, y, 5))
+                    put(x, y, (value, value, value, 228))
+            else:
+                put(x, y, (0, 0, 0, 245))
+
+    # Title glyph bar and content separators.
+    for x in range(96, 254, 12):
+        for y in range(27, 33):
+            put(x, y, (216, 216, 216, 220))
+    for x in range(32, 210):
+        put(x, 59, (110, 110, 110, 170))
+    for x in range(32, 175):
+        put(x, 70, (72, 72, 72, 150))
+    # Prussian selection row inside content.
+    for y in range(76, 84):
+        for x in range(32, 196):
+            if y in (76, 83) or x in (32, 195):
+                continue
+            t = (y - 76) / 7
+            color = tuple(
+                base.clamp(PRUSSIAN_DEEP[i] + (PRUSSIAN_LIT[i] - PRUSSIAN_DEEP[i]) * (1 - t))
+                for i in range(3)
+            )
+            put(x, y, color + (255,))
+
+    def circle(cx: int, cy: int, radius: int, fill, ring):
+        for y in range(cy - radius - 1, cy + radius + 2):
+            for x in range(cx - radius - 1, cx + radius + 2):
+                distance = ((x - cx) ** 2 + (y - cy) ** 2) ** 0.5
+                if distance > radius + 0.6:
+                    continue
+                color = fill
+                if distance > radius - 1.2:
+                    color = ring
+                elif y <= cy - 2:
+                    color = tuple(min(255, c + 38) for c in fill[:3]) + (fill[3],)
+                put(x, y, color)
+
+    circle(33, 31, 7, PRUSSIAN_BASE + (255,), (0, 16, 30, 255))
+    circle(52, 31, 7, (228, 228, 228, 255), (2, 2, 2, 255))
+    circle(71, 31, 7, (96, 96, 96, 255), (2, 2, 2, 255))
+    return width, height, pixels
+
+
+def build(source: Path, output: Path, force: bool) -> None:
+    if not (source / "theme.ini").is_file():
+        base.fail(f"Mac4Lin source is missing: {source}")
+    if output.exists():
+        if not force:
+            base.fail(f"output already exists (use --force to rebuild): {output}")
+        backup = output.with_name(f"{output.name}.pre-rebuild.{int(time.time())}")
+        output.rename(backup)
+        print(f"Preserved prior build: {backup}")
+
+    temporary = output.with_name(f".{output.name}.tmp.{os.getpid()}")
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    shutil.copytree(source, temporary, symlinks=True)
+
+    try:
+        update_theme_ini(temporary / "theme.ini")
+        for path in sorted(temporary.glob("pixmaps.*.png")):
+            tiger_frame(path)
+            print(f"Tiger frame: {path.name}")
+
+        roles = {
+            "close": "prussian",
+            "min": "white",
+            "max": "darkgrey",
+            "restore": "darkgrey",
+            "help": "white",
+            "menu": "neutral",
+            "shade": "neutral",
+            "unshade": "neutral",
+            "dimple": "neutral",
+        }
+        for path in sorted(temporary.glob("*.png")):
+            stem = path.name.removeprefix("buttons.").split(".")[0]
+            if stem in roles:
+                recolor_button(path, roles[stem])
+                print(f"Button {roles[stem]}: {path.name}")
+
+        width, height, pixels = preview_pixels()
+        base.write_png(temporary / "theme.screenshot.png", width, height, pixels)
+
+        (temporary / "TIGER-GUNMETAL-BUILD-RECEIPT.txt").write_text(
+            "Theme: Tiger-Gunmetal-Aqua\n"
+            f"Source: {source}\n"
+            f"Source aggregate: {base.aggregate_hash(source)}\n"
+            "Palette: brushed black gunmetal, Prussian blue, dark grey, white\n"
+            "Deco: OS X 10.4 Mac4Lin geometry, blue/grey/white traffic lights, "
+            "Prussian hairline under active titlebars\n"
+            f"Rollback library theme: {BASELINE_NAME}\n"
+        )
+
+        unsupported = []
+        for path in temporary.glob("*.png"):
+            try:
+                base.read_png(path)
+            except SystemExit as error:
+                unsupported.append(str(error))
+        if unsupported:
+            base.fail("PNG validation failed:\n" + "\n".join(unsupported))
+
+        temporary.rename(output)
+    except BaseException:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
+
+    print(f"Built: {output}")
+    print(f"Files: {sum(1 for p in output.rglob('*') if p.is_file())}")
+    print(f"Aggregate: {base.aggregate_hash(output)}")
+    print(f"theme.ini: {base.sha256(output / 'theme.ini')}")
+    print(f"Preview: {output / 'theme.screenshot.png'}")
+
+
+def apply(theme: Path, no_restart: bool) -> None:
+    print("ESCAPE: /home/sd/.local/bin/xfce-wm-recover")
+    print("TTY fallback: Ctrl+Alt+F2, then xfwm4 --replace &")
+    base.replace_active(theme, "tiger")
+    if not no_restart:
+        base.restart_emerald()
+    print(f"Active theme.ini: {base.sha256(Path.home() / '.emerald/theme/theme.ini')}")
+
+
+def restore(baseline: Path, no_restart: bool) -> None:
+    print("ESCAPE: /home/sd/.local/bin/xfce-wm-recover")
+    base.replace_active(baseline, "tiger-restore")
+    if not no_restart:
+        base.restart_emerald()
+    print(f"Restored baseline: {baseline}")
+    print(f"Active theme.ini: {base.sha256(Path.home() / '.emerald/theme/theme.ini')}")
+
+
+def status(output: Path, baseline: Path) -> None:
+    paths = {
+        "active": Path.home() / ".emerald/theme",
+        "tiger library": output,
+        "rollback baseline": baseline,
+    }
+    for label, path in paths.items():
+        print(f"{label}: {path}")
+        if (path / "theme.ini").is_file():
+            print(f"  theme.ini {base.sha256(path / 'theme.ini')}")
+            print(f"  aggregate {base.aggregate_hash(path)}")
+        else:
+            print("  MISSING")
+    for process in ("compiz", "emerald", "picom"):
+        import subprocess
+
+        result = subprocess.run(
+            ["pgrep", "-ax", process], text=True, capture_output=True, check=False
+        )
+        print(f"{process}: {result.stdout.strip() or '(absent)'}")
+
+
+def main() -> None:
+    home = Path.home()
+    default_output = home / ".emerald/themes" / THEME_NAME
+    default_baseline = home / ".emerald/themes" / BASELINE_NAME
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    build_parser = subparsers.add_parser("build", help="build the user theme")
+    build_parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    build_parser.add_argument("--output", type=Path, default=default_output)
+    build_parser.add_argument("--force", action="store_true")
+
+    apply_parser = subparsers.add_parser("apply", help="activate and restart Emerald")
+    apply_parser.add_argument("--theme", type=Path, default=default_output)
+    apply_parser.add_argument("--no-restart", action="store_true")
+
+    restore_parser = subparsers.add_parser("restore", help="restore saved baseline")
+    restore_parser.add_argument("--baseline", type=Path, default=default_baseline)
+    restore_parser.add_argument("--no-restart", action="store_true")
+
+    status_parser = subparsers.add_parser("status", help="print hashes/processes")
+    status_parser.add_argument("--output", type=Path, default=default_output)
+    status_parser.add_argument("--baseline", type=Path, default=default_baseline)
+
+    args = parser.parse_args()
+    if args.command == "build":
+        build(args.source.expanduser(), args.output.expanduser(), args.force)
+    elif args.command == "apply":
+        apply(args.theme.expanduser(), args.no_restart)
+    elif args.command == "restore":
+        restore(args.baseline.expanduser(), args.no_restart)
+    else:
+        status(args.output.expanduser(), args.baseline.expanduser())
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,483 @@
+#!/usr/bin/env python3
+"""Build the Tiger-Gunmetal-3D GTK3 theme on top of Quake-Gunmetal-3D.
+
+Operator spec 2026-08-22: keep the accepted Quake-Gunmetal surfaces, add
+OS X 10.4 brushed-black-gunmetal top bars, and turn every red accent into
+Prussian blue. The source theme is copied, never edited; the tiger layer
+imports after gunmetal-3d.css so equal specificity resolves to this file.
+
+  tiger-gunmetal-gtk3-theme build  [--source DIR] [--output DIR] [--force]
+  tiger-gunmetal-gtk3-theme probe  [--theme NAME] [--baseline NAME]
+  tiger-gunmetal-gtk3-theme apply  [--theme NAME]
+  tiger-gunmetal-gtk3-theme restore
+  tiger-gunmetal-gtk3-theme status
+"""
+
+from __future__ import annotations
+
+import argparse
+import configparser
+import importlib.machinery
+import importlib.util
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import time
+
+THEME_NAME = "Tiger-Gunmetal-3D"
+SOURCE_NAME = "Quake-Gunmetal-3D"
+STATE_FILE = Path.home() / ".local/state/tiger-gunmetal-gtk3/previous-theme"
+
+# Prussian blue ramp shared with the Emerald deco.
+PRUSSIAN_DEEP = (0, 26, 46)
+PRUSSIAN_BASE = (0, 49, 83)
+PRUSSIAN_LIT = (11, 78, 124)
+PRUSSIAN_RIM = (47, 124, 178)
+
+
+def load_sibling(name: str):
+    path = Path(__file__).resolve().parent / name
+    if not path.is_file():
+        raise SystemExit(f"ERROR: required sibling tool missing: {path}")
+    loader = importlib.machinery.SourceFileLoader(name.replace("-", "_"), str(path))
+    spec = importlib.util.spec_from_loader(loader.name, loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+base = load_sibling("gunmetal-gtk3-theme")
+
+
+def clamp(value: float, low: int = 0, high: int = 255) -> int:
+    return max(low, min(high, round(value)))
+
+
+def brushed(x: int, y: int, amp: int = 4) -> int:
+    value = (x * 2654435761 + (y // 3) * 40503 + (x // 23) * 9176 + 0x17A1) & 0xFFFFFFFF
+    return (value % (amp * 2 + 1)) - amp
+
+
+def gray(value: float, alpha: int = 255):
+    level = clamp(value)
+    return level, level, level, alpha
+
+
+def prussian(t: float, alpha: int = 255):
+    """Vertical ramp inside the Prussian family: 0 = deep, 1 = rim."""
+    return (
+        clamp(PRUSSIAN_DEEP[0] + (PRUSSIAN_RIM[0] - PRUSSIAN_DEEP[0]) * t),
+        clamp(PRUSSIAN_DEEP[1] + (PRUSSIAN_RIM[1] - PRUSSIAN_DEEP[1]) * t),
+        clamp(PRUSSIAN_DEEP[2] + (PRUSSIAN_RIM[2] - PRUSSIAN_DEEP[2]) * t),
+        alpha,
+    )
+
+
+def menubar_pixel(x, y, w, h):
+    """10.4 brushed black gunmetal: white rim, horizontal grain, blue hairline."""
+    if y == 0:
+        return gray(96)
+    if y == 1:
+        return gray(58)
+    if y == h - 1:
+        return prussian(0.62)
+    if y == h - 2:
+        return gray(6)
+    t = y / max(1, h - 3)
+    value = 32 - 24 * t + brushed(x, y, 4) + (2 if y % 6 == 0 else 0)
+    return gray(value, 232)
+
+
+def plate_pixel(x, y, w, h):
+    """Prussian highlight plate for menubar items and menu hover."""
+    if y == 0:
+        return prussian(0.95)
+    if y == h - 1:
+        return prussian(0.08)
+    t = y / max(1, h - 1)
+    color = prussian(0.72 - 0.30 * t)
+    return color[0], color[1], color[2], 255
+
+
+def selected_pixel(x, y, w, h):
+    """Selected-row plate: gunmetal body, Prussian edge and wash."""
+    if x < 3:
+        return prussian(0.85)
+    if y == 0:
+        return gray(38)
+    if y == h - 1:
+        return gray(4)
+    t = y / max(1, h - 1)
+    wash = 0.38 - 0.22 * t
+    return (
+        clamp(12 + (PRUSSIAN_LIT[0] - 12) * wash + brushed(x, y, 2)),
+        clamp(16 + (PRUSSIAN_LIT[1] - 16) * wash + brushed(x, y, 2)),
+        clamp(22 + (PRUSSIAN_LIT[2] - 22) * wash + brushed(x, y, 2)),
+        255,
+    )
+
+
+def button_hover_pixel(x, y, w, h):
+    """Raised gunmetal cap with a faint Prussian inner rim on hover."""
+    edge = min(x, y, w - 1 - x, h - 1 - y)
+    if y == 0:
+        return gray(62)
+    if y == h - 1:
+        return gray(4)
+    t = y / max(1, h - 1)
+    value = 42 - 30 * t + brushed(x, y, 2)
+    if edge == 1:
+        return (
+            clamp(value + (PRUSSIAN_RIM[0] - value) * 0.35),
+            clamp(value + (PRUSSIAN_RIM[1] - value) * 0.35),
+            clamp(value + (PRUSSIAN_RIM[2] - value) * 0.35),
+            255,
+        )
+    return gray(value)
+
+
+def button_active_pixel(x, y, w, h):
+    """Pressed cap sinks into Prussian blue."""
+    if y == 0:
+        return prussian(0.05)
+    if y == h - 1:
+        return prussian(0.80)
+    t = y / max(1, h - 1)
+    color = prussian(0.10 + 0.55 * t)
+    return color[0], color[1], color[2], 255
+
+
+def preview_pixel(x, y, w, h):
+    """Material board: menubar, toolbar, sidebar, list, controls."""
+    if y < 26:
+        return menubar_pixel(x, y, w, 26)
+    if y < 64:
+        if y == 26:
+            return gray(30)
+        value = 22 - 12 * ((y - 27) / 36) + brushed(x, y, 3)
+        return gray(value)
+    if x < 168:
+        edge = 5 * (1 - x / 167)
+        return gray(4 + edge + brushed(x, y, 1))
+    if 74 <= y <= 88 and 176 <= x <= 388:
+        return selected_pixel(x - 176, y - 74, 212, 15)
+    return gray(2 + abs(brushed(x // 3, y // 2, 1)))
+
+
+ASSETS = {
+    "menubar.png": (512, 24, menubar_pixel),
+    "plate-hover.png": (256, 24, plate_pixel),
+    "selected-plate.png": (320, 24, selected_pixel),
+    "button-hover.png": (320, 34, button_hover_pixel),
+    "button-active.png": (320, 34, button_active_pixel),
+    "preview.png": (640, 320, preview_pixel),
+}
+
+
+OVERRIDE_CSS = r'''/* Generated by tiger-gunmetal-gtk3-theme. Prussian accents over gunmetal. */
+
+/* OS X 10.4 brushed black gunmetal top bar with blue hairline. */
+menubar,
+.menubar {
+  min-height: 24px;
+  padding: 0 4px;
+  background-color: #070707;
+  background-image: url("tiger3d/menubar.png");
+  background-size: 100% 100%;
+  border-top: 1px solid rgba(255,255,255,0.38);
+  border-bottom: 1px solid #0b4e7c;
+  box-shadow: inset 0 1px rgba(255,255,255,0.10), inset 0 -2px #010101;
+  color: #f2f2f2;
+}
+menubar > menuitem:hover,
+.menubar > menuitem:hover {
+  background-image: url("tiger3d/plate-hover.png");
+  background-size: 100% 100%;
+  border-color: #12507e #032539 #01121e #12507e;
+  box-shadow: inset 0 1px rgba(255,255,255,0.22);
+  color: #ffffff;
+}
+
+/* Prussian replaces every red selection edge from the gunmetal layer. */
+menu menuitem:hover,
+.menu menuitem:hover,
+modelbutton:hover {
+  background-image: url("tiger3d/plate-hover.png");
+  background-size: 100% 100%;
+  border-left: 2px solid #2f7cb2;
+  color: #ffffff;
+}
+row:selected,
+treeview.view:selected,
+.view:selected,
+.sidebar row:selected,
+window.thunar .view:selected {
+  background-color: #062033;
+  background-image: url("tiger3d/selected-plate.png");
+  background-size: 100% 100%;
+  border-left: 2px solid #0b4e7c;
+  box-shadow: inset 0 1px rgba(255,255,255,0.12), inset 0 -1px #02070c;
+  color: #ffffff;
+}
+
+/* Blue focus replaces the neutral gunmetal glow. */
+entry:focus,
+window.thunar entry:focus {
+  border-color: #2f7cb2 #123c5c #0a2a42 #1d5a88;
+  box-shadow: inset 0 2px 4px #000000, 0 0 3px rgba(47,124,178,0.45);
+}
+entry selection,
+textview text selection,
+label selection {
+  background-color: #003153;
+  color: #ffffff;
+}
+
+/* Hover rims the cap blue; pressed sinks into Prussian. */
+button:hover,
+button.flat:hover,
+toolbar button:hover,
+.primary-toolbar button:hover {
+  background-image: url("tiger3d/button-hover.png");
+  background-size: 100% 100%;
+  box-shadow: inset 0 1px rgba(255,255,255,0.17), 0 0 3px rgba(47,124,178,0.28);
+}
+button:active,
+button:checked,
+button.flat:active,
+button.flat:checked {
+  background-image: url("tiger3d/button-active.png");
+  background-size: 100% 100%;
+  border-color: #01121e #0f4a76 #2f7cb2 #01121e;
+  box-shadow: inset 0 2px 3px #00101d;
+}
+
+/* Blue progress, checks and switches. */
+progressbar trough {
+  background-color: #040404;
+  border: 1px solid #1c1c1c;
+  box-shadow: inset 0 1px 3px #000000;
+}
+progressbar progress {
+  background-image: linear-gradient(to bottom, #2f7cb2, #0b4e7c 55%, #003153);
+  border: 1px solid #011c30;
+  box-shadow: inset 0 1px rgba(255,255,255,0.25);
+  border-radius: 3px;
+}
+check,
+checkbutton.check,
+radiobutton radio {
+  background-color: #060606;
+  border: 1px solid #2a2a2a;
+  box-shadow: inset 0 1px 2px #000000;
+}
+check:checked,
+checkbutton.check:checked,
+radiobutton radio:checked {
+  background-color: #0b4e7c;
+  border-color: #2f7cb2;
+  box-shadow: inset 0 1px rgba(255,255,255,0.28);
+  color: #ffffff;
+}
+switch {
+  background-color: #060606;
+  border: 1px solid #242424;
+  box-shadow: inset 0 1px 2px #000000;
+}
+switch:checked {
+  background-color: #0b4e7c;
+  border-color: #2f7cb2;
+}
+levelbar block.filled {
+  background-color: #0b4e7c;
+  border: 1px solid #2f7cb2;
+}
+'''
+
+
+def verify_source(source: Path) -> None:
+    index = source / "index.theme"
+    gtk_css = source / "gtk-3.0/gtk.css"
+    for path in (index, gtk_css, source / "gtk-3.0/gunmetal-3d.css"):
+        if not path.is_file():
+            base.fail(f"source theme is missing {path}")
+    if not (source / "gtk-3.0/gunmetal3d").is_dir():
+        base.fail(f"source theme lacks gunmetal3d assets: {source}")
+    parser = configparser.ConfigParser(interpolation=None)
+    parser.optionxform = str
+    parser.read(index)
+    name = parser.get("Desktop Entry", "Name", fallback="")
+    if name != SOURCE_NAME:
+        base.fail(f"unexpected source theme name: {name!r} (wanted {SOURCE_NAME})")
+    if '@import url("gunmetal-3d.css");' not in gtk_css.read_text():
+        base.fail("source gtk.css does not import the gunmetal layer")
+
+
+def update_index(path: Path) -> None:
+    parser = configparser.ConfigParser(interpolation=None)
+    parser.optionxform = str
+    parser.read(path)
+    for section in ("Desktop Entry", "X-GNOME-Metatheme"):
+        if section not in parser:
+            base.fail(f"unsupported index.theme: {path}")
+    parser["Desktop Entry"]["Name"] = THEME_NAME
+    parser["Desktop Entry"]["Comment"] = (
+        "Tiger gunmetal GTK3: OS X 10.4 brushed bars, Prussian blue accents"
+    )
+    parser["X-GNOME-Metatheme"]["GtkTheme"] = THEME_NAME
+    scheme = parser["X-GNOME-Metatheme"].get("GtkColorScheme", "")
+    wanted = {"selected_bg_color": "#003153", "selected_fg_color": "#ffffff"}
+    fields, seen = [], set()
+    for field in scheme.split(","):
+        key, separator, value = field.partition(":")
+        normalized = key.strip()
+        if separator and normalized in wanted:
+            fields.append(f"{normalized}:{wanted[normalized]}")
+            seen.add(normalized)
+        else:
+            fields.append(field)
+    missing = set(wanted) - seen
+    if missing:
+        base.fail(f"index.theme color scheme lacks keys: {sorted(missing)}")
+    parser["X-GNOME-Metatheme"]["GtkColorScheme"] = ",".join(fields)
+    with path.open("w") as handle:
+        parser.write(handle, space_around_delimiters=False)
+
+
+def update_gtk_css(path: Path) -> None:
+    import_line = '@import url("tiger-3d.css");'
+    text = path.read_text()
+    if import_line in text:
+        base.fail("source already imports tiger-3d.css")
+    path.write_text(text.rstrip() + "\n" + import_line + "\n")
+
+
+def build(source: Path, output: Path, force: bool) -> None:
+    verify_source(source)
+    if output.exists():
+        if not force:
+            base.fail(f"output exists (use --force): {output}")
+        backup = output.with_name(f"{output.name}.pre-rebuild.{int(time.time())}")
+        output.rename(backup)
+        print(f"Preserved previous build: {backup}")
+
+    temporary = output.with_name(f".{output.name}.tmp.{os.getpid()}")
+    if temporary.exists():
+        shutil.rmtree(temporary)
+    shutil.copytree(source, temporary, symlinks=True)
+    try:
+        update_index(temporary / "index.theme")
+        update_gtk_css(temporary / "gtk-3.0/gtk.css")
+        (temporary / "gtk-3.0/tiger-3d.css").write_text(OVERRIDE_CSS)
+        asset_root = temporary / "gtk-3.0/tiger3d"
+        for name, (width, height, function) in ASSETS.items():
+            base.write_png(asset_root / name, width, height, function)
+            print(f"Generated {name}: {width}x{height}")
+        (temporary / "TIGER-GUNMETAL-3D-BUILD-RECEIPT.txt").write_text(
+            f"Theme: {THEME_NAME}\n"
+            f"Source aggregate: {base.aggregate_hash(source)}\n"
+            "Palette: brushed black gunmetal, Prussian blue, dark grey, white\n"
+            "Layer: tiger-3d.css imported after gunmetal-3d.css; red accents "
+            "remapped to Prussian blue; menubar gets the 10.4 brushed treatment\n"
+            f"Rollback theme: {SOURCE_NAME}\n"
+        )
+        temporary.rename(output)
+    except BaseException:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+        raise
+
+    print(f"Built: {output}")
+    print(f"Files: {sum(1 for p in output.rglob('*') if p.is_file())}")
+    print(f"Aggregate: {base.aggregate_hash(output)}")
+    print(f"Override CSS: {base.sha256(output / 'gtk-3.0/tiger-3d.css')}")
+    print(f"Preview: {output / 'gtk-3.0/tiger3d/preview.png'}")
+
+
+def probe(theme: str, baseline: str) -> None:
+    base.probe(theme, baseline)
+
+
+def apply(theme: str) -> None:
+    current = base.get_xsetting()
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    if current == theme and STATE_FILE.is_file():
+        previous = STATE_FILE.read_text().strip()
+        print(f"Preserved existing rollback while rebuilding active theme: {previous}")
+    else:
+        STATE_FILE.write_text(current + "\n")
+        previous = current
+        print(f"Previous GTK theme recorded: {previous}")
+    base.set_xsetting(theme)
+    print(f"Active GTK theme: {base.get_xsetting()}")
+    print(f"Rollback target: {previous}")
+    print(f"Rollback: tiger-gunmetal-gtk3-theme restore")
+
+
+def restore(fallback: str) -> None:
+    target = STATE_FILE.read_text().strip() if STATE_FILE.is_file() else fallback
+    base.set_xsetting(target)
+    print(f"Restored GTK theme: {base.get_xsetting()}")
+
+
+def status(output: Path) -> None:
+    print(f"active GTK: {base.get_xsetting()}")
+    print(f"theme path: {output}")
+    if output.is_dir():
+        print(f"aggregate: {base.aggregate_hash(output)}")
+        print(f"override CSS: {base.sha256(output / 'gtk-3.0/tiger-3d.css')}")
+    else:
+        print("theme: MISSING")
+    if STATE_FILE.is_file():
+        print(f"recorded rollback: {STATE_FILE.read_text().strip()}")
+    for process in ("compiz", "emerald", "picom"):
+        result = subprocess.run(
+            ["pgrep", "-ax", process], text=True, capture_output=True, check=False
+        )
+        print(f"{process}: {result.stdout.strip() or '(absent)'}")
+
+
+def main() -> None:
+    home = Path.home()
+    default_source = home / ".themes" / SOURCE_NAME
+    default_output = home / ".themes" / THEME_NAME
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    build_parser = subparsers.add_parser("build")
+    build_parser.add_argument("--source", type=Path, default=default_source)
+    build_parser.add_argument("--output", type=Path, default=default_output)
+    build_parser.add_argument("--force", action="store_true")
+
+    probe_parser = subparsers.add_parser("probe")
+    probe_parser.add_argument("--theme", default=THEME_NAME)
+    probe_parser.add_argument("--baseline", default=SOURCE_NAME)
+
+    apply_parser = subparsers.add_parser("apply")
+    apply_parser.add_argument("--theme", default=THEME_NAME)
+
+    restore_parser = subparsers.add_parser("restore")
+    restore_parser.add_argument("--fallback", default=SOURCE_NAME)
+
+    status_parser = subparsers.add_parser("status")
+    status_parser.add_argument("--output", type=Path, default=default_output)
+
+    args = parser.parse_args()
+    if args.command == "build":
+        build(args.source.expanduser(), args.output.expanduser(), args.force)
+    elif args.command == "probe":
+        probe(args.theme, args.baseline)
+    elif args.command == "apply":
+        apply(args.theme)
+    elif args.command == "restore":
+        restore(args.fallback)
+    else:
+        status(args.output.expanduser())
+
+
+if __name__ == "__main__":
+    main()

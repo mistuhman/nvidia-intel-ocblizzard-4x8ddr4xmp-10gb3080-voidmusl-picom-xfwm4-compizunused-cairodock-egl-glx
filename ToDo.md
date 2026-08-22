@@ -12,3 +12,10 @@ Operator topic 2026-08-22: CoD titles + launchers on the migrated NVMe ZFS root 
 | Whatnot launchers | Extra launchers the operator wants (Plutonium launcher, etc.) working. | ☐ |
 | Lunar Client (Minecraft) | Fix "java invoke error" on the Lunar Client launcher. | ☐ |
 | ProtonQT / Proton-CachyOS | Declutter ProtonQT's version list; best Proton tuned for the bore kernel (ntsync/fastsync + features), or compile tuned Proton from source. | ☐ |
+
+Operator topic 2026-08-22: Tiger-Gunmetal theme pair — OS X 10.4 deco in brushed black gunmetal with Prussian blue, dark grey, white.
+
+| Goal | Sentence | Done |
+|---|---|---|
+| Tiger-Gunmetal-Aqua (Emerald) | `etc/tiger-theme-install.block` pasted, both builds + probe PASS on target. | ☐ |
+| Tiger-Gunmetal-3D (XFCE GTK3) | Operator visual verdict on previews/live apply; both themes applied and frozen or rolled back. | ☐ |
