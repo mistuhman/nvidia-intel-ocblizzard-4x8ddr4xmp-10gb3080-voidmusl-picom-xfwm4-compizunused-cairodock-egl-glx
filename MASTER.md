@@ -231,17 +231,23 @@
             "Void package availability 2026-08-22 (void-packages GitHub API): PRESENT steam 1.0.0.87, wine 11.15, wine-gecko, wine-mono, winetricks 20260125, lutris 0.5.22, protonplus 0.6.4, gamescope 3.16.20, gamemode, nvidia, vulkan-loader, icoutils, cabextract, unzip, aria2, 7zip; ABSENT dxvk, vkd3d, umu-launcher, protonup-qt, proton-cachyos - DXVK via winetricks/manual; proton-cachyos via ProtonPlus or manual install into ~/.local/share/Steam/compatibilitytools.d",
             "kernel/game-stack fact: tkg kernels (6.18.35-tkg-bore) carry the ntsync patch - kernel >= 6.14 exposes /dev/ntsync; proton-cachyos gates fastsync/ntsync behind env vars (PROTON_USE_NTSYNC etc); /dev/ntsync presence on target must be confirmed by probe before choosing the tuned Proton build",
             "Lunar Client (Minecraft) java invoke error: candidate causes from research - stale ~/.lunarclient/offline/multiver cache, missing/custom JRE (GraalVM recommended), AppImage support removal reports 2025+, third-party launcher block (LunarAntiAntiAgent.jar for lunar-client-qt); AUR lunar-client notes NVIDIA __GL_THREADED_OPTIMIZATIONS=0 fix; target receipts needed to pick the fix",
-            "ProtonQT declutter plan: probe inventories all Proton versions (Steam compatibilitytools.d, steamapps/common, ProtonPlus-managed); prune to one tuned build matching bore kernel features (ntsync/fastsync, DLSS/upscalers, wayland/wow64) or compile proton/wine-tkg from source with bore-tuned config"
+            "ProtonQT declutter plan: probe inventories all Proton versions (Steam compatibilitytools.d, steamapps/common, ProtonPlus-managed); prune to one tuned build matching bore kernel features (ntsync/fastsync, DLSS/upscalers, wayland/wow64) or compile proton/wine-tkg from source with bore-tuned config",
+            "probe-1 RECEIVED 2026-08-22 (operator paste): kernel 6.18.35-tkg-bore; /dev/ntsync present world-rw (10,262) so the ntsync path is CONFIRMED; installed steam 1.0.0.85, wine 11.14, winetricks 20260125, gamescope 3.16.20, gamemode 1.8.2, MangoHud 0.8.2, nvidia 595.84 full stack incl 32bit libs; NOT installed lutris, protonplus, dxvk, vkd3d, umu-launcher, vulkaninfo; RTX 3080 driver 595.84 CUDA 13.2; / 824G free; tank/games 281G free zfs rw,noatime at /mnt/games",
+            "probe-1 game inventory: CoD4 7940 and BO1 42700 fully installed in /mnt/games/SteamLibrary; BO3 311210 has common-dir files but NO final appmanifest (only dozens of appmanifest .acf.NNN.tmp leftovers for 311210/3354750/4000/730/284160 = interrupted Steam manifest writes; clean only with Steam stopped, wave-3); WaW 10090 and BO2 202970 NOT installed; non-Steam MW2 2009 copy at /mnt/games/Call of Duty - Modern Warfare 2; Steam built-in Proton 9.0 Beta + Proton Hotfix present",
+            "probe-1 Proton inventory: compatibilitytools.d holds 4 proton-cachyos builds (20260602 x86_64, 20260702 x86_64, 20260702 x86_64_v3, 20260703 x86_64_v3); gh check 2026-08-22: latest CachyOS/proton-cachyos release = cachyos-11.0-20260703-slr published 2026-07-22, so the installed 20260703 x86_64_v3 is ALREADY the newest build - declutter = prune to that one (rm 3 older dirs, user-level, wave-3 after lscpu confirms avx2 for v3)",
+            "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
+            "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "First gate for the games objective: operator pastes output of etc/games-probe.block (user-level, non-destructive) from the target - installed game stack versions, /dev/ntsync presence, Steam library contents on /mnt/games (appmanifests show WaW 10090 / BO1 42700 / BO2 202970 / BO3 311210), Lunar Client install location, GPU/vulkan state. Install blocks are authored only after this receipt.",
+        "nextGateAskFirst": "Wave-2 gate: operator pastes outputs of etc/games-probe2.block (user shell) and etc/games-prereq-root.block (root shell entered separately; block starts with id -u). Wave-3 blocks (Plutonium wine prefix + winetricks, proton-cachyos declutter rm, Lunar flatpak fix, CoD4 cod4x+promod, BO3 t7x staging) are authored only after both receipts. Operator-side, no console needed: Steam UI install of WaW 10090 and BO2 202970 into the /mnt/games SteamLibrary can run in parallel.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
-            "Lunar Client java invoke error root cause unconfirmed on target - three candidate fixes (cache wipe, custom JRE, launcher swap to lunar-client-qt)",
-            "/dev/ntsync on 6.18.35-tkg-bore unconfirmed until probe - gates proton-cachyos version choice",
-            "Void glibc wine 11.15 needs 32-bit multilib packages (lib32-*) for 32-bit CoD titles - inventory xbps lib32 packages in the probe/root pass"
+            "Lunar Client java invoke root cause still unconfirmed, now narrowed to the flatpak variant com.lunarclient.LunarClient - fix picked after probe2 log receipts",
+            "BO3 Steam registration broken (no final appmanifest_311210.acf) - the t7x path needs a clean Steam-side BO3 state first; approach decided after probe2 dir receipts",
+            "CPU x86-64-v3 fitness unconfirmed until lscpu receipt (MASTER says Intel DDR4 so likely fine) - gates which proton-cachyos build survives the declutter",
+            "wine 11.15 multilib claim verified in template (single wine package replaces wine-32bit) but unverified on target until the games-prereq-root receipts and a 32-bit exe run"
         ],
-        "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. NEW OBJECTIVE GATE: etc/games-probe.block receipts pasted by operator before any install block.",
+        "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. games-probe.block RECEIVED 2026-08-22; wave-2 gate = games-probe2 + games-prereq-root receipts before any wave-3 action block.",
         "afterBootGate": [
             "probe target user-level with etc/games-probe.block and paste full output",
             "inventory CoD game files on /mnt/games before any download (SteamLibrary restored 2026-08-21 may already hold WaW/BO1/BO2/BO3)",
@@ -255,14 +261,16 @@
             "ntfs-3g FUSE wedges on sustained reads after hot replug - use kernel ntfs3 for big NTFS reads",
             "firmware self-prunes dead-ESP NVRAM entries and self-enumerates EFI/BOOT fallback; efibootmgr -o order is advisory on this firmware",
             "hard rule from operator 2026-08-21: never send a second wave of target commands until the first wave output has arrived",
-            "ZFS lz4 saved about 17pct on the 555G games archive restore"
+            "ZFS lz4 saved about 17pct on the 555G games archive restore",
+            "escaped globs in pasted blocks: backslash-star works for find patterns (find -iname \\*lunar\\*) but defeats ls glob expansion (ls ...appmanifest_\\* returned cannot-access while the plain dir listing held the data) - for ls use a bare unquoted glob like Call\\* or list the parent dir"
         ],
         "knownRisks": [
             "Plutonium + DXVK replaces DLLs; Plutonium anti-cheat flags DLL replacement - community reports no bans for stock DXVK, risk remains",
             "32-bit CoD titles on glibc Void need lib32 multilib packages; missing lib32-vulkan-loader etc breaks DXVK for 32-bit",
-            "ntsync gate: if /dev/ntsync missing on tkg-bore, proton-cachyos fastsync/ntsync features are unavailable - fall back to GE/valve proton",
+            "ntsync device CONFIRMED present (/dev/ntsync world-rw on 6.18.35-tkg-bore); proton-cachyos ntsync may still be env-gated per build - verify launch env at wave-3 before relying on it",
             "boiii is C&D'd/abandonware - prefer t7x; do not run t7patch + boiii together (both patch the same BO3 install)",
-            "Steam library on ZFS tank/games: CoW with heavy writes; keep steamapps and wine prefixes on tank/games, not the nvme root pool"
+            "Steam library on ZFS tank/games: CoW with heavy writes; keep steamapps and wine prefixes on tank/games, not the nvme root pool",
+            "Steam appmanifest .acf.NNN.tmp swarms (311210/3354750/4000/730/284160) are interrupted manifest writes - delete only with Steam fully stopped, wave-3"
         ]
     },
     "parked": [

@@ -1,0 +1,12 @@
+id -u
+# games-prereq-root.block - root: shared prereqs for the games objective (2026-08-22)
+# Gate: every xbps-install below completes without error and the verify queries show wine 11.15, wine-mono, wine-gecko, vulkan-loader, lib32-vulkan-loader, cabextract, unzip, p7zip installed.
+# Rollback: xbps-remove -y p7zip unzip cabextract lib32-vulkan-loader vulkan-loader wine-gecko wine-mono wine
+# Notes: wine upgrades 11.14 to 11.15 (repo current; Void wine is one multilib package that replaces the old wine-32bit, expect a few hundred MB of lib32 deps). Steam, nvidia, kernel are NOT touched. samba intentionally not installed - fallback only if a game later reports missing ntlm_auth.
+df -h /
+xbps-install -y wine wine-mono wine-gecko
+xbps-install -y vulkan-loader lib32-vulkan-loader
+xbps-install -y cabextract unzip p7zip
+xbps-query -s wine
+xbps-query -s vulkan
+xbps-query -s cabextract
