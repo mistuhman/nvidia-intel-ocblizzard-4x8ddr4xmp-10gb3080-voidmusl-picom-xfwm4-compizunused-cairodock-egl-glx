@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "ACCEPTED live 2026-08-22 operator quote compiz working after wave-10. Cause: __GL_YIELD=USLEEP on NVIDIA 595.84 made compiz --replace exit rc0. Launcher rewritten to exec /usr/bin/compiz --replace ccp; backup ~/.local/bin/compiz-session.bak.noneyield; persist still Client0=compiz-session. Emerald 6454 up. Do not close the start TTY. Next reboot is the login gate.",
+        "compiz": "ACCEPTED 2026-08-22 operator: compiz works. Launcher is /usr/bin/compiz --replace ccp (no __GL_YIELD). Persist armed. ZBM rollback nvme/ROOT/void@compiz-ok-20260822 created SNAP_RC_0 (0B used, 99.4G refer). Prior migrate snap nvme/ROOT/void@nvme-migrate kept.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -247,7 +247,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Operator wants the start TTY closed and a ZBM rollback point. User: etc/compiz-detach.block (setsid /usr/bin/compiz --replace ccp, no yield). After COMPIZ_STILL_RIGHT, root: etc/zbm-compiz-ok.block snapshots nvme/ROOT/void@compiz-ok-20260822. Do not run the root block if Compiz died.",
+        "nextGateAskFirst": "Compiz works; ZBM snap nvme/ROOT/void@compiz-ok-20260822 exists. If Compiz is still in a foreground terminal, detach with setsid -f /usr/bin/compiz --replace ccp (no yield) before closing it. Games stay parked until the operator says otherwise.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",

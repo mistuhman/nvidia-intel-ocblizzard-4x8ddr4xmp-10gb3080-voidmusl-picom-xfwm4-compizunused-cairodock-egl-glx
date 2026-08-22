@@ -4,7 +4,7 @@ Operator override 2026-08-22: Compiz first. Games stay listed but parked until C
 
 | Goal | Sentence | Done |
 |---|---|---|
-| Compiz daily WM | Live Compiz+emerald 2026-08-22 (operator: compiz working). Login launcher no longer sets __GL_YIELD=USLEEP. Reboot confirm optional. | ☑ |
+| Compiz daily WM | Compiz works 2026-08-22. Login launcher has no __GL_YIELD. ZBM snap nvme/ROOT/void@compiz-ok-20260822. | ☑ |
 | Call of Duty: World at War | WaW running — Steam + Proton and/or Plutonium T4 client under Wine. PARKED. | ☐ |
 | Call of Duty: Black Ops 1 | BO1 running — Steam + Proton; Plutonium T5 for MP/zombies. | ☐ |
 | Call of Duty: Black Ops 2 | BO2 running via Plutonium (T6) under Wine + DXVK. | ☐ |
