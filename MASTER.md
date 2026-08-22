@@ -187,7 +187,7 @@
     },
     "desktopState": {
         "mission": "Move daily-driver XFCE from xfwm4+picom to compiz-reloaded+cairo-dock with headless-baked PS3-XMB wallpaper while staying reversible.",
-        "compiz": "WOUND 2026-08-22: live WM is xfwm4 --sm-client-disable --replace (escape-path flags), not Compiz. Operator 2026-08-22: both screens usable under xfwm4. Binary 0.8.18 --version OK; GLX NVIDIA 595.84 OK; picom masked; profile repair said 7/7 + floor OK. Prior chat claimed persist armed and silent rc0 starts; wave-2 never started Compiz (strace absent). Next: wave-3 read-only persist/launcher dump.",
+        "compiz": "WOUND 2026-08-22 live=xfwm4, persist ARMED. Wave-3: Client0=/home/sd/.local/bin/compiz-session, verify SAFE, SaveOnExit false, SessionName Default, no Default session file. xfce4-session 1527 since 06:43; xfwm4 4183 PPID 1 since 07:31 --sm-client-disable --replace (NOT xfce-wm-recover, which starts xfwm4 --replace only and would disarm persist). clean-room log 0 bytes rc0 at 07:31. Next: wave-4 live relight.",
         "theme": "gunmetal Emerald and GTK3 accepted and frozen; depth is function, flatness failed.",
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
@@ -234,6 +234,7 @@
             "kernel/game-stack fact: tkg kernels (6.18.35-tkg-bore) carry the ntsync patch - kernel >= 6.14 exposes /dev/ntsync; proton-cachyos gates fastsync/ntsync behind env vars (PROTON_USE_NTSYNC etc); /dev/ntsync presence on target must be confirmed by probe before choosing the tuned Proton build",
             "Lunar Client (Minecraft) java invoke error: candidate causes from research - stale ~/.lunarclient/offline/multiver cache, missing/custom JRE (GraalVM recommended), AppImage support removal reports 2025+, third-party launcher block (LunarAntiAntiAgent.jar for lunar-client-qt); AUR lunar-client notes NVIDIA __GL_THREADED_OPTIMIZATIONS=0 fix; target receipts needed to pick the fix",
             "ProtonQT declutter plan: probe inventories all Proton versions (Steam compatibilitytools.d, steamapps/common, ProtonPlus-managed); prune to one tuned build matching bore kernel features (ntsync/fastsync, DLSS/upscalers, wayland/wow64) or compile proton/wine-tkg from source with bore-tuned config",
+            "compiz-wound wave-3 RECEIVED 2026-08-22: persist ARMED (live xfconf + xml Client0=compiz-session); verify VERDICT SAFE; SaveOnExit=false SessionName=Default; launcher execs env __GL_YIELD=USLEEP /usr/bin/compiz --replace ccp after repair --floor; xfce-wm-recover would set Client0=xfwm4 then nohup xfwm4 --replace (current xfwm4 is --sm-client-disable --replace so recover did NOT start it and did NOT disarm persist); xfce4-session 1527 ppid 1522 since 06:43:28; xfwm4 4183 ppid 1 since 07:31:30; clean-room.rc=0 at 07:31; profile [core] floor+7 keys OK, s0_outputs 2560x1440+0+0;1920x1080+2560+0; golden still af457926; no recover/revert autostart",
             "OPERATOR OVERRIDE 2026-08-22: Compiz recovery takes the gate. Games wave-2 receipts (games-probe2 + games-prereq-root) are still unpaid and stay parked.",
             "compiz-wound wave-2 RECEIVED 2026-08-22: xfwm4 pid 4183 --sm-client-disable --replace is WM; no compiz/emerald/picom; wmctrl Name Xfwm4; / 823G free; NVIDIA 595.84 GLX direct yes; compiz --version 0.8.18 rc0; strace absent so live --replace never ran; repair log already 7/7 + floor OK; gamma 1:1:1 DPMS disabled; operator later: both screens work under xfwm4",
             "compiz-wound source check 2026-08-22 (compiz-reloaded v0.8.18 main.c): startup failures return 1; eventLoop then return 0; SIGTERM/SIGINT set shutDown; SIGSEGV execs xfwm4 --replace after printing Launching fallback window manager. Current xfwm4 flags include --sm-client-disable so this is NOT that fallback.",
@@ -243,7 +244,7 @@
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
             "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
         ],
-        "nextGateAskFirst": "Wave-3 gate: operator pastes FULL output of etc/compiz-wound-wave3.block (user shell, starts with id -u). READ-ONLY. No Compiz --replace until persist, launcher, and escape-script receipts exist. Games blocks stay parked.",
+        "nextGateAskFirst": "Wave-4 gate: operator pastes FULL output of etc/compiz-wound-wave4.block (user shell) plus one verdict word COMPIZ_LOOKS_RIGHT or COMPIZ_LOOKS_WRONG or XFWM4_RESTORED. Rollback: xfwm4 --sm-client-disable --replace. Games stay parked.",
         "handoffFixUnconfirmed": [
             "Plutonium under Steam Proton reportedly does not work; plain Wine prefix is the known-good route - unconfirmed on this target until probe/install receipts",
             "boiii is abandonware/C&D'd; t7x (alterware.dev) is the maintained BO3 client - operator acceptance of t7x over boiii to confirm",
@@ -251,8 +252,10 @@
             "BO3 Steam registration broken (no final appmanifest_311210.acf) - the t7x path needs a clean Steam-side BO3 state first; approach decided after probe2 dir receipts",
             "CPU x86-64-v3 fitness unconfirmed until lscpu receipt (MASTER says Intel DDR4 so likely fine) - gates which proton-cachyos build survives the declutter",
             "wine 11.15 multilib claim verified in template (single wine package replaces wine-32bit) but unverified on target until the games-prereq-root receipts and a 32-bit exe run",
-            "Compiz silent-rc0 killer unconfirmed: wave-2 never started Compiz; persist Client0_Command unread; ~/.local/bin/compiz-session and xfce-wm-recover unread",
-            "Whether XFCE saved-session (not Failsafe) is what actually starts xfwm4 at login is unconfirmed until wave-3 xml dump"
+            "Compiz live start still unconfirmed: persist and profile are good; wave-4 relight is the first attributed --replace this chat",
+            "Whether login at 06:43 actually ran Compiz until the 07:31 clean-room is unconfirmed (no Compiz lines in .xsession-errors)",
+            "Emerald not started by compiz-session; decorations after relight may need a separate emerald --replace",
+            "setsid -f availability on target unconfirmed until wave-4"
         ],
         "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. games-probe.block RECEIVED 2026-08-22; wave-2 gate = games-probe2 + games-prereq-root receipts before any wave-3 action block.",
         "afterBootGate": [

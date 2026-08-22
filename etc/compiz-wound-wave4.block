@@ -1,0 +1,47 @@
+id -u
+# compiz-wound-wave4.block - USER shell (sd). LIVE WM replace, self-heals to xfwm4.
+# Wave-3 proved: persist already armed (Client0=compiz-session), profile SAFE,
+# xfce4-session since 06:43, xfwm4 4183 PPID 1 started 07:31 with flags that
+# xfce-wm-recover does NOT emit. /tmp/compiz-clean-room.rc is 0 at 07:31.
+# This starts Compiz the same way login does, plus --debug into a log.
+# Rollback if the desktop is wrong after this: xfwm4 --sm-client-disable --replace
+# Gate: paste FULL output plus one verdict word:
+#   COMPIZ_LOOKS_RIGHT  or  COMPIZ_LOOKS_WRONG  or  XFWM4_RESTORED
+echo SECTION_A_BEFORE
+df -h /
+date
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+wmctrl -m
+command -v setsid
+command -v emerald
+ls -l /usr/bin/compiz /home/sd/.local/bin/compiz-session /tmp/compiz-relight.log
+echo SECTION_B_RELIGHT
+/home/sd/.local/bin/compiz-profile-repair --floor
+setsid -f env __GL_YIELD=USLEEP /usr/bin/compiz --debug --replace ccp >/tmp/compiz-relight.log 2>&1
+sleep 8
+echo SECTION_C_AFTER
+pgrep -a -x compiz
+pgrep -a -x xfwm4
+pgrep -a -x emerald
+wmctrl -m
+ls -l /tmp/compiz-relight.log
+echo ----relight-log----
+cat /tmp/compiz-relight.log
+echo ----end-relight-log----
+echo SECTION_D_DECOR_OR_RESTORE
+if pgrep -x compiz
+then
+echo COMPIZ_STAYED_UP
+command -v emerald
+pgrep -a -x emerald
+else
+echo COMPIZ_DIED_RESTORING_XFWM4
+xfwm4 --sm-client-disable --replace
+sleep 2
+pgrep -a -x xfwm4
+wmctrl -m
+echo XFWM4_RESTORED
+fi
+echo COMPIZ_WOUND_WAVE4_END
