@@ -1,0 +1,16 @@
+id -u
+# zbm-compiz-ok.block - ROOT shell. Named ZBM rollback snapshot. Does not prune.
+# Dataset is nvme/ROOT/void (not the zfs-snap default zroot/ROOT/void).
+# ZBM lists snapshots of the bootfs; generate-zbm is not required for this.
+# Rollback later: at power-on press Escape, pick nvme, boot this snapshot.
+# Destroy later if you want: zfs destroy nvme/ROOT/void@compiz-ok-20260822
+# Gate: paste FULL output. Pass = snapshot listed.
+echo SECTION_A
+df -h /
+findmnt /
+zfs list nvme/ROOT/void
+echo SECTION_B_SNAP
+zfs snapshot nvme/ROOT/void@compiz-ok-20260822
+echo SNAP_RC_$?
+zfs list -t snapshot nvme/ROOT/void
+echo ZBM_COMPIZ_OK_END

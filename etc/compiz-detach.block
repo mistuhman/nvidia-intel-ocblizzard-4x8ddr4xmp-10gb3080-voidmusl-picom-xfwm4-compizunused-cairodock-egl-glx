@@ -1,0 +1,21 @@
+id -u
+# compiz-detach.block - USER shell (sd). NEW terminal. No __GL_YIELD. No setsid of the old TTY.
+# Replaces the foreground Compiz with a detached copy so the old terminal can close.
+# Rollback: xfwm4 --sm-client-disable --replace
+# Gate: paste FULL output plus COMPIZ_STILL_RIGHT or COMPIZ_DIED.
+# Do not close the old Compiz terminal until wmctrl says Compiz.
+echo SECTION_A
+df -h /
+date
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x xfwm4
+wmctrl -m
+echo SECTION_B_DETACH
+setsid -f /usr/bin/compiz --replace ccp
+sleep 3
+pgrep -a -x compiz
+pgrep -a -x emerald
+pgrep -a -x xfwm4
+wmctrl -m
+echo COMPIZ_DETACH_END
