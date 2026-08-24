@@ -1,10 +1,11 @@
 {
     "schema": "arena-master-context.v1",
-    "updated": "2026-08-22",
+    "updated": "2026-08-24",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a0277c-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "5e96c88153636ef6824b63d957c44e214b3c4689",
+        "branchFixed": "arena/01a03599-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "7a8b9fd7cb26f58098686da46a267a0f90487bce",
+        "priorSession": "arena/01a0277c branch merged to main as PR #33 (commit 7a8b9fd); session 01a03599 continues the same objective",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -236,7 +237,8 @@
             "probe-1 game inventory: CoD4 7940 and BO1 42700 fully installed in /mnt/games/SteamLibrary; BO3 311210 has common-dir files but NO final appmanifest (only dozens of appmanifest .acf.NNN.tmp leftovers for 311210/3354750/4000/730/284160 = interrupted Steam manifest writes; clean only with Steam stopped, wave-3); WaW 10090 and BO2 202970 NOT installed; non-Steam MW2 2009 copy at /mnt/games/Call of Duty - Modern Warfare 2; Steam built-in Proton 9.0 Beta + Proton Hotfix present",
             "probe-1 Proton inventory: compatibilitytools.d holds 4 proton-cachyos builds (20260602 x86_64, 20260702 x86_64, 20260702 x86_64_v3, 20260703 x86_64_v3); gh check 2026-08-22: latest CachyOS/proton-cachyos release = cachyos-11.0-20260703-slr published 2026-07-22, so the installed 20260703 x86_64_v3 is ALREADY the newest build - declutter = prune to that one (rm 3 older dirs, user-level, wave-3 after lscpu confirms avx2 for v3)",
             "probe-1 Lunar inventory: Lunar Client is the FLATPAK com.lunarclient.LunarClient (running process /app/lunarclient/lunarclient; data at /home/sd/.var/app/com.lunarclient.LunarClient; ~/.lunarclient absent) - the java invoke error is flatpak-side; probe2 (flatpak info + log find) picks the fix",
-            "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT"
+            "wave-2 dispatched 2026-08-22: etc/games-probe2.block (user, read-only: lscpu CPU microarch, flatpak inventory, lunar logs, BO3/CoD4 dirs, /mnt/games prefix candidates) + etc/games-prereq-root.block (root: wine 11.15 + wine-mono/gecko, vulkan-loader + lib32-vulkan-loader, cabextract/unzip/p7zip; rollback line included; samba withheld as named ntlm_auth fallback); void-packages template facts via gh: wine 11.15 rev1 is one multilib package replacing wine-32bit, samba-winbind and vulkan-tools templates ABSENT",
+            "session 01a03599 opened 2026-08-24: prior branch arena/01a0277c merged to main as PR #33 (7a8b9fd); wave-2 blocks re-verified (paste-proof PASS x2, test-all PASS, pr-budget PASS at 0 changed lines) and re-presented to operator; wave-2 gate still PENDING on operator paste-back of both receipts"
         ],
         "nextGateAskFirst": "Wave-2 gate: operator pastes outputs of etc/games-probe2.block (user shell) and etc/games-prereq-root.block (root shell entered separately; block starts with id -u). Wave-3 blocks (Plutonium wine prefix + winetricks, proton-cachyos declutter rm, Lunar flatpak fix, CoD4 cod4x+promod, BO3 t7x staging) are authored only after both receipts. Operator-side, no console needed: Steam UI install of WaW 10090 and BO2 202970 into the /mnt/games SteamLibrary can run in parallel.",
         "handoffFixUnconfirmed": [
