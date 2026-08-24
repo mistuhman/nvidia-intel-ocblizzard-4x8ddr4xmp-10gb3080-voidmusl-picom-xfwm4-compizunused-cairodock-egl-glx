@@ -1,0 +1,22 @@
+id -u
+# w3-plutonium-prefix.block - user shell (sd). NEVER run wine as root. Shared plain Wine prefix for Plutonium T4/T5/T6 + launcher download (2026-08-24)
+# Why: Plutonium does NOT run under Steam Proton (forum.plutonium.pw/topic/33563); the known-good route is a plain wine prefix set to win10 with dotnet48 + d3dcompiler_47 (r/CoDWaW Linux guide step 3-4, forum topics 16438/9652). Prefix lives on tank/games per MASTER constraint (no big writes to the nvme root pool). Works on wine 11.14 or 11.15.
+# Runtime note: winetricks dotnet48 downloads about 100MB and installs .NET silently - expect 10-30 minutes on that one step; one or two installer windows may appear and auto-advance; leave them alone unless stuck.
+# Gate: wine --version prints; ls -l shows plutonium.exe downloaded (size larger than 100000 bytes); winetricks list-installed shows win10 corefonts vcrun2019 d3dcompiler_47 dotnet48. Paste everything back.
+# Rollback: rm -rf /mnt/games/plutonium - removes prefix plus launcher only, nothing else on the system is touched. Extra winetricks verbs (physx xact d3dx11) are added later per-title only if a game asks for them; DXVK is deliberately deferred to wave-4 so the stock-DLL anti-cheat risk is not taken blind.
+df -h /mnt/games
+command -v wget
+command -v unzip
+mkdir -p /mnt/games/plutonium
+export WINEPREFIX=/mnt/games/plutonium/pfx
+export WINEDLLOVERRIDES=mscoree,mshtml=
+wine --version
+wineboot -u
+winetricks win10
+winetricks corefonts
+winetricks vcrun2019
+winetricks d3dcompiler_47
+winetricks dotnet48
+wget -O /mnt/games/plutonium/pfx/drive_c/plutonium.exe https://cdn.plutonium.pw/updater/plutonium.exe
+ls -l /mnt/games/plutonium/pfx/drive_c/plutonium.exe
+winetricks list-installed

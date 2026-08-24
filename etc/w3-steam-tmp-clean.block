@@ -1,0 +1,15 @@
+id -u
+# w3-steam-tmp-clean.block - user shell (sd). Remove interrupted Steam manifest writes. QUIT STEAM FULLY FIRST (2026-08-24)
+# Pre-step: right-click the Steam tray icon and Quit completely, wait about 10 seconds, then paste this block. If the pgrep line below prints a PID, Steam is still running - quit it properly and paste the block again. Worst case if it runs anyway: Steam simply re-writes the tmp files; no data loss.
+# Why: dozens of appmanifest_*.acf.NNN.tmp leftovers (311210/3354750/4000/730/284160) are interrupted manifest writes that confuse Steam library state, and BO3 (311210) needs a clean state before a fresh full install.
+# Gate: pgrep prints nothing; the first find lists the tmp files; after -delete the second find prints nothing; the final find lists the REAL manifests and shows whether WaW 10090 and BO2 202970 are installed yet.
+# Rollback: none needed - tmp partial writes carry no unique data and Steam recreates real manifests. Real appmanifest_*.acf files are NOT matched by the tmp-only pattern.
+df -h /mnt/games
+pgrep -x steam
+find /mnt/games/SteamLibrary/steamapps -maxdepth 1 -name appmanifest_\*.acf.\*.tmp
+find /mnt/games/SteamLibrary/steamapps -maxdepth 1 -name appmanifest_\*.acf.\*.tmp -delete
+find /mnt/games/SteamLibrary/steamapps -maxdepth 1 -name appmanifest_\*.acf.\*.tmp
+find /mnt/games/SteamLibrary/steamapps -maxdepth 1 -name appmanifest_\*.acf
+find /home/sd/.local/share/Steam/steamapps -maxdepth 1 -name appmanifest_\*.acf.\*.tmp
+ls -l /mnt/games/SteamLibrary/steamapps/appmanifest_10090.acf
+ls -l /mnt/games/SteamLibrary/steamapps/appmanifest_202970.acf

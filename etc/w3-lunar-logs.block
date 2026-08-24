@@ -1,0 +1,15 @@
+id -u
+# w3-lunar-logs.block - user shell (sd). Read the Lunar Client JVM crash logs to attribute the java invoke error (2026-08-24)
+# Read-only, no changes. Why: wave-2 found FOUR JVM fatal-error logs (hs_err_pid758 / hs_err_pid1629 / hs_err_pid2508 / hs_err_pid3054.log) under .lunarclient/offline/multiver plus launcher and game-profile logs. The hs_err headers name the exact exception, JRE version, and java command line - that picks the fix (stale cache purge vs JRE reinstall vs env override). Attribute cause before fix.
+# Gate: paste the FULL output back. The fix block follows in wave-4 after attribution.
+df -h /
+ls -lt /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/offline/multiver
+head -40 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/offline/multiver/hs_err_pid758.log
+head -40 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/offline/multiver/hs_err_pid1629.log
+head -40 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/offline/multiver/hs_err_pid2508.log
+head -40 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/offline/multiver/hs_err_pid3054.log
+tail -40 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/logs/launcher/main.log
+tail -30 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/profiles/1.8/logs/ichor-boot.log
+tail -30 /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/profiles/1.8/logs/latest.log
+ls -la /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/jre
+find /home/sd/.var/app/com.lunarclient.LunarClient/.lunarclient/jre -maxdepth 4 -type f -name java

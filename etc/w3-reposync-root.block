@@ -1,0 +1,9 @@
+id -u
+# w3-reposync-root.block - ROOT shell (enter sudo -i separately first). Refresh xbps repodata and retry wine 11.15 + wine-mono + wine-gecko (2026-08-24)
+# Why: the wave-2 transaction failed with: failed to download wine-common-11.15_1 signature - Not Found. That is stale local repodata pointing at files the mirror already rotated out. xbps-install -S re-syncs the index first.
+# Gate: the final xbps-query shows wine 11.15_1 plus wine-mono 11.3.0_1 and wine-gecko 2.47.4_1 marked installed. ACCEPTABLE FALLBACK: if wine stays 11.14_1, paste the output anyway - wine 11.14 already exceeds the Plutonium minimum (Wine 8.0.1) and nothing in wave-3 is blocked by it.
+# Rollback: not needed. This only minor-upgrades wine and adds two optional addon packages. To freeze wine on its current version afterwards: xbps-pkgdb -m hold wine wine-common
+df -h /
+xbps-install -S
+xbps-install -y wine wine-mono wine-gecko
+xbps-query -s wine
