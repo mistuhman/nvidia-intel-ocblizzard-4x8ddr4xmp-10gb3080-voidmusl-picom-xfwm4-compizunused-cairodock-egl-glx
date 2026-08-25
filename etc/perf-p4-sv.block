@@ -1,0 +1,18 @@
+id -u
+# perf-p4-sv.block - ROOT. Remove dangling runit links. Inspect omen-sqm. No X restart.
+# Why: p3 05:13 UTC: /etc/sv/nvidia-persistenced zfs-zed rc.local do not exist; omen-sqm is run pid 1334. Persistence-M is already On without persistenced.
+# Gate: those three names are gone from ls -l /etc/runit/runsvdir/current/ ; cat of omen-sqm/run printed; bluetoothd still run.
+# Rollback: none for dangling links (targets never existed). omen-sqm is not stopped.
+df -h /
+ls -l /etc/runit/runsvdir/current/
+ls -l /etc/runit/runsvdir/current/nvidia-persistenced
+ls -l /etc/runit/runsvdir/current/zfs-zed
+ls -l /etc/runit/runsvdir/current/rc.local
+cat /etc/sv/omen-sqm/run
+rm /etc/runit/runsvdir/current/nvidia-persistenced
+rm /etc/runit/runsvdir/current/zfs-zed
+rm /etc/runit/runsvdir/current/rc.local
+ls -l /etc/runit/runsvdir/current/
+sv status /var/service/bluetoothd
+sv status /var/service/omen-sqm
+date

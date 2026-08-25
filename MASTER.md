@@ -193,7 +193,7 @@
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
         "viewportSwitcher": "in-repo deterministic latest-wins controller is sandbox-proven but target trial waits until desktop performance baseline is fixed.",
-        "performance": "ACTIVE OBJECTIVE 2026-08-25: sub-zero work baseline. p2-user PASS 05:07. p2-root PASS numbers 05:08 but console stripped xorg quotes. Do NOT restart X until p3-xorg. Keep bluetooth/privoxy/tor/libvirt. No wallpaper."
+        "performance": "ACTIVE OBJECTIVE 2026-08-25: sub-zero work baseline. p3-nowall PASS 05:13. p3-xorg PASS: quoted Device+Coolbits, ARC 4G. Xorg is safe. Next p4-sv dangling links + measure. Keep bluetooth/privoxy/tor/libvirt. No wallpaper."
     },
     "wallpaperConstraints": [
         "xfdesktop Desktop windows obscure bare layer; do not simply restart xfdesktop",
@@ -220,13 +220,13 @@
             "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization, since we're overclocking my 12700kf and 3080 10gig. granular inspection and analysis before proceeding so we can get the best out of the hardware and software baseline"
         ],
         "currentState": [
-            "p2-user PASS 05:07 UTC: lama/fleasion/Dl now .disabled; spice-vdagent and orca Hidden=true. cairo-dock/easyeffects/ulauncher untouched.",
-            "p2-root PASS numbers 05:08 UTC: zfs_arc_max=8589934592, swappiness=1, nmi_watchdog=0, IRQ149=4, IRQ151=18, bak written. bluetoothd/libvirtd/tor/privoxy all run. nvidia-persistenced dangling.",
-            "p2-root XORG DEFECT: console stripped quotes so 20-nvidia.conf is unquoted Section Device. Coolbits 28 is present. Do NOT restart X or reboot until etc/perf-p3-xorg.block restores the quoted bak plus Coolbits.",
-            "Operator 2026-08-25: keep bluetooth, keep privoxy, yes I run VMs, no animated wallpaper so dont keep stuff for it, ultimate sub zero usage baseline with current work preferences. Keep tor with privoxy. Keep libvirt. Drop wallpaper. Drop ARC 8G to 4G for VMs.",
-            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Next: p3-xorg then p3-nowall. No third wave until those receipts."
+            "p3-nowall PASS 05:13 UTC: xmb-wallpaper-controller.desktop.off; xwinwrap/mpv not running. lama/fleasion/Dl still .disabled.",
+            "p3-xorg PASS 05:13 UTC: 20-nvidia.conf 190 bytes, quoted Device from bak plus Option Coolbits 28; zfs_arc_max=4294967296. Xorg is safe to restart when operator wants Coolbits live. Do not restart in p4.",
+            "Dangling runit: /etc/sv/nvidia-persistenced zfs-zed rc.local do not exist. omen-sqm IS real and run (pid 1334, has run/finish/log). p4-sv removes the three dangling links and cats omen-sqm/run.",
+            "Operator 2026-08-25: keep bluetooth, keep privoxy, yes I run VMs, no animated wallpaper, ultimate sub zero with work prefs. Keep tor with privoxy. Keep libvirt. ARC 4G for VMs.",
+            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Next: p4-sv then p4-measure."
         ],
-        "nextGateAskFirst": "Do NOT restart X. Operator pastes etc/perf-p3-nowall.block as sd, then sudo -i and pastes etc/perf-p3-xorg.block. Gate is quoted Device plus Coolbits in 20-nvidia.conf and zfs_arc_max=4294967296. No further wave until those receipts.",
+        "nextGateAskFirst": "Operator pastes etc/perf-p4-measure.block as sd, then sudo -i and pastes etc/perf-p4-sv.block. Do not restart X. omen-sqm kill/keep is decided from the run script receipt.",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
             "RTX 3080 OC via coolbits requires X11 xorg.conf.d changes + restart; persistence mode via runit service survives reboots",

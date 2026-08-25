@@ -26,4 +26,4 @@ Disable (not running): lama, fleasion, Dl. Hide: spice-vdagent, orca.
 Leave: blueman, xfce4-panel, Thunar, xfdesktop until operator says.
 
 ## Next
-p2-user then p2-root (no X restart). Clock offsets after Coolbits-live X. BIOS 5.0P/4.0E @ 1.28-1.32V operator-only.
+Do NOT restart X. p3-nowall + p3-xorg (restore quoted conf, ARC 4G). Clock offsets after Coolbits-live X. BIOS 5.0P/4.0E operator-only.
