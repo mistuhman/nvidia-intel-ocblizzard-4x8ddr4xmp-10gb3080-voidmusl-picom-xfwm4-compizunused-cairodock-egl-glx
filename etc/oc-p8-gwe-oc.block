@@ -1,0 +1,22 @@
+id -u
+# oc-p8-gwe-oc.block - USER shell (sd), in X session, AFTER baseline receipt. Apply the FIRST conservative 3080 offsets in GWE, then re-run the exact same benchmark protocol.
+# Why: meter the overclock: same benches, same preset, same GPU logged watts/temps, compare to base.
+# Read docs/oc-3080-gwe-recipe.md first for exact slider values and stop rules. Start with step 1 only. No power limit raise yet (PSU plug count must be confirmed first).
+# Gate: GWE shows offsets applied; nvidia-settings queries below print nonzero numbers; re-run bench returns URL + score + CSV tail.
+# Rollback: in GWE set Clock Offset and Memory Offset back to 0 and press Apply. For CLI fallback see docs/oc-3080-gwe-recipe.md.
+# STEP 1 - in GWE set graphics offset = +60 and memory offset = +250, apply. Then verify:
+nvidia-settings -q GPUGraphicsClockOffset -t
+nvidia-settings -q GPUMemoryTransferRateOffset -t
+nvidia-settings -q GPUFanControlState -t
+nvidia-settings -q GPUPowerMizerMode -t
+# STEP 2 - same benchmark protocol as base, meter file gpu-oc.csv (terminal 1):
+nvidia-smi dmon -s pucvt -d 1 -o csv -f /home/sd/oc-meters/gpu-oc.csv
+# STEP 3 - terminal 2, same commands exactly as baseline:
+geekbench6 --benchmark
+geekbench6 --compute
+/home/sd/Downloads/Unigine_Superposition-1.1.run
+# STEP 4 - stop meter (Ctrl+C), then:
+tail -20 /home/sd/oc-meters/gpu-oc.csv
+nvidia-smi -q -d POWER,TEMPERATURE,CLOCK
+sensors
+date

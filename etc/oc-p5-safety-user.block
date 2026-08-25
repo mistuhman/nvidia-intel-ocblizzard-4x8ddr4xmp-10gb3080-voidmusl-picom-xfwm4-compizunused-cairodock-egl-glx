@@ -1,0 +1,32 @@
+id -u
+# oc-p5-safety-user.block - USER shell (sd), in the X session, AFTER root safety + install blocks. READ-ONLY safety + power snapshot and Coolbits live check.
+# Why: before any overclock, verify what the driver actually exposes after the log-out/in, current GPU power/temps/clocks, CPU governor/idle, and that the wallpaper stack is not running.
+# Gate: paste FULL output. nvidia-settings offset queries print numbers (Coolbits live) or a clean Attribute error (still needs log out/in). GPUVfLock0 result tells us if voltage points are visible.
+# Tell operator in chat: PSU label brand/watts and how many 6+2 or 8-pin plugs go into the 3080.
+df -h /
+free -h
+uptime
+nvidia-smi
+nvidia-smi -q -d POWER,TEMPERATURE,CLOCK,FAN,PERF
+nvidia-smi --query-gpu=name,pstate,clocks.sm,clocks.max.sm,clocks.mem,clocks.max.mem,temperature.gpu,power.draw,power.limit,fan.speed --format=csv
+nvidia-settings -q GPUGraphicsClockOffset -t
+nvidia-settings -q GPUMemoryTransferRateOffset -t
+nvidia-settings -q GPUFanControlState -t
+nvidia-settings -q GPUVfLock0 -t
+sensors
+lscpu -e
+lscpu
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+head -1 /sys/devices/system/cpu/intel_pstate/status
+head -1 /sys/devices/system/cpu/intel_pstate/no_turbo
+head -1 /sys/devices/system/cpu/intel_pstate/max_perf_pct
+head -1 /sys/devices/system/cpu/intel_pstate/min_perf_pct
+head -1 /sys/devices/system/cpu/cpu0/cpuidle/current_driver
+head -1 /sys/class/powercap/intel-rapl:0/name
+head -1 /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw
+pgrep -a mpv
+pgrep -a xwinwrap
+pgrep -a gwe
+ps -eo rss,pid,comm --sort=-rss | head -12
+date

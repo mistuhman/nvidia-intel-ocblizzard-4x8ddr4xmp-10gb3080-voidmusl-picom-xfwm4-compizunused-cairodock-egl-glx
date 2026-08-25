@@ -1,0 +1,26 @@
+id -u
+# oc-p10-cpu-run.block - ROOT shell. Linux-native park-control equivalent: CPU governor + EPP for bench runs, plus the meters we use on CPU power.
+# Why: ParkControl is Windows-only. On Linux the same ideas live in cpupower (governor = who decides cores sleep/boost) and the intel_pstate EPP setting. Real 12700KF OC is BIOS-only (docs/oc-cpu-bios-checklist.md).
+# Gate: read outputs first (frequency-info + idle-info + status). After set, governor prints performance and EPP prints balance_performance.
+# Rollback at bottom: governor back to powersave and EPP back to balance_power.
+# STEP 1 - read current CPU state
+df -h /
+cpupower frequency-info
+cpupower idle-info
+head -1 /sys/devices/system/cpu/intel_pstate/status
+head -1 /sys/devices/system/cpu/intel_pstate/no_turbo
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+# STEP 2 - set bench mode (performance governor keeps cores ready; EPP balance_performance favors boost)
+cpupower frequency-set -g performance
+cpupower frequency-set -e balance_performance
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+# STEP 3 - run the CPU benchmark in another terminal, and CPU watt meter here (Ctrl+C to stop, prints a summary row of PkgWatt, Busy%, Bzy_MHz, C6):
+turbostat --quiet
+# STEP 4 - after bench, revert to daily settings:
+cpupower frequency-set -g powersave
+cpupower frequency-set -e balance_power
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+date

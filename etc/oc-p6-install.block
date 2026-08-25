@@ -1,0 +1,24 @@
+id -u
+# oc-p6-install.block - ROOT shell (enter sudo -i separately first). Install OC/meter tooling + Geekbench 6. No reboot. No X restart.
+# Why: operator wants official benchmarks (Geekbench 6 + Unigine Superposition) and Linux-native OC tooling (gwe, cpupower, lm_sensors, nvtop), plus power/thermal meters and CPU stability stress (stress-ng, turbostat).
+# Gate: xbps transaction completes; command -v lines each print a path; /usr/local/bin/geekbench6 exists and ls -l shows the Geekbench dir.
+# Rollback: xbps-remove -y gwe lm_sensors cpupower nvtop stress-ng turbostat wget then rm /usr/local/bin/geekbench6 then rm -rf /opt/geekbench then rm /root/Geekbench-6.5.0-Linux.tar.gz
+# Note: gwe is GreenWithEnvy 0.15.5 from the Void repo (archived upstream, still packaged and working). Superposition is downloaded by the operator in the user block (1.5GB).
+df -h /
+xbps-install -S
+xbps-install -y gwe lm_sensors cpupower nvtop stress-ng turbostat wget
+xbps-pkgdb -a
+wget -O /root/Geekbench-6.5.0-Linux.tar.gz https://cdn.geekbench.com/Geekbench-6.5.0-Linux.tar.gz
+mkdir -p /opt/geekbench
+tar -xzf /root/Geekbench-6.5.0-Linux.tar.gz -C /opt/geekbench
+ls -l /opt/geekbench/
+ln -sf /opt/geekbench/Geekbench-6.5.0-Linux/geekbench6 /usr/local/bin/geekbench6
+command -v gwe
+command -v sensors
+command -v cpupower
+command -v nvtop
+command -v stress-ng
+command -v turbostat
+command -v geekbench6
+ls -l /usr/local/bin/geekbench6
+date
