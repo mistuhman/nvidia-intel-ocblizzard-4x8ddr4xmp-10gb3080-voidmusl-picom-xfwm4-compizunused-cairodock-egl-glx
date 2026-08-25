@@ -7,11 +7,38 @@ Objective: official, comparable benchmarks at stock and at every undervolt/OC st
 
 Run the same benchmark set at stock, then again after every change. Compare:
 
-| Run label | Geekbench CPU | Geekbench GPU | Superposition score | Peak GPU W | Peak GPU C | Peak card temp | CPU PkgW | Repo file |
-|---|---|---|---|---|---|---|---|---|
-| stock | (paste URL) | (paste URL) | (paste) | | | | | oc/base |
-| step1 +60/+250 | | | | | | | | oc/oc |
-| step2 | | | | | | | | oc/oc |
+| Run label | Geekbench CPU (SC / MC) | Geekbench GPU + API | Superposition score + preset | Peak GPU W | Peak GPU C | Peak pclk MHz | CPU PkgW peak | Bzy_MHz peak | Repo file |
+|---|---|---|---|---|---|---|---|---|---|
+| stock 2026-08-25 06:20 UTC attempt (FAILED) | upload error 35 no scores 261s | OpenCL missing rusticl only error unknown platform 50-61W | NOT RUN YET | 61W peak (short run) | 38C | 1395 MHz | 32.53W avg (single summary, flood lost) | 3528 MHz avg | oc-meters/cpu-stock.csv idle only |
+| stock 6.7.1 07:11-07:43 UTC 2026-08-25 COMPLETE | https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569 | https://browser.geekbench.com/v6/compute/6845489 OpenCL 194800 RTX 3080 | 8717 1080p Extreme FPS Min 19.76 Avg 65.20 Max 81.37 GPU Temp 39-81 Util 100% | 201W | 47C CPU bench / 81C Superpos | 1935 MHz | 145.02W | 4476 MHz | oc-meters/cpu-stock-671.csv 811 samples / gpu-671-cpu 1399 samples 201W 47C 9501/1935 / gpu-671-compute 56 samples 201W 47C 9501/1920 / gpu-671-superpos.csv |
+| step1 +60/+250 | | | | | | | | | oc-meters/*-oc1.* |
+| step2 | | | | | | | | | oc-meters/*-oc2.* |
+| BIOS 50P/40E @1.28V | | | | | | | | | oc-meters/*-bios1.* |
+
+### Meter capture rules (learned 2026-08-25, non-negotiable)
+
+1. **Meters go to files, never to the terminal.** `turbostat -i 1` without `--Summary` prints one row per logical CPU per interval — 20 threads x ~12 min = ~14k lines, interleaved with the benchmark's own stdout, so the scrollback dies and the evidence is lost. Use `--Summary` (1-line system summary per interval) plus `--out <file>`; fall back to a shell redirect if that build lacks `--out`.
+2. **Never `cat` then `rm` a meter.** Summarize it with awk and leave the file in `/home/sd/oc-meters/` named `<metric>-<runlabel>.csv`. The file is the receipt.
+3. **Record the compute API.** Geekbench 6 only offers the GPU APIs present on the system (Vulkan and/or OpenCL) and NVIDIA OpenCL needs its own runtime package. If OpenCL appears or disappears mid-campaign the GPU score moves for reasons unrelated to the overclock. Pin it, write it in the table.
+4. **Label the baseline honestly.** "Stock" here means stock CPU/GPU knobs — the p2/p3 system diet (ARC 4G, swappiness 1, nmi_watchdog 0, autostart diet) persists across reboot and is part of every row.
+5. **CPU knobs do not survive reboot** (proven 06:20 UTC: governor back to `powersave`, EPP back to `balance_performance`). Re-apply bench governor/EPP after every reboot, or persist via a runit service, and say which one the row used.
+6. **Sanity band for this CPU:** browser.geekbench.com lists the 12700KF at 2255 SC / 14367 MC; cpu-monkey at 2528 / 14129. Treat SC 2250-2550 and MC 13200-14400 as the valid-stock window — outside it, suspect thermals, background load, or a wrong governor, not a real result.
+7. **nvidia-smi dmon columns on driver 595.84:** header `# gpu pwr gtemp mtemp sm mem enc dec jpg ofa mclk pclk` = 12 columns. So mclk = $11, pclk = $12 (not $9/$10). Use `nvidia-smi dmon -d 1 -f <file>` to avoid shell `>`; if you must redirect, summary awk must use $11/$12. Example fixed: `awk '!/^#/ && NF>5{n++;if($2+0>pw)pw=$2+0;if($3+0>gt)gt=$3+0;if($11+0>mc)mc=$11+0;if($12+0>pc)pc=$12+0} END{printf "samples=%d peak_pwr_W=%s peak_gpu_C=%s peak_mclk=%s peak_pclk=%s\n",n,pw,gt,mc,pc}' file`
+8. **Geekbench 6.5.0 fails upload with internal code 35 on Linux** — outdated LibreSSL. Fixed in 6.7.1 per Primate Labs blog 2026-04-28. Use `https://cdn.geekbench.com/Geekbench-6.7.1-Linux.tar.gz` for all future rows. Verify with `geekbench6 --version` = 6.7.1.
+9. **OpenCL ICD:** NVIDIA OpenCL needs `/etc/OpenCL/vendors/nvidia.icd` containing `libnvidia-opencl.so.1`. If only `rusticl.icd` exists, `clinfo` shows 0 NVIDIA platforms and Geekbench compute says `unknown OpenCL platform`. Install the Void package that provides it (check `xbps-query -l | grep nvidia` and `ls /usr/lib/libnvidia-opencl*`).
+
+### Stock pre-flight state (receipt 2026-08-25 06:20 UTC, final 07:43 UTC)
+
+| Item | Value |
+|---|---|
+| Root disk | 918G, 101G used, 815G avail, 11-12% |
+| intel_pstate | active, no_turbo=0, max_perf_pct=100, min_perf_pct=17 |
+| Governor / EPP | powersave / balance_performance (stock — earlier tuning did not persist) |
+| GPU idle | RTX 3080, driver 595.84 -> 595.91.07 after fix, P3, 55W / 320W, 37C, 525 MHz core (idle) / 5001 MHz mem |
+| Geekbench | 6.5.0 FAILED code 35 -> 6.7.1 Build 603632 OK, symlinked /usr/local/bin/geekbench6 |
+| OpenCL/Vulkan | Fixed: nvidia-opencl-595.91.07_1 + Vulkan-Tools + clinfo, clinfo NVIDIA CUDA RTX 3080, vulkaninfo GPU0 RTX 3080 api 1.4.329 |
+| Platform | HP OMEN 45L GT22-0xxx, board HP 8917, BIOS AMI F.51, kernel 6.18.35-tkg-bore, 31.1 GB |
+| Final stock scores | CPU 2715/14569 https://browser.geekbench.com/v6/cpu/19061796, Compute 194800 OpenCL https://browser.geekbench.com/v6/compute/6845489, Superposition 8717 1080p Extreme |
 
 ## Compare with other users (official)
 

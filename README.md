@@ -24,7 +24,7 @@ Live reversible rebuild of the operator's physical Void Linux musl desktop: XFCE
 | | Agent sandbox | Target |
 |---|---|---|
 | What | ephemeral git checkout | operator desktop, user `sd` |
-| Has | git, gh, node, python3, jq | X11, NVIDIA RTX 3080 10GB, Intel iGPU, 32GB DDR4 XMP |
+| Has | git, gh, node, python3, jq | X11, NVIDIA RTX 3080 10GB, Intel 12700KF (KF = no iGPU), 32GB DDR4 XMP |
 | Lacks | GPU, X server, ffmpeg, browser | nothing relevant |
 | Can | author, verify syntax, commit | execute, observe, judge |
 
