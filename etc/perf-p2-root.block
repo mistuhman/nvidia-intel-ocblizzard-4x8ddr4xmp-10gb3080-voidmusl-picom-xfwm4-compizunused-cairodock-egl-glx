@@ -1,0 +1,43 @@
+id -u
+# perf-p2-root.block - ROOT shell (enter sudo -i separately first). ARC 8G cap + desktop sysctl + Coolbits 28 write. No reboot. No X restart.
+# Why: probe 2026-08-25 04:53 UTC: zfs_arc_max=0 so c_max=32313466880 on 32G; ARC size=7232439432; 20-nvidia.conf has both composition pipeline options and NO Coolbits; Persistence-M already On.
+# Gate: zfs_arc_max prints 8589934592; sysctl vm.swappiness prints 1; cat of 20-nvidia.conf shows Coolbits 28 AND both ForceCompositionPipeline lines; ls -l of bak and new files is nonzero.
+# Rollback: echo 0 | tee /sys/module/zfs/parameters/zfs_arc_max then rm /etc/modprobe.d/99-arc-cap.conf then rm /etc/sysctl.d/99-desktop-perf.conf then cp /root/20-nvidia.conf.20260825.bak /etc/X11/xorg.conf.d/20-nvidia.conf then sysctl -p /etc/sysctl.d/99-desktop-perf.conf
+# Coolbits is inert until the next X restart. Do NOT restart X in this block.
+df -h /
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+ls -l /etc/modprobe.d
+ls -l /etc/sysctl.d
+ls -l /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+cp /etc/X11/xorg.conf.d/20-nvidia.conf /root/20-nvidia.conf.20260825.bak
+ls -l /root/20-nvidia.conf.20260825.bak
+echo options zfs zfs_arc_max=8589934592 | tee /etc/modprobe.d/99-arc-cap.conf
+echo 8589934592 | tee /sys/module/zfs/parameters/zfs_arc_max
+echo vm.swappiness=1 | tee /etc/sysctl.d/99-desktop-perf.conf
+echo vm.dirty_ratio=5 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.dirty_background_ratio=2 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.vfs_cache_pressure=50 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.min_free_kbytes=131072 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo kernel.sched_autogroup_enabled=0 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo kernel.nmi_watchdog=0 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+sysctl -p /etc/sysctl.d/99-desktop-perf.conf
+echo Section \"Device\" | tee /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Identifier \"Nvidia Card\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Driver \"nvidia\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"ForceCompositionPipeline\" \"true\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"ForceFullCompositionPipeline\" \"true\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"Coolbits\" \"28\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo EndSection | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+ls -l /etc/modprobe.d/99-arc-cap.conf
+ls -l /etc/sysctl.d/99-desktop-perf.conf
+ls -l /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/modprobe.d/99-arc-cap.conf
+cat /etc/sysctl.d/99-desktop-perf.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+date

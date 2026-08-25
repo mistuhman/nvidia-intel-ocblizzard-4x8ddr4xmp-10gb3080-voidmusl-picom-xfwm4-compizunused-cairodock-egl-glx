@@ -1,0 +1,108 @@
+id -u
+# perf-probe.block — user shell (sd). READ-ONLY full system inventory for process/memory/perf/OC baseline
+# Why: operator wants extreme optimization for 12700KF + 3080 overclocking while keeping the desktop beautiful.
+# Gate: paste FULL output back. Optimization blocks are authored from this receipt only.
+df -h /
+uptime
+free -h
+echo "=== MEMINFO TOP ==="
+head -40 /proc/meminfo
+echo "=== SWAP ==="
+swapon --show
+echo "=== KERNEL ==="
+uname -a
+echo "=== BOOT PARAMS ==="
+head -1 /proc/cmdline
+echo "=== CPU GOVERNOR ==="
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_driver
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -1 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+echo "=== INTEL PSTATE ==="
+head -1 /sys/devices/system/cpu/intel_pstate/status
+head -1 /sys/devices/system/cpu/intel_pstate/min_perf_pct
+head -1 /sys/devices/system/cpu/intel_pstate/max_perf_pct
+head -1 /sys/devices/system/cpu/intel_pstate/no_turbo
+echo "=== CPU TOPOLOGY ==="
+lscpu -e
+echo "=== CPU SUMMARY ==="
+lscpu
+echo "=== CPUIDLE ==="
+head -1 /sys/devices/system/cpu/cpu0/cpuidle/current_driver
+echo "=== THP ==="
+head -1 /sys/kernel/mm/transparent_hugepage/enabled
+echo "=== KSM ==="
+head -1 /sys/kernel/mm/ksm/run
+echo "=== ZSWAP ==="
+head -1 /sys/module/zswap/parameters/enabled
+echo "=== SYSCTL VM ==="
+sysctl vm.swappiness
+sysctl vm.dirty_ratio
+sysctl vm.dirty_background_ratio
+sysctl vm.vfs_cache_pressure
+sysctl vm.dirty_expire_centisecs
+sysctl vm.dirty_writeback_centisecs
+sysctl vm.min_free_kbytes
+sysctl vm.overcommit_memory
+echo "=== SYSCTL KERNEL ==="
+sysctl kernel.sched_migration_cost_ns
+sysctl kernel.sched_autogroup_enabled
+sysctl kernel.nmi_watchdog
+sysctl kernel.printk
+echo "=== IO SCHEDULER ==="
+head -1 /sys/block/nvme0n1/queue/scheduler
+head -1 /sys/block/sda/queue/scheduler
+echo "=== RUNIT SERVICES ==="
+ls -la /var/service/
+echo "=== RUNIT STATUS ==="
+sv status /var/service/*
+echo "=== PROCESS LIST BY MEMORY ==="
+ps aux --sort=-%mem
+echo "=== PROCESS TREE ==="
+ps -eo pid,ppid,rss,vsz,ni,pri,comm --sort=-rss
+echo "=== NVIDIA ==="
+nvidia-smi
+echo "=== NVIDIA DETAIL ==="
+nvidia-smi -q -d CLOCK,POWER,TEMPERATURE,PERF
+echo "=== NVIDIA PERSISTENCE ==="
+nvidia-smi -q -d PERSISTENCE_MODE
+echo "=== NVIDIA SUPPORTED CLOCKS ==="
+nvidia-smi --query-supported-clocks=mem,gr --format=csv
+echo "=== XORG CONF ==="
+ls /etc/X11/xorg.conf.d/
+cat /etc/X11/xorg.conf.d/10-nvidia.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+echo "=== COMPIZ PROCESS ==="
+pgrep -a compiz
+pgrep -a emerald
+echo "=== CAIRO DOCK ==="
+pgrep -a cairo-dock
+echo "=== XFCE AUTOSTART ==="
+ls -la /home/sd/.config/autostart/
+echo "=== XFCE AUTOSTART CONTENTS ==="
+cat /home/sd/.config/autostart/*.desktop
+echo "=== SYSTEM AUTOSTART ==="
+ls /etc/xdg/autostart/
+echo "=== XWINWRAP MPV ==="
+pgrep -a xwinwrap
+pgrep -a mpv
+echo "=== FLATPAK ==="
+flatpak ps
+echo "=== GPU IRQ ==="
+grep nvidia /proc/interrupts
+echo "=== NIC IRQ ==="
+grep -iE "eth|enp|wlp" /proc/interrupts
+echo "=== USB IRQ ==="
+grep xhci /proc/interrupts
+echo "=== IRQ AFFINITY DEFAULT ==="
+head -1 /proc/irq/default_smp_affinity
+echo "=== ZFS ARC ==="
+grep -E "size|c_max|c_min|hits|misses" /proc/spl/kstat/zfs/arcstats
+echo "=== ZFS ARC PARAMS ==="
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+head -1 /sys/module/zfs/parameters/zfs_arc_min
+echo "=== IRQBALANCE ==="
+pgrep -a irqbalance
+echo "=== THERMALD ==="
+pgrep -a thermald
+echo "=== DONE ==="
+date
