@@ -1,0 +1,21 @@
+id -u
+# w3-postreboot-probe.block - user shell (sd). READ-ONLY post-reboot state check after the interrupted wave-3 run (2026-08-25)
+# Why: the operator rebooted mid-wave-3 and no block outputs came back, so which of the six blocks ran and how far is unknown. This records the true state - pool health, wine version, proton dirs, partial prefixes, cod4x/promod files, Steam tmp manifests - so the cleanup block removes exactly what is half-built and nothing else. No changes are made by this block.
+# Gate: paste the FULL output back (lines that error with cannot-access are themselves answers - they mean that piece does not exist). Cleanup + weekend games resume are authored from this receipt only.
+df -h /
+uptime
+findmnt /mnt/games
+zpool status -x nvme
+zpool status -x tank
+pgrep -x steam
+wine --version
+xbps-query -s wine
+ls -l /home/sd/.local/share/Steam/compatibilitytools.d
+ls /mnt/games
+ls /mnt/games/plutonium
+find /mnt/games/plutonium -maxdepth 3 -type d
+ls /mnt/games/prefixes
+find /mnt/games/prefixes -maxdepth 3 -type d
+find /mnt/games/SteamLibrary/steamapps/common/Call\ of\ Duty\ 4 -maxdepth 1 -iname \*cod4x\*
+find /mnt/games/SteamLibrary/steamapps/common/Call\ of\ Duty\ 4/Mods -maxdepth 1 -type d
+find /mnt/games/SteamLibrary/steamapps -maxdepth 1 -name appmanifest_\*.acf.\*.tmp
