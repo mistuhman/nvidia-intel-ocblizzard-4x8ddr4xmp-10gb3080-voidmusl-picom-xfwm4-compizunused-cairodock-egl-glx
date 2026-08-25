@@ -10,7 +10,7 @@ Run the same benchmark set at stock, then again after every change. Compare:
 | Run label | Geekbench CPU (SC / MC) | Geekbench GPU + API | Superposition score + preset | Peak GPU W | Peak GPU C | Peak pclk MHz | CPU PkgW peak | Bzy_MHz peak | Repo file |
 |---|---|---|---|---|---|---|---|---|---|
 | stock 2026-08-25 06:20 UTC attempt (FAILED) | upload error 35 no scores 261s | OpenCL missing rusticl only error unknown platform 50-61W | NOT RUN YET | 61W peak (short run) | 38C | 1395 MHz | 32.53W avg (single summary, flood lost) | 3528 MHz avg | oc-meters/cpu-stock.csv idle only |
-| stock retry 6.7.1 07:11 UTC 2026-08-25 | https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569 | (pending compute) | NOT RUN YET | (pending) | (pending) | (pending) | (pending awk) | (pending awk) | oc-meters/cpu-stock-671.csv 652 samples 154KB |
+| stock retry 6.7.1 07:11 UTC 2026-08-25 | https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569 | https://browser.geekbench.com/v6/compute/6845489 OpenCL 194800 RTX 3080 | NOT RUN YET | (pending) | (pending) | (pending) | (pending awk) | (pending awk) | oc-meters/cpu-stock-671.csv 652 samples 154KB + gpu-671-cpu 98KB + gpu-671-compute 5KB |
 | step1 +60/+250 | | | | | | | | | oc-meters/*-oc1.* |
 | step2 | | | | | | | | | oc-meters/*-oc2.* |
 | BIOS 50P/40E @1.28V | | | | | | | | | oc-meters/*-bios1.* |
