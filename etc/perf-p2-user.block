@@ -1,0 +1,18 @@
+id -u
+# perf-p2-user.block - user shell (sd). Disable unused autostart. No running-process kills. Reversible.
+# Why: head 05:04 UTC: ollama not running; fleasion and Dl not in top RSS; spice-vdagent is bare-metal; orca unused. bluetooth/xfdesktop/tor left alone.
+# Gate: ls -l shows lama/fleasion/Dl as .disabled and spice-vdagent.desktop plus orca-autostart.desktop exist.
+# Rollback: mv the three .disabled files back to .desktop then rm spice-vdagent.desktop and orca-autostart.desktop under /home/sd/.config/autostart
+df -h /
+ls -l /home/sd/.config/autostart
+mv /home/sd/.config/autostart/lama.desktop /home/sd/.config/autostart/lama.desktop.disabled
+mv /home/sd/.config/autostart/fleasion.desktop /home/sd/.config/autostart/fleasion.desktop.disabled
+mv /home/sd/.config/autostart/Dl.desktop /home/sd/.config/autostart/Dl.desktop.disabled
+echo [Desktop Entry] | tee /home/sd/.config/autostart/spice-vdagent.desktop
+echo Type=Application | tee -a /home/sd/.config/autostart/spice-vdagent.desktop
+echo Hidden=true | tee -a /home/sd/.config/autostart/spice-vdagent.desktop
+echo [Desktop Entry] | tee /home/sd/.config/autostart/orca-autostart.desktop
+echo Type=Application | tee -a /home/sd/.config/autostart/orca-autostart.desktop
+echo Hidden=true | tee -a /home/sd/.config/autostart/orca-autostart.desktop
+ls -l /home/sd/.config/autostart
+date

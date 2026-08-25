@@ -1,42 +1,29 @@
-# Performance receipts 2026-08-25 04:53 UTC (partial)
+# Performance receipts 2026-08-25 (probe 04:53 + head 05:04)
 
-Probe paste began mid `ps --sort=-rss` (PID 812+). Missing: free/meminfo, governor/pstate, sysctl, runit list, top RSS. Recover with `etc/perf-head.block`.
+## Baseline
+- 31G RAM, **no swap**. used 15G / avail 16G. Anon 6.4G + ARC 6.7G.
+- Fat RSS is the session: Isolated Web 1.0G+825M, zen 814M, vesktop 795+394M, electron 592M, element 247M, easyeffects 266M. Do not kill.
+- Beauty: cairo-dock 123M, compiz 114M, Xorg 223M. xfdesktop is **back** at 115M.
+- Governor already `intel_pstate` + `powersave` + `balance_performance`, no_turbo=0. THP `always`. KSM 0. NVMe `[none]`.
+- Cmdline has both `intel_pstate=passive` and `intel_pstate=active` (active wins). Leave.
 
-## Confirmed
+## Confirmed work
+- ARC `c_max` 30.1G, live 6.7G, 98.9% hits. Cap 8G.
+- sysctl already half-tuned: swappiness 10, dirty_ratio 15, vfs_cache_pressure 50. Still set 1 / 5 / 2, autogroup 0, nmi_watchdog 0. `sched_migration_cost_ns` absent (BORE).
+- Coolbits missing. Persistence-M On. irqbalance/thermald absent.
+- IRQ: GPU 149 + NIC 151 on CPU 17 (E-core 9). USB 124 on CPU 5 (P-core 2 HT, keep). Pin GPU→CPU 4, NIC→CPU 18.
+- Topology: CPU 0-15 = P-cores 0-7 HT pairs, max 5000. CPU 16-19 = E-cores 8-11, max 3800. Stock, not BIOS-OC'd.
 
-### ZFS ARC — largest RAM leak
-- `zfs_arc_max=0` `zfs_arc_min=0` so `c_max=32313466880` (~30.1G) on 32G
-- live `size=7232439432` (~6.7G), 98.9% hits (6036034 / 66484)
-- Cap live+persist at 8G (`8589934592`). Do not drop to 4G while tank/games holds Steam.
+## Services (`/var/service`)
+KEEP: NetworkManager, dbus, lightdm, polkitd, udevd, chronyd, rtkit, yeetmouse, agetty-tty*.
+LIVE, ask before kill: bluetoothd, libvirtd+virtlockd+virtlogd, tor (94M), privoxy, omen-sqm.
+Broken symlinks: nvidia-persistenced, rc.local, zfs-zed.
+wpa_supplicant live (iwlwifi present). cupsd absent. ollama **not running**.
 
-### NVIDIA 595.84 / 20-nvidia.conf
-- Persistence-M already On. irqbalance and thermald already absent.
-- 37C P3 57W/320W, 1209/10240 MiB, 45% util with **no** xwinwrap/mpv
-- VRAM: Xorg 456, Vesktop-class 224+31, Zen 194, electron 53, easyeffects 36, dock 14, compiz 5
-- Device options: ForceCompositionPipeline + ForceFullCompositionPipeline, **no Coolbits**
-- Supported max 2100 / 9501. `nvidia-smi -q -d` failed (console ate `-d`)
-- 45% GPU is session browsers + full composition pipeline + Compiz, not cairo-dock
-- `nvidia-oc.desktop.bak` exists (prior OC attempt)
-
-### IRQ (12700KF 8P+4E)
-- GPU 149 → CPU 17 (E-core). NIC enp3s0 151 → **same** CPU 17. USB xhci 124 → CPU 5 (P-core, keep)
-- default affinity `fffff`. Do not pin until `lscpu -e` from the head probe.
-
-### Autostart
-KEEP: cairo-dock `-o`, easyeffects, pipewire, ulauncher, gnome-keyring.
-Already hidden: picom, xmb-wallpaper-controller.
-ASK: `lama.desktop` (ollama serve at login), fleasion, Dl/dotline.
-System waste: spice-vdagent (bare metal), orca. blueman + `krfcommd` live. iwlwifi IRQs 152-167 — do not kill wpa.
-
-### Session (not autostart — do not kill)
-Vesktop x2, Element/Riot x2, Zen. Defunct `zypak-sandbox` + `xdg-open`.
-
-## Do not touch
-compiz `--replace ccp`, emerald, cairo-dock, gunmetal, XMB controller, picom mask.
+## Autostart
+KEEP: cairo-dock, easyeffects, ulauncher, pipewire, gnome-keyring.
+Disable (not running): lama, fleasion, Dl. Hide: spice-vdagent, orca.
+Leave: blueman, xfce4-panel, Thunar, xfdesktop until operator says.
 
 ## Next
-1. `etc/perf-head.block` — missing numbers
-2. `etc/perf-p2-root.block` — ARC 8G + sysctl + Coolbits write, no X restart
-3. User autostart `.disabled` after operator answers
-4. IRQ pin after `lscpu -e`; clock offsets only after Coolbits-live X restart
-5. BIOS 5.0P/4.0E @ 1.28-1.32V is operator-only
+p2-user then p2-root (no X restart). Clock offsets after Coolbits-live X. BIOS 5.0P/4.0E @ 1.28-1.32V operator-only.
