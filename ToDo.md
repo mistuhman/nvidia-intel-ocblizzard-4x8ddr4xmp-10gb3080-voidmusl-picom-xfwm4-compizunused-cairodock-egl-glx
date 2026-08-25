@@ -1,19 +1,21 @@
-# ToDo — extreme optimization sprint (operator directive 2026-08-25)
+# ToDo — sub-zero work baseline (2026-08-25)
 
-> Directive: "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization"
+> keep bluetooth, keep privoxy, VMs yes, no animated wallpaper, ultimate sub-zero with current work prefs
 
-## Phase 1: Probe
-- [x] `etc/perf-probe.block` partial 04:53 UTC + `etc/perf-head.block` 05:04 UTC
+## Done
+- [x] Probe + head
+- [x] p2-user: lama/fleasion/Dl disabled, spice/orca hidden
+- [x] p2-root numbers: ARC 8G, sysctl, IRQ 149→4 / 151→18
 
-## Phase 2: this wave
-- [ ] User: `etc/perf-p2-user.block` — disable lama/fleasion/Dl, hide spice-vdagent/orca
-- [ ] Root: `etc/perf-p2-root.block` — ARC 8G + sysctl + Coolbits write + IRQ pin, no X restart
+## This wave — do not restart X
+- [ ] `etc/perf-p3-nowall.block` — disable XMB wallpaper autostart
+- [ ] `etc/perf-p3-xorg.block` — restore quoted nvidia conf + Coolbits, ARC 8G→4G, inspect dangling sv
 
-## After p2 receipts
-- [ ] Ask: bluetoothd, tor+privoxy, libvirtd, xfdesktop (115M, it came back)
-- [ ] Persist IRQ pin across reboot
+## After p3
+- [ ] Remove dangling nvidia-persistenced / zfs-zed / rc.local only if inspect confirms
+- [ ] Persist IRQ pin
 - [ ] Clock offsets only after Coolbits-live X restart
-- [ ] BIOS 5.0P/4.0E @ 1.28-1.32V is operator-only
+- [ ] BIOS 5.0P/4.0E @ 1.28-1.32V operator-only
 
-## Parked
-- [ ] Games campaign. doas / logging / Tier-2 USB. w3-postreboot-probe if needed.
+## Keep (work)
+bluetooth, privoxy, tor, libvirt, yeetmouse, beauty stack, xfdesktop, browsers

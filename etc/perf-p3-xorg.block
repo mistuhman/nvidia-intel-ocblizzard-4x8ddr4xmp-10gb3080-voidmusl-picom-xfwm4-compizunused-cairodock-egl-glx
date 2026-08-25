@@ -1,0 +1,24 @@
+id -u
+# perf-p3-xorg.block - ROOT. Restore quoted 20-nvidia.conf from bak, insert Coolbits, drop ARC to 4G. No X restart. No reboot.
+# Why: p2-root 05:08 UTC passed ARC/sysctl/IRQ but the console stripped quotes. Unquoted Section Device can fail the next X start. Operator runs VMs and wants sub-zero, so ARC 8G becomes 4G.
+# Gate: cat shows quoted Device from the bak plus a Coolbits 28 line; zfs_arc_max prints 4294967296.
+# Rollback: cp /root/20-nvidia.conf.20260825.bak /etc/X11/xorg.conf.d/20-nvidia.conf then echo 8589934592 | tee /sys/module/zfs/parameters/zfs_arc_max then echo options zfs zfs_arc_max=8589934592 | tee /etc/modprobe.d/99-arc-cap.conf
+df -h /
+ls -l /root/20-nvidia.conf.20260825.bak
+cat /root/20-nvidia.conf.20260825.bak
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+cp /etc/X11/xorg.conf.d/20-nvidia.conf /root/20-nvidia.conf.unquoted.bak
+cp /root/20-nvidia.conf.20260825.bak /etc/X11/xorg.conf.d/20-nvidia.conf
+sed -i /EndSection/iOption\ Coolbits\ 28 /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+ls -l /etc/X11/xorg.conf.d/20-nvidia.conf
+echo 4294967296 | tee /sys/module/zfs/parameters/zfs_arc_max
+echo options zfs zfs_arc_max=4294967296 | tee /etc/modprobe.d/99-arc-cap.conf
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+ls -l /run/runit/runsvdir/current
+ls -l /etc/sv/nvidia-persistenced
+ls -l /etc/sv/zfs-zed
+ls -l /etc/sv/rc.local
+ls -l /etc/sv/omen-sqm
+sv status /var/service/omen-sqm
+date

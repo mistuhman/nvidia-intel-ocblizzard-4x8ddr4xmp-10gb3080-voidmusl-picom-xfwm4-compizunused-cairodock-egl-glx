@@ -193,7 +193,7 @@
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
         "viewportSwitcher": "in-repo deterministic latest-wins controller is sandbox-proven but target trial waits until desktop performance baseline is fixed.",
-        "performance": "ACTIVE OBJECTIVE 2026-08-25: extreme optimization. Head probe 05:04 UTC complete. 31G no swap, used 15G = session RSS + ARC 6.7G. Governor already correct. Next: p2-user then p2-root. Do not restart X."
+        "performance": "ACTIVE OBJECTIVE 2026-08-25: sub-zero work baseline. p2-user PASS 05:07. p2-root PASS numbers 05:08 but console stripped xorg quotes. Do NOT restart X until p3-xorg. Keep bluetooth/privoxy/tor/libvirt. No wallpaper."
     },
     "wallpaperConstraints": [
         "xfdesktop Desktop windows obscure bare layer; do not simply restart xfdesktop",
@@ -220,13 +220,13 @@
             "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization, since we're overclocking my 12700kf and 3080 10gig. granular inspection and analysis before proceeding so we can get the best out of the hardware and software baseline"
         ],
         "currentState": [
-            "Phase 1 COMPLETE 2026-08-25 05:04 UTC: 31G no swap, used 15G avail 16G, Anon 6.4G. Fat RSS is session (zen 814M, vesktop 795M, electron 592M, Isolated Web 1.0G). Beauty: dock 123M, compiz 114M, Xorg 223M. xfdesktop is back at 115M.",
-            "Governor already intel_pstate+powersave+balance_performance, no_turbo=0, THP always, KSM 0, NVMe none. sysctl already half-tuned (swappiness 10, dirty 15, vfs 50). sched_migration_cost_ns absent on BORE. cmdline has both intel_pstate=passive and =active.",
-            "ZFS ARC c_max 30.1G live 6.7G. Coolbits absent. Persistence-M On. GPU149+NIC151 on CPU17 (E-core 9). Topology P=CPU0-15 max 5000, E=CPU16-19 max 3800. Pin GPU->CPU4 NIC->CPU18. USB CPU5 keep.",
-            "Services: KEEP NetworkManager dbus lightdm polkitd udevd chronyd rtkit yeetmouse. ASK bluetoothd libvirtd tor(94M) privoxy omen-sqm. Broken: nvidia-persistenced rc.local zfs-zed. ollama not running. wpa live. cupsd absent.",
-            "p2-user disables lama/fleasion/Dl autostart and hides spice-vdagent/orca. p2-root does ARC 8G + sysctl + Coolbits write + live IRQ pin. No X restart. No process kills. Clock offsets wait for Coolbits-live X. BIOS OC operator-only."
+            "p2-user PASS 05:07 UTC: lama/fleasion/Dl now .disabled; spice-vdagent and orca Hidden=true. cairo-dock/easyeffects/ulauncher untouched.",
+            "p2-root PASS numbers 05:08 UTC: zfs_arc_max=8589934592, swappiness=1, nmi_watchdog=0, IRQ149=4, IRQ151=18, bak written. bluetoothd/libvirtd/tor/privoxy all run. nvidia-persistenced dangling.",
+            "p2-root XORG DEFECT: console stripped quotes so 20-nvidia.conf is unquoted Section Device. Coolbits 28 is present. Do NOT restart X or reboot until etc/perf-p3-xorg.block restores the quoted bak plus Coolbits.",
+            "Operator 2026-08-25: keep bluetooth, keep privoxy, yes I run VMs, no animated wallpaper so dont keep stuff for it, ultimate sub zero usage baseline with current work preferences. Keep tor with privoxy. Keep libvirt. Drop wallpaper. Drop ARC 8G to 4G for VMs.",
+            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Next: p3-xorg then p3-nowall. No third wave until those receipts."
         ],
-        "nextGateAskFirst": "Operator pastes etc/perf-p2-user.block in the user shell, then sudo -i separately and pastes etc/perf-p2-root.block. Do not restart X. Do not send another wave until both receipts return. Still open: bluetooth, tor/privoxy, libvirt, xfdesktop.",
+        "nextGateAskFirst": "Do NOT restart X. Operator pastes etc/perf-p3-nowall.block as sd, then sudo -i and pastes etc/perf-p3-xorg.block. Gate is quoted Device plus Coolbits in 20-nvidia.conf and zfs_arc_max=4294967296. No further wave until those receipts.",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
             "RTX 3080 OC via coolbits requires X11 xorg.conf.d changes + restart; persistence mode via runit service survives reboots",
