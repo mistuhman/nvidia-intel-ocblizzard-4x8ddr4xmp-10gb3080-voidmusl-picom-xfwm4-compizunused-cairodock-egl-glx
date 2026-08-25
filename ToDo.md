@@ -19,10 +19,10 @@
 - [x] FIX 2: OpenCL ICD — installed nvidia-opencl-595.91.07_1, nvidia.icd now present, clinfo shows NVIDIA CUDA RTX 3080
 - [x] FIX 3: Vulkan ICD — Vulkan-Tools installed, vulkaninfo now shows GPU0 RTX 3080 api 1.4.329 driver 595.91.07
 - [x] Driver skew fixed: nvidia 595.84 -> 595.91.07 to match opencl, DKMS rebuilt, reboot OK, nvidia-smi 595.91.07
-- [x] Stock retry 6.7.1 CPU: https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569, 652 samples turbostat file-backed OK
-- [ ] Stock retry peaks: need awk summaries for cpu-stock-671.csv and gpu-stock-671-cpu.csv
-- [ ] Stock Geekbench Compute retry: paste URL + API (Vulkan vs OpenCL) + GPU score
-- [ ] Stock Superposition 1080p Extreme: still owed (launcher bin/superposition_cli)
+- [x] Stock retry 6.7.1 CPU: https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569, 811 samples turbostat PkgW peak 145.02W Bzy 4476 Tmp 70
+- [x] Stock peaks: cpu 811 samples 145W/4476/70, gpu-cpu 1399 samples 201W 47C 9501/1935, gpu-compute 56 samples 201W 47C 9501/1920
+- [x] Stock Geekbench Compute: https://browser.geekbench.com/v6/compute/6845489 OpenCL 194800 RTX 3080
+- [x] Stock Superposition 1080p Extreme: Score 8717 FPS Min 19.76 Avg 65.20 Max 81.37 GPU Temp 39-81 Util 100% (screenshot + .score file /home/sd/Documents/Superposition_Benchmark_v1.1_8717_*.score)
 - [ ] Decide CPU knob persistence (runit service vs re-apply per boot) — proven non-persistent
 - [ ] GWE step1 +60/+250, re-bench (needs Coolbits live: log out/in)
 - [ ] CPU bench mode; BIOS OC per oc-cpu-bios-checklist.md (operator)
