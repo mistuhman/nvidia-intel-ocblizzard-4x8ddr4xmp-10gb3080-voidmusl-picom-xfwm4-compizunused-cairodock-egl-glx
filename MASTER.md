@@ -193,7 +193,7 @@
         "bake": "three deterministic 60s 4480x1440 HEVC loops accepted: sleep, main-red, work-monochrome.",
         "wallpaper": "accepted bare layer: one sticky input-transparent xwinwrap plus one mpv, gpu-next, nvdec-copy, 10-11% decode.",
         "viewportSwitcher": "in-repo deterministic latest-wins controller is sandbox-proven but target trial waits until desktop performance baseline is fixed.",
-        "performance": "ACTIVE OBJECTIVE 2026-08-25: sub-zero work baseline. p3-nowall PASS 05:13. p3-xorg PASS: quoted Device+Coolbits, ARC 4G. Xorg is safe. Next p4-sv dangling links + measure. Keep bluetooth/privoxy/tor/libvirt. No wallpaper."
+        "performance": "ACTIVE OBJECTIVE 2026-08-25: sub-zero work baseline LANDED. p4-measure 05:16: 12G used/18G avail (was 15/16). ARC 4G, IRQ 149=4 151=18, GPU 25% 57W. omen-sqm is CAKE 780Mbit SQM KEEP. Next: operator log-out for Coolbits, then 3080 offsets. BIOS OC operator-only."
     },
     "wallpaperConstraints": [
         "xfdesktop Desktop windows obscure bare layer; do not simply restart xfdesktop",
@@ -220,19 +220,19 @@
             "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization, since we're overclocking my 12700kf and 3080 10gig. granular inspection and analysis before proceeding so we can get the best out of the hardware and software baseline"
         ],
         "currentState": [
-            "p3-nowall PASS 05:13 UTC: xmb-wallpaper-controller.desktop.off; xwinwrap/mpv not running. lama/fleasion/Dl still .disabled.",
-            "p3-xorg PASS 05:13 UTC: 20-nvidia.conf 190 bytes, quoted Device from bak plus Option Coolbits 28; zfs_arc_max=4294967296. Xorg is safe to restart when operator wants Coolbits live. Do not restart in p4.",
-            "Dangling runit: /etc/sv/nvidia-persistenced zfs-zed rc.local do not exist. omen-sqm IS real and run (pid 1334, has run/finish/log). p4-sv removes the three dangling links and cats omen-sqm/run.",
-            "Operator 2026-08-25: keep bluetooth, keep privoxy, yes I run VMs, no animated wallpaper, ultimate sub zero with work prefs. Keep tor with privoxy. Keep libvirt. ARC 4G for VMs.",
-            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Next: p4-sv then p4-measure."
+            "p4-measure PASS 05:16 UTC: 31G no swap, used 12G avail 18G (was 15/16 at 05:04). ARC max 4G. swappiness 1. nmi_watchdog 0. IRQ149=4 IRQ151=18. GPU 25% 57W/320W 1359MiB Persistence On. Fat RSS still session (Isolated Web 1.0G, vesktop 767M, zen 736M, electron 592M, easyeffects 266M, Xorg 223M).",
+            "p4-sv PASS 05:16 UTC: dangling nvidia-persistenced/zfs-zed/rc.local removed from runsvdir. bluetoothd still run. omen-sqm still run.",
+            "omen-sqm IS CAKE SQM: ingress redirect to ifb0, cake bandwidth 780Mbit docsis besteffort, auto-detects default iface. Tiny sleep loop. KEEP for work bufferbloat control. Not an HP thermal daemon.",
+            "Coolbits written and quoted. Live only after X restart. No VT switch: operator logs out/in when ready. Then conservative 3080 offsets. IRQ pin is live not persisted. BIOS 5.0P/4.0E @ 1.28-1.32V operator-only.",
+            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Wallpaper stack off. No new blocks this PR (budget)."
         ],
-        "nextGateAskFirst": "Operator pastes etc/perf-p4-measure.block as sd, then sudo -i and pastes etc/perf-p4-sv.block. Do not restart X. omen-sqm kill/keep is decided from the run script receipt.",
+        "nextGateAskFirst": "Sub-zero work baseline landed. No more target blocks in this PR (budget). Next operator gate: log out/in when Coolbits should go live, then 3080 clock offsets in a new PR. IRQ persist and BIOS OC wait. omen-sqm KEEP (CAKE 780Mbit SQM).",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
-            "RTX 3080 OC via coolbits requires X11 xorg.conf.d changes + restart; persistence mode via runit service survives reboots",
-            "Service pruning reversible via `ln -s /etc/sv/<name> /var/service/` to re-enable",
-            "Compiz plugin changes reversible via ccsm-safe or profile restore",
-            "ZFS ARC cap via module parameter; revert by removing /etc/modprobe.d/zfs.conf line"
+            "RTX 3080 Coolbits is written; offsets wait for operator log-out/in then a new PR",
+            "IRQ pin GPU=CPU4 NIC=CPU18 is live until reboot; persist in next PR",
+            "ZFS ARC cap is /etc/modprobe.d/99-arc-cap.conf at 4G; revert echo 0 to zfs_arc_max and rm that conf",
+            "omen-sqm KEEP (CAKE 780Mbit SQM). Dangling persistenced/zfs-zed/rc.local links already removed"
         ],
         "bootGate": "MIGRATION COMPLETE 2026-08-21 (carried, durable): bootGate2 + persistence PASS - operator verdicts: i booted, pressed escape for zbm boot menu upon turning on. and saw the nvme dir, it worked; just rebooted and let it do its thing; findmnt / = nvme/ROOT/void; BootCurrent 0002 direct NVMe ZBM; BootOrder 0002,0008; tank/games 460G self-mounted at boot; pools nvme+tank ONLINE no errors. games-probe.block RECEIVED 2026-08-22; wave-2 receipts RECEIVED 2026-08-24; wave-3 target run INTERRUPTED - operator rebooted mid-run 2026-08-25 (cause unattributed, no receipts); post-reboot pool/boot health check pending via etc/w3-postreboot-probe.block before any further target action.",
         "afterBootGate": [

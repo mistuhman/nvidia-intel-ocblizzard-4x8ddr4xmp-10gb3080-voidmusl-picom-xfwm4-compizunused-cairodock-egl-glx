@@ -6,18 +6,14 @@
 - [x] Probe + head
 - [x] p2-user autostart diet
 - [x] p2-root ARC/sysctl/IRQ numbers
-- [x] p3-nowall wallpaper autostart off
-- [x] p3-xorg quoted Device+Coolbits, ARC 4G
+- [x] p3-nowall + p3-xorg (quoted Coolbits, ARC 4G)
+- [x] p4-measure: 12G used / 18G avail (was 15/16). IRQ 4+18. GPU 25%
+- [x] p4-sv: dangling persistenced/zfs-zed/rc.local gone. omen-sqm = CAKE 780Mbit SQM, KEEP
 
-## This wave
-- [ ] `etc/perf-p4-measure.block` — snapshot
-- [ ] `etc/perf-p4-sv.block` — drop dangling persistenced/zfs-zed/rc.local, cat omen-sqm/run
-
-## After
-- [ ] omen-sqm keep/kill from run script
-- [ ] Persist IRQ pin
-- [ ] Clock offsets only after operator-approved X restart
+## Next PR / operator gate
+- [ ] Persist IRQ pin across reboot
+- [ ] Log out/in when you want Coolbits live, then conservative 3080 offsets
 - [ ] BIOS 5.0P/4.0E @ 1.28-1.32V operator-only
 
 ## Keep
-bluetooth, privoxy, tor, libvirt, yeetmouse, beauty stack, xfdesktop, browsers
+bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
