@@ -1,0 +1,22 @@
+id -u
+# oc-p7-baseline.block - USER shell (sd), in X session. STOCK BASELINE benchmark protocol. Do this BEFORE any overclock.
+# Why: official compare scores at stock = the meter bar for the undervolt + overclock. Geekbench 6 uploads to geekbench.com. Unigine Superposition posts to the global leaderboard at benchmark.unigine.com.
+# Procedure: two terminals below. Run SECTION A in terminal 1 (it runs until Ctrl+C). Run SECTION B in terminal 2. When B is done, Ctrl+C terminal 1, then run SECTION C.
+# Gate: paste back Geekbench CPU URL, Geekbench GPU URL, Superposition score + resolution/detail preset, the CSV tail from SECTION C, and the nvidia-smi post numbers.
+# NOTE for operator: same preset for every run forever. Superposition default choice = 1080p Extreme; if the free build only offers 1080p Standard or 1080p High, use that and say which one.
+# SECTION A - terminal 1: start the power/thermal meter on the GPU (logs every second until Ctrl+C)
+mkdir -p /home/sd/oc-meters
+nvidia-smi dmon -s pucvt -d 1 -o csv -f /home/sd/oc-meters/gpu-base.csv
+# SECTION B - terminal 2: CPU + GPU official benchmarks at stock
+geekbench6 --benchmark
+geekbench6 --compute
+# Superposition - download and install (about 1.5GB, official free Linux build)
+wget -O /home/sd/Downloads/Unigine_Superposition-1.1.run https://assets.unigine.com/d/Unigine_Superposition-1.1.run
+chmod +x /home/sd/Downloads/Unigine_Superposition-1.1.run
+/home/sd/Downloads/Unigine_Superposition-1.1.run
+# GUI opens: choose preset above, press Benchmark, at the end enter a name for the leaderboard and submit, then note the score.
+# SECTION C - terminal 1 after Ctrl+C: stop the meter, then print the log tail and post-run numbers
+tail -20 /home/sd/oc-meters/gpu-base.csv
+nvidia-smi -q -d POWER,TEMPERATURE,CLOCK
+sensors
+date

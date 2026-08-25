@@ -1,0 +1,26 @@
+id -u
+# oc-p5-safety-root.block - ROOT shell. READ-ONLY safety + power inspection after tools installed. No changes. No restart.
+# Why: operator gate before any overclock work - verify storage pool health, services, saved perf configs, current power limits, and kernel log errors are all clean.
+# Gate: paste FULL output. zpool status says ONLINE no errors; sv status lines all run or expected-fail; 20-nvidia.conf shows Coolbits 28; arc cap 4G; sysctls 1/0; IRQ 149=4 151=18.
+df -h /
+zpool status
+zpool list
+findmnt /
+findmnt /mnt/games
+lsblk -f
+swapon --show
+sv status /var/service/
+sv status /var/service/picom
+ls -l /var/service
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/modprobe.d/99-arc-cap.conf
+cat /etc/sysctl.d/99-desktop-perf.conf
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+cat /proc/irq/149/smp_affinity_list
+cat /proc/irq/151/smp_affinity_list
+head -1 /sys/class/powercap/intel-rapl:0/name
+head -1 /sys/class/powercap/intel-rapl:0/constraint_0_power_limit_uw
+nvidia-smi --query-gpu=name,power.limit,power.max_limit,power.default_limit --format=csv
+dmesg -T -l emerg,alert,crit,err
+date

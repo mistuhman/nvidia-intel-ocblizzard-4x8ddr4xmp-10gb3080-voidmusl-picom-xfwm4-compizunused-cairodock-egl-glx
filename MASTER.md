@@ -3,9 +3,9 @@
     "updated": "2026-08-25",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a0373c-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "54eb76bb0b7286d6285bcec600efa1a771b283aa",
-        "priorSession": "arena/01a0277c branch merged to main as PR #33 (commit 7a8b9fd); session 01a03599 closed 2026-08-25 and merged to main as PR #35 at operator direction",
+        "branchFixed": "arena/01a03761-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "761a168f26ca6bd30886191bb76cf1ce30f65ba5",
+        "priorSession": "arena/01a0277c merged as PR #33 (commit 7a8b9fd); 01a03599 merged as PR #35; 01a0373c merged as PR #36 (761a168, this branch's base). Session 01a03761 opened 2026-08-25 for the official-benchmark + OC meter phase.",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -17,7 +17,8 @@
             "MASTER.md": "JSON context and constraints",
             "ToDo.md": "operator-directed work-infrastructure checklist",
             "scripts/": "target-facing installed desktop and migration utilities",
-            "tools/": "agent-facing TypeScript utilities run by node"
+            "tools/": "agent-facing TypeScript utilities run by node",
+            "docs/": "OC campaign docs: oc-plan.md (scoreboard), oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md"
         },
         "prException": {
             "allowedHere": true,
@@ -224,9 +225,10 @@
             "p4-sv PASS 05:16 UTC: dangling nvidia-persistenced/zfs-zed/rc.local removed from runsvdir. bluetoothd still run. omen-sqm still run.",
             "omen-sqm IS CAKE SQM: ingress redirect to ifb0, cake bandwidth 780Mbit docsis besteffort, auto-detects default iface. Tiny sleep loop. KEEP for work bufferbloat control. Not an HP thermal daemon.",
             "Coolbits written and quoted. Live only after X restart. No VT switch: operator logs out/in when ready. Then conservative 3080 offsets. IRQ pin is live not persisted. BIOS 5.0P/4.0E @ 1.28-1.32V operator-only.",
-            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Wallpaper stack off. No new blocks this PR (budget)."
+            "Work KEEP: bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, beauty stack, xfdesktop/panel/Thunar/ulauncher, session browsers. Wallpaper stack off.",
+            "OC PHASE 2026-08-25 (session 01a03761): official compare decided = Geekbench 6.5.0 (CPU + GPU, geekbench.com/browse) + Unigine Superposition 1.1 free Linux (global leaderboard). 3DMark REJECTED: UL confirms no valid Linux/Proton results. Meter = same bench set every run + nvidia-smi dmon CSV (1s) + turbostat. gwe 0.15.5 is in Void repo (upstream archived, functional); fallback nvidia-settings CLI. Linux has NO voltage-curve undervolt (Pascal+ removed) - undervolt scope = power limit + offsets, metered. PSU = OMEN 45L 850W-class per operator, plug count UNCONFIRMED (no power-limit raise before confirm). Blocks authored: oc-p6-install, oc-p5-safety-root, oc-p5-safety-user, oc-p7-baseline, oc-p8-gwe-oc, oc-p10-cpu-run; docs: oc-plan.md, oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md."
         ],
-        "nextGateAskFirst": "Sub-zero work baseline landed. No more target blocks in this PR (budget). Next operator gate: log out/in when Coolbits should go live, then 3080 clock offsets in a new PR. IRQ persist and BIOS OC wait. omen-sqm KEEP (CAKE 780Mbit SQM).",
+        "nextGateAskFirst": "OC meter phase. Operator gate order: (1) paste oc-p6-install (root) + oc-p5-safety-root (root) for safety/power inspection, (2) log out/in so Coolbits goes live, (3) paste oc-p5-safety-user and report PSU label + 6+2 plug count, (4) paste oc-p7-baseline for STOCK official scores, (5) GWE step 1 via oc-p8-gwe-oc. CPU = BIOS per oc-cpu-bios-checklist.md only.",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
             "RTX 3080 Coolbits is written; offsets wait for operator log-out/in then a new PR",
