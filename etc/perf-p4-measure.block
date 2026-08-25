@@ -1,0 +1,14 @@
+id -u
+# perf-p4-measure.block - user shell (sd). READ-ONLY sub-zero snapshot after p2/p3. Session apps still open.
+# Gate: paste FULL output.
+df -h /
+free -h
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+cat /proc/irq/149/smp_affinity_list
+cat /proc/irq/151/smp_affinity_list
+ps -eo rss,pid,comm --sort=-rss | head -20
+ls /home/sd/.config/autostart
+nvidia-smi
+date

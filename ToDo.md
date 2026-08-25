@@ -1,25 +1,19 @@
-# ToDo — work-week focus (operator directive 2026-08-25)
+# ToDo — sub-zero work baseline (2026-08-25)
 
-> Directive: "kinda messed up, had to reboot on those commands. just clean up, wipe the ToDo.md and add tasks to focus on work only as its the week"
-> Games campaign is PARKED until you say go (weekend). Wave-3 left unknown state after the reboot — nothing gets deleted blind.
+> keep bluetooth, keep privoxy, VMs yes, no animated wallpaper, ultimate sub-zero with work prefs
 
-## Stability — post-reboot recovery
-- [ ] Paste `etc/w3-postreboot-probe.block` (read-only, ~2 min) — records pool/boot health and exactly what wave-3 left behind
-- [ ] Cleanup block authored from that receipt only (partial wine prefixes, half-downloaded zips, winetricks locks) — no blind deletes
+## Done
+- [x] Probe + head
+- [x] p2-user autostart diet
+- [x] p2-root ARC/sysctl/IRQ numbers
+- [x] p3-nowall + p3-xorg (quoted Coolbits, ARC 4G)
+- [x] p4-measure: 12G used / 18G avail (was 15/16). IRQ 4+18. GPU 25%
+- [x] p4-sv: dangling persistenced/zfs-zed/rc.local gone. omen-sqm = CAKE 780Mbit SQM, KEEP
 
-## Performance — daily-driver smoothness in work mode
-- [ ] Desktop performance baseline: sample frame time, GPU/CPU, VRAM, clocks, power during the accepted wallpaper loops; gate = numeric consistency + operator smoothness verdict
-- [ ] That baseline unblocks the parked viewportSwitcher target trial (no re-ask needed)
+## Next PR / operator gate
+- [ ] Persist IRQ pin across reboot
+- [ ] Log out/in when you want Coolbits live, then conservative 3080 offsets
+- [ ] BIOS 5.0P/4.0E @ 1.28-1.32V operator-only
 
-## Infrastructure — weekday backlog (parked phase7 items, now in scope for the week)
-- [ ] doas hardening decision + sudo removal path (note: base-system + testdisk reverse-depend sudo)
-- [ ] Durable machine logging
-- [ ] Tier-2 USB work
-
-## Only if you pick them
-- [ ] Menu opacity via obs plugin
-- [ ] M18 icon stitching + UI sound
-- [ ] XMB Sleep Wave behavior check (installed + selected)
-
-## Parked — weekend / operator go
-- Games: WaW, BO1, BO2 (Plutonium), BO3 (t7x), CoD4 Promod (the treat), Lunar Client java invoke fix, ProtonQT declutter — all research, receipts, and the six wave-3 blocks stay in `MASTER.md`, `docs/games-receipts.md`, `etc/w3-*.block`; resume only via the probe receipt, never a blind re-paste
+## Keep
+bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers

@@ -1,0 +1,51 @@
+id -u
+# perf-p2-root.block - ROOT shell (enter sudo -i separately first). ARC 8G + sysctl + Coolbits 28 write + live IRQ pin. No reboot. No X restart.
+# Why: head 05:04 UTC: 31G no swap, used 15G; zfs_arc_max=0 c_max=30.1G; swappiness=10 dirty_ratio=15 nmi_watchdog=1 autogroup=1; Coolbits absent; GPU149+NIC151 on CPU17 E-core; lscpu-e P=0-15 E=16-19.
+# Gate: zfs_arc_max=8589934592; vm.swappiness=1; 20-nvidia.conf has Coolbits 28 and both ForceCompositionPipeline lines; irq 149 list is 4; irq 151 list is 18; bak and new files ls -l nonzero.
+# Rollback: echo 0 | tee /sys/module/zfs/parameters/zfs_arc_max then rm /etc/modprobe.d/99-arc-cap.conf then rm /etc/sysctl.d/99-desktop-perf.conf then cp /root/20-nvidia.conf.20260825.bak /etc/X11/xorg.conf.d/20-nvidia.conf then echo 0-19 | tee /proc/irq/149/smp_affinity_list then echo 0-19 | tee /proc/irq/151/smp_affinity_list
+# Coolbits is inert until the next X restart. Do NOT restart X in this block. IRQ pin is live only until reboot.
+df -h /
+ls -l /var/service
+sv status /var/service/bluetoothd
+sv status /var/service/libvirtd
+sv status /var/service/tor
+sv status /var/service/privoxy
+sv status /var/service/nvidia-persistenced
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+cat /proc/irq/149/smp_affinity_list
+cat /proc/irq/151/smp_affinity_list
+ls -l /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+cp /etc/X11/xorg.conf.d/20-nvidia.conf /root/20-nvidia.conf.20260825.bak
+ls -l /root/20-nvidia.conf.20260825.bak
+echo options zfs zfs_arc_max=8589934592 | tee /etc/modprobe.d/99-arc-cap.conf
+echo 8589934592 | tee /sys/module/zfs/parameters/zfs_arc_max
+echo vm.swappiness=1 | tee /etc/sysctl.d/99-desktop-perf.conf
+echo vm.dirty_ratio=5 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.dirty_background_ratio=2 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.vfs_cache_pressure=50 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo vm.min_free_kbytes=131072 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo kernel.sched_autogroup_enabled=0 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+echo kernel.nmi_watchdog=0 | tee -a /etc/sysctl.d/99-desktop-perf.conf
+sysctl -p /etc/sysctl.d/99-desktop-perf.conf
+echo 4 | tee /proc/irq/149/smp_affinity_list
+echo 18 | tee /proc/irq/151/smp_affinity_list
+echo Section \"Device\" | tee /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Identifier \"Nvidia Card\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Driver \"nvidia\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"ForceCompositionPipeline\" \"true\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"ForceFullCompositionPipeline\" \"true\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo     Option \"Coolbits\" \"28\" | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+echo EndSection | tee -a /etc/X11/xorg.conf.d/20-nvidia.conf
+ls -l /etc/modprobe.d/99-arc-cap.conf
+ls -l /etc/sysctl.d/99-desktop-perf.conf
+ls -l /etc/X11/xorg.conf.d/20-nvidia.conf
+cat /etc/X11/xorg.conf.d/20-nvidia.conf
+head -1 /sys/module/zfs/parameters/zfs_arc_max
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+cat /proc/irq/149/smp_affinity_list
+cat /proc/irq/151/smp_affinity_list
+date

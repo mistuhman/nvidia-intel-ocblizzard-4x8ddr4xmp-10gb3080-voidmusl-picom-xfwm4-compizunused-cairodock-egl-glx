@@ -1,0 +1,12 @@
+id -u
+# perf-p3-nowall.block - user shell (sd). Disable XMB wallpaper autostart. No process kills.
+# Why: operator 2026-08-25: no animated wallpaper so dont keep stuff for it.
+# Gate: xmb-wallpaper-controller.desktop is gone or .off; pgrep xwinwrap and mpv print nothing.
+# Rollback: mv /home/sd/.config/autostart/xmb-wallpaper-controller.desktop.off /home/sd/.config/autostart/xmb-wallpaper-controller.desktop
+df -h /
+ls -l /home/sd/.config/autostart
+mv /home/sd/.config/autostart/xmb-wallpaper-controller.desktop /home/sd/.config/autostart/xmb-wallpaper-controller.desktop.off
+pgrep -a xwinwrap
+pgrep -a mpv
+ls -l /home/sd/.config/autostart
+date
