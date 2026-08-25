@@ -1,0 +1,12 @@
+id -u
+# w3-proton-declutter.block - user shell (sd). Prune compatibilitytools.d to the single newest proton-cachyos build (2026-08-24)
+# Why: wave-2 lscpu confirmed avx2 plus avx_vnni vaes gfni on the i7-12700KF = x86-64-v3 capable (no avx512, so v4 is out). Upstream latest release is cachyos-11.0-20260703-slr, so the installed 20260703 x86_64_v3 build is ALREADY the newest tuned build for the bore kernel - keep it, remove the three older builds (20260602 x86_64, 20260702 x86_64, 20260702 x86_64_v3). This is the ProtonUp-Qt declutter the operator asked for.
+# Gate: the final ls -l shows exactly ONE proton-cachyos entry (the 20260703 x86_64_v3 one). Paste the output back either way - the first ls -l is the receipt that proves which dir names actually exist.
+# Rollback: ProtonUp-Qt (net.davidotek.pupgui2, already installed as flatpak) or the CachyOS GitHub release tarball reinstalls any removed build in minutes. Game prefixes in compatdata are NOT touched by this block.
+df -h /mnt/games
+ls -l /home/sd/.local/share/Steam/compatibilitytools.d
+ls -ld /home/sd/.steam/steam
+rm -rf /home/sd/.local/share/Steam/compatibilitytools.d/proton-cachyos-*20260602*
+rm -rf /home/sd/.local/share/Steam/compatibilitytools.d/proton-cachyos-*20260702*
+ls -l /home/sd/.local/share/Steam/compatibilitytools.d
+ls -l /home/sd/.steam/steam/compatibilitytools.d

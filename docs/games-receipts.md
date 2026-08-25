@@ -54,3 +54,27 @@ Bounded agents deployed per README.md start protocol. Facts carry sources; unver
 - upstream check (gh api, 2026-08-22): CachyOS/proton-cachyos latest release tag `cachyos-11.0-20260703-slr` published 2026-07-22 with x86_64 and x86_64_v3 assets - the installed 20260703 build is ALREADY the newest; declutter = keep x86_64_v3 (pending lscpu avx2 confirm), remove the 3 older dirs
 - Lunar Client = FLATPAK com.lunarclient.LunarClient (process /app/lunarclient/lunarclient; ~/.lunarclient and ~/Applications absent; data at ~/.var/app/com.lunarclient.LunarClient) - java invoke error is flatpak-side; probe2 fetches flatpak info + logs
 - void-packages template facts (gh api, 2026-08-22): wine 11.15 rev1 is a single multilib package (`replaces="wine-32bit>=0"`, lib32depends pulls the 32-bit stack); samba 4.20.1 carries winbind in the main package (no samba-winbind template); vulkan-loader 1.4.350.1; vulkan-tools template ABSENT - no vulkaninfo on Void, so DXVK runtime is the functional vulkan test; samba withheld from the wave-2 root block (ntlm_auth fallback only if a game demands it)
+
+## Wave-2 receipts (operator paste, 2026-08-24)
+
+### games-probe2 (user shell, id -u = 1000)
+- lscpu: i7-12700KF, 20 CPUs, flags incl avx2 avx_vnni vaes gfni, NO avx512 → **x86-64-v3 CONFIRMED**; 20260703 x86_64_v3 proton-cachyos build survives the declutter, v4 ruled out
+- flatpak list: ProtonUp-Qt `net.davidotek.pupgui2` 2.15.1 installed (= the operator's "protonqt"); Prism Launcher 11.0.3 installed (Lunar fallback candidate); Lunar Client 3.7.15 = USER install, commit 3a683cb 2026-08-12, subject "Update lunar-client.appimage", runtime org.freedesktop.Platform 25.08
+- Lunar data: `.lunarclient/jre` has TWO hashed jre dirs; `.java/fonts/17.0.3` + `17.0.18`; FOUR JVM fatal-error logs `hs_err_pid758/1629/2508/3054.log` under `.lunarclient/offline/multiver`; launcher logs at `.lunarclient/logs/launcher/`; game profile logs at `.lunarclient/profiles/1.8/logs/` (latest.log, ichor-boot.log)
+- BO3 311210: `appmanifest_311210.acf` STILL absent; common dir contains ONLY 10 `BlackOps3.exe.BEYQBBUILD132.CL#13892626.<epoch>.dmp` crash dumps (epochs 1784829528–1785575727 ≈ 2026-07-23..2026-08-01) + `LPC` + `players` → **game files are GONE; full reinstall required before t7x/t7patch**
+- CoD4 dir: iw3sp.exe, iw3mp.exe, __iw3sp, __iw3mp, Mods, PB, DirectX, Docs, d3dx9_34.dll, mss32.dll (+ .bck), cod4x-uninstall.exe, `Play CoD4 v1.7.lnk` → stock 1.7, cod4x previously uninstalled, installer re-applies
+- `/mnt/games/Bottles` exists holding `GE-Proton10-34` (Bottles runner stash, not in Steam compatibilitytools list — untouched); `/mnt/games/local_share` = old relocated `.local/share` copy (no Steam subdir; archive, not live); `steam-compat`/`steam-combat` listed nothing (empty or stderr lost in paste)
+- `df -h /mnt/games`: 741G size, 460G used, 281G avail (unchanged from probe-1)
+
+### games-prereq-root (root shell)
+- `wine` upgrade to 11.15 **FAILED**: `failed to download wine-common-11.15_1 signature from https://repo-default.voidlinux.org/current: Not Found` → stale local repodata; fix = `xbps-install -S` then retry (dispatched as w3-reposync-root.block). wine stays 11.14_1 (≥ Plutonium's Wine 8.0.1 minimum — acceptable). wine-mono + wine-gecko did NOT install (transaction aborted atomically)
+- `vulkan-loader` already installed; `lib32-vulkan-loader` not found in pool — because Void names it **vulkan-loader-32bit** 1.4.350.1, ALREADY INSTALLED (32-bit DXVK loader side covered)
+- cabextract 1.11 + unzip already installed; p7zip replaced by 7zip 26.02 (7z alternatives group created)
+- `df -h /` = 922G size, 821G avail
+
+## Wave-3 URL verification (2026-08-24)
+- Plutonium launcher: `https://cdn.plutonium.pw/updater/plutonium.exe` — confirmed live in forum.plutonium.pw/topic/582 (official staff topic) and the r/CallofDutyWorldatWar Linux Wine guide (17rvfn2, 2023-11-10): prefix 32- or 64-bit, Wine 8.0.1+, `winetricks -q --force dotnet48` + `winetricks -q d3dcompiler_47`, place plutonium.exe in the prefix drive_c, run from there; "has not worked with any version of Proton"
+- cod4x client: `https://cod4x.me/downloads/cod4x_client.zip` — confirmed in callofduty4x/cod4x-docs cod4x-client/installation.md (master): unpack `cod4x18_v17_9_client` folder next to iw3mp.exe, run `install.cmd` (wine cmd.exe /C on Linux), menu version changes 1.7 → 1.8; uninstall.cmd = rollback; "NEVER USE ROOT/SUPER USER FOR WINE COMMANDS"
+- Promod LIVE 220: `https://promod.github.io/releases/promodlive220_eu.zip` (EU ruleset; `_ne.zip` variant exists) → `pml220` into `Mods/`; launch `iw3mp.exe +set fs_game mods/pml220`
+- proton-cachyos release assets (gh api, 2026-08-24): named `proton-cachyos-11.0-<date>-slr-<arch>.tar.xz` (arm64/x86_64/x86_64_v3 per release; tags cachyos-11.0-20260602/20260601/20260702/20260703-slr); declutter rm uses date-anchored globs `proton-cachyos-*20260602*` / `proton-cachyos-*20260702*` which cannot match the 20260703 keeper and are silent no-ops if the dir names differ
+

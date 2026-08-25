@@ -1,0 +1,30 @@
+id -u
+# w3-cod4x-promod.block - user shell (sd). NEVER run wine as root. cod4x client + Promod LIVE 220 into the installed CoD4 (7940) - the treat (2026-08-24)
+# Why: CoD4 is fully installed at the SteamLibrary path below with iw3mp.exe and v1.7 files (cod4x-uninstall.exe present = cod4x was removed earlier; the installer re-applies cleanly and flips the menu version 1.7 to 1.8). Official cod4x-docs: download cod4x_client.zip, unpack the cod4x18_v1 client folder next to iw3mp.exe, run install.cmd. Promod LIVE 220 EU (standard competitive ruleset) unpacks pml220 into Mods.
+# Gate: ls -l shows cod4x_client.zip and promodlive220_eu.zip downloaded; wine cmd.exe /C install.cmd completes with a Done-style message; the final ls shows the promod folder under Mods. Paste everything back.
+# Rollback: wine cmd.exe /C uninstall.cmd inside the unpacked cod4x folder restores stock 1.7; rm -rf Mods/pml220 removes promod; rm -rf /mnt/games/prefixes/cod4x removes this prefix. Steam data is untouched.
+df -h /mnt/games
+command -v wget
+command -v unzip
+export WINEPREFIX=/mnt/games/prefixes/cod4x
+export WINEDLLOVERRIDES=mscoree,mshtml=
+mkdir -p /mnt/games/prefixes
+wineboot -u
+winetricks win10
+cd /mnt/games/SteamLibrary/steamapps/common/Call\ of\ Duty\ 4
+pwd
+ls
+wget -O cod4x_client.zip https://cod4x.me/downloads/cod4x_client.zip
+ls -l cod4x_client.zip
+unzip -o cod4x_client.zip
+ls
+cd cod4x18_v1*
+pwd
+wine cmd.exe /C install.cmd
+cd ..
+ls
+cd Mods
+wget https://promod.github.io/releases/promodlive220_eu.zip
+ls -l promodlive220_eu.zip
+unzip -o promodlive220_eu.zip
+ls
