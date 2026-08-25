@@ -7,11 +7,32 @@ Objective: official, comparable benchmarks at stock and at every undervolt/OC st
 
 Run the same benchmark set at stock, then again after every change. Compare:
 
-| Run label | Geekbench CPU | Geekbench GPU | Superposition score | Peak GPU W | Peak GPU C | Peak card temp | CPU PkgW | Repo file |
-|---|---|---|---|---|---|---|---|---|
-| stock | (paste URL) | (paste URL) | (paste) | | | | | oc/base |
-| step1 +60/+250 | | | | | | | | oc/oc |
-| step2 | | | | | | | | oc/oc |
+| Run label | Geekbench CPU (SC / MC) | Geekbench GPU + API | Superposition score + preset | Peak GPU W | Peak GPU C | Peak pclk MHz | CPU PkgW peak | Bzy_MHz peak | Repo file |
+|---|---|---|---|---|---|---|---|---|---|
+| stock (2026-08-25 06:20 UTC, in flight) | (paste URL) | (paste URL + Vulkan or OpenCL) | NOT RUN YET | | | | | | oc-meters/*-stock.* |
+| step1 +60/+250 | | | | | | | | | oc-meters/*-oc1.* |
+| step2 | | | | | | | | | oc-meters/*-oc2.* |
+| BIOS 50P/40E @1.28V | | | | | | | | | oc-meters/*-bios1.* |
+
+### Meter capture rules (learned 2026-08-25, non-negotiable)
+
+1. **Meters go to files, never to the terminal.** `turbostat -i 1` without `--Summary` prints one row per logical CPU per interval — 20 threads x ~12 min = ~14k lines, interleaved with the benchmark's own stdout, so the scrollback dies and the evidence is lost. Use `--Summary` (1-line system summary per interval) plus `--out <file>`; fall back to a shell redirect if that build lacks `--out`.
+2. **Never `cat` then `rm` a meter.** Summarize it with awk and leave the file in `/home/sd/oc-meters/` named `<metric>-<runlabel>.csv`. The file is the receipt.
+3. **Record the compute API.** Geekbench 6 only offers the GPU APIs present on the system (Vulkan and/or OpenCL) and NVIDIA OpenCL needs its own runtime package. If OpenCL appears or disappears mid-campaign the GPU score moves for reasons unrelated to the overclock. Pin it, write it in the table.
+4. **Label the baseline honestly.** "Stock" here means stock CPU/GPU knobs — the p2/p3 system diet (ARC 4G, swappiness 1, nmi_watchdog 0, autostart diet) persists across reboot and is part of every row.
+5. **CPU knobs do not survive reboot** (proven 06:20 UTC: governor back to `powersave`, EPP back to `balance_performance`). Re-apply bench governor/EPP after every reboot, or persist via a runit service, and say which one the row used.
+6. **Sanity band for this CPU:** browser.geekbench.com lists the 12700KF at 2255 SC / 14367 MC; cpu-monkey at 2528 / 14129. Treat SC 2250-2550 and MC 13200-14400 as the valid-stock window — outside it, suspect thermals, background load, or a wrong governor, not a real result.
+
+### Stock pre-flight state (receipt 2026-08-25 06:20 UTC)
+
+| Item | Value |
+|---|---|
+| Root disk | 918G, 101G used, 817G avail, 11% |
+| intel_pstate | active, no_turbo=0, max_perf_pct=100, min_perf_pct=17 |
+| Governor / EPP | powersave / balance_performance (stock — earlier tuning did not persist) |
+| GPU idle | RTX 3080, driver 595.84, P3, 57.09 W / 320.00 W, 37 C, 1275 MHz core, 5001 MHz mem |
+| Geekbench | 6.5.0 Build 603552 at /opt/geekbench/Geekbench-6.5.0-Linux, symlinked to /usr/local/bin/geekbench6 |
+| Platform | HP OMEN 45L GT22-0xxx, board HP 8917, BIOS AMI F.51, kernel 6.18.35-tkg-bore, 31.1 GB |
 
 ## Compare with other users (official)
 

@@ -12,11 +12,15 @@
 - [x] OC blocks + docs authored (oc-p6/p5-root/p5-user/p7/p8/p10, docs/oc-*.md)
 
 ## Next PR / operator gate
-- [ ] Run oc-p6-install (root) + oc-p5-safety-root (root), paste receipts
-- [ ] Log out/in, then oc-p5-safety-user — report PSU label + 6+2 plug count
-- [ ] oc-p7-baseline — STOCK official scores (the meter bar)
-- [ ] GWE step1 +60/+250, re-bench (oc-p8-gwe-oc)
-- [ ] CPU bench mode via oc-p10-cpu-run; BIOS OC per oc-cpu-bios-checklist.md (operator)
+- [x] Geekbench 6.5.0 install + symlink verified (6.5.0 Build 603552, 06:20 UTC)
+- [x] Superposition 1.1 installed to /home/sd/Downloads/Unigine_Superposition-1.1
+- [ ] Stock Geekbench CPU: in flight 06:20 UTC — paste URL + SC/MC
+- [ ] Stock Geekbench Compute: paste URL + which API (Vulkan vs OpenCL)
+- [ ] Stock Superposition 1080p Extreme: NOT in the operator's stock script, still owed
+- [ ] File-backed meters in /home/sd/oc-meters/ (turbostat --Summary --out, nvidia-smi dmon) — no cat-then-rm
+- [ ] Decide CPU knob persistence (runit service vs re-apply per boot) — proven non-persistent
+- [ ] GWE step1 +60/+250, re-bench (needs Coolbits live: log out/in)
+- [ ] CPU bench mode; BIOS OC per oc-cpu-bios-checklist.md (operator)
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
