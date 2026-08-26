@@ -333,7 +333,11 @@ free, from inside Void.
 ### Where we go from here (operator directive 2026-08-26)
 
 No external escalation. The medium is the free runbook in
-`docs/omen-free-recovery-runbook.md`, worked with the operator one action at a time. It
-starts with the free power-path checks that can stop the cycle before any flash is even
-relevant, then the alternate-stick flash, then boot to Void.
+`docs/omen-free-recovery-runbook.md`, worked with the operator one action at a time.
+
+**Session close 2026-08-26:** Check 1 (front panel / `PB`) FAIL — cycle with `PB` unplugged
+and on cord-in. CMOS jumper FAIL — same cycle; jumper restored. That is consistent with
+Mechanism A in **SPI**, which a CMOS cap does not wipe. Operator stopped further cable/jumper
+work. Machine **off**. Next chat starts at `docs/next-chat-last-power-on.md`. One named test
+before any power-on.
 

@@ -75,6 +75,14 @@ occupies.
 
 ## Free power-path checks (OMEN side — do these before any flash)
 
+### CLOSED 2026-08-26 (do not repeat) — photo receipts + Check 1 + CMOS
+
+Silkscreen from operator photos: **`PB`** = real 2-pin power button (red on one pin). The brown/black 2-pin by `PWR_LED` is **not** the power path. Case button still cycled with that unplugged. With **`PB` unplugged**, plugging the wall cord **auto-cycled** (lights on). Check 1 **FAIL**.
+
+**`CMOS`** 3-pin blue cap (center bottom, not `FDO/PSWD/BBR`): moved to the other pair ~20s, restored. Same instant cycle. CMOS **FAIL**. That does **not** kill Mechanism A (SPI varstore ≠ coin-cell CMOS).
+
+Pump/0-RPM **closed by operator**: fans run during the cycle, then everything dies. No more cable guesses unless the operator names the test. Next-chat briefing: `docs/next-chat-last-power-on.md`.
+
 ### Check 1 — bypass the front-panel power button
 
 This is the test that separates a power-circuit fault from a firmware fault.
