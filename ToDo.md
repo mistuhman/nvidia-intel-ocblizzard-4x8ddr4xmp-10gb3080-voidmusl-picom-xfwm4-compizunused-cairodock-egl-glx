@@ -27,5 +27,10 @@
 - [ ] GWE step1 +60/+250, re-bench (needs Coolbits live: log out/in)
 - [ ] CPU bench mode; BIOS OC per oc-cpu-bios-checklist.md (operator)
 
+## Live recovery focus (operator directive 2026-08-26)
+- [ ] Free runbook active: docs/omen-free-recovery-runbook.md — no external escalation
+- [ ] Free power-path checks on OMEN: front-panel bypass, CPU fan/pump header, GPU-free boot
+- [ ] Copy verified 08917.bin recovery payload to 491 MB FAT Stick A, then flash after a stable power-on
+
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
