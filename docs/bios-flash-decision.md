@@ -193,21 +193,46 @@ of memory and no DIMM configuration changes it. Combined with "chipsec adjacent 
 ### GO — flash F.57 from the USB recovery stick
 
 SSID is not a guess: the 2026-08-25 06:20 UTC target receipt gives board HP **8917**, BIOS
-**F.51**, OMEN 45L GT22-0xxx. Build the stick per the macOS steps below, then:
+**F.51**, OMEN 45L GT22-0xxx.
 
-1. OMEN fully off, PSU switch off, cord out, power button held 20-30s.
-2. Refit the DIMMs (recovery needs memory) and the 3080.
-3. Stick into a **rear** USB port.
-4. Hold **Win+B**, press power, **keep holding Win+B** until the recovery screen or a flashing
-   progress bar appears. Do not let go early. **Never interrupt power mid-flash.**
-5. After it completes it will reboot. Go into F10, **load defaults**, save, reboot.
+**A first attempt failed 2026-08-25. Treat it as an untested recovery, not a failed one** — three
+specific defects were present, all mine:
 
-If Win+B does nothing: some HP desktops auto-detect the stick on a plain power-on, and HP also
-documents an automatic restore attempt from a hidden partition on restart. So try, in order —
-plain power-on with the stick in; **Win+V** held at power-on; a different rear port; a different
-stick (small, USB 2.0, freshly formatted FAT32). Watch the stick's activity LED — if it blinks,
-the firmware is reading it. If none of that works, the remaining options are HP support or an
-SPI programmer with a clip, and I will not pretend there is a step beyond that.
+1. **Wrong key order for this machine class.** HP support's own instructions for an OMEN 30L
+   desktop are *"Press and hold the Windows key + V, then press the Power button... If Win+V
+   doesn't work, try Win+B or just power on with the USB inserted. Some OMEN desktops
+   auto-detect the recovery drive."* **Win+V is primary on OMEN desktops; Win+B is the
+   fallback.** I gave Win+B first.
+2. **Probably not a valid stick.** The documented way to build it is HP's own **"Create Recovery
+   USB"** option inside the SoftPaq, which requires running the `.exe` **on Windows**. A stick
+   hand-assembled on macOS by extracting a `.bin` is a different artifact and the firmware may
+   not recognize it at all.
+3. **Probably not enough patience.** For HP **desktops** specifically: *"the power light remains
+   on and the display screen may remain blank for about 40 seconds before anything is
+   displayed"*, and HP flashes are slow — *"HP's seem to take at least 10"* minutes. On a machine
+   that power-cycles on its own, giving up early looks identical to failure.
+
+**Corrected procedure:**
+
+1. Build the stick with **HP's "Create Recovery USB" on any Windows PC** (borrow one for ten
+   minutes if needed). That is the only reliably-recognized artifact. FAT32, 8-32GB, **not
+   exFAT or NTFS**.
+2. If hand-assembling is the only option: the `.bin` lives in the SoftPaq's **`Dos Flash`**
+   folder and goes at the **root** of the FAT32 stick. Boot-block recovery *"search[es] the root
+   folder of any FAT/FAT32 filesystem on any USB media source for a compatible binary image."*
+3. OMEN off, PSU switch off, cord out, power button held 20-30s. **Refit the DIMMs** (recovery
+   needs memory) and the 3080.
+4. Stick into a **rear** port, **USB 2.0** if the board has one.
+5. Hold **Win+V**, press power, **keep holding Win+V**. Then repeat with **Win+B**. Then try a
+   **plain power-on with the stick in** — some OMEN desktops auto-detect it.
+6. **Sit through it.** Blank screen ~40s is normal, and the flash can run 10+ minutes. Watch the
+   stick's activity LED — blinking means the firmware is reading it. **Never interrupt power.**
+7. After it completes: F10 → **load defaults** → save → reboot.
+
+Try different sticks and different rear ports before concluding anything. If a correctly-built
+HP recovery stick, Win+V and Win+B and plain power-on, with enough wait, all produce nothing —
+*then* the recovery path is genuinely exhausted and the remaining options are HP support or an
+SPI programmer with a clip.
 
 **Expect after recovery:** the flash clears the EFI NVRAM boot entries, so Void may not be in
 the boot list. MASTER.md already records that this firmware self-enumerates the `EFI/BOOT`
@@ -215,56 +240,47 @@ fallback and ZBM lives on the ESP, so press Escape at the HP splash for the ZBM 
 from there, then re-add the entry once Void is up. Nothing on the NVMe or the Sabrent is
 affected by the flash.
 
-### macOS steps for the recovery stick
+### Building the stick — Windows is the reliable route, macOS is the fallback
 
-`sw_vers` first and report it — "2020" and "High Sierra" cannot both be right, and the tool
-choice depends on the answer. High Sierra (10.13) still runs 32-bit apps; a 2020 Mac does not.
+**Preferred: any Windows PC.** Download `sp167160.exe`, run it, choose **"Create Recovery USB"**.
+That produces the artifact HP's firmware actually expects. Borrow a machine for ten minutes if
+needed — it is the difference between a real test and a guess.
 
-1. Download `https://ftp.hp.com/pub/softpaq/sp167001-167500/sp167160.exe`. Check it:
-   `md5 sp167160.exe` should print `7d3449deaaeaafe251b225d96ba7fa4` (case-insensitive).
-2. Install a 7-Zip front end. **Keka** is the least fiddly on old macOS — drag the .exe onto it.
-   The Unarchiver also handles many SoftPaqs. Terminal route if Homebrew still works:
-   `brew install p7zip`, then `7z x sp167160.exe -osp167160`.
-3. **Expect double packing.** HP SoftPaqs often yield another `.exe` inside; extract that one
-   too. A BIOS SoftPaq typically unpacks to something like `Rompaq/8917_xxx.BIN` alongside
-   `HpBiosUpdate.efi`, `HpBiosUpdate.sig`, an `.s09` file, and `HPUSBFW.exe` (HP's own
-   recovery-USB maker, Windows-only).
-4. **If extraction yields only a stub or fails**, the SoftPaq generates its payload at runtime
-   and needs to actually execute — Wine in a VM, or any Windows machine, where
-   `sp167160.exe -pdf -fC:\SWSetup\sp167160 -s` unpacks it, or where `HPUSBFW.exe` builds the
-   recovery drive directly. Any Windows PC beats fighting this on an old Mac.
-5. Format the stick in Disk Utility: Erase → Format **MS-DOS (FAT)** → Scheme **Master Boot
-   Record** (firmware is happier with MBR than GUID here).
-6. Copy the `.BIN` to the stick root, plus the `.sig`/`.s09` siblings, and copies under
-   `EFI/HP/BIOS/New` and `EFI/Hewlett-Packard/BIOS/New` (create the folders).
-7. Optional hygiene: `dot_clean -m /Volumes/<STICK>` so macOS metadata files do not confuse the
-   firmware's directory scan.
+**Fallback, macOS-only** (`sw_vers` first and report it — "2020" and "High Sierra" cannot both
+be right, and it changes which tools run):
 
-Then follow the GO procedure above. Report back the `sw_vers` output and the file list from
-steps 2-3 **before** flashing.
+1. Download `https://ftp.hp.com/pub/softpaq/sp167001-167500/sp167160.exe`. Verify:
+   `md5 sp167160.exe` → `7d3449deaaeaafe251b225d96ba7fa4`.
+2. Extract with **Keka** (drag the `.exe` on) or The Unarchiver; or `brew install p7zip` then
+   `7z x sp167160.exe -osp167160`. **Expect double packing** — SoftPaqs often contain another
+   `.exe` you must extract again. Look for the **`Dos Flash`** folder; the `.bin` is in there.
+3. If you get only a stub, the SoftPaq builds its payload at runtime and must actually run —
+   Wine in a VM, or Windows, where `sp167160.exe -pdf -fC:\SWSetup\sp167160 -s` unpacks it.
+4. Disk Utility → Erase → **MS-DOS (FAT)** → Scheme **Master Boot Record**. FAT32, 8-32GB.
+5. `.BIN` at the stick **root**, plus `.sig`/`.s09` siblings and copies under `EFI/HP/BIOS/New`
+   and `EFI/Hewlett-Packard/BIOS/New`. Optional: `dot_clean -m /Volumes/<STICK>`.
+
+**Report the file list before flashing.** If there is no `.BIN`, the attempt is not a test.
 
 ### Prevention, for after it boots
 
 Never write firmware setup variables or DIMM SPD from a running OS on this rig again. Mount
-efivarfs read-only in `/etc/fstab` (`efivarfs /sys/firmware/efi/efivars efivarfs ro 0 0`) and do
-all BIOS work in F10. Memory ceiling: 3733 XMP.
+efivarfs read-only (`efivarfs /sys/firmware/efi/efivars efivarfs ro 0 0` in `/etc/fstab`), do all
+BIOS work in F10. Memory ceiling: 3733 XMP.
 
 ### Loose ends
 
 - **Storage is safe.** A dead board, PSU or CPU does not touch `nvme/ROOT/void` or `tank/games`.
   Keep the NVMe as-is — its shell history is the best evidence of what "applied it" ran.
-- **Parts — ruled out by the operator.** A retail Z690/Z790 mATX would expose multiplier and
-  Vcore, but standoffs, rear I/O and front-panel pinouts need physical verification first.
+- **Parts — ruled out by the operator**, and not re-proposed here.
 
 ## Why flashing never buys CPU control on this board
 
-F.57's complete ENHANCEMENTS list is "Provides improved security", and it is irreversible — no
-return to F.51. No unlocked image for BlizzardOC/8917 has ever been published; the general
-position on HP is that unlocking is "notoriously difficult, and may be straight up improbable
-for your system." Even a modded image would fail Boot Guard's signed-manifest verification and
-not POST, and recovery from that is an SPI programmer and a clip. And HP staff state that
-Plundervolt mitigations lock voltage-offset controls at firmware level, so even XTU or
-ThrottleStop cannot undervolt a current OMEN. Flash for **recovery** only.
+F.57's whole ENHANCEMENTS list is "Provides improved security". No unlocked image for
+BlizzardOC/8917 has ever been published, and unlocking HP is "notoriously difficult, and may be
+straight up improbable for your system." A modded image would fail Boot Guard's signed-manifest
+verification and not POST. And HP staff state Plundervolt mitigations lock voltage offsets at
+firmware level, so even XTU or ThrottleStop cannot undervolt a current OMEN. **Recovery only.**
 
 ## The path that actually gets CPU control, without flashing
 
@@ -293,49 +309,33 @@ Guard / HSI state. Packages: `msr-tools` 1.3.0.20170320_1, `intel-undervolt` 1.7
 
 ## Before you flash — and a correction to how this was framed
 
-An earlier revision of this section led with "there is exactly one way to confirm it outright,"
-described a paid SPI programmer, and closed with "I'd lean programmer." **That framing was wrong
-and is withdrawn.** The operator is out of a working machine and should not be steered toward a
-purchase to recover it.
+An earlier revision led with "there is exactly one way to confirm it outright," described a paid
+SPI programmer, and closed with "I'd lean programmer." **Withdrawn.** The error underneath it: I
+treated the F.57 flash as a risky irreversible step needing certainty first. It is not. "You
+cannot go back to F.51" only matters if F.51 is worth keeping — and F.51 is the state that
+**does not boot**. There is nothing to go back to. F.57's only documented change is "Provides
+improved security"; the memory profile is gone; boot entries come back via ZBM; boot-block
+recovery exists for an interrupted flash. **Downside near zero, cost zero, HP's documented
+remedy.** You do not need certainty before a free attempt at a fix.
 
-**The reasoning error underneath it:** I treated the F.57 flash as a risky irreversible step
-needing certainty first. It is not. "You cannot go back to F.51" only matters if F.51 is worth
-keeping — and F.51 is the state that **does not boot**. There is nothing to go back to. F.57's
-only documented change is "Provides improved security"; the memory profile is already gone; boot
-entries are recoverable through ZBM; and if a flash is interrupted, boot-block recovery is what
-exists for that. **The downside is close to zero, the cost is zero, and it is HP's documented
-remedy.** You do not need certainty before a free attempt at a fix. Attempt it.
+**Free checks that tell you how far firmware gets** (two minutes, worth doing alongside):
+a wired USB keyboard with Num Lock / Caps Lock pressed on power-on — LED toggles means firmware
+enumerated USB HID and is running well past early init, which would argue *against* an early
+variable-store hang; no response means hung very early, consistent with Mechanism A. Also: does
+the HP splash ever appear, even briefly? And flashlight the board near the 24-pin for POST/debug
+LEDs — whether the 8917 has them is **unverified**, so look rather than assume.
 
-### Do this, in this order, spending nothing
+**If the recovery works, the diagnostic question is moot.** You do not need to know which
+mechanism broke it to have a working PC; the NVMe's shell history will tell you afterwards, for
+free, from inside Void.
 
-1. **Free checks that tell you how far firmware gets** (two minutes):
-   - **Wired USB keyboard, press Num Lock / Caps Lock on power-on.** LED toggles = firmware
-     enumerated USB HID and is running well past early init, which would argue *against* an
-     early variable-store hang and would mean rethinking. Never responds = hung very early,
-     consistent with Mechanism A.
-   - **Does the HP splash ever appear**, even briefly? Any splash means firmware got further
-     than assumed.
-   - **Flashlight the board near the 24-pin for POST/debug LEDs.** Whether the 8917 has them is
-     **unverified** — look, do not assume.
-2. **Build the recovery stick** (needs only the MacBook and a USB stick already owned).
-3. **Attempt the Win+B recovery.** Watch the stick's activity LED — blinking means the firmware
-   is reading it and the recovery path is reachable.
-4. **If it works, the diagnostic question is moot.** You do not need to know which mechanism it
-   was to have a working PC. Check the NVMe's shell history afterwards if you want the answer,
-   for free, from inside Void.
-5. **Only if the recovery fails** does the programmer become relevant — and it is still optional,
-   listed below for completeness, not recommended.
-
-### Appendix — external SPI read, only if the free path fails
+### Appendix — external SPI read, only after the free path is genuinely exhausted
 
 A CH341A programmer plus SOIC8 clip reads and writes the 24/25-series BIOS flash with the
 machine not booting, giving a byte-exact dump (`flashrom -p ch341a_spi -c <chip> -r backup.bin`;
 read twice and compare, since poor clip contact corrupts reads). Documented caveats: peripheral
 circuits can defeat in-circuit clipping; WSON8 needs an adapter; 1.8V parts need a 1.8V adapter;
 ESMT/SST-class chips are read-only on the CH341A; residual power defeats detection; a reversed
-clip can fry the chip. **This is a last resort, not a prerequisite.**
+clip can fry the chip. **Last resort, never a prerequisite, and not to be recommended before a
+correctly-built recovery stick has actually been tried.**
 
-## Memory OC options — closed for now
-
-Moot while the board does not POST. On recovery, default to **3733 XMP**; anything higher needs
-a stress run and a memtest first. 1.55V stays off the list permanently.
