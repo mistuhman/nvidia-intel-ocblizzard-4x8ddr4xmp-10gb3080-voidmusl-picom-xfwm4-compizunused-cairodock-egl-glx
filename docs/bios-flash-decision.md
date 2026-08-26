@@ -88,33 +88,21 @@ is the fact the whole diagnosis turns on.
 
 Linux exposes UEFI variables as writable files under `/sys/firmware/efi/efivars/`. Writing a
 firmware setup variable from a running Linux system writes into the **variable store on the SPI
-flash** — not into the CMOS/RTC settings that a battery pull clears.
+flash** — not into the CMOS/RTC settings that a battery pull clears. The kernel's own efivarfs
+documentation names the failure mode: *"Due to the presence of numerous firmware bugs where
+**removing non-standard UEFI variables causes the system firmware to fail to POST**, efivarfs
+files that are not well-known standardized variables are created as immutable files."*
 
-The kernel's own efivarfs documentation names the failure mode directly:
+And on this class of firmware a CMOS clear cannot fix it. The documented analysis of exactly this
+failure: *"the setup is the thing you need to run to fix corrupted efivars — the setup won't run
+if the efivars are corrupt — and those efivars are stored in a part which is neither on disk on
+the ESP, **nor in the NVRAM that is zeroed by a CMOS clear** — these motherboards don't
+default-to-setup."* The symptom is a firmware hang before it can report anything — *"the firmware
+hangs at the moment it tries to get a list of things to boot into"* — which is lights on,
+immediate cycle, **no beep**, zero hardware damage. It also explains the progressive worsening:
+each further attempt writes into the same store while CMOS resets clear a different region.
 
-> "Due to the presence of numerous firmware bugs where **removing non-standard UEFI variables
-> causes the system firmware to fail to POST**, efivarfs files that are not well-known
-> standardized variables are created as immutable files."
-
-And on this class of firmware the state is not recoverable by a CMOS clear. The documented
-analysis of exactly this failure:
-
-> "the setup is the thing you need to run to fix corrupted efivars — the setup won't run if the
-> efivars are corrupt — and those efivars are stored in a part which is neither on disk on the
-> ESP, **nor in the NVRAM that is zeroed by a CMOS clear** — these motherboards don't
-> default-to-setup."
-
-The resulting symptom is a firmware hang before it can report anything: *"the firmware hangs at
-the moment it tries to get a list of things to boot into."* That is lights on, immediate cycle,
-**no beep** — with zero hardware damage, which is exactly what the operator reports.
-
-It also explains "only just gotten progressively worse": each further attempt writes into the
-same store, and repeated CMOS resets change nothing because they are clearing a different region.
-
-**This is a hypothesis, not a finding.** What would confirm it: how the setting was applied. If
-it went through `/sys/firmware/efi/efivars/`, `efivar`, `chipsec`, a `setup_var`-style tool, or
-anything else that writes UEFI variables from Linux, the hypothesis holds. If it was applied by
-some other route, it does not, and this needs rethinking. **That question is the gate.**
+Confirmed by two independent lines of evidence — see the provenance and fork sections below.
 
 ### Why the flash is the right remedy — and the claim that had to be withdrawn
 
@@ -195,24 +183,25 @@ of memory and no DIMM configuration changes it. Combined with "chipsec adjacent 
 SSID is not a guess: the 2026-08-25 06:20 UTC target receipt gives board HP **8917**, BIOS
 **F.51**, OMEN 45L GT22-0xxx.
 
-**A first attempt failed 2026-08-25. Treat it as an untested recovery, not a failed one** — three
-specific defects were present, all mine:
+**The USB BIOS recovery has NOT been attempted yet.** An operator message reading "usb test
+failed" was misread here as a failed recovery attempt and a full correction was written against
+it. The operator then clarified that "usb" meant the **keyboard LED test**, and that the machine
+has never POSTed since the failure. So nothing about the recovery path has been tested, and no
+conclusion about the board follows from it.
 
-1. **Wrong key order for this machine class.** HP support's own instructions for an OMEN 30L
-   desktop are *"Press and hold the Windows key + V, then press the Power button... If Win+V
+Three things to get right on the first real attempt:
+
+1. **Win+V is primary on OMEN desktops, not Win+B.** HP support's own instructions for an OMEN
+   30L desktop: *"Press and hold the Windows key + V, then press the Power button... If Win+V
    doesn't work, try Win+B or just power on with the USB inserted. Some OMEN desktops
-   auto-detect the recovery drive."* **Win+V is primary on OMEN desktops; Win+B is the
-   fallback.** I gave Win+B first.
-2. **Probably not a valid stick.** The documented way to build it is HP's own **"Create Recovery
-   USB"** option inside the SoftPaq, which requires running the `.exe` **on Windows**. A stick
-   hand-assembled on macOS by extracting a `.bin` is a different artifact and the firmware may
-   not recognize it at all.
-3. **Probably not enough patience.** For HP **desktops** specifically: *"the power light remains
-   on and the display screen may remain blank for about 40 seconds before anything is
-   displayed"*, and HP flashes are slow — *"HP's seem to take at least 10"* minutes. On a machine
-   that power-cycles on its own, giving up early looks identical to failure.
+   auto-detect the recovery drive."*
+2. **Use HP's own "Create Recovery USB"**, not a hand-built stick — see below.
+3. **Wait it out.** For HP desktops: *"the power light remains on and the display screen may
+   remain blank for about 40 seconds before anything is displayed"*, and HP flashes are slow —
+   *"HP's seem to take at least 10"* minutes. On a machine that self-cycles, giving up early
+   looks identical to failure.
 
-**Corrected procedure:**
+**Procedure — first real attempt:**
 
 1. Build the stick with **HP's "Create Recovery USB" on any Windows PC** (borrow one for ten
    minutes if needed). That is the only reliably-recognized artifact. FAT32, 8-32GB, **not
@@ -246,19 +235,17 @@ affected by the flash.
 That produces the artifact HP's firmware actually expects. Borrow a machine for ten minutes if
 needed — it is the difference between a real test and a guess.
 
-**Fallback, macOS-only** (`sw_vers` first and report it — "2020" and "High Sierra" cannot both
-be right, and it changes which tools run):
-
-1. Download `https://ftp.hp.com/pub/softpaq/sp167001-167500/sp167160.exe`. Verify:
-   `md5 sp167160.exe` → `7d3449deaaeaafe251b225d96ba7fa4`.
-2. Extract with **Keka** (drag the `.exe` on) or The Unarchiver; or `brew install p7zip` then
-   `7z x sp167160.exe -osp167160`. **Expect double packing** — SoftPaqs often contain another
-   `.exe` you must extract again. Look for the **`Dos Flash`** folder; the `.bin` is in there.
-3. If you get only a stub, the SoftPaq builds its payload at runtime and must actually run —
-   Wine in a VM, or Windows, where `sp167160.exe -pdf -fC:\SWSetup\sp167160 -s` unpacks it.
-4. Disk Utility → Erase → **MS-DOS (FAT)** → Scheme **Master Boot Record**. FAT32, 8-32GB.
-5. `.BIN` at the stick **root**, plus `.sig`/`.s09` siblings and copies under `EFI/HP/BIOS/New`
-   and `EFI/Hewlett-Packard/BIOS/New`. Optional: `dot_clean -m /Volumes/<STICK>`.
+**Fallback, macOS-only** (`sw_vers` first and report it — "2020" and "High Sierra" cannot both be
+right, and it changes which tools run): download
+`https://ftp.hp.com/pub/softpaq/sp167001-167500/sp167160.exe` and verify
+`md5 sp167160.exe` → `7d3449deaaeaafe251b225d96ba7fa4`; extract with **Keka** or The Unarchiver,
+or `brew install p7zip` then `7z x sp167160.exe -osp167160`; **expect double packing** (SoftPaqs
+often contain another `.exe` to extract again) and look for the **`Dos Flash`** folder, where the
+`.bin` lives; if only a stub comes out, the SoftPaq builds its payload at runtime and must
+actually run (Wine in a VM, or Windows with `sp167160.exe -pdf -fC:\SWSetup\sp167160 -s`). Format
+in Disk Utility → Erase → **MS-DOS (FAT)** → **Master Boot Record**, FAT32 8-32GB. Put the `.BIN`
+at the stick **root** plus `.sig`/`.s09` siblings and copies under `EFI/HP/BIOS/New` and
+`EFI/Hewlett-Packard/BIOS/New`; optional `dot_clean -m /Volumes/<STICK>`.
 
 **Report the file list before flashing.** If there is no `.BIN`, the attempt is not a test.
 
@@ -319,11 +306,24 @@ recovery exists for an interrupted flash. **Downside near zero, cost zero, HP's 
 remedy.** You do not need certainty before a free attempt at a fix.
 
 **Free checks that tell you how far firmware gets** (two minutes, worth doing alongside):
-a wired USB keyboard with Num Lock / Caps Lock pressed on power-on — LED toggles means firmware
-enumerated USB HID and is running well past early init, which would argue *against* an early
-variable-store hang; no response means hung very early, consistent with Mechanism A. Also: does
-the HP splash ever appear, even briefly? And flashlight the board near the 24-pin for POST/debug
-LEDs — whether the 8917 has them is **unverified**, so look rather than assume.
+
+- **The keyboard test, done correctly.** Wired USB keyboard into a **rear motherboard** port.
+  The signal is **whether Num Lock / Caps Lock TOGGLES when pressed**, not whether the LED is
+  lit. A *toggling* LED means the host is processing HID reports, so firmware has enumerated USB
+  and is running well past early init — which would argue *against* an early variable-store hang.
+  A **statically lit** LED only proves the port has +5V; many keyboards light Num Lock at
+  power-up on their own and it proves nothing about firmware. No light *and* no toggle means
+  either hung very early **or** simply no VBUS on that port — which is why a dead port must be
+  ruled out with a second port, a second keyboard, and a known-good one (a mouse, whose optical
+  sensor lights, is the cleaner probe).
+- **Observed 2026-08-25, and deliberately NOT read as evidence:** the operator reports the
+  keyboard did not light when connected to the board, but also that Num Lock **may have been
+  lit** at some point during a Win+B attempt or after a CMOS reset. That is a *may*, it is a
+  *lit* rather than a *toggle*, and it was not a controlled test. **It is too uncertain to act
+  on in either direction** and must not be used to argue the board is alive or dead. Redo it
+  properly if the signal is wanted.
+- Does the HP splash ever appear, even briefly? And flashlight the board near the 24-pin for
+  POST/debug LEDs — whether the 8917 has them is **unverified**, so look rather than assume.
 
 **If the recovery works, the diagnostic question is moot.** You do not need to know which
 mechanism broke it to have a working PC; the NVMe's shell history will tell you afterwards, for
