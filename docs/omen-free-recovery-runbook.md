@@ -50,17 +50,42 @@ From the Windows Disk Management photo 2026-08-26:
 If the 491 MB stick is too small to take the payload, do not format it blindly — report
 the copy error and we will use Stick B or a third candidate.
 
+## Photo receipts (do this before ANY shorting or cable removal)
+
+We do not guess which pins are power. Send these pictures, in order, with the OMEN
+powered off (cord OUT, PSU switch off, power button held 20-30s):
+
+1. **Full board** — side panel off, phone straight above, flash on, whole motherboard
+   visible and in focus.
+2. **Bottom edge of the board** — the front-panel header lives there on almost every
+   board; get close enough to read the white text labels on the PCB.
+3. **The front-panel cable bundle** — where the case's small wires plug in. Do not
+   unplug yet; just show the connector and its labels. If the connector is part of a
+   combined HP hookup, show the whole connector head.
+4. **Any label near a connector** — `F_PANEL`, `FP`, `PANEL`, `PWRSW`, `PWR`, `PWR_SW`,
+   `PB`, `LED`, `PWR_LED`, `RESET`, `RST`. Crisp close-up, flash on, text readable.
+5. **CPU cooler/pump header area** — same subject for Check 2, so we can identify
+   `CPU_FAN` / `CPU_OPT` / `AIO_PUMP` / `PUMP_FAN` in the same pass.
+
+Reference note for identification (not your board yet): HP Omen/Intel-style front panels
+use the standard Intel layout where **Power Switch = pins 6 and 8**, Power LED = 2 and 4,
+HDD LED = 1 and 3, Reset = 5 and 7, pin 10 no-pin, pin 9 reserved. We only act on that
+after the photos confirm which pins are exposed and which pins the case cable currently
+occupies.
+
 ## Free power-path checks (OMEN side — do these before any flash)
 
 ### Check 1 — bypass the front-panel power button
 
 This is the test that separates a power-circuit fault from a firmware fault.
+ONLY after the photo receipts above confirm the exact two PWR_SW pins.
 
 1. OMEN off, PSU off, cord out, hold power 20-30s.
-2. Unplug the case power-button cable from the motherboard's two-pin **PWR** header
-   (labels like `PWRSW`, `PWR_SW`, `PWR`, `FPANEL`). Do not touch reset or HDD LED pins.
-3. Briefly touch the two PWR header pins with a metal screwdriver blade for less than a
-   second, then remove the screwdriver.
+2. Unplug only the case power-button cable pins from the motherboard power-switch header
+   (`PWRSW` / pin 6 and 8 in the standard Intel layout). Do not touch reset, HDD LED, or
+   power-LED pins.
+3. Briefly touch the two power-switch header pins with a metal screwdriver blade for less
+   than a second, then remove the screwdriver.
 4. Watch what happens.
 
 - **Pass:** the board comes on and stays on, beeps, or shows any HP screen — the case
