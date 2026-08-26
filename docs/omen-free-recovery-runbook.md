@@ -14,57 +14,56 @@ next single test together.
 
 ## Why this order matters
 
-The OMEN currently cuts power before it reads the USB stick. The validated clean recovery
-stick, front-panel `PB` check, CMOS check, and pump check have now all produced the same
-instant cycle, so do not repeat them. The remaining free media discriminator is one
-previously untested physical stick; only after that result do we decide whether a flash
-attempt has a reason to run.
+The OMEN cuts power before the validated recovery stick is read. Repeating the clean stick,
+another port, or another keyboard combination cannot repair that pre-USB failure. Research
+found a more direct untested path: the board exposes an `FDO/PSWD/BBR` header, and independent
+Omen reports describe BBR as the path that forces boot-block recovery. Those reports are on
+other boards, so their pin numbers are not transferable. We identify the BlizzardOC position
+first, then decide whether the operator wants one BBR attempt.
 
-## Ground rules (do these before the single next power-on test)
+## Ground rules (before any BBR test)
 
-- Main power switch OFF, cord OUT of the wall rear, power button held 20-30 seconds.
-- Only the 3080, RAM, wired keyboard, monitor, and power attached. No HDD, no wireless
-  dongle, no mouse, no Ethernet, no stick unless a step says to.
-- One action at a time. Do not chain steps.
-- If the board stays on and reaches a beep or any HP screen, stop and report it. That is
-  a pass.
+- Main power switch OFF, cord OUT of the wall, and power button held 20-30 seconds.
+- Keep only the reported 3080, RAM, wired keyboard, monitor, and power attached. No HDD,
+  wireless dongle, mouse, Ethernet, or extra USB device.
+- Do not move `FDO` or `PSWD`; BBR is the only candidate under consideration.
+- One physical change and one power-on only. If recovery activity begins, do not interrupt it.
+- A failed result is still a result: stop and report it rather than trying another jumper pair.
 
-## Recovery-media state and the remaining media discriminator
+## Media and firmware artifacts
 
-The verified clean source is the rebuilt **Disk 3**, a single-partition 7.34 GB FAT32
-`HP_TOOLS` stick containing `HP`, `Hewlett-Packard`, `EFI`, and
-`HP\BIOS\New\08917.bin` plus `08917.sig`. Its plain-power recovery attempt already
-produced the same immediate cycle with no stick activity; do not repeat that stick or its
-Win+V/Win+B combinations.
+The rebuilt 7.34 GB FAT32 `HP_TOOLS` stick with `HP\BIOS\New\08917.bin` and `08917.sig`
+was already tested and produced the same immediate cycle with no LED/activity. Preserve it;
+do not format it or repeat its Win+V/Win+B attempts.
 
-The operator has two other physical sticks, but their capacities, formats, models, and
-Windows disk numbers are not yet recorded. Do not call either one Stick A or Stick B until
-Windows Disk Management identifies it. Disk 1 (1.863 TB DATA) and Disk 2 (931.50 GB Windows)
-are protected; do not select, format, clean, repartition, or write either disk.
+The research pass found two non-vendor Linux projects that extract or invoke HP's signed EFI
+flasher. `Rixmerz/hp-omen-bios-flash-linux` was verified only on an OMEN 15 / board 8787;
+`Ocean-Moist/hp-bios-flash-linux` was verified only on an Insyde OmniBook. Neither proves
+compatibility with AMI BlizzardOC 8917. The useful pre-power question is whether `sp167160.exe`
+contains `HpBiosUpdate.efi` and its matching signature files. A raw `.bin` must not be wrapped
+in a guessed capsule or altered firmware image.
 
-### Step 0 — identify and prepare one alternate stick (Windows, no commands)
+### Step 0 — no-power preflight
 
-1. Keep the OMEN off. In Windows Disk Management, record the candidate's physical disk
-   number, model, capacity, and partition layout. Leave all disks unchanged.
-2. Select exactly one removable candidate only after its identity is unambiguous. If it
-   already contains the verified HP tree, confirm the files rather than rebuilding it.
-3. Otherwise copy the verified source tree in File Explorer, without formatting or
-   repartitioning. Confirm `HP`, `Hewlett-Packard`, `EFI`, and
-   `HP\BIOS\New\08917.bin` plus `08917.sig`; the `.bin` is about 16.4 MB and the `.sig`
-   about 1 KB.
-4. Safely eject the selected alternate stick and report its model, capacity, free space,
-   and the exact payload paths. If it cannot hold the tree, stop and report; do not erase
-   it and do not silently fall back to another disk.
+1. Keep the OMEN off. Photograph the untouched `FDO/PSWD/BBR` header straight-on with the
+   blue cap still installed. The photo must show all three pins, the cap orientation, nearby
+   silkscreen, and enough board context to establish left/right. Do not move the cap.
+2. On Windows, inspect or extract the existing `sp167160.exe` without executing anything on
+   the OMEN. Record whether it contains `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig`
+   siblings, and the exact image/signature names. Preserve the validated USB source.
+3. Report whether a 3.3 V SPI programmer/clip or a DMM/logic probe is already owned. This is
+   inventory only; do not buy or connect hardware by assumption.
+4. Send the photo and artifact/instrument receipt back before any power-on.
 
-This preparation is not a firmware attempt. The OMEN stays powered off until the media
-receipt passes and the one next power-on is explicitly named.
+This preflight is not a firmware attempt. It resolves the only missing board-specific fact
+before we name the last power-on.
 
 ## Historical photo receipts — complete; do not repeat
 
 The board, bottom edge, front-panel bundle, labels, and cooler-header photos were already
 captured and mapped. They established `PB` as the real power-button header, `CMOS` as the
 small center-bottom clear cap, and `FDO/PSWD/BBR` as a different untouched jumper. No new
-photo, short, cable removal, or jumper move is part of the alternate-media test.
+photo, short, cable removal, or jumper move is part of the BBR preflight.
 
 ## Closed power-path checks — do not repeat
 
@@ -79,43 +78,34 @@ usable POST or USB activity. Do not repeat cable, GPU, DIMM, CMOS, or current-st
 `FDO/PSWD/BBR` remains a separate optional jumper experiment, not an implied next step. It
 requires the operator to explicitly name it first; do not move that cap by inference.
 
-## One alternate-stick power-on discriminator
+## One BBR power-on discriminator
 
-This is the only scheduled next power-on. It requires the Step 0 Windows receipt above:
-one untested physical stick has an unambiguous model, capacity, partition layout, and verified
-HP recovery tree. If that receipt is not available, keep the OMEN off.
+This is the only scheduled next power-on, and it requires the Step 0 photo and artifact
+receipt plus explicit operator opt-in. The exact BlizzardOC BBR pair must be read from that
+photo or an exact BlizzardOC source; do not use the 5–6 or 1–2 numbers reported for other
+Omen/HP boards. Use the existing verified recovery stick, not an unverified alternate.
 
-1. With the PSU off, cord out, and power button held 20-30 seconds, leave only the reported
-   3080, RAM, wired keyboard, monitor, and power attached. Keep the external HDD, wireless
-   dongle, mouse, Ethernet, and all other USB devices out.
-2. Insert the **selected alternate stick** in a rear motherboard USB-A port. Do not use the
-   already-tested 7.34 GB source stick.
-3. Power on once with **no Win+V or Win+B**. Watch the stick LED, monitor, speaker, and the
-   exact time until the board either stays on or cuts power. Do not interrupt a flash or a
-   long blank-screen interval.
+1. With the PSU off, cord out, and power button held 20-30 seconds, confirm the 3080, RAM,
+   wired keyboard, monitor, and power are the only attached hardware.
+2. Insert the existing verified `HP_TOOLS` stick in a rear motherboard USB-A port. Leave
+   `FDO` and `PSWD` in their normal untouched state.
+3. Move the blue cap once from its confirmed normal position to the confirmed BlizzardOC
+   BBR position. Power on once with no Win+V or Win+B. Watch the stick LED, speaker, screen,
+   and exact time to power-off. Do not interrupt a recovery/flash interval.
+4. **Pass:** LED/read activity, beeps, HP output, or a materially longer powered interval.
+   Stop and report. **Fail:** the same silent immediate cycle with no activity. Stop and
+   report. If it fails, remove AC power and return the cap to its documented normal position;
+   that is the rollback, not a second test. Do not try another header position or media
+   permutation.
 
-- **Pass:** the stick LED blinks, the board stays on materially longer, beeps, or shows HP
-  output. Stop and report exactly what happened; this provides a reason to consider recovery.
-- **Fail:** the board repeats the same immediate cycle with no stick LED/activity. Stop and
-  report the timing; do not retry this stick, the source stick, or another hotkey combination
-  in the same test.
+If BBR passes, leave the board alone until we identify whether the HP-created recovery tree
+or the signed `HpBiosUpdate.efi` path is the correct flash artifact. If a flash completes,
+power off, remove AC, restore the cap to its documented normal position, then use Escape for
+ZBM and F10 for BIOS.
 
-## Flash — only after an alternate discriminator pass
-
-Use the selected alternate stick only if the discriminator showed LED/read activity or a
-materially longer powered interval. Keep the 3080, RAM, keyboard, and monitor configuration
-that produced the receipt. Initiate one HP recovery attempt using the normal plain-power
-procedure, allow a full blank-screen interval, watch for the LED, and never interrupt power
-if flashing begins. Do not stack Win+V, Win+B, or another physical change automatically;
-name and gate any separate invocation with the operator first.
-
-After a successful flash, press Escape at the HP splash for ZBM, use F10 for BIOS, load
-safe defaults with memory at 3733 XMP, and keep efivarfs read-only. Never write setup
-variables or DIMM SPD from Void.
-
-## If the alternate test produces the identical instant cycle
+## If the BBR test produces the identical instant cycle
 
 Stop. Do not repeat either recovery stick, repeat Win+V/Win+B, or make another cable/jumper
-change. Report the exact media identity, LED result, screen/speaker result, and time to
-power-off. That is the end of the media discriminator; the next free action must be designed
-from those receipts, not guessed in advance.
+change. Report the exact header position, media identity, LED result, screen/speaker result,
+and time to power-off. The next free discriminator is an owned, safe instrument (read-only
+SPI identification/dump or PS_ON#/rail observation), not another guess.

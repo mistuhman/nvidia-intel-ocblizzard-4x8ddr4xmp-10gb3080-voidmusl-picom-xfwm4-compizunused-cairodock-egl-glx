@@ -33,10 +33,13 @@
 - [x] CMOS jumper: FAIL, cap restored. FDO/PSWD/BBR not moved.
 - [x] Pump/0-RPM closed (fans run in the cycle). No more unsolicited cables.
 - [x] Validated clean 7.34 GB HP recovery stick: plain-power attempt FAIL, same immediate loop, no USB activity.
-- [ ] Identify exactly one of the two untested physical USB sticks in Windows Disk Management; record model, capacity, and partition layout without formatting.
-- [ ] Copy the verified `08917.bin` + `.sig` recovery tree to that selected stick only if it has room; verify, safely eject, and keep the OMEN off until this gate passes.
-- [ ] Run one alternate-stick plain-power discriminator; stop and report LED activity, screen/beep, and cycle timing. Do not repeat the current stick or hotkey combinations.
-- [ ] Flash F.57 then boot Void (Escape = ZBM) only after a discriminator pass gives evidence the board will stay powered or the boot block reads media.
+- [x] 80-agent recovery research tool: exact 80-agent/80-URL manifest, hashes and trap filtering.
+- [ ] Photograph the untouched BlizzardOC `FDO/PSWD/BBR` header straight-on; record current cap orientation and legible silkscreen without moving it.
+- [ ] Inspect the existing `sp167160.exe` on Windows for signed `HpBiosUpdate.efi` and signature siblings; do not alter the validated source stick.
+- [ ] Inventory any already-owned 3.3V SPI programmer/clip or suitable DMM/logic probe; do not buy or connect anything by assumption.
+- [ ] Explicitly opt into one BBR-only recovery attempt after the header mapping is confirmed; keep FDO and PSWD untouched.
+- [ ] If BBR produces a recovery/EFI path, use the signed F.57 route; if it fails silently, stop and choose the owned-instrument discriminator.
+- [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
