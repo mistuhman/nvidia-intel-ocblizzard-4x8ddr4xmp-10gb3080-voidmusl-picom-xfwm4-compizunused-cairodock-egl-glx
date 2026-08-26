@@ -7,13 +7,14 @@
 Run in one pass, parallel where independent:
 
 1. Read `MASTER.md` in full. It is JSON context, not prose policy.
-2. Establish ground truth with `node tools/orient.ts orient`.
-3. Read `activeObjective` from `MASTER.md`; that is the task and gate.
-4. Deploy bounded agents: one task, source set, hypothesis, or verification target per agent.
-5. Before pasting target commands, run `node tools/paste-proof.ts --target-console --root <block-file>` or an equivalent stricter check.
-6. Before delivery, run `node tools/test-all.ts` and `node tools/pr-budget.ts main 405` unless the operator explicitly ordered a larger refactor.
-7. Deliver large, filtered, pasteable command blocks only after tool checks; the operator pastes output back for main-model problem solving.
-8. Report objective, agents used, receipts, unverified limits, gate, and next action.
+2. If the OMEN is in no-POST recovery, also read `docs/next-chat-last-power-on.md` before any power-on advice.
+3. Establish ground truth with `node tools/orient.ts orient`.
+4. Read `activeObjective` from `MASTER.md`; that is the task and gate.
+5. Deploy bounded agents: one task, source set, hypothesis, or verification target per agent.
+6. Before pasting target commands, run `node tools/paste-proof.ts --target-console --root <block-file>` or an equivalent stricter check.
+7. Before delivery, run `node tools/test-all.ts` and `node tools/pr-budget.ts main 405` unless the operator explicitly ordered a larger refactor.
+8. Deliver large, filtered, pasteable command blocks only after tool checks; the operator pastes output back for main-model problem solving.
+9. Report objective, agents used, receipts, unverified limits, gate, and next action.
 
 ## Project
 

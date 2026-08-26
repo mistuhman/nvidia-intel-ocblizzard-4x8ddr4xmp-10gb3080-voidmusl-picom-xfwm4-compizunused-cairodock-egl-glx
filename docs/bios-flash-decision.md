@@ -191,7 +191,7 @@ conclusion about the board follows from it.
 
 Three things to get right on the first real attempt:
 
-1. **Win+V is primary on OMEN desktops, not Win+B.** HP support's own instructions for an OMEN
+1. **Win+V is primary on OMEN desktops, not Win+B.** HP's own instructions for an OMEN
    30L desktop: *"Press and hold the Windows key + V, then press the Power button... If Win+V
    doesn't work, try Win+B or just power on with the USB inserted. Some OMEN desktops
    auto-detect the recovery drive."*
@@ -220,8 +220,8 @@ Three things to get right on the first real attempt:
 
 Try different sticks and different rear ports before concluding anything. If a correctly-built
 HP recovery stick, Win+V and Win+B and plain power-on, with enough wait, all produce nothing —
-*then* the recovery path is genuinely exhausted and the remaining options are HP support or an
-SPI programmer with a clip.
+rejoin the operator and continue the free runbook in `docs/omen-free-recovery-runbook.md`;
+the medium is shared free diagnostics, never an external escalation path.
 
 **Expect after recovery:** the flash clears the EFI NVRAM boot entries, so Void may not be in
 the boot list. MASTER.md already records that this firmware self-enumerates the `EFI/BOOT`
@@ -296,8 +296,9 @@ Guard / HSI state. Packages: `msr-tools` 1.3.0.20170320_1, `intel-undervolt` 1.7
 
 ## Before you flash — and a correction to how this was framed
 
-An earlier revision led with "there is exactly one way to confirm it outright," described a paid
-SPI programmer, and closed with "I'd lean programmer." **Withdrawn.** The error underneath it: I
+An earlier revision led with "there is exactly one way to confirm it outright," described an
+external SPI programmer, and closed with "I'd lean programmer." **Withdrawn.** The error
+underneath it: I
 treated the F.57 flash as a risky irreversible step needing certainty first. It is not. "You
 cannot go back to F.51" only matters if F.51 is worth keeping — and F.51 is the state that
 **does not boot**. There is nothing to go back to. F.57's only documented change is "Provides
@@ -329,13 +330,14 @@ remedy.** You do not need certainty before a free attempt at a fix.
 mechanism broke it to have a working PC; the NVMe's shell history will tell you afterwards, for
 free, from inside Void.
 
-### Appendix — external SPI read, only after the free path is genuinely exhausted
+### Where we go from here (operator directive 2026-08-26)
 
-A CH341A programmer plus SOIC8 clip reads and writes the 24/25-series BIOS flash with the
-machine not booting, giving a byte-exact dump (`flashrom -p ch341a_spi -c <chip> -r backup.bin`;
-read twice and compare, since poor clip contact corrupts reads). Documented caveats: peripheral
-circuits can defeat in-circuit clipping; WSON8 needs an adapter; 1.8V parts need a 1.8V adapter;
-ESMT/SST-class chips are read-only on the CH341A; residual power defeats detection; a reversed
-clip can fry the chip. **Last resort, never a prerequisite, and not to be recommended before a
-correctly-built recovery stick has actually been tried.**
+No external escalation. The medium is the free runbook in
+`docs/omen-free-recovery-runbook.md`, worked with the operator one action at a time.
+
+**Session close 2026-08-26:** Check 1 (front panel / `PB`) FAIL — cycle with `PB` unplugged
+and on cord-in. CMOS jumper FAIL — same cycle; jumper restored. That is consistent with
+Mechanism A in **SPI**, which a CMOS cap does not wipe. Operator stopped further cable/jumper
+work. Machine **off**. Next chat starts at `docs/next-chat-last-power-on.md`. One named test
+before any power-on.
 

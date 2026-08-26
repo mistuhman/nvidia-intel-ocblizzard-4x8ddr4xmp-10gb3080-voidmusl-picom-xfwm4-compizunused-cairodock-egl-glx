@@ -27,5 +27,14 @@
 - [ ] GWE step1 +60/+250, re-bench (needs Coolbits live: log out/in)
 - [ ] CPU bench mode; BIOS OC per oc-cpu-bios-checklist.md (operator)
 
+## Live recovery focus (operator directive 2026-08-26)
+- [x] Free runbook: docs/omen-free-recovery-runbook.md — no external escalation
+- [x] Check 1 front-panel / `PB`: FAIL (cycle with PB unplugged; auto-cycle on cord-in)
+- [x] CMOS jumper: FAIL, cap restored. FDO/PSWD/BBR not moved.
+- [x] Pump/0-RPM closed (fans run in the cycle). No more unsolicited cables.
+- [ ] Next chat: read docs/next-chat-last-power-on.md before any power-on
+- [ ] Copy 08917.bin to 491 MB Stick A only after a reason the board will stay on
+- [ ] Flash F.57 then boot Void (Escape = ZBM)
+
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
