@@ -13,6 +13,22 @@ dismissed here, then reinstated after three corrections recorded below.
 3. **Recover, then stay at 3733 XMP.** 4000 MT/s on 4 DIMMs is ~25% over what Intel rates this
    CPU for.
 
+## Current status — 2026-08-26
+
+**The recovery procedure later in this historical analysis is superseded by the receipts
+below; do not repeat its old Win+V/Win+B sequence or current-stick attempt.** The HP-created
+`08917.bin` + `.sig` media was tested first in its former Ventoy layout and then on a clean
+single-partition 7.34 GB `HP_TOOLS` stick. Both produced the same immediate power cycle with
+no LED/activity, screen, beep, or flash. `PB`, `CMOS`, pump/zero-RPM, minimal-bench, and
+zero-DIMM checks are also closed. Two other physical USB sticks remain untested.
+
+Keep the OMEN off while Windows identifies one alternate stick by model, capacity, and
+partition layout. Do not format or repartition it or either internal disk; copy and verify the
+existing HP tree only if it fits. Then perform one plain-power attempt with that alternate
+stick and stop. Mechanism A is still a hypothesis: the repository has no direct setup-variable
+write receipt, and the exact board reset mechanism is not proven. Follow
+`docs/next-chat-last-power-on.md` and `docs/omen-free-recovery-runbook.md` for the current gate.
+
 ## Board facts (verified this session)
 
 | Fact | Value | Source |

@@ -1,4 +1,4 @@
-# ToDo — OC meter phase (2026-08-25)
+# ToDo — OC meter / recovery gate (2026-08-26)
 
 > official compare: Geekbench 6 + Unigine Superposition; meter every step; GWE for 3080; BIOS for 12700KF; ParkControl notes = Linux-only equivalent
 
@@ -32,9 +32,11 @@
 - [x] Check 1 front-panel / `PB`: FAIL (cycle with PB unplugged; auto-cycle on cord-in)
 - [x] CMOS jumper: FAIL, cap restored. FDO/PSWD/BBR not moved.
 - [x] Pump/0-RPM closed (fans run in the cycle). No more unsolicited cables.
-- [ ] Next chat: read docs/next-chat-last-power-on.md before any power-on
-- [ ] Copy 08917.bin to 491 MB Stick A only after a reason the board will stay on
-- [ ] Flash F.57 then boot Void (Escape = ZBM)
+- [x] Validated clean 7.34 GB HP recovery stick: plain-power attempt FAIL, same immediate loop, no USB activity.
+- [ ] Identify exactly one of the two untested physical USB sticks in Windows Disk Management; record model, capacity, and partition layout without formatting.
+- [ ] Copy the verified `08917.bin` + `.sig` recovery tree to that selected stick only if it has room; verify, safely eject, and keep the OMEN off until this gate passes.
+- [ ] Run one alternate-stick plain-power discriminator; stop and report LED activity, screen/beep, and cycle timing. Do not repeat the current stick or hotkey combinations.
+- [ ] Flash F.57 then boot Void (Escape = ZBM) only after a discriminator pass gives evidence the board will stay powered or the boot block reads media.
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers

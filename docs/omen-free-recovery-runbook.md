@@ -14,11 +14,13 @@ next single test together.
 
 ## Why this order matters
 
-The OMEN currently cuts power before it reads the USB stick, so no stick, key-combo, or
-hotkey can matter yet. Three free checks change that. Only after one of them makes the
-board hold power do we bother with the flash.
+The OMEN currently cuts power before it reads the USB stick. The validated clean recovery
+stick, front-panel `PB` check, CMOS check, and pump check have now all produced the same
+instant cycle, so do not repeat them. The remaining free media discriminator is one
+previously untested physical stick; only after that result do we decide whether a flash
+attempt has a reason to run.
 
-## Ground rules (do these before every power-on test)
+## Ground rules (do these before the single next power-on test)
 
 - Main power switch OFF, cord OUT of the wall rear, power button held 20-30 seconds.
 - Only the 3080, RAM, wired keyboard, monitor, and power attached. No HDD, no wireless
@@ -27,132 +29,93 @@ board hold power do we bother with the flash.
 - If the board stays on and reaches a beep or any HP screen, stop and report it. That is
   a pass.
 
-## Stick choice (on the separate Windows machine)
+## Recovery-media state and the remaining media discriminator
 
-From the Windows Disk Management photo 2026-08-26:
+The verified clean source is the rebuilt **Disk 3**, a single-partition 7.34 GB FAT32
+`HP_TOOLS` stick containing `HP`, `Hewlett-Packard`, `EFI`, and
+`HP\BIOS\New\08917.bin` plus `08917.sig`. Its plain-power recovery attempt already
+produced the same immediate cycle with no stick activity; do not repeat that stick or its
+Win+V/Win+B combinations.
 
-- **Stick A — preferred:** Disk 3, Removable, 491 MB, FAT, Healthy Active Primary. This
-  is the clean single-partition alternate stick.
-- **Stick B — not preferred:** the 375 GB Ventoy stick (exFAT `I:` plus `VTOYEFI` 32 MB).
-  Multi-partition; leave it alone unless Stick A genuinely fails.
+The operator has two other physical sticks, but their capacities, formats, models, and
+Windows disk numbers are not yet recorded. Do not call either one Stick A or Stick B until
+Windows Disk Management identifies it. Disk 1 (1.863 TB DATA) and Disk 2 (931.50 GB Windows)
+are protected; do not select, format, clean, repartition, or write either disk.
 
-### Step 0 — put the verified recovery payload on Stick A (Windows, no commands)
+### Step 0 — identify and prepare one alternate stick (Windows, no commands)
 
-1. Open the existing verified clean recovery stick (the one with `HP`, `Hewlett-Packard`,
-   `EFI` folders and `HP\BIOS\New\08917.bin` + `08917.sig`) in File Explorer.
-2. Select everything in its root, copy it.
-3. Open Stick A (`F:` in the photo), paste.
-4. Confirm the same three top-level folders exist on Stick A, and that
-   `F:\HP\BIOS\New\08917.bin` and `08917.sig` are present. `08917.bin` should be about
-   16.4 MB and the `.sig` about 1 KB.
-5. Safely eject both sticks. Report the Stick A free-space used.
+1. Keep the OMEN off. In Windows Disk Management, record the candidate's physical disk
+   number, model, capacity, and partition layout. Leave all disks unchanged.
+2. Select exactly one removable candidate only after its identity is unambiguous. If it
+   already contains the verified HP tree, confirm the files rather than rebuilding it.
+3. Otherwise copy the verified source tree in File Explorer, without formatting or
+   repartitioning. Confirm `HP`, `Hewlett-Packard`, `EFI`, and
+   `HP\BIOS\New\08917.bin` plus `08917.sig`; the `.bin` is about 16.4 MB and the `.sig`
+   about 1 KB.
+4. Safely eject the selected alternate stick and report its model, capacity, free space,
+   and the exact payload paths. If it cannot hold the tree, stop and report; do not erase
+   it and do not silently fall back to another disk.
 
-If the 491 MB stick is too small to take the payload, do not format it blindly — report
-the copy error and we will use Stick B or a third candidate.
+This preparation is not a firmware attempt. The OMEN stays powered off until the media
+receipt passes and the one next power-on is explicitly named.
 
-## Photo receipts (do this before ANY shorting or cable removal)
+## Historical photo receipts — complete; do not repeat
 
-We do not guess which pins are power. Send these pictures, in order, with the OMEN
-powered off (cord OUT, PSU switch off, power button held 20-30s):
+The board, bottom edge, front-panel bundle, labels, and cooler-header photos were already
+captured and mapped. They established `PB` as the real power-button header, `CMOS` as the
+small center-bottom clear cap, and `FDO/PSWD/BBR` as a different untouched jumper. No new
+photo, short, cable removal, or jumper move is part of the alternate-media test.
 
-1. **Full board** — side panel off, phone straight above, flash on, whole motherboard
-   visible and in focus.
-2. **Bottom edge of the board** — the front-panel header lives there on almost every
-   board; get close enough to read the white text labels on the PCB.
-3. **The front-panel cable bundle** — where the case's small wires plug in. Do not
-   unplug yet; just show the connector and its labels. If the connector is part of a
-   combined HP hookup, show the whole connector head.
-4. **Any label near a connector** — `F_PANEL`, `FP`, `PANEL`, `PWRSW`, `PWR`, `PWR_SW`,
-   `PB`, `LED`, `PWR_LED`, `RESET`, `RST`. Crisp close-up, flash on, text readable.
-5. **CPU cooler/pump header area** — same subject for Check 2, so we can identify
-   `CPU_FAN` / `CPU_OPT` / `AIO_PUMP` / `PUMP_FAN` in the same pass.
+## Closed power-path checks — do not repeat
 
-Reference note for identification (not your board yet): HP Omen/Intel-style front panels
-use the standard Intel layout where **Power Switch = pins 6 and 8**, Power LED = 2 and 4,
-HDD LED = 1 and 3, Reset = 5 and 7, pin 10 no-pin, pin 9 reserved. We only act on that
-after the photos confirm which pins are exposed and which pins the case cable currently
-occupies.
+The photo mapping and prior target receipts are complete. `PB` was confirmed as the real
+power-button header; the brown/black pair beside `PWR_LED` was not the power path. With
+`PB` unplugged, cord-in still triggered the same automatic cycle (**FAIL**). The labeled
+`CMOS` cap was moved to the other pair for about 20 seconds and restored; the cycle was
+unchanged (**FAIL**). Fans run during the cycle, so the pump/zero-RPM theory is closed.
+The prior minimal-bench, zero-DIMM, and clean recovery-media attempts also produced no
+usable POST or USB activity. Do not repeat cable, GPU, DIMM, CMOS, or current-stick tests.
 
-## Free power-path checks (OMEN side — do these before any flash)
+`FDO/PSWD/BBR` remains a separate optional jumper experiment, not an implied next step. It
+requires the operator to explicitly name it first; do not move that cap by inference.
 
-### CLOSED 2026-08-26 (do not repeat) — photo receipts + Check 1 + CMOS
+## One alternate-stick power-on discriminator
 
-Silkscreen from operator photos: **`PB`** = real 2-pin power button (red on one pin). The brown/black 2-pin by `PWR_LED` is **not** the power path. Case button still cycled with that unplugged. With **`PB` unplugged**, plugging the wall cord **auto-cycled** (lights on). Check 1 **FAIL**.
+This is the only scheduled next power-on. It requires the Step 0 Windows receipt above:
+one untested physical stick has an unambiguous model, capacity, partition layout, and verified
+HP recovery tree. If that receipt is not available, keep the OMEN off.
 
-**`CMOS`** 3-pin blue cap (center bottom, not `FDO/PSWD/BBR`): moved to the other pair ~20s, restored. Same instant cycle. CMOS **FAIL**. That does **not** kill Mechanism A (SPI varstore ≠ coin-cell CMOS).
+1. With the PSU off, cord out, and power button held 20-30 seconds, leave only the reported
+   3080, RAM, wired keyboard, monitor, and power attached. Keep the external HDD, wireless
+   dongle, mouse, Ethernet, and all other USB devices out.
+2. Insert the **selected alternate stick** in a rear motherboard USB-A port. Do not use the
+   already-tested 7.34 GB source stick.
+3. Power on once with **no Win+V or Win+B**. Watch the stick LED, monitor, speaker, and the
+   exact time until the board either stays on or cuts power. Do not interrupt a flash or a
+   long blank-screen interval.
 
-Pump/0-RPM **closed by operator**: fans run during the cycle, then everything dies. No more cable guesses unless the operator names the test. Next-chat briefing: `docs/next-chat-last-power-on.md`.
+- **Pass:** the stick LED blinks, the board stays on materially longer, beeps, or shows HP
+  output. Stop and report exactly what happened; this provides a reason to consider recovery.
+- **Fail:** the board repeats the same immediate cycle with no stick LED/activity. Stop and
+  report the timing; do not retry this stick, the source stick, or another hotkey combination
+  in the same test.
 
-### Check 1 — bypass the front-panel power button
+## Flash — only after an alternate discriminator pass
 
-This is the test that separates a power-circuit fault from a firmware fault.
-ONLY after the photo receipts above confirm the exact two PWR_SW pins.
+Use the selected alternate stick only if the discriminator showed LED/read activity or a
+materially longer powered interval. Keep the 3080, RAM, keyboard, and monitor configuration
+that produced the receipt. Initiate one HP recovery attempt using the normal plain-power
+procedure, allow a full blank-screen interval, watch for the LED, and never interrupt power
+if flashing begins. Do not stack Win+V, Win+B, or another physical change automatically;
+name and gate any separate invocation with the operator first.
 
-1. OMEN off, PSU off, cord out, hold power 20-30s.
-2. Unplug only the case power-button cable pins from the motherboard power-switch header
-   (`PWRSW` / pin 6 and 8 in the standard Intel layout). Do not touch reset, HDD LED, or
-   power-LED pins.
-3. Briefly touch the two power-switch header pins with a metal screwdriver blade for less
-   than a second, then remove the screwdriver.
-4. Watch what happens.
+After a successful flash, press Escape at the HP splash for ZBM, use F10 for BIOS, load
+safe defaults with memory at 3733 XMP, and keep efivarfs read-only. Never write setup
+variables or DIMM SPD from Void.
 
-- **Pass:** the board comes on and stays on, beeps, or shows any HP screen — the case
-  power button/header is the cause. Free fix; report and we set the permanent workaround.
-- **Still the instant cycle:** put the case button cable back after the test and go to
-  Check 2. Do not keep shorting pins.
+## If the alternate test produces the identical instant cycle
 
-### Check 2 — CPU cooler / AIO pump header
-
-Some boards refuse to finish POST and shut back off when they see zero RPM on the CPU
-fan or pump header.
-
-1. OMEN off, PSU off, cord out, hold power 20-30s.
-2. Find the cooler/pump cable and the header it belongs on (`CPU_FAN`, `CPU_OPT`,
-   `AIO_PUMP`, or `PUMP_FAN`). Confirm it is fully seated.
-3. If you unplugged and re-seated it, power on and watch the cooler spin immediately.
-
-- **Pass:** cooler/pump spins right away and the board does not cycle — cool
-  signal/re-seat was the cause. Free; report.
-- **No change:** go to Check 3.
-
-### Check 3 — remove the RTX 3080 entirely
-
-The board speaker beeps on its own, without any display, so pulling the GPU is a safe
-isolation test and does not hide diagnostics.
-
-1. OMEN off, PSU off, cord out, hold power 20-30s.
-2. Remove the 3080 and both its 6+2 power cables from the PSU.
-3. Leave one DIMM in, 24-pin ATX and CPU EPS 8-pin seated, keyboard in a rear port, no
-   stick, no other USB.
-4. Power on.
-
-- **Pass:** the board beeps or gets to any HP screen with the GPU out — the GPU power
-  path / PSU rail is the culprit. Free; report and we re-test with a single 6+2 first.
-- **Still instant silent cycle:** reinstall the 3080, restore its 6+2, stop, and report.
-  That is the deciding result: the fault is in the board's own power-up path, not media.
-
-## Flash — only after a Check 1-3 pass
-
-1. Reinstall the 3080 and both 6+2, all DIMMs, keyboard in a rear port.
-2. Stick A in a **rear** USB port. OMEN off, PSU off, cord out, hold power 20-30s.
-3. Plug power, PSU on, press power once, **let it sit in the dark for a full 40
-   seconds** — an HP flash can look like a black screen for a while.
-4. If nothing after 40s, try once: hold **Win + V**, press power, keep holding **Win + V**
-   up to 40s. Then once more with **Win + B**. Then a plain power-on with the stick in.
-5. Watch the stick's activity LED. A blinking LED means firmware is reading it.
-6. If the flash starts, do not touch power. Let it finish.
-
-Report what you saw at each step, including any beep, any HP screen, any LED blink, and
-how long the board stayed on.
-
-## After a successful flash
-
-- Press Escape at the HP splash to reach the ZBM menu (Escape is ZBM, not BIOS).
-- Boot Void from NVMe, then run the post-recovery read-only probe and re-add boot order.
-- Keep memory at 3733 XMP; never write firmware setup variables or DIMM SPD from the OS.
-
-## If the free checks all produce the identical instant cycle
-
-Stop. Do not repeat them or make guesses. Report the exact sequence and we design the next
-single free discriminator together from the actual behavior. The point is not to keep
-trying the same thing — it is to keep narrowing the fault with one free test at a time.
+Stop. Do not repeat either recovery stick, repeat Win+V/Win+B, or make another cable/jumper
+change. Report the exact media identity, LED result, screen/speaker result, and time to
+power-off. That is the end of the media discriminator; the next free action must be designed
+from those receipts, not guessed in advance.

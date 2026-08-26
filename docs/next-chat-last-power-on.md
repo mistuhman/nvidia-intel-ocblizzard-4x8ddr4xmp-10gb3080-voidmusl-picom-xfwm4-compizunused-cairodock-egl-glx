@@ -57,18 +57,38 @@ GPU support bracket out on purpose. 3080 + both 6+2 in. All 4 DIMMs in.
 
 | Unknown | Who |
 |---|---|
-| Does boot-block ever run (stick LED) if power is held another way? | next test, operator eyes |
-| Will `FDO/PSWD/BBR` change the cycle? | operator must opt in |
+| Does an untested physical USB stick enumerate before the board resets? | next test, operator eyes |
+| Does boot-block ever run (stick LED) if a different physical medium is present? | next test, operator eyes |
+| Will `FDO/PSWD/BBR` change the cycle? | operator must opt in; not scheduled |
 | Is PS_ON dropping from firmware vs EC/protection? | not separated yet |
-| Alternate 491 MB stick payload copy | Windows machine, not done this chat |
+| Capacity, format, and identity of the two alternate sticks | Windows machine, before any copy |
 
-## One-test rule for last power-on
+The 7.34 GB one-partition `HP_TOOLS` stick is **not** an unknown anymore: HP creation passed,
+then plain power produced the same immediate loop with no USB activity. Do not repeat it or its
+Win+V/Win+B combinations.
 
-Name **one** action whose two outcomes split remaining hypotheses. Power on **once**. Log pass/fail. Stop.
+## Selected next discriminator — alternate physical media
 
-If operator opts into **FDO**: photo of which two of three pins the blue cap occupies, then one move, 20s, **back**, one power. Pass = stays on / beep / HP screen. Fail = same cycle, FDO closed.
+Do the preparation on Windows while the OMEN remains OFF. Open Disk Management and identify
+one of the two untested sticks by physical disk number, model, capacity, and partitions. Do not
+format, clean, repartition, or touch the two internal disks. On the selected removable stick,
+copy the already-verified HP recovery tree from the clean source with File Explorer only; do
+not make a new BIOS payload or alter the source. Confirm `HP`, `Hewlett-Packard`, `EFI`, and
+`HP\\BIOS\\New\\08917.bin` plus `08917.sig`, then safely eject it.
 
-If operator opts into **flash again**: only after a reason the board will stay on longer than before (FDO pass, or documented boot-block that runs during the cycle). Same `08917.bin` media. Rear USB. Watch stick LED. Never interrupt mid-flash.
+## One-test rule for the last power-on
+
+After the media receipt above, name **one** action and power on **once**: insert only that
+selected alternate stick in a rear motherboard USB-A port alongside the already-reported
+3080, RAM, wired keyboard, monitor, and power; use a plain power-on with no Win+V or Win+B.
+Watch the stick LED, screen, speaker, and exact time to power-off. **Pass** = the LED blinks,
+the board stays on materially longer, beeps, or shows HP output. **Fail** = the same immediate
+cycle with no LED/activity. Stop either way and report the complete observation; do not re-test
+the current stick or stack another change.
+
+If the alternate test passes, flash F.57 only while the board is demonstrably staying powered
+or reading the boot block. If it fails identically, alternate-media enumeration is weakened;
+do not repeat media/hotkeys or move `FDO/PSWD/BBR` unless the operator explicitly opts in.
 
 After a real flash: Escape = ZBM, F10 = BIOS. Memory 3733 XMP. efivarfs ro. No setup_var from OS.
 
