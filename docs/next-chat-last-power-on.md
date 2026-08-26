@@ -58,7 +58,7 @@ GPU support bracket out on purpose. 3080 + both 6+2 in. All 4 DIMMs in.
 | Unknown | Who |
 |---|---|
 | Which two pins are normal and which position is BBR on this exact BlizzardOC header? | next photo, operator eyes |
-| Does `sp167160.exe` contain `HpBiosUpdate.efi` and its signed siblings? | Windows machine, no OMEN power-on |
+| Does `sp167160.exe` contain `HpBiosUpdate.efi` and its signed siblings? | any accessible host; Windows is not required |
 | Is an owned 3.3 V SPI programmer/clip or suitable DMM/logic probe available? | operator inventory |
 | Is `PS_ON#` being released by the board or dropped by PSU protection? | instrument measurement, only if safely identified |
 
@@ -73,9 +73,10 @@ fallback only if the BBR/media artifact path requires them.
    header straight-on with the blue cap still installed. The photo must show all three pins,
    current cap orientation, nearby labels, and enough board context to establish left/right
    orientation. Do not move the cap.
-2. On Windows, inspect or extract the existing `sp167160.exe` without executing anything on
-   the OMEN. Report whether it contains `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig`
-   siblings, and the exact `.bin`/signature files. Preserve the existing validated stick.
+2. If `sp167160.exe` exists on any currently accessible host, inspect or extract it without
+   executing anything on the OMEN. Windows is not required. Report whether it contains
+   `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig` siblings, and the exact `.bin`/signature files.
+   Preserve the existing validated stick; if the SoftPaq is unavailable, do not block BBR on it.
 3. Report whether a 3.3 V SPI programmer/clip or DMM/logic probe is already owned. This is
    inventory, not a purchase request.
 

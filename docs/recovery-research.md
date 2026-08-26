@@ -143,10 +143,11 @@ warns that at least the CPU power connectors may not be standard. Do not add or 
 2. Photograph the `FDO/PSWD/BBR` header straight-on with the cap still in its current
    position. Include the surrounding silkscreen and enough board context to establish
    orientation. Do not remove or move the cap.
-3. Check the Windows/Mac recovery workspace for `sp167160.exe`. Without executing anything on
-   the OMEN, inspect/extract a copy and report whether it contains `HpBiosUpdate.efi`, the
-   matching `.s09`/`.s12`/`.s14`/`.sig` files, and the exact firmware image/signature. Keep the
-   original SoftPaq and current verified USB unchanged.
+3. If `sp167160.exe` is available on any currently accessible host, inspect/extract a copy
+   without executing anything on the OMEN and report whether it contains `HpBiosUpdate.efi`,
+   the matching `.s09`/`.s12`/`.s14`/`.sig` files, and the exact firmware image/signature.
+   Windows is not required. Keep the original SoftPaq and current verified USB unchanged;
+   if the SoftPaq is unavailable, do not block BBR on it.
 4. State whether a 3.3 V SPI programmer/clip or a DMM/logic probe is already owned. This is an
    inventory question, not a request to purchase hardware.
 

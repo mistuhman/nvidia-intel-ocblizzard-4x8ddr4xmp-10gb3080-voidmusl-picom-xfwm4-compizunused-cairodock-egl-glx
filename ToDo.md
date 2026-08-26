@@ -35,7 +35,7 @@
 - [x] Validated clean 7.34 GB HP recovery stick: plain-power attempt FAIL, same immediate loop, no USB activity.
 - [x] 80-agent recovery research tool: exact 80-agent/80-URL manifest, hashes and trap filtering.
 - [ ] Photograph the untouched BlizzardOC `FDO/PSWD/BBR` header straight-on; record current cap orientation and legible silkscreen without moving it.
-- [ ] Inspect the existing `sp167160.exe` on Windows for signed `HpBiosUpdate.efi` and signature siblings; do not alter the validated source stick.
+- [ ] If `sp167160.exe` is available on any currently accessible host (Mac, Linux, or Windows), inspect it for signed `HpBiosUpdate.efi` and signature siblings; Windows is not a gate and the validated source stick must not be altered.
 - [ ] Inventory any already-owned 3.3V SPI programmer/clip or suitable DMM/logic probe; do not buy or connect anything by assumption.
 - [ ] Explicitly opt into one BBR-only recovery attempt after the header mapping is confirmed; keep FDO and PSWD untouched.
 - [ ] If BBR produces a recovery/EFI path, use the signed F.57 route; if it fails silently, stop and choose the owned-instrument discriminator.

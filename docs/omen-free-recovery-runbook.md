@@ -48,9 +48,10 @@ in a guessed capsule or altered firmware image.
 1. Keep the OMEN off. Photograph the untouched `FDO/PSWD/BBR` header straight-on with the
    blue cap still installed. The photo must show all three pins, the cap orientation, nearby
    silkscreen, and enough board context to establish left/right. Do not move the cap.
-2. On Windows, inspect or extract the existing `sp167160.exe` without executing anything on
-   the OMEN. Record whether it contains `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig`
-   siblings, and the exact image/signature names. Preserve the validated USB source.
+2. If `sp167160.exe` is available on any currently accessible host, inspect or extract it
+   without executing anything on the OMEN. Windows is not required. Record whether it contains
+   `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig` siblings, and the exact image/signature names.
+   Preserve the validated USB source; if the SoftPaq is unavailable, do not block BBR on it.
 3. Report whether a 3.3 V SPI programmer/clip or a DMM/logic probe is already owned. This is
    inventory only; do not buy or connect hardware by assumption.
 4. Send the photo and artifact/instrument receipt back before any power-on.
