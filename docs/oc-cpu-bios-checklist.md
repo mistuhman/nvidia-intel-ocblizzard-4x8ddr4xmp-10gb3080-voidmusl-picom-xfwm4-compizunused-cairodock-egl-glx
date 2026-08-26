@@ -2,6 +2,26 @@
 
 Linux cannot change CPU ratio/voltage; ParkControl is Windows-only. This is the safe path for this rig (ZFS root, daily driver, 850W-class OMEN 45L custom PSU).
 
+## Read this first — board reality correction 2026-08-25
+
+Steps 2 and 3 below **cannot be done on this board**. It is an HP **BlizzardOC, SSID 8917**
+(Z690), and HP exposes only memory OC even with Extreme Unlocked enabled — no CPU ratio, no
+Vcore, no LLC. Do not hunt for them, and do not flash a BIOS to get them: there is no published
+unlocked image for the 8917, the newest official one (F.57, sp167160) only "provides improved
+security", and it is one-way. See `docs/bios-flash-decision.md`.
+
+Two further corrections:
+
+- "Linux cannot change CPU ratio/voltage" is too strong. It cannot change them through a *BIOS*
+  interface, but the K-series multiplier is unlocked in silicon and the firmware lock bits
+  (MSR 0x194 bit 20, MSR 0x150 OC mailbox, PL1/PL2 at MSR 0x610) are inspectable from Linux and
+  sometimes writable. Read-only probe in `docs/bios-flash-decision.md`.
+- "XMP is already running — leave it" is stale. This rig runs a 4000 MT/s custom profile that is
+  **not stability-validated**. Memory state is the live risk, not the CPU.
+
+The validation protocol below still applies, with `stress-ng --vm` and a memtest added for any
+memory change, and with CPU ratio/Vcore steps skipped until the MSR probe says otherwise.
+
 ## Target (from MASTER.md operator direction)
 
 - P-cores 50x (5.0 GHz), E-cores 40x (4.0 GHz), Vcore 1.28V start, 1.30V then 1.32V max allowed.
