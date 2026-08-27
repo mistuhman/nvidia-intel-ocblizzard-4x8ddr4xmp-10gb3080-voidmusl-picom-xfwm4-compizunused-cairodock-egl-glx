@@ -157,3 +157,91 @@ Undo: `sh /root/omen-fix/finder-install.sh undo`.
 
 Still open and **operator-gated** (untouched here): wiping the SATA disks into a
 unified pool, the XMP 3733 BIOS check, and the CPU/GPU overclock.
+
+
+---
+
+## Addendum — what actually happened when it ran (2026-08-27 12:09–12:23 UTC)
+
+Five defects surfaced during execution. Recording them because three were mine.
+
+### A. `autotrim=on` crushed write performance — my error
+`omen-fs-fix.sh` set `zpool set autotrim=on nvme`. Wrong for this drive. The
+**WDC PC SN530** is an OEM **DRAM-less/HMB** part — the boot log says
+`allocated 32 MiB host memory buffer (8 segments)`. With autotrim, ZFS issues
+TRIM ranges on every transaction-group commit and a DRAM-less FTL serialises
+them against writes. Reads were unaffected (2180 MB/s buffered measured
+*before* the regression), writes collapsed.
+
+After `autotrim=off`:
+
+| test | result |
+|---|---|
+| 2 GiB sequential, `conv=fdatasync` | **6.5 GB/s** (lz4 in play) |
+| 512 MiB `/dev/urandom`, incompressible | **479 MB/s** |
+| 2000 small files | **575 ms** |
+
+Replaced with `/etc/cron.weekly/zfs-trim` — one batched pass, no per-TXG stall.
+`omen-fs-fix.sh` now sets `autotrim=off` explicitly so a re-run cannot
+reintroduce it.
+
+### B. The sysctl override was `99-ollama-ultimate.conf`, not `/etc/sysctl.conf`
+`sysctl --system` sorts every `*.conf` **by filename** across all directories,
+last-write-wins. `/etc/sysctl.d/` contained:
+
+```
+99-cachyos-gaming.conf  99-jit-fix.conf  99-ollama-ultimate.conf
+99-ollama.conf          99-desktop-perf.conf
+```
+
+`99-**o**llama-ultimate` sorts after `99-**d**esktop-perf` and reset
+`swappiness=10 dirty_ratio=15 dirty_background_ratio=5` on every boot. ollama
+is not even running. Fixed by commenting out **only** those three keys there
+(its other settings untouched) and renaming ours to `999-desktop-perf.conf` so
+it always sorts last. Verified: all seven keys now read the intended values.
+
+### C. `sed` delimiter collision — my error
+`sed -E "s|^(vm\.swappiness|vm\.dirty_ratio|…)=|"` — the alternation pipes
+*are* the delimiter. `sed: unknown option to 's'`. Switched to `@`, which
+cannot appear in a sysctl key, and tested against a fixture before shipping.
+
+### D. `BootOrder: 0000,0000,0001` — my error
+`efibootmgr -c` already prepends the new entry before returning, so
+concatenating NEW + OLD duplicated it. Deduped; the create path now dedupes
+inline. The `\EFI\zbm⏎mlinuz.EFI` in the log was cosmetic only — `echo`
+interpreting `\v` as a vertical tab. NVRAM bytes always decoded correctly.
+
+### E. Stale CDN copies
+`raw.githubusercontent.com` served a cached `omen-postfix.sh` three times, even
+with `Cache-Control: no-cache` and a `?cb=` query string. Fixed by publishing
+to **new filenames** (`omen-write-diag.sh`, `finder-setup.sh`,
+`finder-verify.sh`). A path never fetched cannot be cached.
+
+### Also corrected
+* **Icons**: WhiteSur is Big Sur, i.e. macOS, not OS X. Operator rejected it.
+  Now **La Capitaine** (El Capitan-era HIG — the last release actually named
+  "OS X"), wrapped as `OSX-Gunmetal` inheriting the existing theme. Any
+  WhiteSur directories are deleted. `ICONSET=catalina` available.
+* **`libx265` does not exist in Void** — the package is `x265`.
+* **`xbps-install` treats "already installed" as fatal**, aborting a batch.
+  Packages are now installed one at a time.
+* **The libx265.so.215 shlib break resolved itself** via the targeted
+  `x265 libavcodec6 libheif` update (18 packages). `nemo-6.6.4_1` then
+  installed cleanly.
+* **Icons were cloned to `/tmp` then `cp -a`'d** — writing 6000 small files
+  twice, straight into the degraded write path. Now cloned into place, and
+  `./configure` is opt-in (`RUN_CONFIGURE=1`).
+* **`Failed to init libxfconf`** — the guessed bus path
+  `/run/user/1000/bus` is not where dbus listens. `finder-verify.sh` reads the
+  real `DBUS_SESSION_BUS_ADDRESS` out of the running `xfsettingsd`'s
+  `/proc/<pid>/environ` instead of guessing. The XML edit alone is unsafe:
+  xfsettingsd holds it in memory and rewrites it on logout.
+
+### Still open
+* **Kernel selection.** dracut built `initramfs-6.18.41_1.img` and the new ZBM
+  image was generated from `/boot/vmlinuz-6.18.41_1`, while the running kernel
+  is `6.18.35-tkg-bore`. ZBM boots the highest version, so the next reboot
+  lands on **stock**, losing BORE. Pin with `PIN_TKG=1 sh finder-verify.sh`.
+* Wave 2 (vesktop GPU flags) not yet run — `vesktop.bin` was still at 98 %CPU.
+* Disk wipe + unified pool, XMP 3733 check, and the OC steps remain
+  operator-gated.
