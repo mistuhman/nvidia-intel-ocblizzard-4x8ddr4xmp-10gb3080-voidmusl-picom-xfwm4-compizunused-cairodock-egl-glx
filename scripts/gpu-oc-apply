@@ -15,6 +15,7 @@
 #   sh gpu-oc-apply meter STEP_ID [SECONDS]
 #   sh gpu-oc-apply powerlimit PCT           (root)
 #   sh gpu-oc-apply fan PCT | fan auto
+#   sh gpu-oc-apply perfmode max | perfmode auto
 #   sh gpu-oc-apply revert
 set -u
 
@@ -98,6 +99,30 @@ cmd_probe() {
 	cmd_verify
 }
 
+# Apply to the top perf level (the one the card runs under load) and, best effort, the one below it
+# so a mid-load state is not left un-offset. Only the top level is allowed to fail the step.
+apply_level() {
+	lvl=$1
+	core=$2
+	mem=$3
+	strict=$4
+	outc=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$lvl]=$core" 2>&1)
+	outm=$(nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=$mem" 2>&1)
+	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
+	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
+	echo "level $lvl read_back: core=$gotcore mem=$gotmem"
+	if [ "$gotcore" = "$core" ] && [ "$gotmem" = "$mem" ]; then
+		return 0
+	fi
+	echo "$outc" | grep 'ERROR' | head -n 1
+	echo "$outm" | grep 'ERROR' | head -n 1
+	if [ "$strict" = "strict" ]; then
+		die "level $lvl did not take (asked core=$core mem=$mem, card reports core=$gotcore mem=$gotmem)"
+	fi
+	echo "level $lvl not applied (non-fatal)"
+	return 1
+}
+
 cmd_apply() {
 	need nvidia-settings
 	core=$1
@@ -107,23 +132,26 @@ cmd_apply() {
 	[ "$core" -le "$CORE_MAX" ] || die "core offset $core over the recipe cap +$CORE_MAX"
 	[ "$mem" -le "$MEM_MAX" ] || die "memory offset $mem over the recipe cap +$MEM_MAX"
 	lvl=$(perf_level)
-	ns_set "[gpu:0]/GPUGraphicsClockOffset[$lvl]=$core"
-	ns_set "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=$mem"
-	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
-	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
-	echo "read_back level $lvl: core=$gotcore mem=$gotmem"
-	[ "$gotcore" = "$core" ] || die "core offset did not stick (asked $core, card reports $gotcore)"
-	[ "$gotmem" = "$mem" ] || die "memory offset did not stick (asked $mem, card reports $gotmem)"
-	echo "APPLIED core=+$core mem=+$mem at perf level $lvl (resets on X restart)"
+	apply_level "$lvl" "$core" "$mem" strict
+	below=$((lvl - 1))
+	if [ "$below" -gt 0 ]; then
+		apply_level "$below" "$core" "$mem" soft || true
+	fi
+	echo "APPLIED core=+$core mem=+$mem at perf level $lvl (verified by read-back; resets on X restart)"
 	echo "INVERSE: sh $0 revert"
 }
 
 cmd_verify() {
 	need nvidia-settings
 	lvl=$(perf_level)
-	echo "perf_level: $lvl"
-	echo "core_offset: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
-	echo "mem_transfer_rate_offset: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	echo "perf_level_top: $lvl"
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+	echo "powermizer_mode: $(ns_get '[gpu:0]/GPUPowerMizerMode')"
+	echo "core_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
+	echo "mem_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	below=$((lvl - 1))
+	echo "core_offset_level_${below}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$below]")"
+	echo "mem_offset_level_${below}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$below]")"
 	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.limit,power.draw,temperature.gpu,fan.speed --format=csv
 }
 
@@ -174,17 +202,28 @@ cmd_fan() {
 	echo "FAN=${pct}%  INVERSE: sh $0 fan auto"
 }
 
+cmd_perfmode() {
+	need nvidia-settings
+	# PowerMizer 1 = prefer maximum performance: pins the card at the top perf level so a bench is
+	# not measuring a clock-state transition. 0 = adaptive (the stock setting on this target).
+	case "$1" in
+	max) ns_set "[gpu:0]/GPUPowerMizerMode=1"; echo "POWERMIZER=max  INVERSE: sh $0 perfmode auto" ;;
+	auto) ns_set "[gpu:0]/GPUPowerMizerMode=0"; echo "POWERMIZER=auto" ;;
+	*) die "usage: perfmode max|auto" ;;
+	esac
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+}
+
 cmd_revert() {
 	need nvidia-settings
 	lvl=$(perf_level)
-	# Per-level form only: AllPerformanceLevels is permission-denied on this Coolbits setup.
-	ns_set "[gpu:0]/GPUGraphicsClockOffset[$lvl]=0"
-	ns_set "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=0"
-	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
-	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
-	[ "$gotcore" = "0" ] || die "core offset still $gotcore after revert"
-	[ "$gotmem" = "0" ] || die "memory offset still $gotmem after revert"
-	echo "REVERTED offsets to 0 at perf level $lvl (verified by read-back)"
+	# Per-level form only: AllPerformanceLevels is permission-denied on this Coolbits 28 setup.
+	apply_level "$lvl" 0 0 strict
+	below=$((lvl - 1))
+	if [ "$below" -gt 0 ]; then
+		apply_level "$below" 0 0 soft || true
+	fi
+	echo "REVERTED offsets to 0 (verified by read-back)"
 	echo "If a power limit was set, run as root: sh $0 powerlimit 100"
 	echo "If a fan speed was set: sh $0 fan auto"
 }
@@ -201,9 +240,10 @@ verify) cmd_verify ;;
 meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECONDS]"; cmd_meter "$@" ;;
 powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
 fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
+perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
 revert) cmd_revert ;;
 *)
-	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|fan PCT|revert"
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|fan PCT|perfmode max|revert"
 	exit 2
 	;;
 esac

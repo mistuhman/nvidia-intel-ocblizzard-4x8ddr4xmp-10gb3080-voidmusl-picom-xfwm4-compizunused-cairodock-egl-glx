@@ -23,6 +23,8 @@ export type Baseline = {
 //   power.max_limit 320.00 W, clocks.max.graphics 2100 MHz, clocks.max.memory 9501 MHz
 //   nvidia-settings -q GPUGraphicsClockOffset -t -> 0  (Coolbits LIVE)
 //   nvidia-smi -q -d POWER: Min Power Limit 100.00 W, Max 320.00 W, Default 320.00 W
+//   GPUPerfModes: 5 levels, TOP IS perf=4 (memclock 9501 / memTransferRate 19002, nvclockmax 2100).
+//   Coolbits 28 in /etc/X11/xorg.conf.d/20-nvidia.conf; per-level writes ALLOWED, all-level DENIED.
 // Stock Superposition 1080p Extreme meter (gpu-stock-671-superpos.csv, 535 samples, summarized by
 // scripts/gpu-dmon-summary 2026-08-27): pwr_max 314 W, gtemp_max 81 C, pclk_max 1905, mclk_max 9501.
 // (The 1935 MHz in MASTER stockBaseline is the peak from the Geekbench-CPU-run log, not this meter.)
@@ -61,6 +63,7 @@ const OFFSET_CAPTURE_WHEN_LIMITED = 0.7;
 const CORE_WEIGHT = 0.75;
 const MEM_WEIGHT = 0.25;
 // nvidia-settings GPUMemoryTransferRateOffset is a TRANSFER RATE offset: 2 MHz rate = 1 MHz clock.
+// CONFIRMED by the 2026-08-27 GPUPerfModes receipt: perf=4 memclock 9501, memTransferRate 19002.
 export const MEM_OFFSET_TO_CLOCK = 0.5;
 
 export type Point = {

@@ -60,6 +60,11 @@ therefore assigns `[gpu:0]/ATTR[LEVEL]` (level auto-detected from `GPUPerfModes`
 back, fails loudly on mismatch, and treats any `ERROR` line as failure regardless of exit code.
 `sh gpu-oc-apply caps` probes exactly which writes this session permits.
 
+Worse, the level index itself was wrong: `GPUPerfModes` on this card lists **perf=0..4** and the
+load level is **4** (memclock 9501 / memTransferRate 19002), not the 3 that older recipes assume. An
+offset written to level 3 is an offset the benchmark never sees. The applier now auto-detects the
+top level, applies there strictly, mirrors to the level below best-effort, and prints both.
+
 ## Loop
 
 1. **Plan** — `node tools/gpu-oc-plan.ts ladder`, or run `gpu-oc-lab` with your ranges. Blocked rows
