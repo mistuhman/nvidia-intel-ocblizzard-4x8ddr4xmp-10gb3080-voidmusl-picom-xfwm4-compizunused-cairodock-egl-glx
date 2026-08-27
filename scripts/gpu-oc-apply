@@ -102,24 +102,24 @@ cmd_probe() {
 # Apply to the top perf level (the one the card runs under load) and, best effort, the one below it
 # so a mid-load state is not left un-offset. Only the top level is allowed to fail the step.
 apply_level() {
-	lvl=$1
-	core=$2
-	mem=$3
-	strict=$4
-	outc=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$lvl]=$core" 2>&1)
-	outm=$(nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=$mem" 2>&1)
-	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
-	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
-	echo "level $lvl read_back: core=$gotcore mem=$gotmem"
-	if [ "$gotcore" = "$core" ] && [ "$gotmem" = "$mem" ]; then
+	al_lvl=$1
+	al_core=$2
+	al_mem=$3
+	al_strict=$4
+	outc=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$al_lvl]=$al_core" 2>&1)
+	outm=$(nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$al_lvl]=$al_mem" 2>&1)
+	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$al_lvl]")
+	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$al_lvl]")
+	echo "level $al_lvl read_back: core=$gotcore mem=$gotmem"
+	if [ "$gotcore" = "$al_core" ] && [ "$gotmem" = "$al_mem" ]; then
 		return 0
 	fi
 	echo "$outc" | grep 'ERROR' | head -n 1
 	echo "$outm" | grep 'ERROR' | head -n 1
-	if [ "$strict" = "strict" ]; then
-		die "level $lvl did not take (asked core=$core mem=$mem, card reports core=$gotcore mem=$gotmem)"
+	if [ "$al_strict" = "strict" ]; then
+		die "level $al_lvl did not take (asked core=$al_core mem=$al_mem, card reports core=$gotcore mem=$gotmem)"
 	fi
-	echo "level $lvl not applied (non-fatal)"
+	echo "level $al_lvl not applied (non-fatal)"
 	return 1
 }
 
@@ -162,10 +162,15 @@ cmd_meter() {
 	echo "$secs" | grep -Eq '^[0-9]+$' || die "seconds not an integer: $secs"
 	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
 	out=$METER_DIR/$id.dmon.csv
-	echo "metering $secs s into $out — start Superposition 1080p Extreme NOW"
+	echo "metering $secs s into $out — START SUPERPOSITION 1080p EXTREME NOW, this log is worthless without a load"
 	echo "ctrl-C is safe: whatever was written stays usable"
-	nvidia-smi dmon -s pucm -d 1 -c "$secs" >"$out" 2>&1
+	nvidia-smi dmon -s puc -d 1 -c "$secs" >"$out" 2>&1
 	echo "wrote $out"
+	peak=$(awk '/^#/ { next } { if ($2 + 0 > m) m = $2 + 0 } END { printf "%d", m }' "$out")
+	echo "peak_watts_seen: $peak"
+	if [ "$peak" -lt 150 ]; then
+		echo "WARNING: peak draw ${peak}W means NO BENCHMARK LOAD was captured - this log is idle noise, re-run it"
+	fi
 	tail -n 3 "$out"
 }
 

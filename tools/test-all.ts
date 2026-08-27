@@ -24,6 +24,11 @@ run('node', ['tools/gpu-curve.ts', 'selftest']);
 run('node', ['tools/gpu-bench-parse.ts', 'selftest']);
 run('node', ['tools/gpu-oc-verify.ts', 'selftest']);
 run('bash', ['-n', 'scripts/gpu-oc-apply']);
+run('bash', ['-n', 'scripts/gpu-dmon-summary']);
+// DDR4 lab: 3733 baseline -> 4000 MT/s target, with the ZFS integrity gate
+run('node', ['tools/ram-oc-plan.ts', 'selftest']);
+run('node', ['tools/ram-validate-parse.ts', 'selftest']);
+run('bash', ['-n', 'scripts/ram-validate']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);
 execFileSync('node tools/paste-proof.ts --target-console --root', { input: 'id -u\ndf -h /\nls -l MASTER.md\n', stdio: ['pipe', 'inherit', 'inherit'], shell: true });
 console.log('TEST_ALL=PASS');
