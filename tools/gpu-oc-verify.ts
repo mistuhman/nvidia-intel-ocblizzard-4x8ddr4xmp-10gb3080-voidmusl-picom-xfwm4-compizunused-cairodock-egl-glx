@@ -32,6 +32,9 @@ const NEXT_STEP: Record<string, { coreOffset: number; memOffset: number; powerPc
   'c120-m500': { coreOffset: 120, memOffset: 500, powerPct: 90 },
 };
 
+// UV+OC pairs: once a full-power step is clean, its trimmed twin is the next thing worth metering.
+const UVOC_PAIR: Record<string, number> = { 'c60-m250': 90, 'c90-m400': 85, 'c120-m500': 80, 'c150-m600': 75 };
+
 // Noise-aware fan curve: quiet until the GDDR6X gets real work, hard ramp before the 83C stop rule.
 const FAN_CURVE: [number, number][] = [[30, 30], [45, 40], [55, 50], [65, 65], [72, 80], [78, 95], [82, 100]];
 
@@ -49,7 +52,11 @@ function nextCandidate(run: Run): { coreOffset: number; memOffset: number; power
     const nextPct = run.powerPct - 10;
     return nextPct >= LIMITS.powerPctMin + 10 ? { coreOffset: run.coreOffset, memOffset: run.memOffset, powerPct: nextPct } : null;
   }
-  return NEXT_STEP[`c${run.coreOffset}-m${run.memOffset}`] ?? null;
+  const key = `c${run.coreOffset}-m${run.memOffset}`;
+  // Prefer pairing the proven offsets with their trim before climbing to more clock: on a card that
+  // is already pinned and 2C from its stop rule, the trim is where the wins are.
+  if (UVOC_PAIR[key] !== undefined) return { coreOffset: run.coreOffset, memOffset: run.memOffset, powerPct: UVOC_PAIR[key] };
+  return NEXT_STEP[key] ?? null;
 }
 
 function decide(runs: Run[], tolerance: number) {
@@ -201,7 +208,8 @@ function selftest(): void {
     { ...base, id: 'cp60-m250-pl100', coreOffset: 60, memOffset: 250, powerPct: 100, score: 8901, watts: 322, tempMaxC: 76, scorePerWatt: 27.64, deltaScorePctVsStock: 2.11, verdict: 'PASS' },
   ];
   const advance = decide(clean, 2);
-  if (advance.action !== 'ADVANCE' || advance.next?.coreOffset !== 90) throw new Error(`expected ADVANCE to +90: ${JSON.stringify(advance.action)}`);
+  // UV+OC doctrine: a clean +60/+250 at full power pairs with its 90% trim before more clock.
+  if (advance.action !== 'ADVANCE' || advance.next?.coreOffset !== 60 || advance.next?.powerPct !== 90) throw new Error(`expected ADVANCE to the UV+OC twin: ${advance.action} ${JSON.stringify(advance.next)}`);
   const hot = decide([...clean, { ...base, id: 'cp90-m400-pl100', coreOffset: 90, memOffset: 400, powerPct: 100, score: 9000, watts: 330, tempMaxC: 87, scorePerWatt: 27.3, deltaScorePctVsStock: 3.25, verdict: 'STOP', stopRuleHits: ['gtemp max 87C over the 83C stop rule (rule 3)'] }], 2);
   if (hot.action !== 'REVERT' || hot.bestScore?.id !== 'cp60-m250-pl100') throw new Error('stop rule must force REVERT to the best clean step');
   const eff: Run[] = [...clean, { ...base, id: 'cp60-m250-pl80', coreOffset: 60, memOffset: 250, powerPct: 80, score: 8760, watts: 256, tempMaxC: 68, scorePerWatt: 34.22, deltaScorePctVsStock: 0.49, verdict: 'PASS' }];
@@ -214,6 +222,8 @@ function selftest(): void {
   const profile = gweProfile(eff[2]);
   if (profile.memory_clock_offset_mhz !== 125 || profile.power_limit_w !== 256) throw new Error(`gwe profile drifted: ${JSON.stringify(profile)}`);
   if (decide([{ ...base, id: 'x', coreOffset: 0, memOffset: 0, powerPct: 100, score: null, watts: null, tempMaxC: null, scorePerWatt: null, deltaScorePctVsStock: null, verdict: 'INCOMPLETE' }], 2).action !== 'REBENCH') throw new Error('unmetered run must ask for a rebench');
+  const climbed = decide([...clean, { ...base, id: 'cp60-m250-pl90', coreOffset: 60, memOffset: 250, powerPct: 90, score: 8840, watts: 288, tempMaxC: 73, scorePerWatt: 30.69, deltaScorePctVsStock: 1.41, verdict: 'PASS' }], 2);
+  if (climbed.action !== 'ADVANCE' || climbed.next?.powerPct !== 80) throw new Error(`after the UV+OC twin the trim should deepen: ${climbed.action} ${JSON.stringify(climbed.next)}`);
   console.log(`advance_next=${stepId(advance.next as { coreOffset: number; memOffset: number; powerPct: number })}`);
   console.log('GPU_OC_VERIFY=PASS');
 }

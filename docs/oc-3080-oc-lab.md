@@ -34,6 +34,32 @@ claims an Afterburner-style V/F curve on this stack is wrong.
 | `ci/workflows/gpu-clock-feature-matrix.yml` | manual / weekly | one job per knob class: core-only, memory-only, power-trim, combined, efficiency-hunt; also re-proves the caps and the step-4 gate |
 | `ci/workflows/gpu-receipt-ingest.yml` | manual | paste dmon + Superposition (+ Geekbench) for one step → verdict, refitted curve, GWE profile, ledger commit |
 
+## Undervolt **and** overclock (operator directive 2026-08-27)
+
+Standard practice for a card of this vintage, and the right call here: the 3080 is pinned at 314 W
+of a 320 W limit at stock, so raw clock is capped by watts, not by silicon. The pair is
+`node tools/gpu-oc-plan.ts ladder --uvoc`:
+
+| tier | core | mem | power | what it is for |
+|---|---|---|---|---|
+| `uvoc-1` | +60 | +250 | 90 % | first pair, should be near score-neutral |
+| `uvoc-2` | +90 | +400 | 85 % | |
+| `uvoc-3` | +120 | +500 | 80 % | usual daily sweet spot on a pinned 3080 |
+| `uvoc-4` | +120 | +500 | 70 % | quiet/cool profile, real score loss |
+| `uvoc-max` | +150 | +600 | 75 % | most clock a deep trim can hold |
+
+The verdict engine now walks it that way: a clean full-power step advances to **its own trimmed
+twin** before it advances to more clock.
+
+## nvidia-settings will lie to you
+
+Receipt 2026-08-27: `apply 60 250` printed *"Attribute 'GPUGraphicsClockOffset' assigned value 60."*
+and exited 0 — and the read-back was **0**. The `...AllPerformanceLevels` attributes are also
+permission-denied on this Coolbits value while the per-level form is allowed. `scripts/gpu-oc-apply`
+therefore assigns `[gpu:0]/ATTR[LEVEL]` (level auto-detected from `GPUPerfModes`), reads the value
+back, fails loudly on mismatch, and treats any `ERROR` line as failure regardless of exit code.
+`sh gpu-oc-apply caps` probes exactly which writes this session permits.
+
 ## Loop
 
 1. **Plan** — `node tools/gpu-oc-plan.ts ladder`, or run `gpu-oc-lab` with your ranges. Blocked rows

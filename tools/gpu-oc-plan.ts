@@ -8,7 +8,7 @@ import { LIMITS, STOCK, arg, flag, parseRange, project, stepId, validate } from 
 import type { Point, Projection } from './lib/gpu-model.ts';
 
 const USAGE = `usage:
-  node tools/gpu-oc-plan.ts ladder [--json]
+  node tools/gpu-oc-plan.ts ladder [--uvoc] [--json]
   node tools/gpu-oc-plan.ts sweep --core=0:150:30 --mem=0:800:200 --pl=70:100:10 [--top=N] [--sort=score|eff|watts] [--allow-pl-raise] [--json] [--out=FILE]
   node tools/gpu-oc-plan.ts blocks --core=60 --mem=250 [--pl=100] [--install-dir=/home/sd/oc-meters] [--out=FILE]
   node tools/gpu-oc-plan.ts selftest`;
@@ -23,6 +23,18 @@ const LADDER: { step: string; note: string; point: Point }[] = [
   { step: 'uv-80', note: 'soft undervolt: 80% power, the usual efficiency knee', point: { coreOffset: 120, memOffset: 500, powerPct: 80 } },
   { step: 'uv-70', note: 'soft undervolt: 70% power, quiet/cool profile', point: { coreOffset: 120, memOffset: 500, powerPct: 70 } },
   { step: '4-dead', note: 'power raise: IMPOSSIBLE, power.max_limit == default 320W (receipt 2026-08-27)', point: { coreOffset: 120, memOffset: 500, powerPct: 110 } },
+];
+
+// UV+OC ladder (operator directive 2026-08-27: "we need to undervolt AND overclock the 3080").
+// On Linux the pair means: keep the clock offsets (they shift the V/F curve, so the same watts buy
+// more MHz) and trim the power limit at the same time. Score per watt climbs hard; absolute score
+// gives up a little. Run these AFTER the matching full-power step has proven clean.
+const UVOC: { step: string; note: string; point: Point }[] = [
+  { step: 'uvoc-1', note: '+60/+250 at 90% power: first pair, should be near score-neutral', point: { coreOffset: 60, memOffset: 250, powerPct: 90 } },
+  { step: 'uvoc-2', note: '+90/+400 at 85% power', point: { coreOffset: 90, memOffset: 400, powerPct: 85 } },
+  { step: 'uvoc-3', note: '+120/+500 at 80% power: the usual daily sweet spot on a pinned 3080', point: { coreOffset: 120, memOffset: 500, powerPct: 80 } },
+  { step: 'uvoc-4', note: '+120/+500 at 70% power: quiet/cool profile, expect real score loss', point: { coreOffset: 120, memOffset: 500, powerPct: 70 } },
+  { step: 'uvoc-max', note: '+150/+600 at 75% power: most clock the trim can hold', point: { coreOffset: 150, memOffset: 600, powerPct: 75 } },
 ];
 
 function fmt(n: number, w: number): string {
@@ -72,9 +84,10 @@ function emit(payload: unknown, text: string): void {
 }
 
 function ladder(): void {
-  const rows = LADDER.map((l) => decorate(l.point, false, l.step, l.note));
+  const source = flag('uvoc') ? UVOC : [...LADDER, ...UVOC];
+  const rows = source.map((l) => decorate(l.point, false, l.step, l.note));
   const text = [
-    'RTX 3080 10GB — recipe ladder (projected, model only; meter with Superposition 1080p Extreme + dmon)',
+    `RTX 3080 10GB — ${flag('uvoc') ? 'UV+OC ladder' : 'recipe ladder + UV+OC tiers'} (projected, model only; meter with Superposition 1080p Extreme + dmon)`,
     `anchor: stock score ${STOCK.score}, core ${STOCK.coreMHz}MHz (ceiling ${STOCK.coreCeilingMHz}MHz), mclk ${STOCK.mclkMHz}MHz, PL ${STOCK.powerLimitW}W default = ${STOCK.powerMaxLimitW}W max (receipt 2026-08-27, Coolbits LIVE)`,
     table(rows),
     ...rows.filter((r) => r.errors.length || r.warnings.length).map((r) => `${r.step}: ${[...r.errors.map((e) => `ERROR ${e}`), ...r.warnings.map((w) => `WARN ${w}`)].join(' | ')}`),
@@ -161,6 +174,10 @@ function selftest(): void {
   checks.push('caps=enforced');
   if (parseRange('0:100:50', 'x').join(',') !== '0,50,100') throw new Error('range parser drifted');
   checks.push('range=ok');
+  const pair = project({ coreOffset: 120, memOffset: 500, powerPct: 80 });
+  const trimOnly = project({ coreOffset: 0, memOffset: 0, powerPct: 80 });
+  if (!(pair.projectedScore > trimOnly.projectedScore && pair.projectedWatts <= trimOnly.projectedWatts + 1)) throw new Error('UV+OC must beat a bare trim at the same watts');
+  checks.push(`uvoc80_score=${pair.projectedScore} vs trim_only=${trimOnly.projectedScore} at ${pair.projectedWatts}W`);
   console.log(checks.join('\n'));
   console.log('GPU_OC_PLAN=PASS');
 }

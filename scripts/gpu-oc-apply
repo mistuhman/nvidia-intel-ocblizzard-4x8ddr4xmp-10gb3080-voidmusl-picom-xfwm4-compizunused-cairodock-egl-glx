@@ -1,22 +1,28 @@
 #!/bin/sh
-# gpu-oc-apply — target-facing RTX 3080 OC applier. Every mutation has an inverse, nothing persists
-# across an X restart, and all quoting lives HERE so chat blocks stay console-safe (no quotes, no
-# < > &, one command per line). Authored in the repo; deliver by git checkout or heredoc, never curl.
+# gpu-oc-apply — target-facing RTX 3080 OC/UV applier. Every mutation has an inverse, nothing
+# persists across an X restart, and all quoting lives HERE so chat blocks stay console-safe.
 #
+# HARD LESSON 2026-08-27 (target receipt): nvidia-settings prints "assigned value 60." and EXITS 0
+# even when the value did not take, and the AllPerformanceLevels attribute is permission-denied on
+# this Coolbits setup while the per-level form is allowed. So: never trust the assign message, never
+# trust the exit code, always read back the exact [gpu:0]/ATTR[LEVEL] form, and treat any line
+# containing ERROR as a failure.
+#
+#   sh gpu-oc-apply caps                     capability + permission probe (run this first)
 #   sh gpu-oc-apply probe
 #   sh gpu-oc-apply apply CORE_OFFSET MEM_OFFSET
 #   sh gpu-oc-apply verify
 #   sh gpu-oc-apply meter STEP_ID [SECONDS]
-#   sh gpu-oc-apply powerlimit PCT        (root)
+#   sh gpu-oc-apply powerlimit PCT           (root)
+#   sh gpu-oc-apply fan PCT | fan auto
 #   sh gpu-oc-apply revert
 set -u
 
 CORE_MAX=150
 MEM_MAX=700
 PL_MIN_PCT=50   # card Min Power Limit is 100 W = 31%, but below 50% the run stops being comparable
-PL_MAX_PCT=100
+PL_MAX_PCT=100  # power.max_limit == power.default_limit == 320 W: raising is impossible
 METER_DIR=${METER_DIR:-$HOME/oc-meters}
-PERF_LEVEL=${PERF_LEVEL:-3}
 
 die() {
 	echo "GPU_OC_APPLY=FAIL $1"
@@ -27,24 +33,69 @@ need() {
 	command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
 }
 
-coolbits_live() {
-	nvidia-settings -q GPUGraphicsClockOffset -t >/dev/null 2>&1
+# nvidia-settings exits 0 on refusal, so judge it by its output.
+ns_set() {
+	out=$(nvidia-settings -a "$1" 2>&1)
+	echo "$out" | grep -v '^$'
+	if echo "$out" | grep -q 'ERROR'; then
+		die "assignment refused: $1"
+	fi
+}
+
+ns_get() {
+	nvidia-settings -q "$1" -t 2>/dev/null | head -n 1
+}
+
+# The offset attributes live per performance level; the top level is the one that matters under load.
+perf_level() {
+	if [ -n "${PERF_LEVEL:-}" ]; then
+		echo "$PERF_LEVEL"
+		return
+	fi
+	lvl=$(nvidia-settings -q GPUPerfModes -t 2>/dev/null | tr ';' '\n' | sed -n 's/.*perf=\([0-9]*\).*/\1/p' | sort -n | tail -n 1)
+	if [ -z "$lvl" ]; then lvl=3; fi
+	echo "$lvl"
+}
+
+cmd_caps() {
+	need nvidia-settings
+	need nvidia-smi
+	lvl=$(perf_level)
+	echo "perf_level_top: $lvl"
+	echo "perf_modes:"
+	nvidia-settings -q GPUPerfModes -t 2>&1 | head -n 4
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+	echo "core_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
+	echo "mem_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	echo "core_offset_all_levels_query: $(ns_get GPUGraphicsClockOffsetAllPerformanceLevels)"
+	echo "fan_control_state: $(ns_get '[gpu:0]/GPUFanControlState')"
+	echo "fan_target_speed: $(ns_get '[fan:0]/GPUTargetFanSpeed')"
+	echo "powermizer_mode: $(ns_get '[gpu:0]/GPUPowerMizerMode')"
+	echo "--- write test: set the level-${lvl} core offset to 0 (a no-op that proves permission) ---"
+	out=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$lvl]=0" 2>&1)
+	if echo "$out" | grep -q 'ERROR'; then
+		echo "PER_LEVEL_WRITE=DENIED"
+		echo "$out" | grep 'ERROR' | head -n 2
+	else
+		echo "PER_LEVEL_WRITE=ALLOWED"
+	fi
+	out=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=0" 2>&1)
+	if echo "$out" | grep -q 'ERROR'; then
+		echo "ALL_LEVELS_WRITE=DENIED (expected on this Coolbits value; per-level is the path)"
+	else
+		echo "ALL_LEVELS_WRITE=ALLOWED"
+	fi
+	echo "--- xorg Coolbits ---"
+	grep -r -i coolbits /etc/X11 2>/dev/null | head -n 4
 }
 
 cmd_probe() {
 	need nvidia-smi
 	echo "--- driver / card ---"
 	nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power.max_limit,clocks.max.graphics,clocks.max.memory --format=csv
-	echo "--- coolbits ---"
-	if coolbits_live; then
-		echo "COOLBITS=LIVE"
-		nvidia-settings -q GPUGraphicsClockOffset -t
-		nvidia-settings -q GPUMemoryTransferRateOffset -t
-	else
-		echo "COOLBITS=NOT_LIVE (log out and log back in; do NOT switch VT)"
-	fi
 	echo "--- current state ---"
 	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.draw,temperature.gpu,fan.speed --format=csv
+	cmd_verify
 }
 
 cmd_apply() {
@@ -55,20 +106,25 @@ cmd_apply() {
 	echo "$mem" | grep -Eq '^-?[0-9]+$' || die "memory offset not an integer: $mem"
 	[ "$core" -le "$CORE_MAX" ] || die "core offset $core over the recipe cap +$CORE_MAX"
 	[ "$mem" -le "$MEM_MAX" ] || die "memory offset $mem over the recipe cap +$MEM_MAX"
-	coolbits_live || die "Coolbits is not live: log out and log back in first"
-	nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$PERF_LEVEL]=$core" || die "core offset rejected"
-	nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$PERF_LEVEL]=$mem" || die "memory offset rejected"
-	echo "APPLIED core=+$core mem=+$mem (perf level $PERF_LEVEL, resets on X restart)"
+	lvl=$(perf_level)
+	ns_set "[gpu:0]/GPUGraphicsClockOffset[$lvl]=$core"
+	ns_set "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=$mem"
+	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
+	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
+	echo "read_back level $lvl: core=$gotcore mem=$gotmem"
+	[ "$gotcore" = "$core" ] || die "core offset did not stick (asked $core, card reports $gotcore)"
+	[ "$gotmem" = "$mem" ] || die "memory offset did not stick (asked $mem, card reports $gotmem)"
+	echo "APPLIED core=+$core mem=+$mem at perf level $lvl (resets on X restart)"
 	echo "INVERSE: sh $0 revert"
 }
 
 cmd_verify() {
 	need nvidia-settings
-	echo "core_offset:"
-	nvidia-settings -q GPUGraphicsClockOffset -t
-	echo "mem_transfer_rate_offset:"
-	nvidia-settings -q GPUMemoryTransferRateOffset -t
-	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.limit,power.draw,temperature.gpu --format=csv
+	lvl=$(perf_level)
+	echo "perf_level: $lvl"
+	echo "core_offset: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
+	echo "mem_transfer_rate_offset: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.limit,power.draw,temperature.gpu,fan.speed --format=csv
 }
 
 cmd_meter() {
@@ -79,7 +135,8 @@ cmd_meter() {
 	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
 	out=$METER_DIR/$id.dmon.csv
 	echo "metering $secs s into $out — start Superposition 1080p Extreme NOW"
-	nvidia-smi dmon -s pucm -d 1 -c "$secs" -o DT >"$out" 2>&1
+	echo "ctrl-C is safe: whatever was written stays usable"
+	nvidia-smi dmon -s pucm -d 1 -c "$secs" >"$out" 2>&1
 	echo "wrote $out"
 	tail -n 3 "$out"
 }
@@ -90,33 +147,63 @@ cmd_powerlimit() {
 	pct=$1
 	echo "$pct" | grep -Eq '^[0-9]+$' || die "percent not an integer: $pct"
 	[ "$pct" -ge "$PL_MIN_PCT" ] || die "percent $pct below the ${PL_MIN_PCT}% floor"
-	[ "$pct" -le "$PL_MAX_PCT" ] || die "percent $pct above 100: the step-4 PSU gate is not open"
+	[ "$pct" -le "$PL_MAX_PCT" ] || die "percent $pct above 100: power.max_limit == default, raising is impossible"
 	def=$(nvidia-smi --query-gpu=power.default_limit --format=csv,noheader,nounits | head -n 1 | tr -d ' ')
 	echo "$def" | grep -Eq '^[0-9]+(\.[0-9]+)?$' || die "could not read default power limit (got: $def)"
 	watts=$(awk -v d="$def" -v p="$pct" 'BEGIN { printf "%d", (d * p) / 100 }')
 	nvidia-smi -pl "$watts" || die "power limit rejected (persistence mode or permissions)"
+	nvidia-smi --query-gpu=power.limit --format=csv
 	echo "POWER_LIMIT=${watts}W (${pct}% of ${def}W default)"
 	echo "INVERSE: sh $0 powerlimit 100"
 }
 
+cmd_fan() {
+	need nvidia-settings
+	pct=$1
+	if [ "$pct" = "auto" ]; then
+		ns_set "[gpu:0]/GPUFanControlState=0"
+		echo "FAN=auto"
+		return
+	fi
+	echo "$pct" | grep -Eq '^[0-9]+$' || die "fan percent not an integer: $pct"
+	[ "$pct" -ge 30 ] || die "fan percent $pct under 30: do not stall the fans"
+	[ "$pct" -le 100 ] || die "fan percent $pct over 100"
+	ns_set "[gpu:0]/GPUFanControlState=1"
+	ns_set "[fan:0]/GPUTargetFanSpeed=$pct"
+	ns_set "[fan:1]/GPUTargetFanSpeed=$pct"
+	echo "FAN=${pct}%  INVERSE: sh $0 fan auto"
+}
+
 cmd_revert() {
 	need nvidia-settings
-	nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=0" || die "core revert rejected"
-	nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffsetAllPerformanceLevels=0" || die "memory revert rejected"
-	echo "REVERTED offsets to 0. If a power limit was set, run as root: sh $0 powerlimit 100"
+	lvl=$(perf_level)
+	# Per-level form only: AllPerformanceLevels is permission-denied on this Coolbits setup.
+	ns_set "[gpu:0]/GPUGraphicsClockOffset[$lvl]=0"
+	ns_set "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]=0"
+	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")
+	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")
+	[ "$gotcore" = "0" ] || die "core offset still $gotcore after revert"
+	[ "$gotmem" = "0" ] || die "memory offset still $gotmem after revert"
+	echo "REVERTED offsets to 0 at perf level $lvl (verified by read-back)"
+	echo "If a power limit was set, run as root: sh $0 powerlimit 100"
+	echo "If a fan speed was set: sh $0 fan auto"
 }
 
 action=${1:-}
-shift 2>/dev/null || true
+# `shift` is a POSIX special built-in: in dash a failed shift kills the script even with || true,
+# which silently ate the usage message. Guard it instead.
+if [ $# -gt 0 ]; then shift; fi
 case "$action" in
+caps) cmd_caps ;;
 probe) cmd_probe ;;
 apply) [ $# -eq 2 ] || die "usage: apply CORE_OFFSET MEM_OFFSET"; cmd_apply "$1" "$2" ;;
 verify) cmd_verify ;;
 meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECONDS]"; cmd_meter "$@" ;;
 powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
+fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
 revert) cmd_revert ;;
 *)
-	echo "usage: sh gpu-oc-apply probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|revert"
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|fan PCT|revert"
 	exit 2
 	;;
 esac
