@@ -1,0 +1,12 @@
+id -u
+# finder-install.block - ROOT (sudo -i first).
+# Replaces Thunar with Nemo, branded "Finder", macOS WhiteSur icons layered
+# over the existing gunmetal theme, plus 13 ZFS/zpool right-click actions.
+# Undo everything with:  sh /root/omen-fix/finder-install.sh undo
+mkdir -p /root/omen-fix
+cd /root/omen-fix
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/finder-install.sh -o finder-install.sh
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/finder-zfs -o finder-zfs
+chmod 0755 finder-install.sh finder-zfs
+sh /root/omen-fix/finder-install.sh
+date

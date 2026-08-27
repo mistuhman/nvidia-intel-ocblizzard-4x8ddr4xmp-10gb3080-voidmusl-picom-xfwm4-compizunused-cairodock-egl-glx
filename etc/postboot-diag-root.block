@@ -1,0 +1,85 @@
+id -u
+# postboot-diag-root.block - ROOT shell on target (sudo -i first, then paste). READ-ONLY.
+# Why: operator reports (1) Discord loads like spinning disk, (2) constant system stutter,
+# (3) CEntrance Pro USB audio (rear SS USB, lit, enabled) mic does not work, (4) "stuff feels
+# weird" booting NVMe post-reassembly, (5) wants external drives wiped + zpools.
+# LiveGates 1+3 (omen-postrecovery-probe, boot-order-drive-probe) were never pasted back.
+# This block supersedes both with extra USB/audio/I-O/IRQ/governor/ARC/speed probes.
+# NOTHING IS CHANGED. No zpool destroy/labelclear/wipefs. Paste FULL output back.
+df -h /
+df -h
+uptime
+cat /proc/cmdline
+uname -r
+cat /sys/class/dmi/id/product_name
+cat /sys/class/dmi/id/board_name
+cat /sys/class/dmi/id/bios_version
+echo === lsblk ===
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,UUID,MODEL,SERIAL,ROTA,SCHED,MOUNTPOINT
+echo === by-id ===
+ls -l /dev/disk/by-id
+echo === by-path ===
+ls -l /dev/disk/by-path
+echo === zpool status ===
+zpool status
+echo === zpool list ===
+zpool list -v
+echo === zpool import ===
+zpool import
+echo === zfs list ===
+zfs list -o name,mountpoint,used,avail,compressratio
+echo === arc caps ===
+cat /sys/module/zfs/parameters/zfs_arc_max
+cat /sys/module/zfs/parameters/zfs_arc_min
+echo === mounts ===
+findmnt /
+findmnt /mnt/games
+findmnt
+swapon --show
+echo === EFI boot ===
+efibootmgr -v
+echo === sensors ===
+sensors
+echo === fan input paths ===
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+echo === temp input paths ===
+find /sys/class/hwmon -maxdepth 2 -name temp\*_input
+echo === nvidia ===
+nvidia-smi
+echo === memory ===
+free -g
+echo === sysctl perf ===
+sysctl vm.swappiness
+sysctl kernel.nmi_watchdog
+cat /proc/sys/vm/dirty_ratio
+cat /proc/sys/vm/dirty_background_ratio
+echo === CPU governor EPP ===
+cat /sys/devices/system/cpu/intel_pstate/status
+cat /sys/devices/system/cpu/intel_pstate/no_turbo
+cat /sys/devices/system/cpu/intel_pstate/max_perf_pct
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference
+echo === IRQ names ===
+cat /proc/interrupts
+echo === services ===
+ls -l /var/service
+echo === USB tree ===
+lsusb -t
+lsusb
+echo === ALSA cards ===
+cat /proc/asound/cards
+cat /proc/asound/devices
+echo === block devices ===
+ls -l /sys/block
+echo === scheduler nvme ===
+cat /sys/block/nvme0n1/queue/scheduler
+echo === read-only nvme speed ===
+hdparm -tT /dev/nvme0n1
+echo === dmesg errors warn ===
+dmesg -T --level=err,warn
+echo === dmesg sata nvme ===
+dmesg -T | grep -i -E 'ata|sata|nvme|blk_update|reset'
+echo === dmesg usb audio ===
+dmesg -T | grep -i -E 'usb|xhci|ehci|audio|centrance|disconnect'
+echo === done postboot-diag-root ===
+date

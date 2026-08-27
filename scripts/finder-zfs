@@ -1,0 +1,214 @@
+#!/bin/sh
+# finder-zfs - ZFS/zpool helper invoked by the Finder (Nemo) right-click actions.
+# Renders output in a GUI window so pool management works without a terminal.
+#
+# usage: finder-zfs <verb> [path...]
+set -u
+
+VERB=${1:-status}
+shift 2>/dev/null || true
+TARGET=${1:-}
+
+# ---- GUI plumbing ---------------------------------------------------------
+have() { command -v "$1" >/dev/null 2>&1; }
+
+show() {                       # show <title> ; body on stdin
+	_t=$1
+	if have yad; then
+		yad --text-info --title="$_t" --width=980 --height=640 \
+		    --fontname=monospace --button=Close:0 --wrap 2>/dev/null
+	elif have zenity; then
+		zenity --text-info --title="$_t" --width=980 --height=640 2>/dev/null
+	elif have xfce4-terminal; then
+		_f=$(mktemp); cat > "$_f"
+		xfce4-terminal --title="$_t" --hold -e "less -S $_f"
+	else
+		cat
+	fi
+}
+
+ask() {                        # ask <question> -> exit 0 = yes
+	if have yad; then
+		yad --question --title="Finder / ZFS" --width=460 --text="$1" 2>/dev/null
+	elif have zenity; then
+		zenity --question --title="Finder / ZFS" --width=460 --text="$1" 2>/dev/null
+	else
+		printf '%s [y/N] ' "$1"; read -r a; [ "$a" = y ]
+	fi
+}
+
+entry() {                      # entry <prompt> <default> -> value on stdout
+	if have yad; then
+		yad --entry --title="Finder / ZFS" --width=460 --text="$1" --entry-text="$2" 2>/dev/null
+	elif have zenity; then
+		zenity --entry --title="Finder / ZFS" --width=460 --text="$1" --entry-text="$2" 2>/dev/null
+	else
+		printf '%s [%s] ' "$1" "$2"; read -r a; echo "${a:-$2}"
+	fi
+}
+
+notify() { have notify-send && notify-send "Finder / ZFS" "$1" || echo "$1"; }
+
+# root escalation for mutating verbs
+asroot() {
+	if [ "$(id -u)" = 0 ]; then "$@"
+	elif have pkexec; then pkexec "$@"
+	elif have doas;   then doas "$@"
+	else sudo "$@"; fi
+}
+
+# dataset that owns a given path
+ds_for() {
+	[ -n "${1:-}" ] || return 1
+	df --output=source,fstype "$1" 2>/dev/null | awk 'NR==2 && $2=="zfs" {print $1}'
+}
+
+# ---- verbs ----------------------------------------------------------------
+case "$VERB" in
+
+status)
+	{
+		echo "########## zpool status -v ##########"; zpool status -v
+		echo; echo "########## zpool list -v ##########"; zpool list -v
+		echo; echo "########## capacity ##########"; zpool list -o name,size,alloc,free,cap,frag,dedup,health
+		echo; echo "########## errors ##########"; zpool status -x
+	} 2>&1 | show "Finder / ZFS - Pool status"
+	;;
+
+iostat)
+	{
+		echo "########## live iostat (5 x 1s) ##########"
+		zpool iostat -v 1 5
+		echo; echo "########## latency histogram ##########"
+		zpool iostat -w 1 2 2>/dev/null || echo "(latency histogram unsupported)"
+	} 2>&1 | show "Finder / ZFS - Pool I/O"
+	;;
+
+datasets)
+	{
+		echo "########## zfs list ##########"
+		zfs list -o name,used,avail,refer,ratio,mountpoint,mounted
+		echo; echo "########## snapshots ##########"
+		zfs list -t snapshot -o name,used,refer,creation -s creation 2>/dev/null | tail -60
+	} 2>&1 | show "Finder / ZFS - Datasets"
+	;;
+
+props)
+	D=$(ds_for "$TARGET")
+	[ -n "$D" ] || { notify "Not on a ZFS dataset: $TARGET"; exit 1; }
+	{
+		echo "dataset for $TARGET"
+		echo "  -> $D"; echo
+		zfs get -o property,value,source all "$D"
+	} 2>&1 | show "Finder / ZFS - $D"
+	;;
+
+usage)
+	D=$(ds_for "$TARGET")
+	[ -n "$D" ] || { notify "Not on a ZFS dataset: $TARGET"; exit 1; }
+	{
+		echo "########## space breakdown: $D ##########"
+		zfs list -o space "$D"
+		echo; echo "########## compression ##########"
+		zfs get -o property,value used,logicalused,compressratio,recordsize,compression "$D"
+		echo; echo "########## largest children ##########"
+		zfs list -r -o name,used -s used "$D" 2>/dev/null | tail -25
+	} 2>&1 | show "Finder / ZFS - space for $D"
+	;;
+
+snapshot)
+	D=$(ds_for "$TARGET")
+	[ -n "$D" ] || { notify "Not on a ZFS dataset: $TARGET"; exit 1; }
+	N=$(entry "Snapshot name for $D" "finder-$(date +%Y%m%d-%H%M%S)")
+	[ -n "$N" ] || exit 0
+	if asroot zfs snapshot "$D@$N"; then
+		notify "created $D@$N"
+	else
+		notify "FAILED to create $D@$N"
+	fi
+	;;
+
+snaplist)
+	D=$(ds_for "$TARGET")
+	[ -n "$D" ] || D=""
+	{
+		echo "########## snapshots ${D:+for $D} ##########"
+		if [ -n "$D" ]; then
+			zfs list -t snapshot -r -o name,used,refer,creation -s creation "$D"
+			echo; echo "browse them read-only at: $(zfs get -H -o value mountpoint "$D")/.zfs/snapshot/"
+		else
+			zfs list -t snapshot -o name,used,refer,creation -s creation
+		fi
+	} 2>&1 | show "Finder / ZFS - Snapshots"
+	;;
+
+browsesnaps)
+	D=$(ds_for "$TARGET")
+	[ -n "$D" ] || { notify "Not on a ZFS dataset"; exit 1; }
+	MP=$(zfs get -H -o value mountpoint "$D")
+	if [ "$MP" = "none" ] || [ "$MP" = "legacy" ]; then MP=$(df --output=target "$TARGET" | tail -1); fi
+	asroot zfs set snapdir=visible "$D" 2>/dev/null || true
+	nemo "$MP/.zfs/snapshot" 2>/dev/null &
+	;;
+
+scrub)
+	P=${TARGET:-}
+	POOL=$(ds_for "$P" | cut -d/ -f1)
+	[ -n "$POOL" ] || POOL=$(entry "Scrub which pool?" "nvme")
+	[ -n "$POOL" ] || exit 0
+	ask "Start a scrub of pool '$POOL'?\n\nThis reads every block and verifies checksums.\nIt runs in the background at low priority but WILL add I/O load." || exit 0
+	asroot zpool scrub "$POOL" && notify "scrub started on $POOL - check Pool status for progress"
+	;;
+
+scrubstop)
+	POOL=$(entry "Stop the scrub on which pool?" "nvme")
+	[ -n "$POOL" ] || exit 0
+	asroot zpool scrub -s "$POOL" && notify "scrub stopped on $POOL"
+	;;
+
+trim)
+	POOL=$(entry "TRIM which pool? (SSD/NVMe only)" "nvme")
+	[ -n "$POOL" ] || exit 0
+	asroot zpool trim "$POOL" && notify "trim started on $POOL"
+	;;
+
+arc)
+	{
+		echo "########## ARC ##########"
+		awk '/^(size|c|c_max|c_min|hits|misses|arc_meta_used) /{printf "%-22s %s\n",$1,$3}' /proc/spl/kstat/zfs/arcstats 2>/dev/null
+		echo
+		H=$(awk '/^hits /{print $3}' /proc/spl/kstat/zfs/arcstats 2>/dev/null)
+		M=$(awk '/^misses /{print $3}' /proc/spl/kstat/zfs/arcstats 2>/dev/null)
+		[ -n "${H:-}" ] && [ -n "${M:-}" ] && [ "$((H+M))" -gt 0 ] && \
+			echo "hit ratio: $(( 100 * H / (H + M) ))%"
+		echo "arc_max (bytes): $(cat /sys/module/zfs/parameters/zfs_arc_max)"
+		echo
+		echo "########## RAM ##########"; free -h
+		echo; echo "########## schedulers ##########"
+		for d in /sys/block/nvme*n*/queue/scheduler /sys/block/sd*/queue/scheduler; do
+			[ -e "$d" ] && printf '%-12s %s\n' "$(echo "$d" | cut -d/ -f4)" "$(cat "$d")"
+		done
+	} 2>&1 | show "Finder / ZFS - ARC + cache health"
+	;;
+
+disks)
+	{
+		echo "########## block devices ##########"
+		lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MODEL,ROTA,SCHED,MOUNTPOINT
+		echo; echo "########## stable /dev/disk/by-id names (use these for zpool) ##########"
+		ls -l /dev/disk/by-id | grep -vE 'part[0-9]+$' | awk '{print $9, "->", $11}'
+		echo; echo "########## SMART summary ##########"
+		for d in /dev/sd? /dev/nvme?n?; do
+			[ -e "$d" ] || continue
+			printf '\n--- %s ---\n' "$d"
+			smartctl -H -i "$d" 2>/dev/null | grep -iE 'model|serial|health|capacity' || echo "(smartctl unavailable)"
+		done
+	} 2>&1 | show "Finder / ZFS - Disks"
+	;;
+
+*)
+	echo "finder-zfs: unknown verb '$VERB'" >&2
+	echo "verbs: status iostat datasets props usage snapshot snaplist browsesnaps scrub scrubstop trim arc disks" >&2
+	exit 2
+	;;
+esac
