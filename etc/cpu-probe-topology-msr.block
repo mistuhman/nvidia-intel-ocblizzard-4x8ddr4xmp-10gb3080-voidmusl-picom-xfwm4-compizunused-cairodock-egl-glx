@@ -1,0 +1,26 @@
+id -u
+# cpu-probe-topology-msr.block - ROOT shell (sudo -i separately first).
+# Read-only CPU topology, ITMT favored cores, RAPL limits, and MSR lock inspection.
+# Why: Establish empirical ground truth for 12700KF overclocking and Linux core parking.
+# Gate: df -h / passes, lscpu prints 20 CPUs, rdmsr prints hex values for 0x194/0x1ad/0x610/0xce.
+# Rollback: None needed (read-only inspection).
+df -h /
+uname -r
+xbps-install -y msr-tools
+modprobe msr
+cat /proc/sys/kernel/sched_itmt_enabled
+lscpu -e=CPU,CORE,SOCKET,NODE,MAXMHZ,MINMHZ
+cat /sys/devices/system/cpu/intel_pstate/status
+cat /sys/devices/system/cpu/intel_pstate/no_turbo
+cat /sys/class/powercap/intel-rapl/intel-rapl:0/name
+cat /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw
+cat /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_time_window_us
+cat /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_1_power_limit_uw
+cat /sys/class/powercap/intel-rapl/intel-rapl:0/constraint_1_time_window_us
+rdmsr -x 0x194
+rdmsr -x 0x1ad
+rdmsr -x 0x610
+rdmsr -x 0xce
+ls -l /sys/devices/system/cpu/cpu16/online
+head -n 20 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+head -n 20 /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference

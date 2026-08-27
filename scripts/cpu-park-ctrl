@@ -1,0 +1,226 @@
+#!/bin/sh
+# cpu-park-ctrl - 12700KF Linux ParkControl equivalent & PL1/PL2 power-limit manager.
+#
+# Hardware topology on this rig (12700KF, 8P+4E, 20 logical threads):
+#   P-Cores (Golden Cove): CPU 0-15 (SMT pairs: 0+1, 2+3, 4+5, 6+7, 8+9, 10+11, 12+13, 14+15)
+#   E-Cores (Gracemont):   CPU 16-19 (single thread per core)
+#
+# Subcommands:
+#   sh cpu-park-ctrl status       Show online cores, governor, EPP, frequencies, RAPL power limits
+#   sh cpu-park-ctrl probe-itmt   Read MSR 0x771 across all cores to identify the 5.0 GHz golden cores
+#   sh cpu-park-ctrl pl-unlock    Raise PL1 from 125W to 241W (matches PL2, stops Tau throttling)
+#   sh cpu-park-ctrl pl-restore   Restore PL1 to stock 125W
+#   sh cpu-park-ctrl park-ecores  Offline CPU 16-19 (returns 100% ring bus & package power to P-cores)
+#   sh cpu-park-ctrl park-smt     Offline CPU 1,3,5,7,9,11,13,15 (leaves 8 pure physical P-cores)
+#   sh cpu-park-ctrl park-game    Park E-cores + SMT + governor performance + EPP performance
+#   sh cpu-park-ctrl asym-game    Keep 20T online, but downclock E-cores to base and boost P-cores
+#   sh cpu-park-ctrl restore      Restore all 20 threads online + powersave + balance_performance
+#
+# Safety: All actions are runtime-only sysfs/MSR changes; reboot fully reverts all states.
+set -u
+
+RAPL_PL1=/sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw
+RAPL_PL2=/sys/class/powercap/intel-rapl/intel-rapl:0/constraint_1_power_limit_uw
+
+need_root() {
+	if [ "$(id -u)" != "0" ]; then
+		echo "CPU_PARK_CTRL=FAIL this action requires root (sudo -i)"
+		exit 1
+	fi
+}
+
+cmd_status() {
+	echo "=== CPU Online Topology ==="
+	P_ON=""
+	P_OFF=""
+	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+		if [ "$c" = "0" ] || [ "$(cat /sys/devices/system/cpu/cpu$c/online 2>/dev/null)" = "1" ]; then
+			P_ON="$P_ON $c"
+		else
+			P_OFF="$P_OFF $c"
+		fi
+	done
+	E_ON=""
+	E_OFF=""
+	for c in 16 17 18 19; do
+		if [ "$(cat /sys/devices/system/cpu/cpu$c/online 2>/dev/null)" = "1" ]; then
+			E_ON="$E_ON $c"
+		else
+			E_OFF="$E_OFF $c"
+		fi
+	done
+	echo "P-cores (0-15) online: ${P_ON:-none}"
+	[ -n "$P_OFF" ] && echo "P-cores (0-15) parked: $P_OFF"
+	echo "E-cores (16-19) online: ${E_ON:-none}"
+	[ -n "$E_OFF" ] && echo "E-cores (16-19) parked: $E_OFF"
+
+	echo ""
+	echo "=== Governors & EPP ==="
+	echo "CPU0 (P-core):  gov=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null) epp=$(cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference 2>/dev/null) cur=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null)kHz"
+	if [ -r /sys/devices/system/cpu/cpu16/online ] && [ "$(cat /sys/devices/system/cpu/cpu16/online)" = "1" ]; then
+		echo "CPU16 (E-core): gov=$(cat /sys/devices/system/cpu/cpu16/cpufreq/scaling_governor 2>/dev/null) epp=$(cat /sys/devices/system/cpu/cpu16/cpufreq/energy_performance_preference 2>/dev/null) cur=$(cat /sys/devices/system/cpu/cpu16/cpufreq/scaling_cur_freq 2>/dev/null)kHz"
+	else
+		echo "CPU16 (E-core): parked (offline)"
+	fi
+
+	echo ""
+	echo "=== Package Power Limits (RAPL) ==="
+	if [ -r "$RAPL_PL1" ]; then
+		PL1_W=$(awk '{printf "%.1f", $1/1000000}' "$RAPL_PL1")
+		PL2_W=$(awk '{printf "%.1f", $1/1000000}' "$RAPL_PL2")
+		echo "PL1 (sustained): ${PL1_W} W"
+		echo "PL2 (burst):     ${PL2_W} W"
+	fi
+}
+
+cmd_probe_itmt() {
+	need_root
+	modprobe msr 2>/dev/null || true
+	if ! command -v rdmsr >/dev/null 2>&1; then
+		echo "CPU_PARK_CTRL=FAIL rdmsr not found; run: xbps-install -y msr-tools"
+		exit 1
+	fi
+	echo "=== MSR 0x771 HWP Capabilities (Per-Core Highest Ratio) ==="
+	c=0
+	while [ "$c" -lt 20 ]; do
+		if [ "$c" = "0" ] || [ "$(cat /sys/devices/system/cpu/cpu$c/online 2>/dev/null)" = "1" ]; then
+			RAW=$(rdmsr -p "$c" -x 0x771 2>/dev/null || echo "0")
+			# bits 7:0 = 1x Highest Performance Ratio
+			HEX=$(printf "%s" "$RAW" | tail -c 2)
+			RATIO=$(printf "%d" "0x$HEX" 2>/dev/null || echo 0)
+			MHZ=$((RATIO * 100))
+			ROLE="P-core"
+			if [ "$c" -ge 16 ]; then ROLE="E-core"; fi
+			printf "CPU %2d (%s): ratio %2dx (%4d MHz) [raw=0x%s]\n" "$c" "$ROLE" "$RATIO" "$MHZ" "$RAW"
+		else
+			printf "CPU %2d: parked (offline)\n" "$c"
+		fi
+		c=$((c + 1))
+	done
+}
+
+cmd_pl_unlock() {
+	need_root
+	if [ ! -w "$RAPL_PL1" ]; then
+		echo "CPU_PARK_CTRL=FAIL $RAPL_PL1 not writable"
+		exit 1
+	fi
+	echo 241000000 > "$RAPL_PL1"
+	echo "CPU_PARK_CTRL=OK PL1 raised to 241.0 W (matches PL2)"
+}
+
+cmd_pl_restore() {
+	need_root
+	if [ ! -w "$RAPL_PL1" ]; then
+		echo "CPU_PARK_CTRL=FAIL $RAPL_PL1 not writable"
+		exit 1
+	fi
+	echo 125000000 > "$RAPL_PL1"
+	echo "CPU_PARK_CTRL=OK PL1 restored to stock 125.0 W"
+}
+
+cmd_park_ecores() {
+	need_root
+	for c in 16 17 18 19; do
+		if [ -w "/sys/devices/system/cpu/cpu$c/online" ]; then
+			echo 0 > "/sys/devices/system/cpu/cpu$c/online"
+		fi
+	done
+	echo "CPU_PARK_CTRL=OK E-cores (CPU 16-19) taken offline"
+}
+
+cmd_park_smt() {
+	need_root
+	for c in 1 3 5 7 9 11 13 15; do
+		if [ -w "/sys/devices/system/cpu/cpu$c/online" ]; then
+			echo 0 > "/sys/devices/system/cpu/cpu$c/online"
+		fi
+	done
+	echo "CPU_PARK_CTRL=OK SMT siblings (CPU 1,3,5,7,9,11,13,15) taken offline"
+}
+
+cmd_park_game() {
+	need_root
+	# 1. Park E-cores + SMT siblings -> leaves 8 physical P-cores (0,2,4,6,8,10,12,14)
+	cmd_park_ecores
+	cmd_park_smt
+	# 2. Set governor=performance and EPP=performance on remaining active cores
+	for c in 0 2 4 6 8 10 12 14; do
+		if [ -w "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" ]; then
+			echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor"
+		fi
+		if [ -w "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" ]; then
+			echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference"
+		fi
+	done
+	# 3. Unlock PL1 to 241W so the 8 P-cores never hit sustained power throttle
+	cmd_pl_unlock
+	echo "CPU_PARK_CTRL=OK Parked for gaming: 8 pure physical P-cores active at max boost"
+}
+
+cmd_asym_game() {
+	need_root
+	# Ensure all cores are online
+	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
+		if [ -w "/sys/devices/system/cpu/cpu$c/online" ]; then
+			echo 1 > "/sys/devices/system/cpu/cpu$c/online"
+		fi
+	done
+	# Boost P-cores
+	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+		echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+	done
+	# Downclock E-cores to base & save power
+	for c in 16 17 18 19; do
+		echo "powersave" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo "power" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+		echo 2400000 > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
+	done
+	cmd_pl_unlock
+	echo "CPU_PARK_CTRL=OK Asymmetric profile active: P-cores boosted, E-cores downclocked to 2.4GHz"
+}
+
+cmd_restore() {
+	need_root
+	# 1. Bring all cores back online
+	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
+		if [ -w "/sys/devices/system/cpu/cpu$c/online" ]; then
+			echo 1 > "/sys/devices/system/cpu/cpu$c/online"
+		fi
+	done
+	# 2. Restore scaling_max_freq to hardware max
+	for c in 16 17 18 19; do
+		if [ -r "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" ]; then
+			cat "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
+		fi
+	done
+	# 3. Restore governor and EPP
+	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
+		echo "powersave" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo "balance_performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+	done
+	# 4. Restore PL1 to 125W
+	cmd_pl_restore
+	echo "CPU_PARK_CTRL=OK All 20 threads online, powersave/balance_performance restored"
+}
+
+action=${1:-status}
+case "$action" in
+status) cmd_status ;;
+probe-itmt) cmd_probe_itmt ;;
+pl-unlock) cmd_pl_unlock ;;
+pl-restore) cmd_pl_restore ;;
+park-ecores) cmd_park_ecores ;;
+park-smt) cmd_park_smt ;;
+park-game) cmd_park_game ;;
+asym-game) cmd_asym_game ;;
+restore) cmd_restore ;;
+help|--help)
+	sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+	;;
+*)
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-game|asym-game|restore"
+	exit 1
+	;;
+esac
