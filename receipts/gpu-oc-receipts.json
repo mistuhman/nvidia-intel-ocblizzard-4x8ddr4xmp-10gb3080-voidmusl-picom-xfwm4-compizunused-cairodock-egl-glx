@@ -44,6 +44,32 @@
         "coreMHz": 1905,
         "tempC": 81
       }
+    },
+    {
+      "id": "cp60-m250-pl100",
+      "coreOffset": 60,
+      "memOffset": 250,
+      "powerPct": 100,
+      "score": 8635,
+      "watts": 314,
+      "fpsAvg": 64.59,
+      "tempMaxC": 80,
+      "coreMHzMax": 1935,
+      "memClkMaxMHz": 9626,
+      "samples": 2,
+      "preset": "1080p Extreme",
+      "geekbench": null,
+      "verdict": "PASS",
+      "stopRuleHits": [],
+      "deltaScorePctVsStock": -0.94,
+      "scorePerWatt": 27.5,
+      "modelErrorPct": 3.66,
+      "predicted": {
+        "score": 8951,
+        "watts": 320,
+        "coreMHz": 1965,
+        "tempC": 81.6
+      }
     }
   ]
 }
