@@ -10,7 +10,7 @@ Linux does NOT expose the per-point voltage curve (Pascal and newer; NVIDIA remo
 
 ## Requirements
 
-- CoolBits 28 LIVE (xorg config written; log out / log in once). Verify: `nvidia-settings -q GPUGraphicsClockOffset -t` prints numbers.
+- CoolBits 28 LIVE — **CONFIRMED 2026-08-27**: `nvidia-settings -q GPUGraphicsClockOffset -t` and `-q GPUMemoryTransferRateOffset -t` both print `0`, no error. Card ceiling from the same receipt: `clocks.max.graphics 2100 MHz`, so offsets past +165 are dead.
 - gwe installed (Void `gwe` 0.15.5). Launch: `gwe` in the X session.
 
 ## Steps (one at a time; bench + meter between each)
@@ -21,7 +21,7 @@ Linux does NOT expose the per-point voltage curve (Pascal and newer; NVIDIA remo
 | 1 | +60 | +250 | stock | first run |
 | 2 | +90 | +400 | stock | if step 1 clean |
 | 3 | +120 | +500 | stock | if step 2 clean; HOLD here for a week of daily use before more |
-| 4 (optional) | step-3 values | step-3 values | +10% max | ONLY after PSU plug count + brand confirmed (HP OMEN 45L 850W claim) and only if GWE shows the slider enabled |
+| 4 | ~~+10% power~~ **DEAD** | — | — | IMPOSSIBLE on this card: receipt 2026-08-27 shows power.limit = power.default_limit = power.max_limit = 320.00 W. There is no headroom to unlock; the only power knob is trimming DOWN (see docs/oc-3080-oc-lab.md undervolt tiers). |
 
 Do not exceed +150 core or +700 memory on the 3080 10GB without a 3rd-party cooler review; GDDR6X runs hot. 3080 10GB typical safe zone: core +100..+150, memory +400..+800 for daily.
 

@@ -6,8 +6,10 @@
 
 export type Baseline = {
   coreMHz: number;      // dmon pclk peak at stock
+  coreCeilingMHz: number; // clocks.max.graphics reported by the card - offsets past it do nothing
   mclkMHz: number;      // dmon mclk peak at stock (memory clock, NOT transfer rate)
-  powerLimitW: number;  // card default power limit - UNVERIFIED until nvidia-smi -q -d POWER is pasted
+  powerLimitW: number;  // card default power limit
+  powerMaxLimitW: number; // power.max_limit reported by the card
   referenceW: number;   // board draw at stock core under the graphics meter
   score: number;        // Superposition 1080p Extreme score
   fpsAvg: number;
@@ -15,10 +17,16 @@ export type Baseline = {
   tempMaxC: number;
 };
 
+// Target receipt 2026-08-27 (user shell, nvidia-smi --query-gpu):
+//   RTX 3080, driver 595.91.07, power.limit 320.00 W, power.default_limit 320.00 W,
+//   power.max_limit 320.00 W, clocks.max.graphics 2100 MHz, clocks.max.memory 9501 MHz
+//   nvidia-settings -q GPUGraphicsClockOffset -t -> 0  (Coolbits LIVE)
 export const STOCK: Baseline = {
   coreMHz: 1935,
+  coreCeilingMHz: 2100,
   mclkMHz: 9501,
   powerLimitW: 320,
+  powerMaxLimitW: 320,
   referenceW: 320,
   score: 8717,
   fpsAvg: 65.2,
@@ -33,7 +41,7 @@ export const LIMITS = {
   memOffsetMax: 700,
   memOffsetWarn: 500,
   powerPctMin: 60,
-  powerPctMax: 100,     // >100 requires the step-4 PSU gate (--allow-pl-raise)
+  powerPctMax: 100,     // hardware-fixed: power.max_limit == power.default_limit == 320 W
   tempStopC: 83,
 };
 
@@ -85,7 +93,9 @@ export function project(point: Point, base: Baseline = STOCK): Projection {
   // budget sustains, keeping the captured share of the offset.
   const sustainedCore = base.coreMHz * (powerLimitW / base.referenceW) ** (1 / POWER_EXP);
   // A power-limited board can never exceed the clock it would run unlimited.
-  const coreMHz = limited ? Math.min(requestedCore, sustainedCore + point.coreOffset * OFFSET_CAPTURE_WHEN_LIMITED) : requestedCore;
+  const uncapped = limited ? Math.min(requestedCore, sustainedCore + point.coreOffset * OFFSET_CAPTURE_WHEN_LIMITED) : requestedCore;
+  // The card will not boost past clocks.max.graphics no matter what the offset says.
+  const coreMHz = Math.min(uncapped, base.coreCeilingMHz);
   const watts = limited ? powerLimitW : demandW;
   const perf = (coreMHz / base.coreMHz) ** CORE_WEIGHT * (memClk / base.mclkMHz) ** MEM_WEIGHT;
   const score = base.score * perf;
@@ -122,8 +132,14 @@ export function validate(point: Point, allowPlRaise: boolean, base: Baseline = S
   else if (point.coreOffset > LIMITS.coreOffsetWarn) warnings.push(`core offset ${point.coreOffset} is past recipe step 3 (+${LIMITS.coreOffsetWarn}); a week of daily use is the gate`);
   if (point.memOffset > LIMITS.memOffsetMax) errors.push(`memory offset ${point.memOffset} exceeds recipe hard cap +${LIMITS.memOffsetMax} (GDDR6X heat)`);
   else if (point.memOffset > LIMITS.memOffsetWarn) warnings.push(`memory offset ${point.memOffset} is past recipe step 3 (+${LIMITS.memOffsetWarn})`);
-  if (point.powerPct > LIMITS.powerPctMax && !allowPlRaise) errors.push('power limit above 100% needs the step-4 gate: PSU plug count + brand confirmed, then --allow-pl-raise');
+  if (point.powerPct > LIMITS.powerPctMax) {
+    // Receipt 2026-08-27: power.max_limit == power.default_limit == 320 W. The vBIOS has no headroom,
+    // so the old step-4 "PSU gate" is moot - nvidia-smi -pl will simply refuse the value.
+    errors.push(`power limit above 100% is impossible on this card: power.max_limit == power.default_limit == ${base.powerMaxLimitW}W (receipt 2026-08-27)${allowPlRaise ? '; --allow-pl-raise cannot override a vBIOS limit' : ''}`);
+  }
   if (point.powerPct < LIMITS.powerPctMin) errors.push(`power limit ${point.powerPct}% below the ${LIMITS.powerPctMin}% floor: clocks collapse and the run stops being comparable`);
+  const requestedCore = base.coreMHz + point.coreOffset;
+  if (requestedCore > base.coreCeilingMHz) warnings.push(`requested ${requestedCore}MHz is over clocks.max.graphics ${base.coreCeilingMHz}MHz: everything past +${base.coreCeilingMHz - base.coreMHz} is dead offset`);
   const p = project(point, base);
   if (p.projectedTempC > LIMITS.tempStopC) warnings.push(`projected ${p.projectedTempC}C is at/over the ${LIMITS.tempStopC}C stop rule; abort the run if dmon confirms it`);
   return { ok: errors.length === 0, errors, warnings };

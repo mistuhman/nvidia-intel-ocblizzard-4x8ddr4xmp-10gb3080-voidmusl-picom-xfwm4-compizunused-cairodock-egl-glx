@@ -127,7 +127,7 @@
             "Meter peaks: cpu 811 samples PkgW 145.02W Bzy 4476MHz Tmp 70C; gpu 201W 47C mclk 9501 pclk 1935"
         ],
         "knobs": {
-            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench (same Geekbench+Superposition+dmon protocol as stock baseline). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. No power-limit raise before PSU plug count is confirmed. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules. Lab added 2026-08-27: plan/sweep/curve/parse/verify tools plus GitHub workflows model every candidate and rank it BEFORE anything is pasted; power limit above 100% stays refused without the step-4 PSU gate.",
+            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench (same Geekbench+Superposition+dmon protocol as stock baseline). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. Power-limit RAISE is impossible (max==default==320W, receipt 2026-08-27); power trim down is the only Linux undervolt. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules. Lab added 2026-08-27: plan/sweep/curve/parse/verify tools plus GitHub workflows model every candidate and rank it BEFORE anything is pasted; power limit above 100% stays refused without the step-4 PSU gate.",
             "cpu12700kf": "Multiplier locked by HP firmware; ratio/Vcore work is BIOS-only and operator-gated per docs/oc-cpu-bios-checklist.md (targets: all P-cores on, P 51-52 / E 41-42 try, 1.28-1.32V). Voltage offsets are blocked by Plundervolt mitigations per HP staff. Reversible software path first: read-only MSR probe (msr-tools), then PL1/PL2 via MSR 0x610 - usually writable even where voltage is locked and the biggest legal win since the KF is power-limited at stock. OS side already landed: governor powersave + EPP, BORE kernel, IRQ pinning; CPU knob persistence still undecided (runit service vs re-apply per boot - proven non-persistent).",
             "ddr4": "4x8GB Kingston HP37D4U1S8MR-8X (die UNVERIFIED), board 4-DIMM 2DPC so the IMC is the binding limit. Live baseline = XMP 3733 1.35V. 4000 @1.50V booted but was NEVER stability-validated - treat as marginal-unproven, not known-good. 1.55V FAILED to boot: do not repeat, and no further VDIMM beyond 1.50V without die ID and DIMM load temps. Never declare any memory OC stable without stress-ng --vm + memtest + clean zpool scrub (ZFS root means silent corruption is the failure mode, not just crashes). Before anything else: verify BIOS Advanced shows XMP 3733 with no remnant of the 4000 custom profile."
         },
@@ -138,7 +138,7 @@
             "4. AHCI vs RAID decision (ToDo Phase 3) gates all SATA storage work; switching is safe with NVMe root but is its own operator-gated step",
             "5. SATA -> zpool work (ToDo Options A-D): one drive per power-on, /dev/disk/by-id only, zpool status + zfs list pasted after each create, autotrim on SSD pools, scrub baseline at the end",
             "6. Verify memory XMP 3733 in BIOS, no 4000 remnant (gates any GPU/CPU stress)",
-            "7. GWE step 1 +60/+250 re-bench after operator log-out/in makes Coolbits live",
+            "7. GWE step 1 +60/+250 re-bench - Coolbits CONFIRMED LIVE 2026-08-27 (offset queries return 0), so this gate is open",
             "8. CPU knob persistence decision, then CPU BIOS OC per docs/oc-cpu-bios-checklist.md - operator applies in F10 and reports stability/temps"
         ],
         "unconfirmedHandoff": [
@@ -159,7 +159,8 @@
             "fast": "ata-CT1000MX500SSD1_2317E6CCE92E MX500 ~900G at /fast (vm/work/steam). autotrim on.",
             "bulk": "ata-ST2000NM0033-9ZM175_Z1X6R7P5 + ata-TOSHIBA_DT01ACA200_95CWVMJAS stripe ~3.6T at /bulk /mnt/games /bulk/media /bulk/archive. Kingston SV300 L2ARC cache. No redundancy.",
             "tank": "DESTROYED 2026-08-27 17:11 UTC. Export was blocked by vesktop/bwrap mount namespaces, not host fuser."
-        }
+        },
+        "gpu": "Target receipt 2026-08-27 (user shell): RTX 3080, driver 595.91.07, power.limit 320.00 W == power.default_limit 320.00 W == power.max_limit 320.00 W -> NO power-limit headroom exists on this vBIOS, the old step-4 'PSU gate' is moot and nvidia-smi -pl above 320W will be refused; trimming DOWN is the only power knob. clocks.max.graphics 2100 MHz (so anything past core +165 is dead offset), clocks.max.memory 9501 MHz. COOLBITS IS LIVE: nvidia-settings -q GPUGraphicsClockOffset -t and -q GPUMemoryTransferRateOffset -t both return 0 with no error. Idle at receipt time: 765 MHz core / 5001 MHz mem / 65.22 W / 40 C / fan 30%. /home/sd/oc-meters already holds Aug-25 meter logs incl. gpu-stock-671-superpos.csv (47 KB) - mine it with scripts/gpu-dmon-summary rather than pasting it."
     },
     "machines": {
         "sandbox": {

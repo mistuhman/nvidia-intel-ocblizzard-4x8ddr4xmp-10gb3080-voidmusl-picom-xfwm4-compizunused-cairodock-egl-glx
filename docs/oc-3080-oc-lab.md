@@ -20,6 +20,7 @@ claims an Afterburner-style V/F curve on this stack is wrong.
 | `tools/gpu-oc-verify.ts` | ranks the ledger, says ADVANCE / HOLD / REVERT / REBENCH, emits the GWE profile spec |
 | `scripts/gpu-oc-apply` | target-facing applier: `probe`, `apply`, `verify`, `meter`, `powerlimit`, `revert` — all quoting lives here so chat blocks stay console-safe |
 | `receipts/gpu-oc-receipts.json` | the ledger; the only thing that outranks the model |
+| `scripts/gpu-dmon-summary` | reduces a 47 KB dmon log to peaks + a 3-line block the parser eats — no giant pastes |
 
 ## Workflows
 
@@ -47,8 +48,10 @@ claims an Afterburner-style V/F curve on this stack is wrong.
 
 ## What the model is and is not
 
-It projects from the MASTER stock receipts (score 8717, pclk 1935, mclk 9501, 320 W default limit
-which is still **UNVERIFIED** — one `nvidia-smi -q -d POWER` paste fixes that). It assumes power
+It projects from the MASTER stock receipts (score 8717, pclk 1935, mclk 9501) plus the 2026-08-27
+target receipt: **power.limit = power.default_limit = power.max_limit = 320.00 W** (no raise is
+possible, the model and the applier both refuse >100 %), **clocks.max.graphics 2100 MHz** (projected
+clocks are clamped there, and offsets past +165 are flagged as dead), Coolbits **live**. It assumes power
 grows with clock^1.35, that a clock offset keeps ~70 % of its value while the board is pinned at the
 power limit, and that Superposition 1080p Extreme is 75 % core / 25 % memory bound. Every projected
 number is printed as `projected_*` and is only a queue-ordering aid. `gpu-curve --measured=` refits
@@ -68,8 +71,8 @@ node tools/gpu-oc-verify.ts verify --receipts=receipts/gpu-oc-receipts.json --em
 ## Gates that still bind
 
 - Coolbits must be live (operator log out / log in, never a VT switch) before any offset applies.
-- Power limit **above 100 %** stays blocked until the PSU plug count and brand are confirmed; the
-  tools refuse it without `--allow-pl-raise`, and `scripts/gpu-oc-apply` refuses it outright.
+- Power limit **above 100 % is impossible** (max == default == 320 W): the planner errors, no flag
+  overrides it, and `scripts/gpu-oc-apply` refuses it outright.
 - Core `+150` / memory `+700` are hard caps in both the planner and the applier.
 - Any artifact, crash, driver reset, or sustained 83 C = revert to the previous step, and record it
   with `--artifacts` so the ledger keeps the failure.

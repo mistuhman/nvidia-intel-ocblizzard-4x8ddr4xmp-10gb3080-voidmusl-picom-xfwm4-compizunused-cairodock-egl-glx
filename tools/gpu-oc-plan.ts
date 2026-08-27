@@ -22,7 +22,7 @@ const LADDER: { step: string; note: string; point: Point }[] = [
   { step: 'uv-90', note: 'soft undervolt: 90% power, offsets held', point: { coreOffset: 120, memOffset: 500, powerPct: 90 } },
   { step: 'uv-80', note: 'soft undervolt: 80% power, the usual efficiency knee', point: { coreOffset: 120, memOffset: 500, powerPct: 80 } },
   { step: 'uv-70', note: 'soft undervolt: 70% power, quiet/cool profile', point: { coreOffset: 120, memOffset: 500, powerPct: 70 } },
-  { step: '4-gated', note: 'power raise; blocked until PSU plug count + brand confirmed', point: { coreOffset: 120, memOffset: 500, powerPct: 110 } },
+  { step: '4-dead', note: 'power raise: IMPOSSIBLE, power.max_limit == default 320W (receipt 2026-08-27)', point: { coreOffset: 120, memOffset: 500, powerPct: 110 } },
 ];
 
 function fmt(n: number, w: number): string {
@@ -75,7 +75,7 @@ function ladder(): void {
   const rows = LADDER.map((l) => decorate(l.point, false, l.step, l.note));
   const text = [
     'RTX 3080 10GB — recipe ladder (projected, model only; meter with Superposition 1080p Extreme + dmon)',
-    `anchor: stock score ${STOCK.score}, core ${STOCK.coreMHz}MHz, mclk ${STOCK.mclkMHz}MHz, default PL ${STOCK.powerLimitW}W (UNVERIFIED until nvidia-smi -q -d POWER is pasted)`,
+    `anchor: stock score ${STOCK.score}, core ${STOCK.coreMHz}MHz (ceiling ${STOCK.coreCeilingMHz}MHz), mclk ${STOCK.mclkMHz}MHz, PL ${STOCK.powerLimitW}W default = ${STOCK.powerMaxLimitW}W max (receipt 2026-08-27, Coolbits LIVE)`,
     table(rows),
     ...rows.filter((r) => r.errors.length || r.warnings.length).map((r) => `${r.step}: ${[...r.errors.map((e) => `ERROR ${e}`), ...r.warnings.map((w) => `WARN ${w}`)].join(' | ')}`),
   ].join('\n');
@@ -155,7 +155,9 @@ function selftest(): void {
   if (validate({ coreOffset: 200, memOffset: 0, powerPct: 100 }, false).ok) throw new Error('core cap not enforced');
   if (validate({ coreOffset: 0, memOffset: 900, powerPct: 100 }, false).ok) throw new Error('memory cap not enforced');
   if (validate({ coreOffset: 0, memOffset: 0, powerPct: 110 }, false).ok) throw new Error('PL raise gate not enforced');
-  if (!validate({ coreOffset: 0, memOffset: 0, powerPct: 110 }, true).ok) throw new Error('PL raise gate must open with --allow-pl-raise');
+  if (validate({ coreOffset: 0, memOffset: 0, powerPct: 110 }, true).ok) throw new Error('a vBIOS-fixed power limit must not be overridable by a flag');
+  if (project({ coreOffset: 150, memOffset: 0, powerPct: 100 }).projectedCoreMHz > STOCK.coreCeilingMHz) throw new Error('core ceiling not clamped');
+  if (!validate({ coreOffset: 150, memOffset: 0, powerPct: 100 }, false).warnings.some((w) => w.includes('clocks.max.graphics')) === false) checks.push('ceiling_warn=ok');
   checks.push('caps=enforced');
   if (parseRange('0:100:50', 'x').join(',') !== '0,50,100') throw new Error('range parser drifted');
   checks.push('range=ok');
