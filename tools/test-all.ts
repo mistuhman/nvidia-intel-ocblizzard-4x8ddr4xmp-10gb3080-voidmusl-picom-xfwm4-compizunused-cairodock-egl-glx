@@ -8,13 +8,15 @@ function run(command: string, args: string[]): void {
   execFileSync(command, args, { stdio: 'inherit' });
 }
 
+// deterministic-tool gate: every workflow answer comes from a tool, never from prose memory
 for (const name of readdirSync('tools').filter((x) => x.endsWith('.ts')).sort()) run('node', ['--check', join('tools', name)]);
 run('python3', ['-m', 'json.tool', 'MASTER.md']);
+run('node', ['tools/cmd.ts', 'selftest']);
+run('node', ['tools/cmd.ts', 'check']);
 run('node', ['tools/orient.ts', 'orient']);
-run('node', ['tools/stall-check.ts']);
+run('node', ['tools/next-gate.ts']);
 run('node', ['tools/agent-deploy.ts', '--objective=tool self test']);
 run('node', ['tools/recovery-research.ts', '--plan']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);
-console.log('id -u\ndf -h /\nls -l MASTER.md\n');
 execFileSync('node tools/paste-proof.ts --target-console --root', { input: 'id -u\ndf -h /\nls -l MASTER.md\n', stdio: ['pipe', 'inherit', 'inherit'], shell: true });
 console.log('TEST_ALL=PASS');
