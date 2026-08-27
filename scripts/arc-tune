@@ -1,0 +1,59 @@
+#!/bin/sh
+# arc-tune - runtime-only ZFS ARC size control. Moves the kernel knob, never the conf:
+# a set-* value lasts until reboot (or the next set), so it is always reversible and
+# cannot drift the boot configuration. Use it to create headroom for ram-validate on
+# this 25.6 G box, where a 12 G ARC + live desktop + 80% stress = a starved kernel.
+#
+#   sh arc-tune status         live zfs_arc_max + the conf value (the 4G-vs-12G decision receipts)
+#   sh arc-tune set-4g         drop the live ARC to 4 GiB (test headroom; web caches get slower)
+#   sh arc-tune set-12g        restore the live ARC to 12 GiB
+#   sh arc-tune restore-conf   apply the value written in /etc/modprobe.d/99-arc-cap.conf
+#
+# The set/restore actions need root. The standing 4G-vs-12G decision is the operator's;
+# this tool only moves the runtime knob and shows both values.
+set -u
+
+SYS=/sys/module/zfs/parameters/zfs_arc_max
+CONF=/etc/modprobe.d/99-arc-cap.conf
+ACTION=${1:-status}
+
+cur() { cat "$SYS" 2>/dev/null || echo "unknown"; }
+
+apply() {
+	if [ "$(id -u)" != "0" ]; then
+		echo "ARC_TUNE=FAIL this action writes the kernel knob - needs root"
+		exit 1
+	fi
+	if [ ! -w "$SYS" ]; then
+		echo "ARC_TUNE=FAIL $SYS not writable"
+		exit 1
+	fi
+	echo "$1" > "$SYS"
+	echo "ARC_TUNE=OK zfs_arc_max set to $1 (live now: $(cur))"
+}
+
+case "$ACTION" in
+status)
+	echo "live zfs_arc_max:   $(cur) bytes"
+	if [ -r "$CONF" ]; then
+		echo "conf (99-arc-cap):  $(grep -h zfs_arc_max "$CONF" | head -n 1)"
+	fi
+	;;
+set-4g) apply 4294967296 ;;
+set-12g) apply 12884901888 ;;
+restore-conf)
+	V=$(grep -h '^zfs_arc_max' "$CONF" 2>/dev/null | head -n 1 | cut -d= -f2)
+	if [ -z "$V" ]; then
+		echo "ARC_TUNE=FAIL no zfs_arc_max line in $CONF"
+		exit 1
+	fi
+	apply "$V"
+	;;
+help|--help)
+	sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+	;;
+*)
+	echo "usage: sh arc-tune status|set-4g|set-12g|restore-conf"
+	exit 1
+	;;
+esac

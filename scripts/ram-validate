@@ -6,12 +6,19 @@
 #   sh ram-validate quick  r3       ~20 min, catches an obviously broken profile
 #   sh ram-validate full   r3       ~1 h stress + scrub, the real gate
 #   sh ram-validate scrub  r3       scrub + status + dmesg only
+#   sh ram-validate full   r3 50    3rd arg (optional) = stress vm-bytes percent, default 80
+#
+# Sizing: 80% is the lab-doc default for a headroom-rich machine. On a 25.6 G ZFS-root box with
+# a 12 G ARC + live desktop, 80% starves the kernel (observed: hard freeze, operator hard-reboot).
+# 50% with the ARC dropped to 4 G (arc-tune set-4g) still hammers every DIMM bank with
+# --vm-method all --verify and is the safe size here. A headroom warning prints before the stress.
 #
 # Run it inside tmux or screen: it outlives no shell on its own.
 set -u
 
 MODE=${1:-quick}
 ID=${2:-unnamed}
+VMPCT=${3:-80}
 OUT_DIR=${OUT_DIR:-$HOME/oc-meters}
 POOL=${POOL:-nvme}
 
@@ -28,7 +35,7 @@ case "$MODE" in
 quick) SECS=1200 ;;
 full) SECS=3600 ;;
 scrub) SECS=0 ;;
-*) die "usage: sh ram-validate quick|full|scrub ID" ;;
+	*) die "usage: sh ram-validate quick|full|scrub ID [vm-bytes-pct]" ;;
 esac
 
 {
@@ -44,8 +51,15 @@ esac
 	grep MemTotal /proc/meminfo
 
 	if [ "$SECS" -gt 0 ]; then
-		echo "--- stress-ng vm verify, ${SECS}s ---"
-		stress-ng --vm 12 --vm-bytes 80% --vm-method all --verify --metrics-brief --timeout "${SECS}s" 2>&1
+		MT=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
+		ARC=$(cat /sys/module/zfs/parameters/zfs_arc_max 2>/dev/null || echo 0)
+		VMK=$(( MT * VMPCT / 100 ))
+		if [ "$((VMK + ARC))" -gt "$((MT * 90 / 100))" ]; then
+			echo "HEADROOM WARNING: stress ${VMPCT}% (${VMK}K) + ARC (${ARC}K) exceeds 90% of MemTotal (${MT}K)"
+			echo "  -> the kernel will thrash (seen: hard freeze). sh arc-tune set-4g first, or re-run with a lower pct"
+		fi
+		echo "--- stress-ng vm verify, ${SECS}s, ${VMPCT}% ---"
+		stress-ng --vm 12 --vm-bytes "${VMPCT}%" --vm-method all --verify --metrics-brief --timeout "${SECS}s" 2>&1
 		echo "--- stress-ng cache/matrix cross-check, 300s ---"
 		stress-ng --cache 4 --matrix 4 --verify --metrics-brief --timeout 300s 2>&1
 	fi

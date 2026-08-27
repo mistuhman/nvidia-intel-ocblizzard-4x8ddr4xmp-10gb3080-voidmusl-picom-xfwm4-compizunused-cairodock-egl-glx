@@ -252,6 +252,24 @@ cmd_superposition_find() {
 	find -L "$HOME" /fast /bulk /mnt/games -maxdepth 6 -iname '*uperposition*' 2>/dev/null | head -n 20
 }
 
+# The app's own registered entry point wins: the .desktop Unigine installed (it survives on the
+# NVMe home even after the install tree is wiped and re-downloaded) names the exact binary the
+# install ships. Read Exec=, keep the first token (drops args/%U), trust it only if it is an
+# executable INSIDE the discovered install dir. Anything else falls through to the candidate list.
+desktop_entry() {
+	for d in "$HOME/.local/share/applications/Superposition.desktop" "$HOME/Desktop/Superposition.desktop"; do
+		[ -f "$d" ] || continue
+		line=$(grep '^Exec=' "$d" 2>/dev/null | head -n 1)
+		[ -n "$line" ] || continue
+		token=${line#Exec=}
+		token=${token%% *}
+		if [ -n "$token" ] && [ -x "$token" ]; then
+			echo "$token"
+			return
+		fi
+	done
+}
+
 cmd_superposition_run() {
 	dir=${1:-}
 	if [ -z "$dir" ] || [ ! -d "$dir" ]; then
@@ -265,17 +283,26 @@ cmd_superposition_run() {
 	[ -n "$dir" ] && [ -d "$dir" ] || die "no Superposition install found - run superposition-find and paste the listing"
 	echo "install: $dir"
 	launcher=""
-	for candidate in "$dir/bin/launcher" "$dir/launcher" "$dir/bin/superposition" "$dir/Superposition"; do
-		if [ -x "$candidate" ]; then
-			launcher=$candidate
-			break
-		fi
-	done
+	launcher_src=""
+	desktop_bin=$(desktop_entry)
+	case "$desktop_bin" in
+	"$dir"/*) launcher=$desktop_bin; launcher_src="desktop" ;;
+	esac
+	if [ -z "$launcher" ]; then
+		for candidate in "$dir/bin/launcher" "$dir/launcher" "$dir/bin/superposition" "$dir/Superposition"; do
+			if [ -x "$candidate" ]; then
+				launcher=$candidate
+				launcher_src="candidate"
+				break
+			fi
+		done
+	fi
 	if [ -z "$launcher" ]; then
 		launcher=$(find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 1)
+		[ -n "$launcher" ] && launcher_src="find"
 	fi
 	[ -n "$launcher" ] || die "no executable found under $dir - run superposition-probe and paste the listing"
-	echo "launcher: $launcher"
+	echo "launcher: $launcher (source: $launcher_src)"
 	# Unigine resolves its data paths relative to the working directory: launching it from anywhere
 	# else (ulauncher, a file manager, a random shell) is exactly why it appears to do nothing.
 	cd "$dir" || die "cannot cd $dir"

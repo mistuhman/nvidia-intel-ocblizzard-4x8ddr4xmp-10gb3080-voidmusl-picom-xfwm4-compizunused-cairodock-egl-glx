@@ -1,0 +1,54 @@
+#!/bin/sh
+# xorg-idle-opt - A/B the ForceCompositionPipeline option against the measured 32% idle-GPU
+# artifact (WAVE-18: idle 32% util / 660 MHz / 31 W with the wallpaper OFF; xorg.conf carries
+# Option "ForceCompositionPipeline" "true" with a tearing-fix comment, so the removal is a
+# trade the operator's eyes must judge).
+#
+#   sh xorg-idle-opt probe     (user) read-only: option state + idle GPU baseline
+#   sh xorg-idle-opt apply     (root) back up the conf, remove the option; log out/in, judge tearing
+#   sh xorg-idle-opt restore   (root) put the backed-up conf back; log out/in
+# Every mutation has its inverse; nothing else in the conf is touched.
+set -u
+
+CONF=/etc/X11/xorg.conf.d/20-nvidia.conf
+BAK=${CONF}.fcp-bak
+
+cmd_probe() {
+	echo "conf: $CONF"
+	grep -n 'ForceCompositionPipeline\|TripleBuffer\|UseNvKmsCompositionPipeline' "$CONF"
+	echo "--- idle baseline (let the desktop sit ~60s with no window activity first) ---"
+	nvidia-smi --query-gpu=utilization.gpu,utilization.memory,power.draw,clocks.gr,temperature.gpu --format=csv
+}
+
+cmd_apply() {
+	[ -f "$CONF" ] || { echo "XORG_IDLE_OPT=FAIL missing $CONF"; exit 1; }
+	cp "$CONF" "$BAK" || { echo "XORG_IDLE_OPT=FAIL backup failed"; exit 1; }
+	sed -i '/Option.*ForceCompositionPipeline/d' "$CONF"
+	if grep -q 'ForceCompositionPipeline' "$CONF"; then
+		echo "XORG_IDLE_OPT=FAIL option still present:"
+		grep -n 'ForceCompositionPipeline' "$CONF"
+		exit 1
+	fi
+	echo "XORG_IDLE_OPT=PASS removed ForceCompositionPipeline (backup: $BAK)"
+	echo "Now log out / log in, let the desktop settle ~5 min, then run: sh $0 probe"
+	echo "Judge tearing by dragging a window across the screen. INVERSE: sh $0 restore"
+}
+
+cmd_restore() {
+	[ -f "$BAK" ] || { echo "XORG_IDLE_OPT=FAIL no backup at $BAK"; exit 1; }
+	cp "$BAK" "$CONF" || { echo "XORG_IDLE_OPT=FAIL restore failed"; exit 1; }
+	echo "XORG_IDLE_OPT=PASS restored from $BAK"
+	echo "Now log out / log in, then verify with: sh $0 probe"
+}
+
+action=${1:-}
+if [ $# -gt 0 ]; then shift; fi
+case "$action" in
+probe) cmd_probe ;;
+apply) cmd_apply ;;
+restore) cmd_restore ;;
+*)
+	echo "usage: sh xorg-idle-opt probe|apply|restore"
+	exit 2
+	;;
+esac
