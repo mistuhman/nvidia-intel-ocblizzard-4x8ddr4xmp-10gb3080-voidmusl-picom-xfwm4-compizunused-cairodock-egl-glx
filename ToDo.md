@@ -55,7 +55,10 @@
 - [x] **VOID BOOTS AGAIN — multiple clean boots, POST -> ZBM -> nvme/ROOT/void -> login**
 - [x] **BIOS REACHED (F10 OMEN Setup Utility)**. Thermal: CPU 734, Rear 707, Front#2 602, Front#3 597, **Front#1 N/A**, **Pump 1565** -> cooling is real; Front Fan #1 is the only dead sensor and the cause of 90B
 - [x] **90B CLEARED**: spare F FAN -> FFAN1, Front#1 now 598, pump 1573, cold boot cleared the prompt. **Boots clean to Void, no Enter press**
-- [ ] Reinstall the PSU into the chassis, re-verify SPWR + both CPU 4-pins + PB + both 6+2 before cord-in
+- [x] Reassembled: PSU back in place, 4 SATA drives added (2 HDD + 2 SSD), LED hub M82868-001 left unplugged by choice (no RGB, and it keeps the prime suspect out of circuit)
+- [ ] First boot: Escape -> ZBM -> nvme/ROOT/void explicitly, then run `etc/omen-postrecovery-probe.block` (root, read-only) and paste full output
+- [ ] If a SATA drive is missing from lsblk: BIOS SATA Emulation = RAID is the likely cause; AHCI switch is a separate gated change
+- [ ] ~~Reinstall the PSU into the chassis~~, re-verify SPWR + both CPU 4-pins + PB + both 6+2 before cord-in
 - [ ] ~~Plug spare F FAN into FFAN1~~ (bottom edge) — or disable System Fan Check if no fan is mounted there
 - [ ] Verify in Advanced: memory XMP 3733 or stock, no remnant of the 4000 profile
 - [ ] Receipt: After Power Loss = Off (so it did NOT cause the cord-in auto-cycle); SATA Emulation = **RAID** — settle AHCI vs RAID before adding the HDDs/SSD
