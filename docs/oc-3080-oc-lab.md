@@ -71,8 +71,10 @@ top level, applies there strictly, mirrors to the level below best-effort, and p
    are blocked for a reason (caps from the recipe, the step-4 PSU gate, the 83 C stop rule).
 2. **Paste** — one step, one wave. Apply + meter blocks in the user shell; power-limit blocks in a
    root shell. Every step ships with its inverse.
-3. **Meter** — `sh gpu-oc-apply meter STEP_ID 300` writes `~/oc-meters/STEP_ID.dmon.csv` while
-   Superposition 1080p Extreme runs. Same preset forever, or the comparison is void.
+3. **Meter** — `sh gpu-oc-apply meterbg STEP_ID 300` arms the meter and frees the shell: it polls
+   `utilization.gpu` and only starts recording once the card passes **90 % load**, so the window is
+   the benchmark run and not your reaction time. It auto-summarizes and refuses to pretend an idle
+   log is a result (`LOAD_CHECK=FAIL`). Same preset forever, or the comparison is void.
 4. **Ingest** — run `gpu-receipt-ingest` (or `gpu-bench-parse` locally) with the pasted output.
 5. **Judge** — `gpu-oc-verify` prints ADVANCE / HOLD / REVERT / REBENCH with the reason, plus the
    best-score step, the best pts/W step, and the daily recommendation inside the loss budget.

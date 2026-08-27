@@ -12,7 +12,9 @@
 #   sh gpu-oc-apply probe
 #   sh gpu-oc-apply apply CORE_OFFSET MEM_OFFSET
 #   sh gpu-oc-apply verify
-#   sh gpu-oc-apply meter STEP_ID [SECONDS]
+#   sh gpu-oc-apply meter STEP_ID [SECONDS] [WAIT]   arms, waits for 90% load, then records
+#   sh gpu-oc-apply meterbg STEP_ID [SECONDS]        same, backgrounded, frees the shell
+#   sh gpu-oc-apply superposition-probe [DIR]        find the benchmark launcher
 #   sh gpu-oc-apply powerlimit PCT           (root)
 #   sh gpu-oc-apply fan PCT | fan auto
 #   sh gpu-oc-apply perfmode max | perfmode auto
@@ -159,19 +161,69 @@ cmd_meter() {
 	need nvidia-smi
 	id=$1
 	secs=${2:-300}
+	wait_max=${3:-900}
 	echo "$secs" | grep -Eq '^[0-9]+$' || die "seconds not an integer: $secs"
+	echo "$wait_max" | grep -Eq '^[0-9]+$' || die "wait seconds not an integer: $wait_max"
 	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
 	out=$METER_DIR/$id.dmon.csv
-	echo "metering $secs s into $out — START SUPERPOSITION 1080p EXTREME NOW, this log is worthless without a load"
-	echo "ctrl-C is safe: whatever was written stays usable"
+	echo "ARMED: waiting up to ${wait_max}s for the GPU to reach 90% load."
+	echo "Start Superposition 1080p Extreme now — recording begins by itself when the run loads the card."
+	waited=0
+	loaded=0
+	while [ "$waited" -lt "$wait_max" ]; do
+		util=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | head -n 1 | tr -d ' ')
+		case "$util" in
+		'' | *[!0-9]*) util=0 ;;
+		esac
+		if [ "$util" -ge 90 ]; then
+			loaded=1
+			break
+		fi
+		if [ $((waited % 30)) -eq 0 ]; then
+			echo "  waiting... ${waited}s elapsed, gpu at ${util}%"
+		fi
+		sleep 2
+		waited=$((waited + 2))
+	done
+	if [ "$loaded" -eq 0 ]; then
+		die "no 90% load inside ${wait_max}s - nothing was recorded, so nothing can be claimed"
+	fi
+	echo "LOAD DETECTED after ${waited}s — recording ${secs}s into $out"
 	nvidia-smi dmon -s puc -d 1 -c "$secs" >"$out" 2>&1
 	echo "wrote $out"
 	peak=$(awk '/^#/ { next } { if ($2 + 0 > m) m = $2 + 0 } END { printf "%d", m }' "$out")
 	echo "peak_watts_seen: $peak"
 	if [ "$peak" -lt 150 ]; then
-		echo "WARNING: peak draw ${peak}W means NO BENCHMARK LOAD was captured - this log is idle noise, re-run it"
+		echo "WARNING: peak draw ${peak}W - the load stopped mid-run, treat this log as suspect"
 	fi
-	tail -n 3 "$out"
+	summary=$(dirname "$0")/gpu-dmon-summary
+	if [ -f "$summary" ]; then
+		echo "--- summary ---"
+		sh "$summary" "$out"
+	fi
+}
+
+cmd_meterbg() {
+	id=$1
+	secs=${2:-300}
+	wait_max=${3:-900}
+	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
+	log=$METER_DIR/$id.meter.log
+	nohup sh "$0" meter "$id" "$secs" "$wait_max" >"$log" 2>&1 &
+	echo "meter running in the background, pid $!"
+	echo "log: $log"
+	echo "this shell is free — start Superposition now, then read the log with:"
+	echo "cat $log"
+}
+
+cmd_superposition_probe() {
+	dir=${1:-$HOME/Downloads/Unigine_Superposition-1.1}
+	echo "dir: $dir"
+	ls -l "$dir" 2>&1 | head -n 20
+	echo "--- bin ---"
+	ls -l "$dir/bin" 2>&1 | head -n 20
+	echo "--- launchers found ---"
+	find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 20
 }
 
 cmd_powerlimit() {
@@ -248,7 +300,7 @@ fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
 perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
 revert) cmd_revert ;;
 *)
-	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|fan PCT|perfmode max|revert"
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-probe|powerlimit PCT|fan PCT|perfmode max|revert"
 	exit 2
 	;;
 esac
