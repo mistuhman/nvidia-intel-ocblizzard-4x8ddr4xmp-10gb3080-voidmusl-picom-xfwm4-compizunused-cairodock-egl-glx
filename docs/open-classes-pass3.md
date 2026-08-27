@@ -263,3 +263,58 @@ A clean sweep is also a real result and makes L1 the right next step.
 Send: the PartSurfer parts list, photos 1–8 (or "blocked" for any you could not take
 without moving something), and the damage-sweep answer in words. Nothing gets powered,
 unplugged, or bridged until that comes back and L1 is separately named.
+
+---
+
+# L0 receipts — RECEIVED 2026-08-27
+
+## L0-A PASS — factory BOM for this exact unit
+
+Operator supplied `https://partsurfer.hp.com/?searchtext=2MO22432DX`. That serial resolves
+to **OMEN 45L Gaming DT GT22-0139**, product **575Q1AA** (refurb SKU `575Q1AAR`), described
+by HP as *"OMEN by HP 45L Gaming Desktop PC GT22-0000i (393C6AV)"*, 31 service records.
+Chassis codename in HP's own part descriptions: **ARTICUNO**.
+
+Parts that matter to this campaign:
+
+| Part | HP description | Why it matters |
+|---|---|---|
+| **M83827-001** | **POWER SUPPLY UNIT 800W ATX Gold** | **HP's own service catalogue calls this unit ATX.** Third independent confirmation, now vendor-side and serial-specific. The pass-2 "maybe non-standard" caution is dead. |
+| **M81915-601** | MOTHERBOARD, BlizzardOC, INTEL ADL+Z690, WINDOWS | board identity confirmed against the serial, not inferred |
+| **M82868-001** | **PCA LIGHTING CONTROL, ARTI** | the undocumented PSU-fed accessory board **is fitted to this machine** — the L2 prime suspect is real, not hypothetical |
+| M82877-001 | LIGHTING MODULE LOGO, ARTICUNO | the OMEN logo LED is its own module (matches the retracted "logo LED means standby power" finding) |
+| M82873-001 / M82874-001 | Cable LIGHTING 2_2pin 400mm / 5_10pin 400mm | the lighting harness is two separate cables — both come off in L2 |
+| M82875-001 | CABLE TOP IO | top USB/audio reaches the board by cable, so it unplugs at the board in L2 |
+| **M82880-002** | **LCS 240 N-RGB G9 ARTICUNOI** | plain 240 mm liquid cooler. **No Intel Cryo / TEC controller in this SKU** — that hypothesis is closed before it cost a power-on |
+| M82878-002 / M82879-001 | FAN FRONT ARGB / FAN SYSTEM | the fan loads to account for in L2 |
+| M87648-003 | CPU INTEL i7-12700KF 12C 125W | matches |
+| M29374-001 | NVIDIA GeForce D20X-30 10GB GDDR6x | RTX 3080 10GB, matches |
+| **M85222-001** | **RAM DIMM 8G DDR4 1.35V 3733HS, Arti** | HP's factory DIMM is a **3733** part. The 3733 XMP was in spec; the 4000 custom profile was not |
+
+Note the retail-catalogue guess from earlier in this pass (`M19770-003/-013`) is **not** this
+unit's part; the serial-accurate PSU FRU is **M83827-001**. Both are 800 W standard-ATX
+Cooler-Master-class units, but only `M83827-001` is receipted for this machine.
+
+## L0-C PASS — visual damage sweep
+
+Operator verdict: **"no damage."** No browning/melting on connector housings, no bulged or
+leaking VRM caps, no scorch or soot, no burnt smell, no loose metal debris. So there is no
+shortcut: the fault is not visible, and the ladder proceeds as designed.
+
+## L0-B PARTIAL — photos not supplied
+
+Photos 1–8 were not sent. Most of them are now redundant: L0-A answered PSU identity
+(photo 1), board identity, and the accessory inventory (photos 5–7) from HP's own BOM.
+
+**One photo is still mandatory and it is the L1 safety gate: photo 3, the 24-pin at the
+motherboard end, close and straight-on, wire colours legible with the latch visible.**
+L1 bridges two specific contacts; it is not run off a remembered pinout. Two outcomes:
+
+- **A single green wire is present** → standard ATX `PS_ON#` on pin 16, jumper it to an
+  adjacent black `COM`. L1 proceeds as written.
+- **All wires are black** (common on Cooler Master OEM harnesses) → **do not count pins from
+  memory and do not guess.** Send the photo; the pin index is derived from the latch
+  orientation and the keying in the image, and only then is L1 authorised.
+
+Until that photo exists, L1 is **not** authorised, regardless of how well-identified the PSU
+now is.
