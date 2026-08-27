@@ -141,6 +141,11 @@ echo "--- fast (Crucial MX500 1TB SSD) ---"
 run zpool create -f $COMMON -O mountpoint=/fast fast "$SSD"
 run zfs create -o mountpoint=/fast/vm fast/vm
 run zfs create -o mountpoint=/fast/work fast/work
+run zfs create -o mountpoint=/fast/steam fast/steam
+# VM images: no lz4 win, 64K matches qcow2 clusters
+run zfs set recordsize=64K fast/vm
+run zfs set compression=off fast/vm
+run mkdir -p /fast/steam/steamapps/common
 zpool status fast 2>/dev/null || true
 
 echo "--- bulk (2 x 2TB HDD) ---"
@@ -155,6 +160,7 @@ fi
 run zfs create -o mountpoint=/mnt/games bulk/games
 run zfs create -o mountpoint=/bulk/media bulk/media
 run zfs create -o mountpoint=/bulk/archive bulk/archive
+run mkdir -p /mnt/games/steamapps/common
 zpool status bulk 2>/dev/null || true
 
 echo "--- attach the Kingston as L2ARC read cache on bulk ---"
@@ -177,6 +183,10 @@ done
 CRON
 chmod 0755 /etc/cron.weekly/zfs-trim
 run chown -R sd: /fast /bulk /mnt/games 2>/dev/null || true
+HERE=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+if [ "$DRYRUN" != "1" ] && [ -f "$HERE/finder-storage-places.sh" ]; then
+	sh "$HERE/finder-storage-places.sh" || echo "finder-storage-places failed (pools already created)"
+fi
 
 say "7/7 AFTER"
 zpool list -v
@@ -193,5 +203,6 @@ run zpool scrub bulk 2>/dev/null || true
 echo
 echo "Check progress any time with:  zpool status -t"
 echo "Or from Finder: right-click any folder -> ZFS: Pool status"
+echo "Finder hierarchy: ~/Storage  and Places sidebar Fast / Bulk / Games"
 echo "DONE omen-sata-pools"
 date

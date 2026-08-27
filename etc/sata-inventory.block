@@ -1,0 +1,30 @@
+id -u
+# sata-inventory.block - ROOT (sudo -i first, then paste). READ-ONLY.
+# No wipefs, no labelclear, no zpool destroy, no sgdisk, no dd, no blkdiscard.
+# Why: operator directed wipe of internal SATA excluding NVMe, then zpool a
+# Finder-visible hierarchy. Wave 1 confirms live by-id names, that the boot
+# NVMe is the root pool, that USB disks are out of the wipe set, and whether
+# tank / NTFS 50 / Windows still hold data. Wave 2 (wipe) ships ONLY after
+# this full output is pasted back.
+# Protected forever: nvme-WDC_PC_SN530_SDBPNPZ-1T00-1006_214628806479
+df -h /
+findmnt /
+uname -r
+cat /proc/cmdline
+efibootmgr -v
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MODEL,SERIAL,TRAN,ROTA,MOUNTPOINT
+ls -l /dev/disk/by-id
+ls -l /dev/disk/by-id/nvme-WDC_PC_SN530_SDBPNPZ-1T00-1006_214628806479
+ls -l /dev/disk/by-id/ata-CT1000MX500SSD1_2317E6CCE92E
+ls -l /dev/disk/by-id/ata-KINGSTON_SV300S37A240G_50026B7762054FB2
+ls -l /dev/disk/by-id/ata-ST2000NM0033-9ZM175_Z1X6R7P5
+ls -l /dev/disk/by-id/ata-TOSHIBA_DT01ACA200_95CWVMJAS
+zpool status -P
+zpool list -v
+zfs list -o name,used,avail,refer,mountpoint,compression,recordsize
+findmnt -t zfs
+blkid
+df -h /mnt/games
+ls /mnt/games
+zpool status tank
+date
