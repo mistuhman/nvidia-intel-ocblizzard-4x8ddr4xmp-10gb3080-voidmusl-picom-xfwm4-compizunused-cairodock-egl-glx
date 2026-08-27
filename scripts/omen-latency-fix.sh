@@ -89,7 +89,7 @@ log() { printf '[omen-perf] %s\n' "$*"; }
 
 # --- sysctl (Void does not reliably drain /etc/sysctl.d) -------------------
 sysctl --system >/dev/null 2>&1 || \
-	sysctl -p /etc/sysctl.d/9999-desktop-perf.conf >/dev/null 2>&1
+	sysctl -p /etc/sysctl.d/999-desktop-perf.conf >/dev/null 2>&1
 log "sysctl applied (swappiness=$(sysctl -n vm.swappiness))"
 
 # --- EPP: performance on every CPU ----------------------------------------
