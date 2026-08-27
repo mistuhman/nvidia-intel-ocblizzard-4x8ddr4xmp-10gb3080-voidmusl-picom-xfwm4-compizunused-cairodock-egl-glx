@@ -598,3 +598,23 @@ Prefer the physical fix; a disabled check hides future failures.
 
 **Still to verify in `Advanced`:** that memory is on **XMP 3733** or stock, and that no
 remnant of the **4000** custom profile survives.
+
+
+## 90B CLEARED — 2026-08-27
+
+Spare `F FAN` landed on `FFAN1`. Thermal page after the fix: CPU 696, Rear 713, Front #2 620,
+Front #3 597, **Front #1 598** (was `N/A`), **Pump 1573**. No sensor reads `N/A`. A cold boot
+(save+exit, cord out 20 s, cord in) cleared the `90B` prompt — the earlier persistence was a
+stale check from the pass before the fan was connected.
+
+**The machine now boots clean, with no Enter press, to Void.** Recovery complete.
+
+### Remaining, in order
+
+1. **Reinstall the PSU into the chassis** (it has been running from the desk since A1b).
+2. **LED hub `M82868-001` test** — reconnect it *alone*, one power-on. Instant cycle returning
+   attributes the original fault to that branch; booting clean clears it.
+3. **AHCI vs RAID** decision before any SATA storage (BIOS currently `SATA Emulation = RAID`).
+4. Storage: 2× HDD + spare 240 GB SSD, **one drive per power-on**, after several clean boots.
+5. Verify memory in `Advanced` is XMP 3733 or stock, with no remnant of the 4000 profile.
+6. Resume `extreme-optimization-oc` from the parked state.
