@@ -6,7 +6,7 @@ import { join } from 'node:path';
 type Master = {
   schema?: string;
   updated?: string;
-  activeObjective?: { id?: string; summary?: string; bootGate?: string; nextGateAskFirst?: string; currentState?: string[] };
+  objective?: { id?: string; summary?: string; officialCompare?: string; stockBaseline?: string[]; liveGates?: string[]; unconfirmedHandoff?: string[] };
   repo?: { branchFixed?: string; files?: Record<string, string> };
 };
 
@@ -43,18 +43,21 @@ function legacyActiveObjective(master: string): string {
 }
 
 function printObjective(master: { raw: string; json?: Master }): void {
-  if (!master.json?.activeObjective) {
+  if (!master.json?.objective) {
     console.log(legacyActiveObjective(master.raw));
     return;
   }
-  const objective = master.json.activeObjective;
+  const objective = master.json.objective;
   console.log(`id: ${objective.id ?? '(none)'}`);
   console.log(`summary: ${objective.summary ?? '(none)'}`);
-  if (objective.nextGateAskFirst) console.log(`next_gate_first: ${objective.nextGateAskFirst}`);
-  if (objective.bootGate) console.log(`boot_gate: ${objective.bootGate}`);
-  if (objective.currentState?.length) {
-    console.log('current_state:');
-    for (const item of objective.currentState.slice(0, 8)) console.log(`- ${item}`);
+  if (objective.officialCompare) console.log(`official_compare: ${objective.officialCompare}`);
+  if (objective.stockBaseline?.length) {
+    console.log('stock_baseline:');
+    for (const item of objective.stockBaseline) console.log(`- ${item}`);
+  }
+  if (objective.liveGates?.length) {
+    console.log('live_gates:');
+    for (const item of objective.liveGates) console.log(`- ${item}`);
   }
 }
 
