@@ -448,3 +448,32 @@ No display is expected either way: the 12700**KF** has no iGPU and the 3080 is d
 
 The branch whose reconnection brings the instant cycle back **is the fault**. That is a
 part-level answer reached with zero purchases and zero instruments.
+
+
+### L2 — RETRACTED as a pass (same 2026-08-27 session)
+
+Follow-up operator report: *"absolutely zero activity, no cpu power to my knowledge. then
+again, some of the other cpu components arent plugged in."* The photo sent with it is out of
+focus and cannot confirm plug seating.
+
+So L2 is **"nothing at all"**, i.e. the **same shape as L3=C**, and it is **not** the
+accessory-branch pass claimed above. Retracted before it could be built on.
+
+Two mundane explanations must be excluded before any L2/L3 result means anything:
+
+1. **The two 4-pin CPU plugs may not actually be seated** (operator: "no cpu power to my
+   knowledge").
+2. **The `PB` front-panel header may still be disconnected.** It was deliberately unplugged
+   during the 2026-08-26 `PB` isolation test. If it was never reconnected, pressing the case
+   button does nothing at all — which produces exactly "absolutely zero activity" with no
+   fault involved.
+
+Observed pattern to date, stated without interpretation:
+
+| Config | Result |
+|---|---|
+| everything connected | instant cycle |
+| stripped configs (L3, L2) | nothing at all |
+
+Nothing can be concluded from that until the power-request path (`PB` or shorting the `PB`
+pins) and CPU-plug seating are **verified**, not assumed.

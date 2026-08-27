@@ -49,7 +49,8 @@
 - [x] A0 PASS: bench POSTs on its own Thermaltake (boot menu, Kingston SSD, code 02) -> known-good reference + POST-code instrument
 - [x] A1 VOID as run (GPU absent in that pass, present in A0 — two variables changed)
 - [x] A1b PASS: same A0 config, only the PSU swapped to the OMEN M83827-001 -> POST code **AA** (end of POST). PSU EXONERATED; fault is OMEN board M81915-601 or CPU M87648-003; firmware was never the cause
-- [x] **L2 RUN: DOES NOT CYCLE** with 24-pin + both CPU 4-pins and nothing else on the PSU -> an accessory branch is implicated (confirm: stays powered vs nothing at all)
+- [x] ~~L2 RUN: DOES NOT CYCLE~~ **RETRACTED**: follow-up = "absolutely zero activity, no cpu power to my knowledge" -> same shape as L3=C, not an accessory pass. Verify PB header reconnected (unplugged since 2026-08-26!) and both CPU 4-pins seated before any further reading
+- [ ] ~~L2 RUN~~ with 24-pin + both CPU 4-pins and nothing else on the PSU -> an accessory branch is implicated (confirm: stays powered vs nothing at all)
 - [ ] Re-add one branch per power-on: (1) 3080 + both 6+2, (2) lighting board M82868-001, (3) SATA/Molex drives, (4) fan hub/pump/front panel — the one that brings the cycle back is the fault
 - [ ] LAST FREE STEP — L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
 - [ ] Read the bench board's 2-digit POST code (new instrument), then run L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
