@@ -4,7 +4,7 @@
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, chat workflow, brute-problem-solving doctrine, OC objective, and constraints. It is JSON context, not prose policy.",
     "debloated": "2026-08-27 (session 01a042f7, operator directive): removed the halt machinery and all crisis-era junk - tools/stall-check.ts deleted, interactionModel.crisisDiscipline, requiredHaltLine/haltWhen/onHalt/haltRepoFreeze, crisis.closedTestClasses, crisis.openSearchClasses, sessionMisbehavior, and the 47KB currentState append-log all removed. Brute problem solving is kept and elevated as doctrine below. Recovery history stays readable in docs/ and ToDo.md receipts; it is not policy.",
     "repo": {
-        "branchFixed": "arena/01a04483-nvidia-intel-ocblizzard-4x8ddr",
+        "branchFixed": "arena/01a044ea-nvidia-intel-ocblizzard-4x8ddr",
         "baseCommit": "fc12cb62ad3d79e05eaaa4763e4ece387cbf0831",
         "priorSessions": "01a0277c PR #33 through 01a04148 PR #44 (DDR4 1.55V failure, BIOS-recovery decision, crisis sessions); 01a04157 + 01a0416e worked the no-POST recovery to completion (THE OMEN POSTS AGAIN 2026-08-27); 01a042f7 remade README/MASTER for the OC-era chat workflow and built the deterministic command registry; 01a04446 built the GPU OC lab and merged as PR #51 into main (fc12cb6); 01a04483 = this session, resumed from the superposition-find receipt (WAVE-10: the Superposition install was on the wiped SATA bulk pool; re-download to /fast/steam).",
         "prLineTarget": 405,

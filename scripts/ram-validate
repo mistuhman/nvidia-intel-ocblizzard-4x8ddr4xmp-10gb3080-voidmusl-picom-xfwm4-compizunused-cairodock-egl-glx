@@ -3,6 +3,7 @@
 # tools/ram-validate-parse.ts can read. Long-running by design: a 20 minute pass proves nothing on
 # its own, and on ZFS root the scrub is the gate that actually matters.
 #
+#   sh ram-validate smoke  r3       ~4 min, quick sanity check before gaming/benchmarking
 #   sh ram-validate quick  r3       ~20 min, catches an obviously broken profile
 #   sh ram-validate full   r3       ~1 h stress + scrub, the real gate
 #   sh ram-validate scrub  r3       scrub + status + dmesg only
@@ -32,10 +33,11 @@ mkdir -p "$OUT_DIR" || die "cannot create $OUT_DIR"
 LOG=$OUT_DIR/ram-$ID.$MODE.log
 
 case "$MODE" in
-quick) SECS=1200 ;;
-full) SECS=3600 ;;
-scrub) SECS=0 ;;
-	*) die "usage: sh ram-validate quick|full|scrub ID [vm-bytes-pct]" ;;
+smoke) SECS=120; CROSS=60 ;;
+quick) SECS=1200; CROSS=300 ;;
+full) SECS=3600; CROSS=300 ;;
+scrub) SECS=0; CROSS=0 ;;
+	*) die "usage: sh ram-validate smoke|quick|full|scrub ID [vm-bytes-pct]" ;;
 esac
 
 {
@@ -60,8 +62,8 @@ esac
 		fi
 		echo "--- stress-ng vm verify, ${SECS}s, ${VMPCT}% ---"
 		stress-ng --vm 12 --vm-bytes "${VMPCT}%" --vm-method all --verify --metrics-brief --timeout "${SECS}s" 2>&1
-		echo "--- stress-ng cache/matrix cross-check, 300s ---"
-		stress-ng --cache 4 --matrix 4 --verify --metrics-brief --timeout 300s 2>&1
+		echo "--- stress-ng cache/matrix cross-check, ${CROSS}s ---"
+		stress-ng --cache 4 --matrix 4 --verify --metrics-brief --timeout "${CROSS}s" 2>&1
 	fi
 
 	echo "--- zfs integrity gate ---"

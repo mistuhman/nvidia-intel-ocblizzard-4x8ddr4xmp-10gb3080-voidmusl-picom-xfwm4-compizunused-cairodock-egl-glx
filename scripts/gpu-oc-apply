@@ -21,6 +21,9 @@
 #   sh gpu-oc-apply fan PCT | fan auto
 #   sh gpu-oc-apply perfmode max | perfmode auto
 #   sh gpu-oc-apply revert
+#   sh gpu-oc-apply persist-root [WATTS]     (root: persists PL into /etc/sv/omen-perf/run)
+#   sh gpu-oc-apply persist-user CORE MEM    (user: persists offsets into ~/.config/autostart/)
+#   sh gpu-oc-apply unpersist                (removes persistence)
 set -u
 
 CORE_MAX=150
@@ -370,6 +373,52 @@ cmd_revert() {
 	echo "If a fan speed was set: sh $0 fan auto"
 }
 
+cmd_persist_root() {
+	[ "$(id -u)" -eq 0 ] || die "persist-root needs root"
+	watts=${1:-304}
+	echo "$watts" | grep -Eq '^[0-9]+$' || die "watts not an integer: $watts"
+	runfile=/etc/sv/omen-perf/run
+	[ -w "$runfile" ] || die "cannot write $runfile"
+	if grep -q 'nvidia-smi -pl' "$runfile"; then
+		sed -i "s/nvidia-smi -pl [0-9]*/nvidia-smi -pl $watts/" "$runfile"
+	else
+		sed -i "/nvidia-smi -pm 1/a command -v nvidia-smi >/dev/null \&\& nvidia-smi -pl $watts >/dev/null 2>&1" "$runfile"
+	fi
+	echo "PERSIST_ROOT=OK power limit ${watts}W saved in $runfile"
+	echo "INVERSE: sh $0 unpersist (as root)"
+}
+
+cmd_persist_user() {
+	[ $# -eq 2 ] || die "usage: persist-user CORE_OFFSET MEM_OFFSET"
+	core=$1; mem=$2
+	autodir="$HOME/.config/autostart"
+	mkdir -p "$autodir" || die "cannot create $autodir"
+	cat > "$autodir/gpu-oc.desktop" <<EOF
+[Desktop Entry]
+Type=Application
+Name=GPU Overclock
+Exec=sh /home/sd/oc-lab/scripts/gpu-oc-apply apply $core $mem
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Comment=Apply RTX 3080 core +$core mem +$mem on login
+EOF
+	chmod 0644 "$autodir/gpu-oc.desktop"
+	echo "PERSIST_USER=OK autostart written to $autodir/gpu-oc.desktop (apply $core $mem on login)"
+	echo "INVERSE: sh $0 unpersist"
+}
+
+cmd_unpersist() {
+	if [ -f "$HOME/.config/autostart/gpu-oc.desktop" ]; then
+		rm -f "$HOME/.config/autostart/gpu-oc.desktop"
+		echo "UNPERSIST=OK removed $HOME/.config/autostart/gpu-oc.desktop"
+	fi
+	if [ "$(id -u)" -eq 0 ] && [ -w /etc/sv/omen-perf/run ]; then
+		sed -i '/nvidia-smi -pl/d' /etc/sv/omen-perf/run
+		echo "UNPERSIST=OK removed power limit from /etc/sv/omen-perf/run"
+	fi
+}
+
 action=${1:-}
 # `shift` is a POSIX special built-in: in dash a failed shift kills the script even with || true,
 # which silently ate the usage message. Guard it instead.
@@ -388,8 +437,11 @@ powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
 fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
 perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
 revert) cmd_revert ;;
+persist-root) cmd_persist_root "$@" ;;
+persist-user) cmd_persist_user "$@" ;;
+unpersist) cmd_unpersist ;;
 *)
-	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-find|superposition-probe|superposition-run|powerlimit PCT|fan PCT|perfmode max|revert"
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-find|superposition-probe|superposition-run|powerlimit PCT|fan PCT|perfmode max|revert|persist-root [W]|persist-user CORE MEM|unpersist"
 	exit 2
 	;;
 esac
