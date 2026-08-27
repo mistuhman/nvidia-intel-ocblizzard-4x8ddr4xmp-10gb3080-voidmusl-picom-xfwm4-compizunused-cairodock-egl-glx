@@ -245,3 +245,43 @@ to **new filenames** (`omen-write-diag.sh`, `finder-setup.sh`,
 * Wave 2 (vesktop GPU flags) not yet run — `vesktop.bin` was still at 98 %CPU.
 * Disk wipe + unified pool, XMP 3733 check, and the OC steps remain
   operator-gated.
+
+### Two of my own claims were wrong — corrected 12:26 UTC
+
+**"The icon theme is a torn copy" — WRONG.** It was complete all along:
+`10029` svg/png files, `index.theme` present, all of `actions animations apps
+devices emblems emotes mimetypes panel places status`. The `ls | head -5` that
+alarmed me showed `COPYING Credits.md LICENSE README.md Thanks.md` simply
+because those sort alphabetically ahead of the directories. I read a normal
+listing as damage. No re-clone was needed and none happened (the integrity
+gate correctly declined to fire).
+
+**"The next reboot lands on the stock kernel" — WRONG.** The pin was already
+set before I ever raised the alarm:
+
+```
+--- ZBM kernel pin (empty = ZBM picks the highest version) ---
+6.18.35-tkg-bore
+```
+
+`org.zfsbootmenu:kernel` was already `6.18.35-tkg-bore`, so ZBM was never
+going to boot `6.18.41_1`. Running `PIN_TKG=1` re-wrote the identical value —
+harmless, but it was not needed. The correct reading of that receipt is that
+the boot dataset was already protected.
+
+Worth noting for later: `/boot` carries six kernels and six initramfs images,
+including a newer **`6.18.39-tkg-bore`**. The pin targets `6.18.35-tkg-bore`
+(the running one) because the selector takes the first `*tkg*` match. Moving
+to `6.18.39-tkg-bore` is a deliberate, separate step.
+
+### Confirmed working after finder-verify
+* `finder` `finder-zfs` `nemo` `yad` all resolve on PATH.
+* Session bus found at `unix:path=/tmp/dbus-ayirgqdYRP` — nowhere near the
+  `/run/user/1000/bus` I had guessed. `xfconf set OK`, `IconThemeName` now
+  reads `OSX-Gunmetal` from xfconf itself, so xfsettingsd will not revert it.
+* 13 `zfs-*.nemo_action` files installed alongside the stock Cinnamon actions.
+* Thunar desktop entries hidden, `/usr/local/bin/thunar` shim in place.
+
+The `finder-zfs` smoke test printing nothing is expected, not a fault: with no
+args it defaults to `status`, which pipes through `yad`, and root had no
+DISPLAY. Invoked from Nemo it inherits the user's session and renders.
