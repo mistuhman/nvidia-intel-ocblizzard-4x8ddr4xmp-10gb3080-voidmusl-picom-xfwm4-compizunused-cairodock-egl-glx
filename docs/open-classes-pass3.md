@@ -354,3 +354,28 @@ unattributed (its GPU is out, no baseline taken).
    One button press.
    - still instant-cycles → accessory class CLOSED, fault is board or CPU
    - does not cycle → one accessory branch is the fault; re-add one branch per power-on
+
+
+## A0 baseline — PASS (2026-08-27)
+
+Bench Gigabyte G1 Gaming **POSTs on its own Thermaltake Smart 550 W**: photo shows the
+"Please select boot device" menu listing `P4: KINGSTON SV300S37A240G`, plus `Enter Setup`,
+and the onboard 2-digit code reading `02`. The bench is therefore a **known-good reference
+machine**, and its POST-code display is a live instrument.
+
+### This invalidates the A1 comparison as run
+
+In the A0 pass the **EVGA GPU is installed** (visible in the slot, lit). In the A1 pass with
+the OMEN PSU it was **not** — so "fan spins and stays spinning, no post" may simply have been
+*no video source*, not a failure to execute. A1 changed **two** variables (PSU and GPU) and
+therefore cannot be read.
+
+**A1b — the single-variable re-run:** keep the exact A0 configuration that just POSTed —
+same GPU, same RAM, same monitor and cable, same drive — and swap **only the PSU** to the
+OMEN `M83827-001`.
+
+- **Boot-device menu / BIOS appears** → the HP PSU delivers real power under real load with
+  a GPU attached. PSU exonerated; the fault is the OMEN board or CPU, and no firmware path
+  was ever going to help.
+- **Instant cycle, or starts but never POSTs where A0 did** → the PSU is implicated after
+  all, and that is the good ending: a replaceable part.
