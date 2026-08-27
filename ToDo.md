@@ -1,4 +1,4 @@
-# ToDo — OC meter phase (2026-08-25)
+# ToDo — OC meter / recovery gate (2026-08-26)
 
 > official compare: Geekbench 6 + Unigine Superposition; meter every step; GWE for 3080; BIOS for 12700KF; ParkControl notes = Linux-only equivalent
 
@@ -32,9 +32,14 @@
 - [x] Check 1 front-panel / `PB`: FAIL (cycle with PB unplugged; auto-cycle on cord-in)
 - [x] CMOS jumper: FAIL, cap restored. FDO/PSWD/BBR not moved.
 - [x] Pump/0-RPM closed (fans run in the cycle). No more unsolicited cables.
-- [ ] Next chat: read docs/next-chat-last-power-on.md before any power-on
-- [ ] Copy 08917.bin to 491 MB Stick A only after a reason the board will stay on
-- [ ] Flash F.57 then boot Void (Escape = ZBM)
+- [x] Validated clean 7.34 GB HP recovery stick: plain-power attempt FAIL, same immediate loop, no USB activity.
+- [x] 80-agent recovery research tool: exact 80-agent/80-URL manifest, hashes and trap filtering.
+- [ ] Photograph the untouched BlizzardOC `FDO/PSWD/BBR` header straight-on; record current cap orientation and legible silkscreen without moving it.
+- [ ] If `sp167160.exe` is available on any currently accessible host (Mac, Linux, or Windows), inspect it for signed `HpBiosUpdate.efi` and signature siblings; Windows is not a gate and the validated source stick must not be altered.
+- [ ] Inventory any already-owned 3.3V SPI programmer/clip or suitable DMM/logic probe; do not buy or connect anything by assumption.
+- [ ] Explicitly opt into one BBR-only recovery attempt after the header mapping is confirmed; keep FDO and PSWD untouched.
+- [ ] If BBR produces a recovery/EFI path, use the signed F.57 route; if it fails silently, stop and choose the owned-instrument discriminator.
+- [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers

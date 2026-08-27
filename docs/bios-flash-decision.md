@@ -1,8 +1,8 @@
 # No-POST after a memory OC — diagnosis, and why the operator's flash plan was right
 
-Date 2026-08-25. Trigger: 4000 MT/s @1.55V on an HP 8917 / F.51, applied partly in BIOS and then
-from Void; no boot since. Operator's opening plan — flash from a MacBook USB stick — was
-dismissed here, then reinstated after three corrections recorded below.
+Date 2026-08-25. Trigger: a 4000 MT/s @1.55V OC attempt on an HP 8917 / F.51, followed by
+no boot. The operator's reports conflict on whether the setting was applied only in BIOS or
+again from Void; this document must not turn either wording into a proven mechanism.
 
 ## Verdict (current, after three corrections — see the trail below)
 
@@ -12,6 +12,22 @@ dismissed here, then reinstated after three corrections recorded below.
    changelog is "Provides improved security"; and it is one-way.
 3. **Recover, then stay at 3733 XMP.** 4000 MT/s on 4 DIMMs is ~25% over what Intel rates this
    CPU for.
+
+## Current status — 2026-08-26
+
+**The recovery procedure later in this historical analysis is superseded by the receipts
+below; do not repeat its old Win+V/Win+B sequence or current-stick attempt.** The HP-created
+`08917.bin` + `.sig` media was tested first in its former Ventoy layout and then on a clean
+single-partition 7.34 GB `HP_TOOLS` stick. Both produced the same immediate power cycle with
+no LED/activity, screen, beep, or flash. `PB`, `CMOS`, pump/zero-RPM, minimal-bench, and
+zero-DIMM checks are also closed. Two other physical USB sticks remain untested.
+
+Keep the OMEN off while the untouched `FDO/PSWD/BBR` header is photographed and the existing
+`sp167160.exe` is inspected for a signed `HpBiosUpdate.efi` path. Do not move a jumper or alter
+the validated recovery stick yet. Mechanism A is still a hypothesis: the repository has no
+direct setup-variable write receipt, and the exact board reset mechanism is not proven. After
+the photo and artifact receipt, require explicit operator opt-in for one BBR-only attempt;
+follow `docs/next-chat-last-power-on.md` and `docs/omen-free-recovery-runbook.md` for the gate.
 
 ## Board facts (verified this session)
 
@@ -178,18 +194,16 @@ init and complains when it finds no memory. **It still did not POST** — so the
 of memory and no DIMM configuration changes it. Combined with "chipsec adjacent tool", that is
 **A**. Both branches of evidence agree, and the test result carries the conclusion on its own.
 
-### GO — flash F.57 from the USB recovery stick
+### Historical pre-receipt recovery procedure (superseded 2026-08-26)
 
 SSID is not a guess: the 2026-08-25 06:20 UTC target receipt gives board HP **8917**, BIOS
-**F.51**, OMEN 45L GT22-0xxx.
+**F.51**, OMEN 45L GT22-0xxx. The following paragraph records an earlier state of the
+investigation for provenance only. It is superseded by the current-status gate above: USB
+recovery has now been attempted with both the former Ventoy layout and a clean one-partition
+stick, and neither produced LED activity or a flash. Do not repeat the old key sequence or
+current-stick attempt.
 
-**The USB BIOS recovery has NOT been attempted yet.** An operator message reading "usb test
-failed" was misread here as a failed recovery attempt and a full correction was written against
-it. The operator then clarified that "usb" meant the **keyboard LED test**, and that the machine
-has never POSTed since the failure. So nothing about the recovery path has been tested, and no
-conclusion about the board follows from it.
-
-Three things to get right on the first real attempt:
+Historical details from the superseded first-attempt plan (not a current instruction):
 
 1. **Win+V is primary on OMEN desktops, not Win+B.** HP's own instructions for an OMEN
    30L desktop: *"Press and hold the Windows key + V, then press the Power button... If Win+V
@@ -201,7 +215,7 @@ Three things to get right on the first real attempt:
    *"HP's seem to take at least 10"* minutes. On a machine that self-cycles, giving up early
    looks identical to failure.
 
-**Procedure — first real attempt:**
+**Historical procedure (not a current instruction):**
 
 1. Build the stick with **HP's "Create Recovery USB" on any Windows PC** (borrow one for ten
    minutes if needed). That is the only reliably-recognized artifact. FAT32, 8-32GB, **not
@@ -218,10 +232,10 @@ Three things to get right on the first real attempt:
    stick's activity LED — blinking means the firmware is reading it. **Never interrupt power.**
 7. After it completes: F10 → **load defaults** → save → reboot.
 
-Try different sticks and different rear ports before concluding anything. If a correctly-built
-HP recovery stick, Win+V and Win+B and plain power-on, with enough wait, all produce nothing —
-rejoin the operator and continue the free runbook in `docs/omen-free-recovery-runbook.md`;
-the medium is shared free diagnostics, never an external escalation path.
+The current receipts supersede that historical sequence. Do not repeat the tested stick,
+key combinations, or port variations. Continue from `docs/next-chat-last-power-on.md` and
+`docs/omen-free-recovery-runbook.md`, which now gate one BBR-only attempt after the exact
+header position is confirmed.
 
 **Expect after recovery:** the flash clears the EFI NVRAM boot entries, so Void may not be in
 the boot list. MASTER.md already records that this firmware self-enumerates the `EFI/BOOT`

@@ -3,9 +3,9 @@
     "updated": "2026-08-26",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
     "repo": {
-        "branchFixed": "arena/01a03cfb-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "65d6ccafa782b009263d58a2d42023d030632030",
-        "priorSession": "arena/01a0277c merged as PR #33 (commit 7a8b9fd); 01a03599 merged as PR #35; 01a0373c merged as PR #36 (761a168); 01a03761 merged as PR #37 (14bbe38); 01a03794 merged as PR #38 (91ed038); 01a03ae8 merged as PR #39 (65d6cca, this branch's base) after documenting the DDR4 1.55V failure and BIOS-recovery decision. Session 01a03cfb opened 2026-08-26 for Windows 11 recovery-media creation and the operator-gated F.57 recovery attempt.",
+        "branchFixed": "arena/01a03dff-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "60697fe9d6a2a6601402ca9d275589d1c784ad20",
+        "priorSession": "arena/01a0277c merged as PR #33 (commit 7a8b9fd); 01a03599 merged as PR #35; 01a0373c merged as PR #36 (761a168); 01a03761 merged as PR #37 (14bbe38); 01a03794 merged as PR #38 (91ed038); 01a03ae8 merged as PR #39 (65d6cca, this branch's base) after documenting the DDR4 1.55V failure and BIOS-recovery decision. Session 01a03dff opened 2026-08-26 for Windows recovery-media inspection and the operator-gated alternate-media discriminator.",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -18,7 +18,7 @@
             "ToDo.md": "operator-directed work-infrastructure checklist",
             "scripts/": "target-facing installed desktop and migration utilities",
             "tools/": "agent-facing TypeScript utilities run by node",
-            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md (read before any OMEN power-on)"
+            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md, recovery-research.md (read before any OMEN power-on)"
         },
         "prException": {
             "allowedHere": true,
@@ -174,7 +174,7 @@
         "mpv": "0.41.0",
         "ffmpeg6": "6.1.6 preferred",
         "chromium": "151.x musl headless viable",
-        "nvidia": "595.84 nonfree",
+        "nvidia": "595.91.07 nonfree",
         "zfs": "2.4.3 DKMS, zfs-zed service only",
         "zfsbootmenu": "3.1.0 generate-zbm",
         "opendoas": "6.8.2; package doas absent",
@@ -247,7 +247,7 @@
             "CPU-CONTROL PATH WITHOUT FLASHING (session 01a03ae8): the 12700KF multiplier is unlocked in silicon; what is in the way is firmware lock bits, which live in setup variables and MSRs - inspectable and sometimes changeable without rewriting the firmware image, and therefore reversible. Order, cheapest first: (1) read-only MSR probe, (2) PL1/PL2 via MSR 0x610 - usually writable even where voltage is locked and normally the biggest legal win on a locked OEM board since the 12700KF is power-limited at stock, (3) turbo ratios via 0x1ad if the OC lock permits, (4) voltage offsets via MSR 0x150 OC mailbox with intel-undervolt only if the OC lock reports unlocked, (5) LAST RESORT and still no reflash: clear OC/CFG lock bits from an EFI shell by writing setup variables (setup_var / RU.EFI style) - edits NVRAM not the image so Boot Guard is not tripped, but a wrong varstore/offset bricks the board, so it needs probe receipts plus an explicit operator go/no-go. void-packages master confirmed via GitHub API this session: msr-tools 1.3.0.20170320_1, intel-undervolt 1.7_1, fwupd 2.1.7_1. MSR bit meanings (0x194 bit 20 = OC lock) are provisional until the operator's receipts arrive - interpret from the returned values, not from memory.",
             "NO-POST ESCALATION 2026-08-25 (session 01a03ae8): operator receipt - it 'does beep but that only happened when it was giving me issues about the 4 dimm thing. it hasnt been giving me any feedback after troubleshooting, so to my knowledge the condition has gone worse', and the light they meant is the HP OMEN LOGO (case LED), not a drain indicator. READ: beeping during the 4-DIMM phase proves the EC reached memory-init reporting; no code at all plus an immediate power cycle means the board now resets BEFORE POST reporting, which is earlier than memory init. So the operative fault is no longer the memory overclock, a CMOS clear cannot address it, and a Win+B flash cannot run on a board that never reaches POST. The feedback stopped AFTER repeated case entry, so the leading hypothesis is physical: unseated 24-pin ATX or CPU EPS 8-pin, disturbed front-panel power header, a short from case work (loose screw, standoff, or the 45L LED-controller cable under the back cover resting on pins), unseated 3080 or its 6+2, CMOS battery backwards or still out, a DIMM mis-seated during one-at-a-time testing, disturbed cooler/CPU, or the custom HP PSU. AGENT ERROR CORRECTED THIS TURN: I had claimed the lit logo proved standby power was still up and explained the failed resets - withdrawn, the logo is normal standby behaviour on this case and carries no diagnostic value; why the earlier resets did not take is unknown. DELIVERED: minimal-bench procedure with the beep as the sole instrument, one change at a time, 3080 kept in (KF = no iGPU), boot NVMe pulled last as the board-alive test, and an explicit instruction NOT to pull the CPU for a socket inspection until every connector and short check is clean. OPERATOR PRIORITY: 'we need to overclock the cpu, but to do that, i need to actually boot to void' - boot-to-Void is now the objective."
         ],
-        "nextGateAskFirst": "DO NOT POWER ON until docs/next-chat-last-power-on.md is read. CLOSED: Check1 PB FAIL, CMOS jumper FAIL, USB recovery never read, pump not the cause. Mechanism A (SPI setup varstore) still live because CMOS does not wipe SPI. Last power-on = one operator-named test (FDO jumper only if they opt in; else design one discriminator from receipts). No cable pile. After flash: Escape=ZBM F10=BIOS 3733 XMP efivarfs ro.",
+        "nextGateAskFirst": "DO NOT POWER ON until docs/next-chat-last-power-on.md is read. CLOSED: PB, CMOS, pump, minimal-bench, zero-DIMM, and validated clean-stick recovery checks all failed; do not repeat them. Research now prioritizes the untested BlizzardOC FDO/PSWD/BBR header: first obtain a straight-on photo showing the current cap and pin labels, inspect sp167160 for a signed HpBiosUpdate.efi without changing the OMEN, inventory any already-owned 3.3V SPI programmer or DMM, then require explicit operator opt-in before one BBR-only recovery attempt. Do not infer pins from another Omen, move FDO/PSWD, or use setup_var from OS. After a real flash: Escape=ZBM, F10=BIOS, 3733 XMP, efivarfs ro.",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
             "RTX 3080 Coolbits is written; offsets wait for operator log-out/in then a new PR",

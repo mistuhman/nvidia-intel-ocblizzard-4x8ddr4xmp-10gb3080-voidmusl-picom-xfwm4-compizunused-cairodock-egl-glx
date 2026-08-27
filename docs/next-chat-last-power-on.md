@@ -14,7 +14,7 @@ HP OMEN 45L GT22, board **BlizzardOC SSID 8917**, BIOS was **F.51**. i7-12700KF 
 
 ## Cause still on the table
 
-**Mechanism A:** corrupted UEFI **SPI** setup varstore after a chipsec-adjacent write from Void. Zero-DIMM still no POST (hang upstream of memory). **CMOS jumper does not wipe SPI.** That is why CMOS fail does not kill A.
+**Mechanism A candidate:** corrupted UEFI **SPI** setup varstore after the OC attempt. The operator's BIOS-versus-Void application accounts conflict, so the write itself is not proven. Zero-DIMM still no POST (hang upstream of memory). **CMOS jumper does not wipe SPI.** That is why CMOS fail does not kill A.
 
 ## Photo-confirmed silkscreen (this session)
 
@@ -57,18 +57,44 @@ GPU support bracket out on purpose. 3080 + both 6+2 in. All 4 DIMMs in.
 
 | Unknown | Who |
 |---|---|
-| Does boot-block ever run (stick LED) if power is held another way? | next test, operator eyes |
-| Will `FDO/PSWD/BBR` change the cycle? | operator must opt in |
-| Is PS_ON dropping from firmware vs EC/protection? | not separated yet |
-| Alternate 491 MB stick payload copy | Windows machine, not done this chat |
+| Which two pins are normal and which position is BBR on this exact BlizzardOC header? | next photo, operator eyes |
+| Does `sp167160.exe` contain `HpBiosUpdate.efi` and its signed siblings? | any accessible host; Windows is not required |
+| Is an owned 3.3 V SPI programmer/clip or suitable DMM/logic probe available? | operator inventory |
+| Is `PS_ON#` being released by the board or dropped by PSU protection? | instrument measurement, only if safely identified |
 
-## One-test rule for last power-on
+The 7.34 GB one-partition `HP_TOOLS` stick is **not** an unknown anymore: HP creation passed,
+then plain power produced the same immediate loop with no USB activity. Do not repeat it or its
+Win+V/Win+B combinations. The two alternate sticks are not the primary next test; they are a
+fallback only if the BBR/media artifact path requires them.
 
-Name **one** action whose two outcomes split remaining hypotheses. Power on **once**. Log pass/fail. Stop.
+## Selected next action — BBR and flasher artifact preflight, no power
 
-If operator opts into **FDO**: photo of which two of three pins the blue cap occupies, then one move, 20s, **back**, one power. Pass = stays on / beep / HP screen. Fail = same cycle, FDO closed.
+1. Keep the OMEN unplugged and the PSU switch off. Photograph the untouched `FDO/PSWD/BBR`
+   header straight-on with the blue cap still installed. The photo must show all three pins,
+   current cap orientation, nearby labels, and enough board context to establish left/right
+   orientation. Do not move the cap.
+2. If `sp167160.exe` exists on any currently accessible host, inspect or extract it without
+   executing anything on the OMEN. Windows is not required. Report whether it contains
+   `HpBiosUpdate.efi`, `.s09`/`.s12`/`.s14`/`.sig` siblings, and the exact `.bin`/signature files.
+   Preserve the existing validated stick; if the SoftPaq is unavailable, do not block BBR on it.
+3. Report whether a 3.3 V SPI programmer/clip or DMM/logic probe is already owned. This is
+   inventory, not a purchase request.
 
-If operator opts into **flash again**: only after a reason the board will stay on longer than before (FDO pass, or documented boot-block that runs during the cycle). Same `08917.bin` media. Rear USB. Watch stick LED. Never interrupt mid-flash.
+## One-test rule for the last power-on
+
+Only after the header mapping is confirmed and the operator explicitly opts in: use the
+existing verified HP media with **BBR only**, leaving FDO and PSWD untouched. Move the cap once
+to the documented BlizzardOC BBR position, power on once, and watch the stick LED, speaker,
+screen, and time to power-off. **Pass** = recovery activity, beeps, HP output, or a materially
+longer powered interval. **Fail** = the same silent immediate cycle with no activity. Stop
+either way; do not try another jumper position, hotkey, cable, or USB permutation. If it
+fails, remove AC power and return the cap to its documented normal position before leaving the
+case; that is the rollback, not a second test.
+
+If BBR passes, use the signed F.57 EFI flasher if the SoftPaq contains it, or let the verified
+BBR recovery finish without interruption. If BBR fails and an owned SPI instrument exists, the
+next step is a read-only chip-identification/dump plan. If neither exists, the next useful
+free evidence is a safe PS_ON#/rail measurement rather than another media retry.
 
 After a real flash: Escape = ZBM, F10 = BIOS. Memory 3733 XMP. efivarfs ro. No setup_var from OS.
 
