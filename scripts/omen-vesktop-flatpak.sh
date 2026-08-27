@@ -103,9 +103,21 @@ else
 		# Insert AFTER the app id, BEFORE @@u. This is the only correct spot:
 		# anything before `run` is parsed by flatpak, anything after @@u is
 		# swallowed by file-forwarding.
-		sed -i "s@\($APP\)\( @@u\)@\1 $MINFLAGS\2@" "$DESK"
-		# fallback for entries without the @@u block
-		grep -q -- "$MINFLAGS" "$DESK" || sed -i "s@\($APP\)\$@\1 $MINFLAGS@" "$DESK"
+		#
+		# awk, NOT sed: the Exec line contains "@@u", and every sed delimiter
+		# worth using (@ / # |) risks colliding with the payload. This is the
+		# third delimiter collision in this project - so no delimiter at all.
+		awk -v app="$APP" -v fl="$MINFLAGS" '
+			/^Exec=/ && index($0, fl) == 0 {
+				i = index($0, app)
+				if (i > 0) {
+					$0 = substr($0, 1, i + length(app) - 1) " " fl \
+					     substr($0, i + length(app))
+				}
+			}
+			{ print }
+		' "$DESK" > "$DESK.tmp"
+		mv -f "$DESK.tmp" "$DESK"
 		chown "$U": "$DESK"
 		echo "--- $DESK"
 		grep -E '^(Name|Exec)=' "$DESK"
