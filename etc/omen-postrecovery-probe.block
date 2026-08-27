@@ -1,0 +1,23 @@
+id -u
+# omen-postrecovery-probe.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: first boot after the 2026-08-27 recovery and reassembly, with four SATA drives added in one pass (2 HDD + 2 SSD) and the M82868-001 LED hub deliberately left unplugged. This records the true post-recovery state - fan/pump tachs, temps, every block device and its by-id name, both pools, the ESP and boot order, and the firmware version - so storage work and the OC campaign resume from receipts instead of memory. Nothing is changed by this block.
+# Gate: paste the FULL output back. Missing files or empty output are answers too. Do not add or repartition any disk, and do not stress the CPU or GPU, until this receipt is read.
+df -h /
+uptime
+cat /sys/class/dmi/id/product_name
+cat /sys/class/dmi/id/bios_version
+findmnt /
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MODEL,SERIAL
+ls -l /dev/disk/by-id
+zpool status
+zpool list
+zpool import
+findmnt /mnt/games
+efibootmgr -v
+mount | grep efivars
+sensors
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+find /sys/class/hwmon -maxdepth 2 -name temp\*_input
+nvidia-smi
+free -g
+dmesg -T --level=err,warn

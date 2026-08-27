@@ -1,4 +1,4 @@
-# ToDo — OC meter / recovery gate (2026-08-26)
+# ToDo — OC meter / recovery gate (2026-08-27: **THE OMEN POSTS AGAIN**)
 
 > official compare: Geekbench 6 + Unigine Superposition; meter every step; GWE for 3080; BIOS for 12700KF; ParkControl notes = Linux-only equivalent
 
@@ -39,6 +39,37 @@
 - [x] One jumper-slide attempt FAIL. Jumper class CLOSED. Do not horseshoe to another cap.
 - [x] MASTER crisisDiscipline + tools/stall-check.ts (halt + new chat; search remaining classes).
 - [x] New chat (2026-08-27, session 01a04157): openSearchClasses worked in docs/open-classes-pass2.md — HpBiosUpdate.efi proven a shipped HP artifact hidden in AMI UCP (@UAF) inside SoftPaqs; it is a normal EFI app needing POST+USB+F9 and Secure Boot off, so it CANNOT run on the no-POST board; BlizzardOC public vendor docs hold no recovery path beyond closed classes; 45L PSU/EC family reports recorded (standard-ATX vs non-standard-EPS conflict; auto-on mechanism unattributed).
+- [x] New chat (2026-08-27, session 01a0416e): PASS 3 scrape — docs/open-classes-pass3.md. PSU/EPS pinout conflict CLOSED (standard ATX 24-pin + two 4-pin EPS: HP employee accepted solution 9323368/9330242 + owner running a retail MSI MPG A1000G + Cooler Master OEM M19770-003/-013 spec). HP's published desktop BIOS-recovery ladder fully consumed by closed classes; Sure Start is EliteBook/ZBook only. NEW CLASS FOUND: PSU-side load isolation (this chassis has an undocumented PSU-fed lighting board — PCMag 45L review, HP 9614053).
+- [x] L0 NAMED by operator 2026-08-27 — zero-power checklist authored (docs/open-classes-pass3.md "L0 — executing"): PartSurfer parts list by serial, photos 1-8 incl. the 24-pin green-wire L1 safety gate, visual damage sweep. Awaiting receipts.
+- [x] L0-A PASS: PartSurfer 2MO22432DX = OMEN 45L GT22-0139 / 575Q1AA (ARTICUNO). PSU FRU **M83827-001 POWER SUPPLY UNIT 800W ATX Gold** (HP itself says ATX), board M81915-601 BlizzardOC, **PCA LIGHTING CONTROL M82868-001 fitted**, cooler M82880-002 plain LCS 240 (no Cryo/TEC), RAM M85222-001 DDR4 3733 1.35V
+- [x] L0-C PASS: operator visual sweep = "no damage" (no burnt housings, bulged caps, scorch, smell, or debris)
+- [ ] L0-B OUTSTANDING (blocks L1): ONE photo — 24-pin at the board end, wire colours legible, latch visible. Green wire = PS_ON# pin 16; all-black harness = derive pin index from the photo, never from memory
+- [x] L3 = C: both CPU 4-pins out -> OMEN does NOTHING (no cord-in cycle, no button cycle). Ambiguous alone
+- [x] A1 = OMEN PSU M83827-001 powers the BENCH board and HOLDS: "fan spins and stays spinning, no post" -> PSU starts on request and does not latch; weight moves to OMEN board/CPU
+- [x] A0 PASS: bench POSTs on its own Thermaltake (boot menu, Kingston SSD, code 02) -> known-good reference + POST-code instrument
+- [x] A1 VOID as run (GPU absent in that pass, present in A0 — two variables changed)
+- [x] A1b PASS: same A0 config, only the PSU swapped to the OMEN M83827-001 -> POST code **AA** (end of POST). PSU EXONERATED; fault is OMEN board M81915-601 or CPU M87648-003; firmware was never the cause
+- [x] ~~L2 RUN: DOES NOT CYCLE~~ **RETRACTED**: follow-up = "absolutely zero activity, no cpu power to my knowledge" -> same shape as L3=C, not an accessory pass. Verify PB header reconnected (unplugged since 2026-08-26!) and both CPU 4-pins seated before any further reading
+- [ ] ~~L2 RUN~~ with 24-pin + both CPU 4-pins and nothing else on the PSU -> an accessory branch is implicated (confirm: stays powered vs nothing at all)
+- [x] **PB header reconnected -> beeps returned (HP 3.3 = graphics init timeout, expected with GPU power off) -> GPU power restored -> HP POST SCREEN with CPU Fan (90B). THE MACHINE POSTS.**
+- [x] **VOID BOOTS AGAIN — multiple clean boots, POST -> ZBM -> nvme/ROOT/void -> login**
+- [x] **BIOS REACHED (F10 OMEN Setup Utility)**. Thermal: CPU 734, Rear 707, Front#2 602, Front#3 597, **Front#1 N/A**, **Pump 1565** -> cooling is real; Front Fan #1 is the only dead sensor and the cause of 90B
+- [x] **90B CLEARED**: spare F FAN -> FFAN1, Front#1 now 598, pump 1573, cold boot cleared the prompt. **Boots clean to Void, no Enter press**
+- [x] Reassembled: PSU back in place, 4 SATA drives added (2 HDD + 2 SSD), LED hub M82868-001 left unplugged by choice (no RGB, and it keeps the prime suspect out of circuit)
+- [ ] First boot: Escape -> ZBM -> nvme/ROOT/void explicitly, then run `etc/omen-postrecovery-probe.block` (root, read-only) and paste full output
+- [ ] If a SATA drive is missing from lsblk: BIOS SATA Emulation = RAID is the likely cause; AHCI switch is a separate gated change
+- [ ] ~~Reinstall the PSU into the chassis~~, re-verify SPWR + both CPU 4-pins + PB + both 6+2 before cord-in
+- [ ] ~~Plug spare F FAN into FFAN1~~ (bottom edge) — or disable System Fan Check if no fan is mounted there
+- [ ] Verify in Advanced: memory XMP 3733 or stock, no remnant of the 4000 profile
+- [ ] Receipt: After Power Loss = Off (so it did NOT cause the cord-in auto-cycle); SATA Emulation = **RAID** — settle AHCI vs RAID before adding the HDDs/SSD
+- [ ] Reassembly by phase: docs/omen-reassembly-checklist.md (cooling -> test -> front panel -> LED hub alone -> test -> BIOS defaults + XMP 3733)
+- [ ] Storage deferred: 2 new HDDs + spare 240GB SSD, one drive per power-on, only after several clean boots (SATA adds rename sd* on ZFS root)
+- [ ] Residual: POST `CPU Fan (90B)` needs Enter each boot -> run `etc/omen-90b-fan-probe.block` (root, read-only) and paste full output; then move the pump/CPU-fan lead to the header the EC watches
+- [ ] Reconnect AIO pump + CPU fan headers (90B is real - no cooling right now), then F10 = BIOS, load defaults, memory XMP 3733 (never 4000), then Escape = ZBM -> Void
+- [ ] Cause UNATTRIBUTED (multi-variable fix). Re-add one branch per power-on: (1) 3080 + both 6+2, (2) lighting board M82868-001, (3) SATA/Molex drives, (4) fan hub/pump/front panel — the one that brings the cycle back is the fault
+- [ ] LAST FREE STEP — L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
+- [ ] Read the bench board's 2-digit POST code (new instrument), then run L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
+- [ ] OPERATOR GATE, one step per report, no power-on until named: L0 photos (PSU label + cable fan-out, zero power) -> L1 PSU alone, paperclip pin16 green/pin17 black + fan load -> L2 board only, 24-pin + both 4-pin EPS, every accessory off the PSU -> L3 both EPS unplugged (decisive on firmware-vs-electrical)
 - [ ] Operator free receipt (no OMEN touch): on Windows host run `dir /s /b` on the created recovery stick (root already shows EFI/Hewlett-Packard/HP) and on C:\SWSetup\sp167160; report whether Hewlett-Packard\BIOSUpdate\HpBiosUpdate.efi + .s09/.s12/.s14/.sig exist. Inspect only — stick stays unmodified.
 - [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
 
