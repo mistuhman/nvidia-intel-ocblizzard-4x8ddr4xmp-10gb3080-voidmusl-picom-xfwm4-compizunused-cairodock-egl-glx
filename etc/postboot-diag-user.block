@@ -1,0 +1,51 @@
+id -u
+# postboot-diag-user.block - USER shell (sd), in the X session. READ-ONLY.
+# Why: complement to postboot-diag-root. CEntrance Pro USB mic is a PipeWire/WirePlumber
+# problem; stutter could be a wallpaper-mpv/GPU/compositor issue or a runaway process.
+# NOTHING IS CHANGED. Paste FULL output back.
+echo === user ===
+whoami
+echo === DISPLAY XDG ===
+echo DISPLAY=$DISPLAY
+echo XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR
+echo === free uptime ===
+df -h /
+free -h
+uptime
+echo === pipewire ===
+pipewire --version
+pactl info
+echo === cards CEntrance should appear ===
+pactl list cards short
+pactl list cards
+echo === sources mics ===
+pactl list sources short
+echo === sinks ===
+pactl list sinks short
+echo === default source sink ===
+pactl get-default-source
+pactl get-default-sink
+echo === alsa raw ===
+aplay -l
+arecord -l
+echo === wpctl ===
+wpctl status
+echo === top RSS ===
+ps -eo rss,pid,comm --sort=-rss
+echo === top CPU ===
+ps -eo pcpu,pid,comm --sort=-pcpu
+echo === wallpaper stack ===
+pgrep -a mpv
+pgrep -a xwinwrap
+pgrep -a picom
+pgrep -a compiz
+echo === gwe coolbits ===
+nvidia-smi
+nvidia-settings -q GPUGraphicsClockOffset -t
+nvidia-settings -q GPUMemoryTransferRateOffset -t
+echo === GPU state ===
+nvidia-smi --query-gpu=pstate,clocks.sm,clocks.mem,temperature.gpu,power.draw,utilization.gpu,utilization.memory --format=csv
+echo === dmesg tail ===
+dmesg -T
+echo === done postboot-diag-user ===
+date
