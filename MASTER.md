@@ -152,9 +152,10 @@
         "desktop": "XFCE runs compiz-reloaded (use scripts/ccsm-safe; Detect Outputs and Detect Refresh Rate off; golden profile af457926, post-recovery b94b49e0; __GL_YIELD=USLEEP mattered) with gunmetal Emerald + GTK3 theme frozen and accepted, cairo-dock, and the bare wallpaper layer: one sticky input-transparent xwinwrap + one mpv (gpu-next, nvdec-copy, never --hwdec=auto, --wid needs equals form via scripts/mpv-xwinwrap-shim) playing three deterministic 60s 4480x1440 HEVC loops (sleep, main-red, work-monochrome). xfdesktop Desktop windows obscure the bare layer - do not simply restart xfdesktop; the shell/xprop crossfade path is retired (controller exits 2); same-role viewport hops pulse blur only; NVENC cannot encode 4480 width, HEVC can. picom stays masked. The desktop is accepted and frozen: do not churn it for OC work.",
         "perf": "p4-measure PASS: 12G used / 18G avail (was 15/16), ARC cap 4G, swappiness 1, nmi_watchdog 0, GPU idle 25% 57W. Keep for work: bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, NM/dbus/lightdm/polkitd/pipewire/chronyd/rtkit, xfdesktop/panel/Thunar/ulauncher, session browsers. Wallpaper stack off during benchmarking.",
         "disks": {
-            "nvme0n1": "953.9G whole-disk: p1 ESP 512M vfat (ZBM) + rest zfs pool nvme, root dataset nvme/ROOT/void (lean, ~824G free)",
-            "sda": "1.8T Sabrent USB3 HDD on rear 10G port: sda1 NTFS label 50 (1.1T archive incl nvme-games.tar 555G) + sda2 zpool tank (766G) mounted at /mnt/games (460G post-lz4)",
-            "staged": "2x new HDD + spare 240GB SSD, now inside the case, one-drive-per-power-on rule applies to any future changes"
+            "nvme0n1": "953.9G: p1 ESP 512M vfat (ZBM) + p2 pool nvme, dataset nvme/ROOT/void. Never a wipe target. ~811G free after 2026-08-27 SATA wipe.",
+            "fast": "ata-CT1000MX500SSD1_2317E6CCE92E MX500 ~900G at /fast (vm/work/steam). autotrim on.",
+            "bulk": "ata-ST2000NM0033-9ZM175_Z1X6R7P5 + ata-TOSHIBA_DT01ACA200_95CWVMJAS stripe ~3.6T at /bulk /mnt/games /bulk/media /bulk/archive. Kingston SV300 L2ARC cache. No redundancy.",
+            "tank": "DESTROYED 2026-08-27 17:11 UTC. Export was blocked by vesktop/bwrap mount namespaces, not host fuser."
         }
     },
     "machines": {
