@@ -1,0 +1,5 @@
+# summarized by scripts/gpu-dmon-summary from /home/sd/oc-meters/gpu-stock-671-superpos.csv
+# 535 samples, target receipt 2026-08-27
+# gpu    pwr gtemp mtemp    sm   mem   enc   dec  mclk  pclk
+    0    314    81     -   50    0     0     0  9501  1905
+    0    133    81     -   50    0     0     0  9501  1905

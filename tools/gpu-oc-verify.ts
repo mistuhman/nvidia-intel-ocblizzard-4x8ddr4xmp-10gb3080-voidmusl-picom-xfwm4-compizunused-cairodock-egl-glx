@@ -70,6 +70,7 @@ function decide(runs: Run[], tolerance: number) {
   const fullPowerRef = passed.filter((r) => r.powerPct === 100).sort((a, b) => (b.score as number) - (a.score as number))[0] ?? null;
 
   let action: 'ADVANCE' | 'HOLD' | 'REVERT' | 'REBENCH' = 'HOLD';
+  let thermalNext: { coreOffset: number; memOffset: number; powerPct: number } | null = null;
   const reasons: string[] = [];
   if (stopped.length > 0) {
     action = 'REVERT';
@@ -82,9 +83,21 @@ function decide(runs: Run[], tolerance: number) {
     const gainPct = latest.deltaScorePctVsStock ?? 0;
     const hot = (latest.tempMaxC ?? 0) >= LIMITS.tempStopC - 3;
     const candidate = nextCandidate(latest);
-    if (hot) {
-      action = 'HOLD';
-      reasons.push(`${latest.id} peaked at ${latest.tempMaxC}C, within 3C of the ${LIMITS.tempStopC}C stop rule: trim power before adding clock`);
+    // A board already pinned at its power limit cannot get hotter from a clock offset - the watts
+    // are capped either way, the offset just buys clock inside the same budget. A board that is hot
+    // WITHOUT being pinned has a cooling problem, and more clock will make it worse.
+    const plW = (STOCK.powerLimitW * latest.powerPct) / 100;
+    const pinned = (latest.watts ?? 0) >= plW * 0.95;
+    if (hot && !pinned) {
+      action = 'ADVANCE';
+      const trim = { coreOffset: latest.coreOffset, memOffset: latest.memOffset, powerPct: Math.max(LIMITS.powerPctPracticalMin, latest.powerPct - 10) };
+      thermalNext = trim;
+      reasons.push(`${latest.id} peaked at ${latest.tempMaxC}C without being pinned at its ${Math.round(plW)}W limit (${latest.watts}W drawn): that is a cooling limit, not a power one. Trim first - next ${stepId(trim)} - before any more clock`);
+    } else if (hot) {
+      action = 'ADVANCE';
+      const candidateHot = nextCandidate(latest);
+      thermalNext = candidateHot;
+      reasons.push(`${latest.id} peaked at ${latest.tempMaxC}C but is PINNED at ${latest.watts}W of a ${Math.round(plW)}W limit: clock offsets cost no extra watts, so ${candidateHot ? stepId(candidateHot) : 'the next step'} is thermally near-free. Only ${LIMITS.tempStopC - (latest.tempMaxC ?? 0)}C of headroom left - abort the run the moment dmon shows ${LIMITS.tempStopC}C sustained, and expect the undervolt tiers, not more clock, to be where this card wins`);
     } else if (latest.powerPct < 100) {
       // Undervolt tier: the meter is points-per-watt against the same offsets at full power, and the
       // score loss budget, NOT the raw score.
@@ -116,7 +129,7 @@ function decide(runs: Run[], tolerance: number) {
       reasons.push(`${latest.id} clean, but it is the end of the authored ladder: hold a week of daily use before authoring anything past it`);
     }
   }
-  return { action, reasons, bestScore, bestEff, daily, passed, stopped, incomplete, next: latest ? nextCandidate(latest) : null };
+  return { action, reasons, bestScore, bestEff, daily, passed, stopped, incomplete, next: thermalNext ?? (latest ? nextCandidate(latest) : null) };
 }
 
 function gweProfile(run: Run) {

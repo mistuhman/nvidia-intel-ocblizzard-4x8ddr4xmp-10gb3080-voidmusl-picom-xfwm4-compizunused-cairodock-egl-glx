@@ -10,7 +10,8 @@ export type Baseline = {
   mclkMHz: number;      // dmon mclk peak at stock (memory clock, NOT transfer rate)
   powerLimitW: number;  // card default power limit
   powerMaxLimitW: number; // power.max_limit reported by the card
-  referenceW: number;   // board draw at stock core under the graphics meter
+  referenceW: number;   // MEASURED board draw at stock core under the official graphics meter
+  powerMinLimitW: number; // nvidia-smi "Min Power Limit" - the hard floor of the undervolt graph
   score: number;        // Superposition 1080p Extreme score
   fpsAvg: number;
   tempIdleC: number;
@@ -21,13 +22,18 @@ export type Baseline = {
 //   RTX 3080, driver 595.91.07, power.limit 320.00 W, power.default_limit 320.00 W,
 //   power.max_limit 320.00 W, clocks.max.graphics 2100 MHz, clocks.max.memory 9501 MHz
 //   nvidia-settings -q GPUGraphicsClockOffset -t -> 0  (Coolbits LIVE)
+//   nvidia-smi -q -d POWER: Min Power Limit 100.00 W, Max 320.00 W, Default 320.00 W
+// Stock Superposition 1080p Extreme meter (gpu-stock-671-superpos.csv, 535 samples, summarized by
+// scripts/gpu-dmon-summary 2026-08-27): pwr_max 314 W, gtemp_max 81 C, pclk_max 1905, mclk_max 9501.
+// (The 1935 MHz in MASTER stockBaseline is the peak from the Geekbench-CPU-run log, not this meter.)
 export const STOCK: Baseline = {
-  coreMHz: 1935,
+  coreMHz: 1905,
   coreCeilingMHz: 2100,
   mclkMHz: 9501,
   powerLimitW: 320,
   powerMaxLimitW: 320,
-  referenceW: 320,
+  powerMinLimitW: 100,
+  referenceW: 314,
   score: 8717,
   fpsAvg: 65.2,
   tempIdleC: 39,
@@ -40,7 +46,8 @@ export const LIMITS = {
   coreOffsetWarn: 120,
   memOffsetMax: 700,
   memOffsetWarn: 500,
-  powerPctMin: 60,
+  powerPctMin: 32,          // hardware: 100 W min limit / 320 W default
+  powerPctPracticalMin: 60, // below this the clock collapse makes the run useless as a comparison
   powerPctMax: 100,     // hardware-fixed: power.max_limit == power.default_limit == 320 W
   tempStopC: 83,
 };
@@ -137,7 +144,9 @@ export function validate(point: Point, allowPlRaise: boolean, base: Baseline = S
     // so the old step-4 "PSU gate" is moot - nvidia-smi -pl will simply refuse the value.
     errors.push(`power limit above 100% is impossible on this card: power.max_limit == power.default_limit == ${base.powerMaxLimitW}W (receipt 2026-08-27)${allowPlRaise ? '; --allow-pl-raise cannot override a vBIOS limit' : ''}`);
   }
-  if (point.powerPct < LIMITS.powerPctMin) errors.push(`power limit ${point.powerPct}% below the ${LIMITS.powerPctMin}% floor: clocks collapse and the run stops being comparable`);
+  const requestedPlW = (base.powerLimitW * point.powerPct) / 100;
+  if (requestedPlW < base.powerMinLimitW) errors.push(`power limit ${point.powerPct}% = ${Math.round(requestedPlW)}W is under the card's Min Power Limit ${base.powerMinLimitW}W (receipt 2026-08-27): nvidia-smi will refuse it`);
+  else if (point.powerPct < LIMITS.powerPctPracticalMin) warnings.push(`power limit ${point.powerPct}% is under the ${LIMITS.powerPctPracticalMin}% practical floor: legal, but the clock collapse makes it a curiosity, not a daily profile`);
   const requestedCore = base.coreMHz + point.coreOffset;
   if (requestedCore > base.coreCeilingMHz) warnings.push(`requested ${requestedCore}MHz is over clocks.max.graphics ${base.coreCeilingMHz}MHz: everything past +${base.coreCeilingMHz - base.coreMHz} is dead offset`);
   const p = project(point, base);

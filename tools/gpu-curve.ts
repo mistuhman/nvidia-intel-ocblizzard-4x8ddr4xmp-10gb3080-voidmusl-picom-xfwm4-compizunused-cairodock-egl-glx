@@ -21,20 +21,22 @@ function readMeasured(path: string): Measured[] {
     .sort((a, b) => a.powerPct - b.powerPct || (a.id ?? '').localeCompare(b.id ?? ''));
 }
 
-// Coarse deterministic grid search over the two anchors we do not trust: the card's real default
-// power limit and its draw at stock clock. Never invents data - it only fits what was pasted.
+// The default power limit is now a receipt (320 W), so the only free anchor left is the board draw
+// at stock clock under the meter. Deterministic 1 W grid search. Never invents data.
 function calibrate(measured: Measured[]): { base: Baseline; rmsePct: number; samples: number } {
   let best = { base: STOCK, rmsePct: Number.POSITIVE_INFINITY, samples: measured.length };
   if (measured.length === 0) return { ...best, rmsePct: 0 };
-  for (let pl = 280; pl <= 400; pl += 5) {
-    for (let ref = 240; ref <= 400; ref += 5) {
-      const base: Baseline = { ...STOCK, powerLimitW: pl, referenceW: ref };
+  {
+    for (let ref = 200; ref <= 360; ref += 1) {
+      const base: Baseline = { ...STOCK, referenceW: ref };
       let sum = 0;
       for (const m of measured) {
         const p = project({ coreOffset: m.coreOffset, memOffset: m.memOffset, powerPct: m.powerPct }, base);
-        sum += (((p.projectedScore - m.score) / m.score) * 100) ** 2;
+        // Fit score AND board watts: a score-only fit is degenerate whenever the run was not
+        // power-limited (every referenceW below the limit reproduces the same score).
+        sum += (((p.projectedScore - m.score) / m.score) * 100) ** 2 + (((p.projectedWatts - m.watts) / m.watts) * 100) ** 2;
       }
-      const rmsePct = Math.round(Math.sqrt(sum / measured.length) * 100) / 100;
+      const rmsePct = Math.round(Math.sqrt(sum / (2 * measured.length)) * 100) / 100;
       if (rmsePct < best.rmsePct) best = { base, rmsePct, samples: measured.length };
     }
   }
@@ -114,7 +116,7 @@ function curve(): void {
   const text = [
     `UNDERVOLT GRAPH core=+${coreOffset} mem=+${memOffset} points=${rows.length}`,
     measured.length
-      ? `calibration: ${fit.samples} measured runs, fitted defaultPL=${base.powerLimitW}W referenceW=${base.referenceW}W, rmse=${fit.rmsePct}%`
+      ? `calibration: ${fit.samples} measured runs, PL fixed at ${base.powerLimitW}W (receipt), fitted referenceW=${base.referenceW}W, rmse=${fit.rmsePct}%`
       : 'calibration: none (model anchors from MASTER stockBaseline; feed --measured to refit)',
     'pl%\tplW\tcoreMHz\twatts\tscore\tpts/W\ttempC\tscore-bar',
     ...rows.map((r) => [r.powerPct, r.powerLimitW, r.projectedCoreMHz, r.projectedWatts, r.projectedScore, r.projectedScorePerWatt, r.projectedTempC, bar(r.projectedScore, scoreMin, scoreMax, 24)].join('\t')),
@@ -140,11 +142,12 @@ function selftest(): void {
   const s = svg(rows, [{ id: 'm', coreOffset: 120, memOffset: 500, powerPct: 80, score: 8000, watts: 250 }]);
   if (!s.startsWith('<svg') || !s.includes('</svg>')) throw new Error('svg malformed');
   const fit = calibrate([
-    { id: 'a', coreOffset: 0, memOffset: 0, powerPct: 100, score: 8717, watts: 320 },
-    { id: 'b', coreOffset: 0, memOffset: 0, powerPct: 70, score: 7300, watts: 224 },
+    { id: 'a', coreOffset: 0, memOffset: 0, powerPct: 100, score: 8717, watts: 314 },
+    { id: 'b', coreOffset: 0, memOffset: 0, powerPct: 70, score: 7900, watts: 224 },
   ]);
+  if (Math.abs(fit.base.referenceW - 314) > 12) throw new Error(`watts term ignored in the fit: referenceW=${fit.base.referenceW}`);
   if (!(fit.rmsePct < 5)) throw new Error(`calibration failed to fit clean anchors: rmse=${fit.rmsePct}`);
-  console.log(`fit_pl=${fit.base.powerLimitW} fit_ref=${fit.base.referenceW} rmse=${fit.rmsePct}`);
+  console.log(`fit_ref=${fit.base.referenceW} rmse=${fit.rmsePct}`);
   console.log(`spark=${sparkline(rows.map((r) => r.projectedScore), 3)}`);
   console.log('GPU_CURVE=PASS');
 }

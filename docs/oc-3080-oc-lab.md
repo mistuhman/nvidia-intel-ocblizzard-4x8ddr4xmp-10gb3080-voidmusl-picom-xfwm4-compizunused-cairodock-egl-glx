@@ -49,9 +49,14 @@ claims an Afterburner-style V/F curve on this stack is wrong.
 ## What the model is and is not
 
 It projects from the MASTER stock receipts (score 8717, pclk 1935, mclk 9501) plus the 2026-08-27
-target receipt: **power.limit = power.default_limit = power.max_limit = 320.00 W** (no raise is
+target receipts: **power.limit = power.default_limit = power.max_limit = 320.00 W, Min Power Limit 100 W** (no raise is
 possible, the model and the applier both refuse >100 %), **clocks.max.graphics 2100 MHz** (projected
-clocks are clamped there, and offsets past +165 are flagged as dead), Coolbits **live**. It assumes power
+clocks are clamped there, and offsets past +165 are flagged as dead), Coolbits **live**, and the
+measured stock meter (`gpu-stock-671-superpos.csv`, 535 samples): **314 W peak, 81 C peak, pclk 1905**.
+The card is already pinned at its power limit at stock with 2 C of thermal headroom, so the verdict
+engine treats clock offsets as thermally near-free and points the campaign at the trim tiers for the
+real wins. `gpu-curve --measured=` fits `referenceW` against score **and** watts (a score-only fit is
+degenerate whenever a run was not power-limited) and reports the RMSE. It assumes power
 grows with clock^1.35, that a clock offset keeps ~70 % of its value while the board is pinned at the
 power limit, and that Superposition 1080p Extreme is 75 % core / 25 % memory bound. Every projected
 number is printed as `projected_*` and is only a queue-ordering aid. `gpu-curve --measured=` refits

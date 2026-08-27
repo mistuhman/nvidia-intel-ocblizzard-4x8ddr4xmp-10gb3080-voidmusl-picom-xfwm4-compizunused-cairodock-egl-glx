@@ -13,7 +13,7 @@ set -u
 
 CORE_MAX=150
 MEM_MAX=700
-PL_MIN_PCT=60
+PL_MIN_PCT=50   # card Min Power Limit is 100 W = 31%, but below 50% the run stops being comparable
 PL_MAX_PCT=100
 METER_DIR=${METER_DIR:-$HOME/oc-meters}
 PERF_LEVEL=${PERF_LEVEL:-3}
