@@ -25,6 +25,8 @@ run('node', ['tools/gpu-bench-parse.ts', 'selftest']);
 run('node', ['tools/gpu-oc-verify.ts', 'selftest']);
 run('bash', ['-n', 'scripts/gpu-oc-apply']);
 run('bash', ['-n', 'scripts/gpu-dmon-summary']);
+// every cmd_* in a target script must actually be reachable from its dispatcher
+run('node', ['tools/script-dispatch-check.ts', 'scripts/gpu-oc-apply']);
 // DDR4 lab: 3733 baseline -> 4000 MT/s target, with the ZFS integrity gate
 run('node', ['tools/ram-oc-plan.ts', 'selftest']);
 run('node', ['tools/ram-validate-parse.ts', 'selftest']);

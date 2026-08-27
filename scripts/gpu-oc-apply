@@ -226,6 +226,29 @@ cmd_superposition_probe() {
 	find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 20
 }
 
+cmd_superposition_run() {
+	dir=${1:-$HOME/Downloads/Unigine_Superposition-1.1}
+	[ -d "$dir" ] || die "no Superposition install at $dir (pass the path: superposition-run /path/to/install)"
+	launcher=""
+	for candidate in "$dir/bin/launcher" "$dir/launcher" "$dir/bin/superposition" "$dir/Superposition"; do
+		if [ -x "$candidate" ]; then
+			launcher=$candidate
+			break
+		fi
+	done
+	if [ -z "$launcher" ]; then
+		launcher=$(find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 1)
+	fi
+	[ -n "$launcher" ] || die "no executable found under $dir - run superposition-probe and paste the listing"
+	echo "launcher: $launcher"
+	# Unigine resolves its data paths relative to the working directory: launching it from anywhere
+	# else (ulauncher, a file manager, a random shell) is exactly why it appears to do nothing.
+	cd "$dir" || die "cannot cd $dir"
+	nohup "$launcher" >"$METER_DIR/superposition.log" 2>&1 &
+	echo "started pid $! with cwd $dir"
+	echo "log: $METER_DIR/superposition.log"
+}
+
 cmd_powerlimit() {
 	need nvidia-smi
 	[ "$(id -u)" -eq 0 ] || die "powerlimit needs root"
@@ -294,7 +317,10 @@ caps) cmd_caps ;;
 probe) cmd_probe ;;
 apply) [ $# -eq 2 ] || die "usage: apply CORE_OFFSET MEM_OFFSET"; cmd_apply "$1" "$2" ;;
 verify) cmd_verify ;;
-meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECONDS]"; cmd_meter "$@" ;;
+meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECS] [WAIT_SECS]"; cmd_meter "$@" ;;
+meterbg) [ $# -ge 1 ] || die "usage: meterbg STEP_ID [SECS] [WAIT_SECS]"; cmd_meterbg "$@" ;;
+superposition-probe) cmd_superposition_probe "$@" ;;
+superposition-run) cmd_superposition_run "$@" ;;
 powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
 fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
 perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
