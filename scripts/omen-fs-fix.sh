@@ -11,7 +11,7 @@
 #     Directory xattrs cost an extra hidden-directory lookup + I/O per file.
 #     Electron cache dirs and Thunar/gvfs thumbnails hammer xattrs.
 #     xattr=sa stores them inline in the dnode. Big win, zero risk.
-#   * vm.swappiness reads 10, but /etc/sysctl.d/99-desktop-perf.conf sets 1
+#   * vm.swappiness reads 10, but /etc/sysctl.d/9999-desktop-perf.conf sets 1
 #     => /etc/sysctl.d IS NOT BEING APPLIED AT BOOT. Every perf sysctl we set
 #     on 2026-08-25 has been silently dead since the next reboot.
 #   * every SATA disk is on the "bfq" scheduler, including sdd which is the
@@ -28,7 +28,7 @@
 #   echo 4294967296 > /sys/module/zfs/parameters/zfs_arc_max
 #   zfs set xattr=on nvme
 #   rm -f /etc/udev/rules.d/60-omen-ioscheduler.rules
-#   rm -f /etc/sysctl.d/99-desktop-perf.conf /etc/runit/core-services/98-omen-sysctl.sh
+#   rm -f /etc/sysctl.d/9999-desktop-perf.conf /etc/runit/core-services/98-omen-sysctl.sh
 set -eu
 
 say() { printf '\n=== %s ===\n' "$*"; }
@@ -73,8 +73,8 @@ zpool set autotrim=on nvme 2>/dev/null || true
 
 # ---------------------------------------------------------------- 3. sysctl (and make it STICK)
 say "3/6 sysctl file + boot-time application (this was silently dead)"
-cp -a /etc/sysctl.d/99-desktop-perf.conf "$BAK/" 2>/dev/null || true
-cat > /etc/sysctl.d/99-desktop-perf.conf <<'SYSCTL'
+cp -a /etc/sysctl.d/9999-desktop-perf.conf "$BAK/" 2>/dev/null || true
+cat > /etc/sysctl.d/9999-desktop-perf.conf <<'SYSCTL'
 # OMEN 45L desktop-latency profile. Applied by /etc/runit/core-services/98-omen-sysctl.sh
 vm.swappiness=1
 vm.dirty_ratio=5
@@ -92,13 +92,13 @@ SYSCTL
 # Void's runit does not reliably drain /etc/sysctl.d. Force it.
 cat > /etc/runit/core-services/98-omen-sysctl.sh <<'CORESVC'
 # Applies /etc/sysctl.d/*.conf at boot. Void core-services only guarantees
-# /etc/sysctl.conf on some versions; receipts proved 99-desktop-perf.conf
+# /etc/sysctl.conf on some versions; receipts proved 999-desktop-perf.conf
 # was never applied (swappiness read 10, file said 1).
 msg "Applying sysctl settings (omen)..."
-sysctl --system >/dev/null 2>&1 || sysctl -p /etc/sysctl.d/99-desktop-perf.conf >/dev/null 2>&1
+sysctl --system >/dev/null 2>&1 || sysctl -p /etc/sysctl.d/9999-desktop-perf.conf >/dev/null 2>&1
 CORESVC
 chmod 0644 /etc/runit/core-services/98-omen-sysctl.sh
-sysctl --system >/dev/null 2>&1 || sysctl -p /etc/sysctl.d/99-desktop-perf.conf
+sysctl --system >/dev/null 2>&1 || sysctl -p /etc/sysctl.d/9999-desktop-perf.conf
 
 # ---------------------------------------------------------------- 4. I/O schedulers
 say "4/6 I/O schedulers: drop bfq"
