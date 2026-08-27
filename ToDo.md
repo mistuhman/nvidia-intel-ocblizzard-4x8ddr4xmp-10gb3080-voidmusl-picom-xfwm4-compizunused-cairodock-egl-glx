@@ -56,22 +56,88 @@
 - [x] **BIOS REACHED (F10 OMEN Setup Utility)**. Thermal: CPU 734, Rear 707, Front#2 602, Front#3 597, **Front#1 N/A**, **Pump 1565** -> cooling is real; Front Fan #1 is the only dead sensor and the cause of 90B
 - [x] **90B CLEARED**: spare F FAN -> FFAN1, Front#1 now 598, pump 1573, cold boot cleared the prompt. **Boots clean to Void, no Enter press**
 - [x] Reassembled: PSU back in place, 4 SATA drives added (2 HDD + 2 SSD), LED hub M82868-001 left unplugged by choice (no RGB, and it keeps the prime suspect out of circuit)
-- [ ] First boot: Escape -> ZBM -> nvme/ROOT/void explicitly, then run `etc/omen-postrecovery-probe.block` (root, read-only) and paste full output
-- [ ] If a SATA drive is missing from lsblk: BIOS SATA Emulation = RAID is the likely cause; AHCI switch is a separate gated change
-- [ ] ~~Reinstall the PSU into the chassis~~, re-verify SPWR + both CPU 4-pins + PB + both 6+2 before cord-in
-- [ ] ~~Plug spare F FAN into FFAN1~~ (bottom edge) — or disable System Fan Check if no fan is mounted there
-- [ ] Verify in Advanced: memory XMP 3733 or stock, no remnant of the 4000 profile
-- [ ] Receipt: After Power Loss = Off (so it did NOT cause the cord-in auto-cycle); SATA Emulation = **RAID** — settle AHCI vs RAID before adding the HDDs/SSD
-- [ ] Reassembly by phase: docs/omen-reassembly-checklist.md (cooling -> test -> front panel -> LED hub alone -> test -> BIOS defaults + XMP 3733)
-- [ ] Storage deferred: 2 new HDDs + spare 240GB SSD, one drive per power-on, only after several clean boots (SATA adds rename sd* on ZFS root)
-- [ ] Residual: POST `CPU Fan (90B)` needs Enter each boot -> run `etc/omen-90b-fan-probe.block` (root, read-only) and paste full output; then move the pump/CPU-fan lead to the header the EC watches
-- [ ] Reconnect AIO pump + CPU fan headers (90B is real - no cooling right now), then F10 = BIOS, load defaults, memory XMP 3733 (never 4000), then Escape = ZBM -> Void
-- [ ] Cause UNATTRIBUTED (multi-variable fix). Re-add one branch per power-on: (1) 3080 + both 6+2, (2) lighting board M82868-001, (3) SATA/Molex drives, (4) fan hub/pump/front panel — the one that brings the cycle back is the fault
-- [ ] LAST FREE STEP — L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
-- [ ] Read the bench board's 2-digit POST code (new instrument), then run L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
-- [ ] OPERATOR GATE, one step per report, no power-on until named: L0 photos (PSU label + cable fan-out, zero power) -> L1 PSU alone, paperclip pin16 green/pin17 black + fan load -> L2 board only, 24-pin + both 4-pin EPS, every accessory off the PSU -> L3 both EPS unplugged (decisive on firmware-vs-electrical)
-- [ ] Operator free receipt (no OMEN touch): on Windows host run `dir /s /b` on the created recovery stick (root already shows EFI/Hewlett-Packard/HP) and on C:\SWSetup\sp167160; report whether Hewlett-Packard\BIOSUpdate\HpBiosUpdate.efi + .s09/.s12/.s14/.sig exist. Inspect only — stick stays unmodified.
-- [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
+  - [ ] First boot: Escape -> ZBM -> nvme/ROOT/void explicitly, then run `etc/omen-postrecovery-probe.block` (root, read-only) and paste full output
+  - [ ] If a SATA drive is missing from lsblk: BIOS SATA Emulation = RAID is the likely cause; AHCI switch is a separate gated change
+  - [ ] ~~Reinstall the PSU into the chassis~~, re-verify SPWR + both CPU 4-pins + PB + both 6+2 before cord-in
+  - [ ] ~~Plug spare F FAN into FFAN1~~ (bottom edge) — or disable System Fan Check if no fan is mounted there
+  - [ ] Verify in Advanced: memory XMP 3733 or stock, no remnant of the 4000 profile
+  - [ ] Receipt: After Power Loss = Off (so it did NOT cause the cord-in auto-cycle); SATA Emulation = **RAID** — settle AHCI vs RAID before adding the HDDs/SSD
+  - [ ] Reassembly by phase: docs/omen-reassembly-checklist.md (cooling -> test -> front panel -> LED hub alone -> test -> BIOS defaults + XMP 3733)
+  - [ ] Storage deferred: 2 new HDDs + spare 240GB SSD, one drive per power-on, only after several clean boots (SATA adds rename sd* on ZFS root)
+  - [ ] Residual: POST `CPU Fan (90B)` needs Enter each boot -> run `etc/omen-90b-fan-probe.block` (root, read-only) and paste full output; then move the pump/CPU-fan lead to the header the EC watches
+  - [ ] Reconnect AIO pump + CPU fan headers (90B is real - no cooling right now), then F10 = BIOS, load defaults, memory XMP 3733 (never 4000), then Escape = ZBM -> Void
+  - [ ] Cause UNATTRIBUTED (multi-variable fix). Re-add one branch per power-on: (1) 3080 + both 6+2, (2) lighting board M82868-001, (3) SATA/Molex drives, (4) fan hub/pump/front panel — the one that brings the cycle back is the fault
+  - [ ] LAST FREE STEP — L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
+  - [ ] Read the bench board's 2-digit POST code (new instrument), then run L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
+  - [ ] OPERATOR GATE, one step per report, no power-on until named: L0 photos (PSU label + cable fan-out, zero power) -> L1 PSU alone, paperclip pin16 green/pin17 black + fan load -> L2 board only, 24-pin + both 4-pin EPS, every accessory off the PSU -> L3 both EPS unplugged (decisive on firmware-vs-electrical)
+  - [ ] Operator free receipt (no OMEN touch): on Windows host run `dir /s /b` on the created recovery stick (root already shows EFI/Hewlett-Packard/HP) and on C:\SWSetup\sp167160; report whether Hewlett-Packard\BIOSUpdate\HpBiosUpdate.efi + .s09/.s12/.s14/.sig exist. Inspect only — stick stays unmodified.
+  - [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
+
+## Boot order + drive validity (2026-08-27 — cables snug, rear panel sealed)
+
+> Problem: main monitor does not light up immediately on boot the way the tertiary monitor does.
+> Adding four SATA drives in one pass can cause firmware to inject new SATA boot entries ahead of
+> the NVMe ZBM entry; firmware then probes each SATA device (hundreds of ms per drive in RAID mode)
+> before handing off to ZBM, and the 3080 gets no display signal until after that SATA scan.
+> The tertiary monitor sees POST video earlier because it gets the firmware framebuffer during init.
+
+### Phase 1 — diagnose (READ-ONLY, paste output back)
+- [ ] Run `etc/boot-order-drive-probe.block` as root; paste full output
+  - Confirms: `efibootmgr -v` BootOrder and every Boot#### entry (expected Boot0002/Boot0008 = ZBM NVMe)
+  - Confirms: `lsblk` shows all four SATA drives with correct fs/partition types and stable by-id names
+  - Confirms: ZBM pool `nvme` ONLINE, `tank` ONLINE, both healthy
+  - Confirms: `dmesg` SATA scan timing and any AHCI/RST errors
+
+### Phase 2 — fix boot order (OPERATOR-GATED after Phase 1 receipt)
+- [ ] Run `etc/boot-order-nvme-first.block` as root ONLY after Phase 1 output is pasted back
+  - Reads current BootOrder, identifies any firmware-injected SATA boot entries
+  - Operator confirms which Boot#### numbers are SATA (not Boot0002/Boot0008)
+  - Sets `BootOrder=0002,0008` so NVMe ZBM is always first with no SATA scan detour
+  - Rollback: F10 BIOS -> Boot tab, or F9 at HP splash to manually pick NVMe
+  - **Expected result after reboot**: main monitor lights up at the same time as tertiary — ZBM is
+    the first thing firmware hands off to, no SATA probe delay, 3080 mode-sets immediately
+
+### Phase 3 — AHCI vs RAID decision (separate gated change, after Phase 2)
+- [ ] BIOS is currently SATA Emulation = RAID (confirmed 2026-08-27 thermal page receipt)
+  - Root is NVMe only; Void boots fine today regardless of SATA mode
+  - RAID mode can hide SATA drives from Linux (they show as one Intel RST volume or not at all)
+  - AHCI mode makes each SATA drive independently visible as sda/sdb/sdc/sdd
+  - **Decision gate**: if Phase 1 `lsblk` shows all four SATA drives, RAID mode is passing them through
+    as individual disks (common on Z690 with RST set to RAID but no array configured); if any drive
+    is missing, switch BIOS to AHCI before ZFS pool creation
+  - Switching AHCI on a running system with NVMe root is safe (NVMe is unaffected); do NOT add
+    any `intel_iommu` or `ahci` kernel params — just the BIOS F10 change
+
+## SATA drives → ZFS zpools (future, operator-gated, one drive per power-on after Phase 3)
+
+> Staged drives: 2× new HDD + 1× spare 240GB SSD (all SATA). Existing sda = 1.8T Sabrent USB3 HDD
+> (already in pool `tank` with tank/games at /mnt/games, 460G post-lz4). Plan: convert the bare
+> SATA drives to additional ZFS pools or vdevs. Do NOT touch sda/tank or the NVMe pool during this.
+
+### Pool design options (decide before running any zpool create)
+- [ ] **Option A — single new pool per drive** (simplest): `zpool create data1 /dev/disk/by-id/...`
+  one pool per HDD, one pool for the SSD. Independent pools, no redundancy, max usable space.
+- [ ] **Option B — mirror vdev** (if both HDDs are identical size): `zpool create data mirror disk1 disk2`
+  One pool, redundant, net capacity = one drive. Best for durability of data not backed elsewhere.
+- [ ] **Option C — striped pool** (both HDDs in one pool, no mirror): full combined capacity, no redundancy.
+  Only safe for data with another backup copy (e.g. sda/tank already holds the nvme-games.tar archive).
+- [ ] **Option D — add SSD as L2ARC or SLOG to existing tank** (performance): `zpool add tank cache /dev/...`
+  Extends tank with a read cache (L2ARC) or write-intent log (SLOG). Does not create a new pool.
+  SLOG requires a small dedicated partition (1-4G); the rest can be L2ARC.
+
+### Prerequisites before any `zpool create`
+- [ ] AHCI decision settled (Phase 3 above) — drives must appear in lsblk by-id before pool creation
+- [ ] Each drive wiped cleanly: `zpool labelclear -f /dev/disk/by-id/...` if it held a prior pool label;
+  `wipefs -a /dev/disk/by-id/...` to clear any NTFS/ext4/other signatures. OPERATOR-GATED: confirm
+  drive is blank or archival content is already preserved elsewhere before wipefs.
+- [ ] Always use `/dev/disk/by-id/` paths in `zpool create` — never `/dev/sda` (renames on rescan)
+- [ ] One drive per power-on rule still applies: add one drive, boot, verify lsblk, then add the next
+- [ ] Run `zpool status` and `zfs list` after each create; paste output before proceeding
+- [ ] `zpool set autotrim=on <poolname>` for the SSD pool to keep the SSD healthy
+- [ ] Dataset layout example: `zfs create data1/archive`, `zfs set compression=lz4 data1/archive`
+- [ ] After all pools created and healthy: `zpool scrub <poolname>` baseline pass, paste output
+- [ ] Block file for each pool creation will be authored here once drive sizes/models are confirmed
+  from the Phase 1 `etc/boot-order-drive-probe.block` receipt
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
