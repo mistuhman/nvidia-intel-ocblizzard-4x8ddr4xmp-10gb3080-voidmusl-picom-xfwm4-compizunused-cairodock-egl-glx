@@ -1,0 +1,46 @@
+{
+  "required_api_version": "^2.0.0",
+  "name": "Finder Search",
+  "description": "Search files by name and reveal them in Finder (Nemo), with ZFS-aware roots",
+  "developer_name": "omen",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.25
+  },
+  "preferences": [
+    {
+      "id": "fs_kw",
+      "type": "keyword",
+      "name": "Find file",
+      "description": "Search files by name and open them in Finder",
+      "default_value": "f"
+    },
+    {
+      "id": "fs_dirkw",
+      "type": "keyword",
+      "name": "Find folder",
+      "description": "Search folders only and open them in Finder",
+      "default_value": "fd"
+    },
+    {
+      "id": "fs_limit",
+      "type": "input",
+      "name": "Max results",
+      "default_value": "25"
+    },
+    {
+      "id": "fs_roots",
+      "type": "input",
+      "name": "Search roots (colon separated)",
+      "description": "Where to look when plocate is unavailable",
+      "default_value": "~:/mnt/games:/bulk:/fast"
+    },
+    {
+      "id": "fs_hidden",
+      "type": "select",
+      "name": "Include hidden files",
+      "default_value": "no",
+      "options": [{"value": "no"}, {"value": "yes"}]
+    }
+  ]
+}
