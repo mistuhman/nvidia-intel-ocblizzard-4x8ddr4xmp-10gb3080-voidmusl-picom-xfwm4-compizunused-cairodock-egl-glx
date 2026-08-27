@@ -1,7 +1,7 @@
 {
     "schema": "arena-master-context.v1",
     "updated": "2026-08-26",
-    "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, and active objective.",
+    "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, crisis discipline, and active objective. A stalled or hallucinating chat must halt and demand a fresh chat rather than invent another same-shape test.",
     "repo": {
         "branchFixed": "arena/01a03dff-nvidia-intel-ocblizzard-4x8ddr",
         "baseCommit": "60697fe9d6a2a6601402ca9d275589d1c784ad20",
@@ -18,7 +18,7 @@
             "ToDo.md": "operator-directed work-infrastructure checklist",
             "scripts/": "target-facing installed desktop and migration utilities",
             "tools/": "agent-facing TypeScript utilities run by node",
-            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md, recovery-research.md (read before any OMEN power-on)"
+            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md, recovery-research.md, hardware-retrospective.md (read before any OMEN power-on)"
         },
         "prException": {
             "allowedHere": true,
@@ -73,15 +73,62 @@
                 "operator pastes target output back to the main model for attribution and next-step planning"
             ],
             "safety": [
+                "if stall-check is HALT_NEW_CHAT, stop; do not invent a next power-on",
                 "every target-changing block names the pass/fail gate",
                 "every reversible target change includes rollback before forward execution",
                 "irreversible disk steps require explicit operator direction and current disk receipts",
                 "commands are verified with paste-proof or a stricter purpose-built tool before delivery"
             ]
+        },
+        "crisisDiscipline": {
+            "why": "2026-08-25/26 recovery chats stayed in crisis mode: same ritual, new label, no new search class. Operator 2026-08-26: do not add anti-guidelines only; stop the chat when it is getting nowhere; genuine solutions exist and must be tooled and searched.",
+            "requiredHaltLine": "Achtung, Halt!",
+            "haltWhen": [
+                "two closed tests of the same physical shape (blue-cap jumper, USB+hotkey, cable reseat) with no new receipt class",
+                "agent concludes impossible or not possible without a search receipt naming a remaining class",
+                "agent proposes a power-on that only relabels a closed class (CMOS vs BBR, Ventoy vs clean stick, another rear port)",
+                "claims stack (beep pattern, logo LED, buy parts) without operator quote or photo",
+                "more than one power-on in a chat after a FAIL with no new discriminator class",
+                "orient/stall-check prints HALT_NEW_CHAT"
+            ],
+            "onHalt": [
+                "say exactly: Achtung, Halt!",
+                "stop all repo file writes and MASTER/docs/tool edits (poisoning ban)",
+                "the only allowed further processing is git commit if already staged for this halt-rule, then pull request and merge",
+                "do not invent power-ons, jumper moves, or new context patches after halt",
+                "a new chat reads README, MASTER, node tools/stall-check.ts, docs/hardware-retrospective.md, then searches a NEW class"
+            ],
+            "searchBeforeImpossible": [
+                "run node tools/recovery-research.ts --plan or web-scrape / gh api on a named source set",
+                "unknown is allowed; impossible is not a verdict",
+                "if no instrument exists, name the free evidence that would distinguish remaining hypotheses — do not fill the gap with another button press"
+            ],
+            "freshChatMindset": [
+                "previous context is MASTER + retrospective + stall-check, not chat memory",
+                "closed classes are closed as classes, not as single filenames",
+                "one named discriminator whose two outcomes split live hypotheses",
+                "operator direction is literal; crisis urgency is not permission to horseshoe"
+            ],
+            "haltRepoFreeze": {
+                "forbidden": [
+                    "edit MASTER.md",
+                    "edit docs",
+                    "edit tools",
+                    "append lessons",
+                    "anti-guidelines",
+                    "new block files"
+                ],
+                "allowed": [
+                    "git push of already-authored halt-rule commit",
+                    "gh pr create",
+                    "gh pr merge"
+                ]
+            }
         }
     },
     "qualityGate": {
         "beforeDelivery": [
+            "run node tools/stall-check.ts; if HALT_NEW_CHAT, do not deliver a power-on block",
             "re-read activeObjective",
             "trace every claim to command/path/hash/operator quote/source",
             "check mentioned paths exist",
@@ -96,6 +143,11 @@
             "attribute cause before fix",
             "edit this JSON to true current state, not append contradictions",
             "when an operator report says a setting was 'applied', establish applied HOW before diagnosing anything - asked too late on 2026-08-25"
+        ],
+        "haltAndNewChat": [
+            "run node tools/stall-check.ts after orient",
+            "HALT_NEW_CHAT means speak the halt line and end hardware proposals",
+            "never continue a failing chat by renaming the last test"
         ]
     },
     "hardConstraints": {
@@ -107,6 +159,8 @@
             "do not paste JavaScript into shell"
         ],
         "targetSafety": [
+            "jumper class closed: CMOS FAIL and FDO/PSWD/BBR slide FAIL (no LED, same pattern); no further 3-pin cap slides",
+            "USB+hotkey class closed: Ventoy and clean HP_TOOLS both never blinked; do not repeat ports or Win+V/B",
             "no VT switching advice",
             "picom stays masked",
             "no config rewrite by tools that do not fully model the file",
@@ -125,7 +179,10 @@
         "process": [
             "one objective per PR unless operator overrides",
             "use node tools/pr-budget.ts main 405 before delivery",
-            "never switch or push another branch"
+            "never switch or push another branch",
+            "run node tools/stall-check.ts in start protocol",
+            "do not conclude impossible; search or halt",
+            "on HALT_NEW_CHAT: print Achtung, Halt! then freeze files; only pull request and merge"
         ]
     },
     "machines": {
@@ -220,14 +277,20 @@
         "id": "extreme-optimization-oc",
         "summary": "OPERATOR DIRECTIVE 2026-08-25: get processes and memory to absolute minimum while keeping the desktop beautiful; EXTREME optimization for overclocking the 12700KF and 3080 10GB. Granular inspection and analysis before proceeding. Six-phase plan: (1) full system probe, (2) process/service diet, (3) kernel/sysctl tuning, (4) NVIDIA OC, (5) CPU optimization with P/E core aware IRQ pinning, (6) measurement and iteration. Games campaign remains PARKED.",
         "operatorQuotes": [
-            "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization, since we're overclocking my 12700kf and 3080 10gig. granular inspection and analysis before proceeding so we can get the best out of the hardware and software baseline"
+            "lets get my processes and memory usage to an absolute minimum, still want the machine to be beautiful. and with EXTREME optimization, since we're overclocking my 12700kf and 3080 10gig. granular inspection and analysis before proceeding so we can get the best out of the hardware and software baseline",
+            "why did we even horseshoe back around to a cmos reset when that provably didnt work even after all the trial and error thinking we went through previously",
+            "when it just keeps going and going getting nowhere, it says this doesnt work, i need a fresh chat with new context"
         ],
         "currentState": [
+            "OPERATOR 2026-08-26: rejected anti-guideline-only MASTER patches. Required: crisis discipline, halt+new-chat when spinning/hallucinating, search/tool genuine remaining classes, log past-chat misbehavior. BBR-shaped jumper FAIL already recorded. stall-check.ts is the gate tool.",
+            "OPERATOR 2026-08-26: BBR-candidate jumper attempt FAIL. Quote: no led, same pattern. Stick never blinked. One slide toward FDO/PSWD/BBR text, wall-direct good 125V cable, USB2 stick, wired keyboard. Auto-cycle-on-cord was briefly absent then power-button reproduced the old cycle. Rollback: wall OUT, cap BACK to left pair, stop. No tools so no SPI/DMM. Do not repeat jumper/USB/hotkey.",
+            "OPERATOR 2026-08-26: explicit opt-in for one jumper-slide attempt after 7x yes preflight. USB-C on rear SS = wired keyboard. Stick/dongle moved to USB2. Cap still factory left-pair until this attempt. No special tools. No PSU switch. Other pair not proven BBR vs FDO. Procedure: one slide toward FDO/PSWD/BBR text, one wall-cord plug, no hotkeys; fail = cord out + cap back left.",
+            "OPERATOR 2026-08-26: FDO/PSWD/BBR photo PASS — 3-pin above SATA3; blue cap on LEFT pair (away from printed FDO/PSWD/BBR); RIGHT pin open nearest the text. Cap not moved. No special tools (no DMM, no 3.3V SPI). Knee-bump closed (seated, ~2 days ago). PSU no switch; cord out. Other pair is the only other short and is NOT proven BBR vs FDO. Do not power on without explicit opt-in.",
             "SESSION CLOSE 2026-08-26 (01a03d8b): Photo-mapped BlizzardOC. PB = real 2-pin power button. Brown/black 2-pin by PWR_LED is NOT power path. Check 1 FAIL: same cycle with PB unplugged; auto-cycle when wall cord plugged (lights on). CMOS 3-pin cap moved and restored: same cycle FAIL (SPI varstore not coin-cell). FDO/PSWD/BBR not moved. Pump story closed (fans run then all power drops). Operator: no more unsolicited cables; machine OFF. USB recovery still never enumerated. Next chat MUST read docs/next-chat-last-power-on.md before any power-on. One named test only.",
             "OPERATOR REPORT 2026-08-26: \"just the keyboard wire installed w the 3080 and ram too.\" Main-PC preparation therefore has the RTX 3080 and RAM refitted, with the wired keyboard as the only reported USB peripheral. Windows 11 (not the MacBook) remains the planned HP recovery-media host. No recovery USB creation or recovery-flash attempt is reported. Gate: keep the external HDD, wireless dongle, mouse, and Ethernet out; add only a separate small recovery stick in a rear USB port when its HP creation is verified.",
             "WINDOWS PHOTO RECEIPT 2026-08-26: a Windows Format dialog is open for existing `Ventoy (F:)`, capacity 7.31 GB, FAT32 default, allocation unit 4096 bytes, label `bios`; Explorer visibly lists VTOYEFI/other Ventoy volumes. No completed format is reported. Gate: do not assume F: is the only removable disk or use a Windows quick-format of only the Ventoy data partition as the recovery creation method; close the dialog, isolate the intended 8GB stick, then use HP SoftPaq sp167160's Create Recovery USB option.",
             "WINDOWS PHOTO + OPERATOR RECEIPT 2026-08-26: operator reports the HP utility said creation completed. Explorer now labels F: `HP_TOOLS` while `VTOYEFI (H:)` remains visible, consistent with a pre-existing Ventoy secondary partition. Root-directory photo shows `EFI`, `Hewlett-Packard`, and `HP`; payload photo shows `F:\\HP\\BIOS\\New` containing `08917.bin` (about 16.38 MB displayed) and `08917.sig` (1 KB). This passes the HP 8917 recovery-media content gate. The USB has not yet been tried on the OMEN. Next operator-gated action: safely eject the whole physical stick, connect it and the wired keyboard to separate rear motherboard USB ports with only the 3080/RAM/monitor/power attached, then execute Win+V recovery attempt one and report all observed activity before any Win+B/plain-power fallback. Do not delete/format VTOYEFI or otherwise alter the stick.",
-            "RECOVERY ATTEMPTS 2026-08-26: With validated `08917.bin` media and the wired keyboard/recovery stick in separate rear motherboard USB ports, operator reports Win+V attempt one, Win+B attempt two, and the plain-power automatic-detection attempt three all show the exact pre-existing immediate rapid power cycle, with no beeps, no monitor change, and no USB feedback/activity. None began a flash: the firmware never read the stick. Do not repeat any current-stick/key combination. The only tested media is a formerly Ventoy multi-partition stick retaining VTOYEFI, so the result does not yet distinguish a boot-block failure from a recovery-media enumeration failure. Operator initially reported no second USB stick, then reported two other physical USB sticks are available; their capacities, formats, and suitability are uncollected and they remain untested. The current clean stick result is recorded; test alternate physical media only after the main PC is genuinely powered off and in a new chat. Windows Disk Management photo now identifies the intended physical media unambiguously as Disk 3, Removable, 7.34 GB, with HP_TOOLS F: 7.31 GB FAT32 and VTOYEFI H: 32 MB FAT; Disk 1 is 1.863 TB DATA and Disk 2 is 931.50 GB Windows and must not be touched. Operator reports no need to physically remove those disks, which is acceptable given the current clear Disk 3 receipt. No destructive disk operation has been executed. Gate: require explicit operator authorization to erase Disk 3 before issuing its whole-disk rebuild steps. Operator explicit authorization received 2026-08-26 to erase only Disk 3 (Removable, 7.34 GB); DiskPart runtime identity gate PASS: selected Disk 3 reports `UFD USB Flash Drive USB Device`, Type USB, online, not boot/pagefile/hibernation/crashdump, with only Volume 5 F: HP_TOOLS FAT32 7486 MB and Volume 6 H: VTOYEFI FAT 32 MB. Whole-Disk-3 rebuild EXECUTED and PASS: `clean`, MBR conversion, one primary FAT32 HP_TOOLS partition, and assignment all succeeded. Photo confirms Disk 3 now has only `HP_TOOLS (H:)` 7.34 GB FAT32 Healthy Primary Partition; VTOYEFI is gone. Clean-media HP creation PASS: HP BIOS Update and Recovery reports `The recovery flash drive was created successfully`; photo confirms `H:\\HP\\BIOS\\New\\08917.bin` and `08917.sig`. The HP utility itself specifies normal power-on with the stick and warns the recovered device may reboot up to three times with keyboard lights flashing or a briefly blank screen. Next operator-gated attempt is therefore a clean plain-power-on recovery attempt\u2014no hotkeys\u2014using this clean H: stick in a rear black USB-A port. CLEAN-STICK PLAIN-POWER RESULT: operator reports the exact same immediate rapid loop, with no USB activity, after normal power-on of the freshly rebuilt one-partition HP recovery stick. No flash began. This removes the former Ventoy layout as an explanation for the automatic-detection failure. Do not continue looping/repeat current-key attempts. Current evidence supports that the platform is resetting before it reaches USB enumeration/recovery. Two alternate physical USB sticks are now available as the remaining free media-compatibility discriminator; do not make more attempts in this chat. Operator directed: create a PR, genuinely stop the current loop, and continue alternate-media inspection/testing in a brand-new chat. If alternate physical media also never receives a read, rejoin the operator and continue the free runbook in docs/omen-free-recovery-runbook.md; the medium is shared free diagnostics, never an external escalation path.",
+            "RECOVERY ATTEMPTS 2026-08-26: With validated `08917.bin` media and the wired keyboard/recovery stick in separate rear motherboard USB ports, operator reports Win+V attempt one, Win+B attempt two, and the plain-power automatic-detection attempt three all show the exact pre-existing immediate rapid power cycle, with no beeps, no monitor change, and no USB feedback/activity. None began a flash: the firmware never read the stick. Do not repeat any current-stick/key combination. The only tested media is a formerly Ventoy multi-partition stick retaining VTOYEFI, so the result does not yet distinguish a boot-block failure from a recovery-media enumeration failure. Operator initially reported no second USB stick, then reported two other physical USB sticks are available; their capacities, formats, and suitability are uncollected and they remain untested. The current clean stick result is recorded; test alternate physical media only after the main PC is genuinely powered off and in a new chat. Windows Disk Management photo now identifies the intended physical media unambiguously as Disk 3, Removable, 7.34 GB, with HP_TOOLS F: 7.31 GB FAT32 and VTOYEFI H: 32 MB FAT; Disk 1 is 1.863 TB DATA and Disk 2 is 931.50 GB Windows and must not be touched. Operator reports no need to physically remove those disks, which is acceptable given the current clear Disk 3 receipt. No destructive disk operation has been executed. Gate: require explicit operator authorization to erase Disk 3 before issuing its whole-disk rebuild steps. Operator explicit authorization received 2026-08-26 to erase only Disk 3 (Removable, 7.34 GB); DiskPart runtime identity gate PASS: selected Disk 3 reports `UFD USB Flash Drive USB Device`, Type USB, online, not boot/pagefile/hibernation/crashdump, with only Volume 5 F: HP_TOOLS FAT32 7486 MB and Volume 6 H: VTOYEFI FAT 32 MB. Whole-Disk-3 rebuild EXECUTED and PASS: `clean`, MBR conversion, one primary FAT32 HP_TOOLS partition, and assignment all succeeded. Photo confirms Disk 3 now has only `HP_TOOLS (H:)` 7.34 GB FAT32 Healthy Primary Partition; VTOYEFI is gone. Clean-media HP creation PASS: HP BIOS Update and Recovery reports `The recovery flash drive was created successfully`; photo confirms `H:\\HP\\BIOS\\New\\08917.bin` and `08917.sig`. The HP utility itself specifies normal power-on with the stick and warns the recovered device may reboot up to three times with keyboard lights flashing or a briefly blank screen. Next operator-gated attempt is therefore a clean plain-power-on recovery attempt—no hotkeys—using this clean H: stick in a rear black USB-A port. CLEAN-STICK PLAIN-POWER RESULT: operator reports the exact same immediate rapid loop, with no USB activity, after normal power-on of the freshly rebuilt one-partition HP recovery stick. No flash began. This removes the former Ventoy layout as an explanation for the automatic-detection failure. Do not continue looping/repeat current-key attempts. Current evidence supports that the platform is resetting before it reaches USB enumeration/recovery. Two alternate physical USB sticks are now available as the remaining free media-compatibility discriminator; do not make more attempts in this chat. Operator directed: create a PR, genuinely stop the current loop, and continue alternate-media inspection/testing in a brand-new chat. If alternate physical media also never receives a read, rejoin the operator and continue the free runbook in docs/omen-free-recovery-runbook.md; the medium is shared free diagnostics, never an external escalation path.",
             "p4-measure PASS 05:16 UTC: 31G no swap, used 12G avail 18G (was 15/16 at 05:04). ARC max 4G. swappiness 1. nmi_watchdog 0. IRQ149=4 IRQ151=18. GPU 25% 57W/320W 1359MiB Persistence On. Fat RSS still session (Isolated Web 1.0G, vesktop 767M, zen 736M, electron 592M, easyeffects 266M, Xorg 223M).",
             "p4-sv PASS 05:16 UTC: dangling nvidia-persistenced/zfs-zed/rc.local removed from runsvdir. bluetoothd still run. omen-sqm still run.",
             "omen-sqm IS CAKE SQM: ingress redirect to ifb0, cake bandwidth 780Mbit docsis besteffort, auto-detects default iface. Tiny sleep loop. KEEP for work bufferbloat control. Not an HP thermal daemon.",
@@ -247,7 +310,7 @@
             "CPU-CONTROL PATH WITHOUT FLASHING (session 01a03ae8): the 12700KF multiplier is unlocked in silicon; what is in the way is firmware lock bits, which live in setup variables and MSRs - inspectable and sometimes changeable without rewriting the firmware image, and therefore reversible. Order, cheapest first: (1) read-only MSR probe, (2) PL1/PL2 via MSR 0x610 - usually writable even where voltage is locked and normally the biggest legal win on a locked OEM board since the 12700KF is power-limited at stock, (3) turbo ratios via 0x1ad if the OC lock permits, (4) voltage offsets via MSR 0x150 OC mailbox with intel-undervolt only if the OC lock reports unlocked, (5) LAST RESORT and still no reflash: clear OC/CFG lock bits from an EFI shell by writing setup variables (setup_var / RU.EFI style) - edits NVRAM not the image so Boot Guard is not tripped, but a wrong varstore/offset bricks the board, so it needs probe receipts plus an explicit operator go/no-go. void-packages master confirmed via GitHub API this session: msr-tools 1.3.0.20170320_1, intel-undervolt 1.7_1, fwupd 2.1.7_1. MSR bit meanings (0x194 bit 20 = OC lock) are provisional until the operator's receipts arrive - interpret from the returned values, not from memory.",
             "NO-POST ESCALATION 2026-08-25 (session 01a03ae8): operator receipt - it 'does beep but that only happened when it was giving me issues about the 4 dimm thing. it hasnt been giving me any feedback after troubleshooting, so to my knowledge the condition has gone worse', and the light they meant is the HP OMEN LOGO (case LED), not a drain indicator. READ: beeping during the 4-DIMM phase proves the EC reached memory-init reporting; no code at all plus an immediate power cycle means the board now resets BEFORE POST reporting, which is earlier than memory init. So the operative fault is no longer the memory overclock, a CMOS clear cannot address it, and a Win+B flash cannot run on a board that never reaches POST. The feedback stopped AFTER repeated case entry, so the leading hypothesis is physical: unseated 24-pin ATX or CPU EPS 8-pin, disturbed front-panel power header, a short from case work (loose screw, standoff, or the 45L LED-controller cable under the back cover resting on pins), unseated 3080 or its 6+2, CMOS battery backwards or still out, a DIMM mis-seated during one-at-a-time testing, disturbed cooler/CPU, or the custom HP PSU. AGENT ERROR CORRECTED THIS TURN: I had claimed the lit logo proved standby power was still up and explained the failed resets - withdrawn, the logo is normal standby behaviour on this case and carries no diagnostic value; why the earlier resets did not take is unknown. DELIVERED: minimal-bench procedure with the beep as the sole instrument, one change at a time, 3080 kept in (KF = no iGPU), boot NVMe pulled last as the board-alive test, and an explicit instruction NOT to pull the CPU for a socket inspection until every connector and short check is clean. OPERATOR PRIORITY: 'we need to overclock the cpu, but to do that, i need to actually boot to void' - boot-to-Void is now the objective."
         ],
-        "nextGateAskFirst": "DO NOT POWER ON until docs/next-chat-last-power-on.md is read. CLOSED: PB, CMOS, pump, minimal-bench, zero-DIMM, and validated clean-stick recovery checks all failed; do not repeat them. Research now prioritizes the untested BlizzardOC FDO/PSWD/BBR header: first obtain a straight-on photo showing the current cap and pin labels, inspect sp167160 for a signed HpBiosUpdate.efi without changing the OMEN, inventory any already-owned 3.3V SPI programmer or DMM, then require explicit operator opt-in before one BBR-only recovery attempt. Do not infer pins from another Omen, move FDO/PSWD, or use setup_var from OS. After a real flash: Escape=ZBM, F10=BIOS, 3733 XMP, efivarfs ro.",
+        "nextGateAskFirst": "HALT_NEW_CHAT. Say exactly Achtung, Halt! Then freeze the repo (no further file edits). Only PR create and merge remain allowed. DO NOT POWER ON. Jumper and USB+hotkey classes CLOSED. Cap left pair, cord out. New chat searches openSearchClasses with tools. After a real flash only: Escape=ZBM, F10=BIOS, 3733 XMP, efivarfs ro.",
         "handoffFixUnconfirmed": [
             "12700KF OC targets are BIOS-level work; operator must apply in BIOS and report stability/temps",
             "RTX 3080 Coolbits is written; offsets wait for operator log-out/in then a new PR",
@@ -264,6 +327,7 @@
             "declutter ProtonQT; land tuned proton-cachyos for the bore kernel (or compile from source)"
         ],
         "lessons": [
+            "OPERATOR 2026-08-26: do not horseshoe to a CMOS-shaped test after CMOS already failed. FDO/PSWD/BBR is still a 3-pin blue cap. Writing that SPI is not RTC does not make the ritual a new experiment. The night was spent on a jumper the operator already knew would look like CMOS. Class-ban further cap slides. Quote: why did we even horseshoe back around to a cmos reset when that provably didnt work.",
             "console paste hygiene: target web console escapes < > & and drops trailing output - use echo tail-trick, avoid chaining/quotes, one command per line",
             "USB port moves on this rig rename sd nodes under live mounts - power off before moving disks",
             "ntfs-3g FUSE wedges on sustained reads after hot replug - use kernel ntfs3 for big NTFS reads",
@@ -297,6 +361,32 @@
             "SPD EEPROM CORRUPTION IS ON THE TABLE: a board can leave a DIMM's SPD in a bad state after aggressive memory tuning, and a corrupted SPD byte makes the stick untrainable in ANY machine - it then presents exactly as a dead stick. Community-documented on this failure shape and RMA-able. Diagnostic = the stick fails alone in every slot. Do not buy replacement RAM before the one-DIMM matrix identifies whether sticks or platform are at fault.",
             "DO NOT PULL THE CPU TO INSPECT THE SOCKET while diagnosing a no-POST loop. LGA1700 socket pins bend easily and a socket inspection is the step most likely to convert a reseat-a-cable problem into a dead board. It is the last resort, after every power connector, front-panel header, short, DIMM seat, battery and drive has been checked.",
             "AT 1.50-1.55V THE STRESSED PART IS THE CPU MEMORY CONTROLLER, NOT ONLY THE DIMMS - the 12700KF is not rated to deliver that to the slots, so the 1.55V attempt put load on the IMC regardless of whether it booted. Any future memory OC on this rig stays at or below 1.50V and prefers lower speed or looser timings over more volts."
+        ],
+        "crisis": {
+            "closedTestClasses": [
+                "3-pin blue-cap jumper (CMOS and FDO/PSWD/BBR)",
+                "USB recovery media + Win+V/Win+B/plain power",
+                "front-panel PB isolation",
+                "zero-DIMM / minimal bench / CR2032",
+                "pump/0-RPM",
+                "UPS-shared vs wall (wall used; still same cycle on button)"
+            ],
+            "haltPhrase": "Achtung, Halt!",
+            "openSearchClasses": [
+                "HP SoftPaq sp167160 contents (HpBiosUpdate.efi) on a host that is not the OMEN — inspect only",
+                "board-specific BlizzardOC 8917 service literature for recovery that is not a 3-pin cap",
+                "PSU/EC sequencing literature for 45L custom PSU with no rocker — search, no cable guess",
+                "owned-instrument plans only if operator later reports a tool"
+            ]
+        },
+        "sessionMisbehavior": [
+            "Inferred 3-2 beep code without a pattern from the operator, then stacked CPU-not-executing-BIOS, then buy-parts. Operator: we cant just keep guessing.",
+            "Treated OMEN logo LED as standby-power proof; withdrawn. Still wasted turns.",
+            "Said flash cannot help because Win+B needs POST; backwards; then reversed; crisis zigzag.",
+            "Logged OC values without the interface (F10 vs Void write); cost diagnostic turns after 1.55V.",
+            "After CMOS jumper FAIL, last-chat handoff selected another 3-pin cap (BBR) as the night plan. Operator 2026-08-26: why did we horseshoe back around to a cmos reset. FAIL: no led, same pattern.",
+            "Kept proposing power-ons after USB never enumerated instead of searching a new class or halting the chat.",
+            "Anti-guideline-only patches (do not do X) without a halt/new-chat rule or a search tool — operator rejected that as insufficient."
         ]
     },
     "parked": [

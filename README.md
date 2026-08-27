@@ -6,15 +6,16 @@
 
 Run in one pass, parallel where independent:
 
-1. Read `MASTER.md` in full. It is JSON context, not prose policy.
-2. If the OMEN is in no-POST recovery, also read `docs/next-chat-last-power-on.md` before any power-on advice.
-3. Establish ground truth with `node tools/orient.ts orient`.
-4. Read `activeObjective` from `MASTER.md`; that is the task and gate.
-5. Deploy bounded agents: one task, source set, hypothesis, or verification target per agent.
-6. Before pasting target commands, run `node tools/paste-proof.ts --target-console --root <block-file>` or an equivalent stricter check.
-7. Before delivery, run `node tools/test-all.ts` and `node tools/pr-budget.ts main 405` unless the operator explicitly ordered a larger refactor.
-8. Deliver large, filtered, pasteable command blocks only after tool checks; the operator pastes output back for main-model problem solving.
-9. Report objective, agents used, receipts, unverified limits, gate, and next action.
+1. Read `MASTER.md` in full. It is JSON context, not prose policy. Read `interactionModel.crisisDiscipline` and `activeObjective.sessionMisbehavior`.
+2. Run `node tools/stall-check.ts`. If `HALT_NEW_CHAT`, print exactly `Achtung, Halt!` then freeze the repo (no more file edits). The only allowed further processing is pull request create and merge.
+3. If the OMEN is in no-POST recovery, also read `docs/hardware-retrospective.md` and `docs/next-chat-last-power-on.md` before any power-on advice.
+4. Establish ground truth with `node tools/orient.ts orient`.
+5. Read `activeObjective` from `MASTER.md`; that is the task and gate. Closed test classes are classes; do not relabel them.
+6. Deploy bounded agents: one task, source set, hypothesis, or verification target per agent. Search a **new** class before hardware.
+7. Before pasting target commands, run `node tools/paste-proof.ts --target-console --root <block-file>` or an equivalent stricter check.
+8. Before delivery, run `node tools/test-all.ts` and `node tools/pr-budget.ts main 405` unless the operator explicitly ordered a larger refactor.
+9. Deliver large, filtered, pasteable command blocks only after tool checks; the operator pastes output back for main-model problem solving.
+10. Report objective, agents used, receipts, unverified limits, gate, and next action. If the chat is spinning, halt for a new chat instead of another try.
 
 ## Project
 

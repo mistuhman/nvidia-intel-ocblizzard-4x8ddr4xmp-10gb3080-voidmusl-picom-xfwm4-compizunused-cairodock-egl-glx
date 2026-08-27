@@ -34,11 +34,11 @@
 - [x] Pump/0-RPM closed (fans run in the cycle). No more unsolicited cables.
 - [x] Validated clean 7.34 GB HP recovery stick: plain-power attempt FAIL, same immediate loop, no USB activity.
 - [x] 80-agent recovery research tool: exact 80-agent/80-URL manifest, hashes and trap filtering.
-- [ ] Photograph the untouched BlizzardOC `FDO/PSWD/BBR` header straight-on; record current cap orientation and legible silkscreen without moving it.
-- [ ] If `sp167160.exe` is available on any currently accessible host (Mac, Linux, or Windows), inspect it for signed `HpBiosUpdate.efi` and signature siblings; Windows is not a gate and the validated source stick must not be altered.
-- [ ] Inventory any already-owned 3.3V SPI programmer/clip or suitable DMM/logic probe; do not buy or connect anything by assumption.
-- [ ] Explicitly opt into one BBR-only recovery attempt after the header mapping is confirmed; keep FDO and PSWD untouched.
-- [ ] If BBR produces a recovery/EFI path, use the signed F.57 route; if it fails silently, stop and choose the owned-instrument discriminator.
+- [x] Photograph FDO/PSWD/BBR; cap was left pair; one slide toward label FAIL (no LED, same pattern); cap restored left.
+- [x] No special tools (no DMM, no 3.3V SPI).
+- [x] One jumper-slide attempt FAIL. Jumper class CLOSED. Do not horseshoe to another cap.
+- [x] MASTER crisisDiscipline + tools/stall-check.ts (halt + new chat; search remaining classes).
+- [ ] New chat only: search openSearchClasses (SoftPaq inspect off-OMEN, 8917 literature that is not a 3-pin cap). No power-on from a spinning chat.
 - [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
 
 ## Keep
