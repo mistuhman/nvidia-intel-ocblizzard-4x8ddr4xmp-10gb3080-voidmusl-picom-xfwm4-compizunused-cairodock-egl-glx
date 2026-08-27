@@ -110,7 +110,9 @@ if [ -z "$TARGET" ]; then
 	echo "!! no EFI image found under /boot/efi - NOT touching NVRAM"
 else
 	LOADER=$(printf '%s' "${TARGET#/boot/efi}" | tr '/' '\\')
-	echo "using loader: $LOADER  (from $TARGET)"
+	# printf %s, not echo: echo interprets the \v in \vmlinuz as a vertical tab
+	# and mangles the log line (the NVRAM entry itself was always correct).
+	printf 'using loader: %s  (from %s)\n' "$LOADER" "$TARGET"
 	# Remove any stale duplicates of our own label only. Firmware/SATA entries
 	# are left alone - they are reported below for you to eyeball.
 	for n in $(efibootmgr | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\? ZFSBootMenu (NVMe).*/\1/p'); do
@@ -118,10 +120,14 @@ else
 	done
 	efibootmgr -c -d "$ESPDISK" -p "$ESPPART" -L "ZFSBootMenu (NVMe)" -l "$LOADER" >/dev/null
 	NEW=$(efibootmgr | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\? ZFSBootMenu (NVMe).*/\1/p' | head -1)
-	OLD=$(efibootmgr | sed -n 's/^BootOrder: //p')
-	echo "new entry: $NEW   previous order: $OLD"
-	# NVMe ZBM first, keep the old fallback behind it as a safety net.
-	efibootmgr -o "$NEW,$(printf '%s' "$OLD" | tr -d ' ')" >/dev/null
+	OLD=$(efibootmgr | sed -n 's/^BootOrder: //p' | tr -d ' ')
+	echo "new entry: $NEW   order after -c: $OLD"
+	# NVMe ZBM first, old fallback behind it as a safety net.
+	# efibootmgr -c ALREADY prepends the new entry, so dedupe or we end up with
+	# "0000,0000,0001" (which is what the first run produced).
+	ORDER=$(printf '%s,%s' "$NEW" "$OLD" | tr ',' '\n' | awk 'NF && !seen[$0]++' | paste -sd, -)
+	echo "final order: $ORDER"
+	efibootmgr -o "$ORDER" >/dev/null
 	# Give the firmware a 1s menu window instead of 0 (0 = no F9 chance if this misfires).
 	efibootmgr -t 1 >/dev/null 2>&1 || true
 fi

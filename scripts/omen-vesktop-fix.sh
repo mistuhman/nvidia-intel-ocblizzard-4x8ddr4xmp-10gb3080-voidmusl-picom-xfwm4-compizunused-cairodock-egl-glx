@@ -63,6 +63,14 @@ if [ -n "$SRC" ]; then
 		update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 fi
 
+if [ "${SKIP_MIC:-0}" = "1" ]; then
+	echo
+	echo "SKIP_MIC=1 - audio left alone (operator reports the mic is fine)."
+	echo "DONE omen-vesktop-fix - fully restart vesktop for the flags to apply"
+	date
+	exit 0
+fi
+
 say "audio: point the default source at the CEntrance MicPort Pro"
 # Receipts proved the interface DOES enumerate:
 #   lsusb  -> Bus 001 Device 002: 1c07:0001 CEntrance MicPort Pro

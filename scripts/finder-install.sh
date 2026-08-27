@@ -1,6 +1,6 @@
 #!/bin/sh
 # finder-install.sh - ROOT. Replaces Thunar with a ZFS-aware file manager
-# branded as "Finder", using macOS (WhiteSur) icons, keeping the current
+# branded as "Finder", using genuine OS X (La Capitaine) icons, keeping the current
 # gunmetal GTK3 theme untouched.
 #
 # WHY NEMO (and not something else):
@@ -16,10 +16,13 @@
 #     drop-in overlay rather than a fork.
 #
 # WHAT IT DOES
-#   1. installs nemo + gvfs + yad + smartmontools
-#   2. installs the WhiteSur (macOS Big Sur) icon theme, wrapped in a derived
-#      theme "WhiteSur-Gunmetal" that inherits your current icon theme so
-#      nothing you already themed gets lost
+#   1. installs nemo + gvfs + yad (repairing the broken libx265 shlib first)
+#   2. installs a real OS X icon theme - La Capitaine (El Capitan, i.e. the
+#      last release actually called "OS X"), NOT WhiteSur/Big Sur - wrapped in
+#      a derived theme "OSX-Gunmetal" that inherits your current icon theme so
+#      nothing you already themed gets lost.
+#      Override with:  ICONSET=catalina sh finder-install.sh
+#      Choices: lacapitaine (default) | catalina | none
 #   3. brands nemo as "Finder" (desktop entry, window title, app id, icon)
 #   4. installs 13 ZFS right-click actions backed by scripts/finder-zfs
 #   5. makes Finder the default handler for folders everywhere (xdg-mime,
@@ -42,7 +45,10 @@ if [ "${1:-}" = "undo" ]; then
 	rm -f /usr/share/applications/nemo.desktop.omen-bak
 	rm -f /etc/xdg/autostart/finder-noop.desktop
 	rm -rf /usr/share/nemo/actions/zfs-*.nemo_action
-	rm -f /usr/local/bin/finder /usr/local/bin/finder-zfs
+	rm -f /usr/local/bin/finder /usr/local/bin/finder-zfs /usr/local/bin/thunar
+	rm -rf /usr/share/icons/OSX-Gunmetal
+	rm -f /usr/share/glib-2.0/schemas/99_finder.gschema.override
+	glib-compile-schemas /usr/share/glib-2.0/schemas 2>/dev/null || true
 	for f in /usr/share/applications/thunar.desktop /usr/share/applications/Thunar.desktop; do
 		[ -f "$f" ] && sed -i '/^NoDisplay=true$/d;/^Hidden=true$/d' "$f"
 	done
@@ -55,60 +61,133 @@ STAMP=$(date +%Y%m%d-%H%M%S)
 BAK=/root/finder-install.$STAMP
 mkdir -p "$BAK"
 
+# ------------------------------------------------------------ 0. shlib repair
+# Wave-1 receipts: `libavcodec6-6.1.6_2: broken, unresolvable shlib
+# libx265.so.215` and the same for libheif. The installed x265 is older than
+# what the currently-installed libavcodec6 links against, so xbps refuses ANY
+# transaction until the graph is consistent. Nothing to do with nemo - it just
+# blocks every install. Repair it before touching packages.
+say "0/6 repair broken shlibs (libx265.so.215)"
+xbps-install -Sy >/dev/null 2>&1 || true
+if xbps-pkgdb -a 2>&1 | grep -q 'broken, unresolvable'; then
+	echo "broken shlibs present, repairing"
+fi
+xbps-install -y x265 libx265 2>&1 | tail -5 || true
+xbps-install -uy libx265 x265 libavcodec6 libheif ffmpeg6 2>&1 | tail -8 || true
+if xbps-install -n nemo >/dev/null 2>&1; then
+	echo "shlib graph is consistent"
+else
+	echo "targeted repair insufficient - running a full system update"
+	echo "(this is the only way out of a split-repo state; it is a normal Void -Su)"
+	xbps-install -Suy xbps 2>&1 | tail -5 || true
+	xbps-install -Suy 2>&1 | tail -30 || true
+fi
+
 # ------------------------------------------------------------ 1. packages
 say "1/6 packages"
-PKGS="nemo gvfs gvfs-afc gvfs-mtp yad smartmontools xdg-utils desktop-file-utils shared-mime-info"
-xbps-install -Sy $PKGS 2>&1 | tail -20 || {
-	echo "!! bulk install failed, trying one at a time"
-	for p in $PKGS; do xbps-install -y "$p" 2>&1 | tail -2 || echo "  (skipped $p)"; done
+# Install one at a time: "already installed" is an ERROR exit in xbps and
+# aborts the whole batch, which is what killed the first attempt.
+need() {
+	if xbps-query -l | grep -q "^ii $1-[0-9]"; then echo "  already: $1"; return 0; fi
+	xbps-install -y "$1" 2>&1 | tail -3 || echo "  (failed: $1)"
 }
-command -v nemo >/dev/null || { echo "FATAL: nemo did not install. Aborting."; exit 1; }
-# optional extras, never fatal
+for p in nemo gvfs gvfs-afc gvfs-mtp yad smartmontools xdg-utils \
+         desktop-file-utils shared-mime-info git; do
+	need "$p"
+done
+command -v nemo >/dev/null || {
+	echo
+	echo "FATAL: nemo still did not install."
+	echo "Run this by hand and paste the output:  xbps-install -Sy nemo"
+	exit 1
+}
 for p in nemo-fileroller nemo-image-converter python3-nemo; do
 	xbps-install -y "$p" >/dev/null 2>&1 || true
 done
 
-# ------------------------------------------------------------ 2. macOS icons
-say "2/6 WhiteSur (macOS) icon theme"
+# ------------------------------------------------------------ 2. OS X icons
+say "2/6 OS X icon theme"
+ICONSET=${ICONSET:-lacapitaine}
 CUR_ICONS=$(asuser "xfconf-query -c xsettings -p /Net/IconThemeName" 2>/dev/null || echo "")
 echo "current icon theme: ${CUR_ICONS:-unknown}"
+echo "requested set:      $ICONSET"
 echo "$CUR_ICONS" > "$BAK/icon-theme.before.txt"
 
-if [ ! -d /usr/share/icons/WhiteSur ] && [ ! -d /usr/share/icons/WhiteSur-dark ]; then
-	command -v git >/dev/null || xbps-install -y git >/dev/null 2>&1
-	rm -rf /tmp/WhiteSur-icon-theme
-	git clone --depth=1 https://github.com/vinceliuice/WhiteSur-icon-theme.git /tmp/WhiteSur-icon-theme
-	# -a = alternative colourful folders, -b = also install to /root
-	sh /tmp/WhiteSur-icon-theme/install.sh -d /usr/share/icons -t default -a 2>&1 | tail -10
-	rm -rf /tmp/WhiteSur-icon-theme
-else
-	echo "WhiteSur already present"
-fi
-ls -d /usr/share/icons/WhiteSur* 2>/dev/null || true
+command -v git >/dev/null || xbps-install -y git >/dev/null 2>&1 || true
+BASE=""
 
-# Pick the dark variant to match a gunmetal desktop.
-WS=WhiteSur-dark
-[ -d /usr/share/icons/$WS ] || WS=WhiteSur
-[ -d /usr/share/icons/$WS ] || { echo "!! WhiteSur missing; keeping current icons"; WS=""; }
+case "$ICONSET" in
+lacapitaine)
+	# La Capitaine - drawn against the macOS Human Interface guidelines from
+	# the OS X era (El Capitan was the LAST release named "OS X"; everything
+	# from 10.12 on is macOS, and Big Sur / WhiteSur is the flat-squircle
+	# redesign the operator explicitly rejected). Aqua-style glossy squares,
+	# proper Finder/HD/folder faces. Pure SVG, no install.sh needed - the
+	# repo IS the theme directory.
+	if [ ! -d /usr/share/icons/la-capitaine ]; then
+		rm -rf /tmp/la-capitaine
+		git clone --depth=1 https://github.com/keeferrourke/la-capitaine-icon-theme.git /tmp/la-capitaine
+		rm -rf /tmp/la-capitaine/.git
+		rm -rf /usr/share/icons/la-capitaine
+		cp -a /tmp/la-capitaine /usr/share/icons/la-capitaine
+		rm -rf /tmp/la-capitaine
+		# its ./configure adapts the distro/DE specific symlinks
+		if [ -x /usr/share/icons/la-capitaine/configure ]; then
+			( cd /usr/share/icons/la-capitaine && ./configure ) 2>&1 | tail -5 || true
+		fi
+	else
+		echo "la-capitaine already present"
+	fi
+	BASE=la-capitaine
+	;;
+catalina)
+	# Os-Catalina-icons - closer to 10.15, still pre-Big-Sur.
+	if [ ! -d /usr/share/icons/Os-Catalina-icons ]; then
+		rm -rf /tmp/oscat
+		git clone --depth=1 https://github.com/zayronxio/Os-Catalina-icons.git /tmp/oscat
+		rm -rf /tmp/oscat/.git
+		cp -a /tmp/oscat /usr/share/icons/Os-Catalina-icons
+		rm -rf /tmp/oscat
+	fi
+	BASE=Os-Catalina-icons
+	;;
+none)
+	echo "icon theme left alone by request"
+	;;
+*)
+	echo "unknown ICONSET '$ICONSET' - leaving icons alone"
+	;;
+esac
 
-if [ -n "$WS" ]; then
-	# Derived theme: macOS icons FIRST, your existing theme behind it as a
+# If a WhiteSur set got installed by the earlier attempt, get rid of it -
+# operator explicitly does not want Big Sur icons.
+for d in /usr/share/icons/WhiteSur /usr/share/icons/WhiteSur-dark \
+         /usr/share/icons/WhiteSur-light /usr/share/icons/WhiteSur-Gunmetal; do
+	[ -d "$d" ] && { rm -rf "$d"; echo "removed $d"; }
+done
+
+[ -n "$BASE" ] && [ ! -d "/usr/share/icons/$BASE" ] && { echo "!! $BASE missing; keeping current icons"; BASE=""; }
+
+if [ -n "$BASE" ]; then
+	# Derived theme: OS X icons FIRST, your existing theme behind them as a
 	# fallback so anything you already customised still resolves.
-	mkdir -p /usr/share/icons/WhiteSur-Gunmetal
-	INHERIT="$WS"
-	if [ -n "$CUR_ICONS" ] && [ "$CUR_ICONS" != "$WS" ]; then INHERIT="$WS,$CUR_ICONS"; fi
+	mkdir -p /usr/share/icons/OSX-Gunmetal
+	INHERIT="$BASE"
+	if [ -n "$CUR_ICONS" ] && [ "$CUR_ICONS" != "$BASE" ] && [ "$CUR_ICONS" != "OSX-Gunmetal" ]; then
+		INHERIT="$BASE,$CUR_ICONS"
+	fi
 	INHERIT="$INHERIT,Adwaita,gnome,hicolor"
-	cat > /usr/share/icons/WhiteSur-Gunmetal/index.theme <<EOF
+	cat > /usr/share/icons/OSX-Gunmetal/index.theme <<EOF
 [Icon Theme]
-Name=WhiteSur-Gunmetal
-Comment=macOS Big Sur icons layered over the existing gunmetal desktop theme
+Name=OSX-Gunmetal
+Comment=OS X (El Capitan era) icons layered over the existing gunmetal desktop theme
 Inherits=$INHERIT
 Directories=
 Hidden=false
 EOF
-	gtk-update-icon-cache -f /usr/share/icons/WhiteSur-Gunmetal 2>/dev/null || true
-	gtk-update-icon-cache -f "/usr/share/icons/$WS" 2>/dev/null || true
-	cat /usr/share/icons/WhiteSur-Gunmetal/index.theme
+	gtk-update-icon-cache -f /usr/share/icons/OSX-Gunmetal 2>/dev/null || true
+	gtk-update-icon-cache -f "/usr/share/icons/$BASE" 2>/dev/null || true
+	cat /usr/share/icons/OSX-Gunmetal/index.theme
 fi
 
 # ------------------------------------------------------------ 3. Finder branding
@@ -123,8 +202,8 @@ export GTK_THEME_VARIANT=dark
 exec nemo --name=Finder --class=Finder "$@"
 FINDER
 
-# The Finder desktop entry. Icon: WhiteSur ships the macOS Finder face as
-# `system-file-manager` / `nemo`; both resolve inside WhiteSur-Gunmetal.
+# The Finder desktop entry. Icon: La Capitaine ships the OS X Finder face as
+# `system-file-manager`; it resolves inside OSX-Gunmetal.
 install -Dm0644 /dev/stdin /usr/local/share/applications/finder.desktop <<'DESK'
 [Desktop Entry]
 Type=Application
@@ -285,9 +364,9 @@ printf 'FileManager=custom-FileManager\n' >> "$TARGET_HOME/.config/xfce4/helpers
 mkdir -p "$TARGET_HOME/.config"
 asuser "xdg-mime default finder.desktop inode/directory" 2>/dev/null || true
 asuser "xdg-mime default finder.desktop x-scheme-handler/file" 2>/dev/null || true
-if [ -n "$WS" ]; then
-	asuser "xfconf-query -c xsettings -p /Net/IconThemeName -s WhiteSur-Gunmetal" 2>/dev/null || true
-	asuser "gsettings set org.gnome.desktop.interface icon-theme WhiteSur-Gunmetal" 2>/dev/null || true
+if [ -n "$BASE" ]; then
+	asuser "xfconf-query -c xsettings -p /Net/IconThemeName -s OSX-Gunmetal" 2>/dev/null || true
+	asuser "gsettings set org.gnome.desktop.interface icon-theme OSX-Gunmetal" 2>/dev/null || true
 fi
 chown -R "$TARGET_USER": "$TARGET_HOME/.local/share/xfce4" "$TARGET_HOME/.config/xfce4" 2>/dev/null || true
 
