@@ -477,3 +477,65 @@ Observed pattern to date, stated without interpretation:
 
 Nothing can be concluded from that until the power-request path (`PB` or shorting the `PB`
 pins) and CPU-plug seating are **verified**, not assumed.
+
+
+---
+
+# THE OMEN POSTS AGAIN — 2026-08-27
+
+After reconnecting the **`PB` front-panel header** (it had been left disconnected since the
+2026-08-26 `PB` isolation test) the machine went, in one session:
+
+1. **beeps** — 3 long + 3 short, repeating ~5 iterations then stopping. HP major/minor
+   **3.3** = *"The embedded controller has timed out waiting for BIOS to return from graphics
+   initialization"*, and HP documents beep sequences as running **five iterations then
+   stopping**. Correct and expected with the 3080's 6+2 plugs deliberately disconnected on a
+   **12700KF** (no iGPU).
+2. **video + HP POST screen** once GPU power was restored:
+   *"The system has detected that a cooling fan is not operating correctly… **CPU Fan (90B)**
+   … press the Enter key now"*, then an automatic shutdown when Enter was not pressed —
+   exactly the documented behaviour.
+
+**The no-POST crisis that started 2026-08-25 is over.** The board executes, initialises
+memory, initialises graphics, and renders HP's own POST UI.
+
+## Cause — honestly UNATTRIBUTED
+
+Several things changed across this pass: every PSU-side accessory branch came off, the
+24-pin and both CPU 4-pins were unplugged and reseated, the PSU itself was removed, bench-
+tested and reinstalled, and `PB` was reconnected. **Which of those fixed it is not known**,
+and no single-variable receipt exists. Candidates, none proven:
+
+- a marginal / partially-seated `SPWR` 24-pin or CPU 4-pin, corrected by the reseat;
+- a faulty PSU-side accessory branch (the `M82868-001` lighting board is the standout
+  suspect: HP's own polarity documentation for it is wrong per PCMag, and it is still
+  disconnected);
+- the long full-drain with the PSU physically out of the case.
+
+Do **not** write a cause into the ledger. The re-add ladder is what would attribute it.
+
+## What this retro-proves
+
+- **`M83827-001` PSU: good** (bench POSTed to `AA` on it, and it now runs the OMEN).
+- **Firmware was never the fault.** Mechanism A (corrupt SPI setup varstore) is dead. The
+  jumper, USB-recovery, hotkey and `HpBiosUpdate.efi` classes were all correctly closed —
+  they were never going to work, for reasons unrelated to technique or media.
+- The **PSU-side load-isolation class** named in this pass is what broke the deadlock, after
+  five sessions of firmware theory.
+
+## Immediate safety gate
+
+`90B` is a **real** warning, not noise: the CPU cooling is currently disconnected. Do not
+press Enter and run the machine, and absolutely do not load it, until the AIO pump and CPU
+fan headers are reconnected.
+
+## Next, in order
+
+1. Cord out. Reconnect **AIO pump + CPU fan** headers (and the rest of the cooling).
+2. Power on → `90B` should be gone → **F10 = BIOS**.
+3. In BIOS: load defaults, then set memory to **XMP 3733** (HP's own factory DIMM
+   `M85222-001` is a DDR4-3733 part) — **never** the 4000 custom profile that preceded the
+   crisis.
+4. **Escape = ZBM** → boot `nvme/ROOT/void`.
+5. Only then re-add the remaining accessory branches **one power-on at a time** (lighting
+   board, SATA/drives, fan hub, front panel) to find out whether one of them was the trip.
