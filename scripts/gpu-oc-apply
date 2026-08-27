@@ -14,7 +14,9 @@
 #   sh gpu-oc-apply verify
 #   sh gpu-oc-apply meter STEP_ID [SECONDS] [WAIT]   arms, waits for 90% load, then records
 #   sh gpu-oc-apply meterbg STEP_ID [SECONDS]        same, backgrounded, frees the shell
-#   sh gpu-oc-apply superposition-probe [DIR]        find the benchmark launcher
+#   sh gpu-oc-apply superposition-find               locate the benchmark anywhere on this rig
+#   sh gpu-oc-apply superposition-probe [DIR]        list one install's executables
+#   sh gpu-oc-apply superposition-run [DIR]          launch it with the correct working directory
 #   sh gpu-oc-apply powerlimit PCT           (root)
 #   sh gpu-oc-apply fan PCT | fan auto
 #   sh gpu-oc-apply perfmode max | perfmode auto
@@ -226,9 +228,36 @@ cmd_superposition_probe() {
 	find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 20
 }
 
+# Search the roots this rig actually uses. MASTER recorded the install under ~/Downloads and it is
+# not there any more, so discovery beats a hardcoded path.
+superposition_find() {
+	for root in "$HOME" /fast /bulk /mnt/games /opt /usr/local /home; do
+		[ -d "$root" ] || continue
+		find "$root" -maxdepth 5 -iname 'Unigine_Superposition*' -o -maxdepth 5 -iname 'superposition' 2>/dev/null
+	done | sort -u
+}
+
+cmd_superposition_find() {
+	echo "--- candidates ---"
+	superposition_find
+	echo "--- score files (tell us where it has run before) ---"
+	find "$HOME" /bulk /fast -maxdepth 4 -iname 'Superposition_Benchmark*' 2>/dev/null | head -n 10
+	echo "--- steam/proton copies ---"
+	find "$HOME" /fast /bulk /mnt/games -maxdepth 6 -iname '*uperposition*' -type d 2>/dev/null | head -n 10
+}
+
 cmd_superposition_run() {
-	dir=${1:-$HOME/Downloads/Unigine_Superposition-1.1}
-	[ -d "$dir" ] || die "no Superposition install at $dir (pass the path: superposition-run /path/to/install)"
+	dir=${1:-}
+	if [ -z "$dir" ] || [ ! -d "$dir" ]; then
+		for candidate in $(superposition_find); do
+			if [ -d "$candidate" ]; then
+				dir=$candidate
+				break
+			fi
+		done
+	fi
+	[ -n "$dir" ] && [ -d "$dir" ] || die "no Superposition install found - run superposition-find and paste the listing"
+	echo "install: $dir"
 	launcher=""
 	for candidate in "$dir/bin/launcher" "$dir/launcher" "$dir/bin/superposition" "$dir/Superposition"; do
 		if [ -x "$candidate" ]; then
@@ -320,13 +349,14 @@ verify) cmd_verify ;;
 meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECS] [WAIT_SECS]"; cmd_meter "$@" ;;
 meterbg) [ $# -ge 1 ] || die "usage: meterbg STEP_ID [SECS] [WAIT_SECS]"; cmd_meterbg "$@" ;;
 superposition-probe) cmd_superposition_probe "$@" ;;
+superposition-find) cmd_superposition_find ;;
 superposition-run) cmd_superposition_run "$@" ;;
 powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
 fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
 perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
 revert) cmd_revert ;;
 *)
-	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-probe|powerlimit PCT|fan PCT|perfmode max|revert"
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-find|superposition-probe|superposition-run|powerlimit PCT|fan PCT|perfmode max|revert"
 	exit 2
 	;;
 esac
