@@ -1,0 +1,6 @@
+Geekbench 6.7.1 Build 603632
+Single-Core Score 2715
+Multi-Core Score 14569
+https://browser.geekbench.com/v6/cpu/19061796
+OpenCL Score 194800
+https://browser.geekbench.com/v6/compute/6845489

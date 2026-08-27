@@ -1,0 +1,114 @@
+name: gpu-receipt-ingest
+
+# Paste target receipts in, get a verdict out. Takes the dmon log + Superposition result (+ optional
+# Geekbench) for ONE metered step, normalizes them, applies the stop rules, refits the model against
+# every run so far, and says ADVANCE / HOLD / REVERT / REBENCH with the reason.
+on:
+  workflow_dispatch:
+    inputs:
+      step_id:
+        description: 'step id from gpu-oc-plan, e.g. cp60-m250-pl100'
+        required: true
+      core:
+        description: 'core offset applied (MHz)'
+        default: '0'
+      mem:
+        description: 'memory transfer-rate offset applied (MHz)'
+        default: '0'
+      pl:
+        description: 'power limit applied (percent of default)'
+        default: '100'
+      dmon:
+        description: 'nvidia-smi dmon output for the run (paste)'
+        required: true
+      superposition:
+        description: 'Superposition result text or .score filename (paste)'
+        required: true
+      geekbench:
+        description: 'Geekbench 6.7.1 result text / URL (optional)'
+        default: ''
+      artifacts:
+        description: 'operator saw artifacts, a crash, or a driver reset'
+        type: boolean
+        default: false
+      commit:
+        description: 'commit the receipt ledger back to this branch'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: write pasted receipts to files
+        env:
+          DMON: ${{ inputs.dmon }}
+          SUPER: ${{ inputs.superposition }}
+          GEEK: ${{ inputs.geekbench }}
+        run: |
+          mkdir -p out receipts
+          printf '%s\n' "$DMON" > out/dmon.txt
+          printf '%s\n' "$SUPER" > out/superposition.txt
+          printf '%s\n' "$GEEK" > out/geekbench.txt
+      - name: parse and append to the ledger
+        run: |
+          GEEK_ARG=""
+          if [ -s out/geekbench.txt ] && [ "$(tr -d '[:space:]' < out/geekbench.txt)" != "" ]; then GEEK_ARG="--geekbench=out/geekbench.txt"; fi
+          node tools/gpu-bench-parse.ts parse \
+            --id='${{ inputs.step_id }}' \
+            --core='${{ inputs.core }}' \
+            --mem='${{ inputs.mem }}' \
+            --pl='${{ inputs.pl }}' \
+            --dmon=out/dmon.txt \
+            --superposition=out/superposition.txt \
+            $GEEK_ARG \
+            ${{ inputs.artifacts && '--artifacts' || '' }} \
+            --append=receipts/gpu-oc-receipts.json | tee out/run.txt
+      - name: verdict + GWE profile
+        run: |
+          node tools/gpu-oc-verify.ts verify \
+            --receipts=receipts/gpu-oc-receipts.json \
+            --markdown=out/report.md \
+            --emit-gwe=out/gwe-profile.json || true
+          cat out/report.md
+      - name: refit the undervolt graph against every run so far
+        run: |
+          node tools/gpu-curve.ts curve --core='${{ inputs.core }}' --mem='${{ inputs.mem }}' --pl=60:100:5 \
+            --measured=receipts/gpu-oc-receipts.json --csv=out/undervolt-curve.csv --svg=out/undervolt-curve.svg | tee out/curve.txt
+      - name: job summary
+        run: |
+          {
+            cat out/report.md
+            echo
+            echo '### this run'
+            echo '```'
+            cat out/run.txt
+            echo '```'
+            echo '### refitted undervolt graph'
+            echo '```'
+            cat out/curve.txt
+            echo '```'
+            echo '### GWE profile spec for the recommended daily step'
+            echo '```json'
+            cat out/gwe-profile.json 2>/dev/null || echo '{}'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gpu-receipt-${{ inputs.step_id }}
+          path: out/
+      - name: commit ledger
+        if: ${{ inputs.commit }}
+        run: |
+          git config user.name 'oc-lab'
+          git config user.email 'oc-lab@users.noreply.github.com'
+          git add receipts/gpu-oc-receipts.json
+          git diff --cached --quiet || git commit -m "receipts: ${{ inputs.step_id }}"
+          git push origin HEAD:${{ github.ref_name }}

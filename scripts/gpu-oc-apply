@@ -1,0 +1,368 @@
+#!/bin/sh
+# gpu-oc-apply — target-facing RTX 3080 OC/UV applier. Every mutation has an inverse, nothing
+# persists across an X restart, and all quoting lives HERE so chat blocks stay console-safe.
+#
+# HARD LESSON 2026-08-27 (target receipt): nvidia-settings prints "assigned value 60." and EXITS 0
+# even when the value did not take, and the AllPerformanceLevels attribute is permission-denied on
+# this Coolbits setup while the per-level form is allowed. So: never trust the assign message, never
+# trust the exit code, always read back the exact [gpu:0]/ATTR[LEVEL] form, and treat any line
+# containing ERROR as a failure.
+#
+#   sh gpu-oc-apply caps                     capability + permission probe (run this first)
+#   sh gpu-oc-apply probe
+#   sh gpu-oc-apply apply CORE_OFFSET MEM_OFFSET
+#   sh gpu-oc-apply verify
+#   sh gpu-oc-apply meter STEP_ID [SECONDS] [WAIT]   arms, waits for 90% load, then records
+#   sh gpu-oc-apply meterbg STEP_ID [SECONDS]        same, backgrounded, frees the shell
+#   sh gpu-oc-apply superposition-find               locate the benchmark anywhere on this rig
+#   sh gpu-oc-apply superposition-probe [DIR]        list one install's executables
+#   sh gpu-oc-apply superposition-run [DIR]          launch it with the correct working directory
+#   sh gpu-oc-apply powerlimit PCT           (root)
+#   sh gpu-oc-apply fan PCT | fan auto
+#   sh gpu-oc-apply perfmode max | perfmode auto
+#   sh gpu-oc-apply revert
+set -u
+
+CORE_MAX=150
+MEM_MAX=700
+PL_MIN_PCT=50   # card Min Power Limit is 100 W = 31%, but below 50% the run stops being comparable
+PL_MAX_PCT=100  # power.max_limit == power.default_limit == 320 W: raising is impossible
+METER_DIR=${METER_DIR:-$HOME/oc-meters}
+
+die() {
+	echo "GPU_OC_APPLY=FAIL $1"
+	exit 1
+}
+
+need() {
+	command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+# nvidia-settings exits 0 on refusal, so judge it by its output.
+ns_set() {
+	out=$(nvidia-settings -a "$1" 2>&1)
+	echo "$out" | grep -v '^$'
+	if echo "$out" | grep -q 'ERROR'; then
+		die "assignment refused: $1"
+	fi
+}
+
+ns_get() {
+	nvidia-settings -q "$1" -t 2>/dev/null | head -n 1
+}
+
+# The offset attributes live per performance level; the top level is the one that matters under load.
+perf_level() {
+	if [ -n "${PERF_LEVEL:-}" ]; then
+		echo "$PERF_LEVEL"
+		return
+	fi
+	lvl=$(nvidia-settings -q GPUPerfModes -t 2>/dev/null | tr ';' '\n' | sed -n 's/.*perf=\([0-9]*\).*/\1/p' | sort -n | tail -n 1)
+	if [ -z "$lvl" ]; then lvl=3; fi
+	echo "$lvl"
+}
+
+cmd_caps() {
+	need nvidia-settings
+	need nvidia-smi
+	lvl=$(perf_level)
+	echo "perf_level_top: $lvl"
+	echo "perf_modes:"
+	nvidia-settings -q GPUPerfModes -t 2>&1 | head -n 4
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+	echo "core_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
+	echo "mem_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	echo "core_offset_all_levels_query: $(ns_get GPUGraphicsClockOffsetAllPerformanceLevels)"
+	echo "fan_control_state: $(ns_get '[gpu:0]/GPUFanControlState')"
+	echo "fan_target_speed: $(ns_get '[fan:0]/GPUTargetFanSpeed')"
+	echo "powermizer_mode: $(ns_get '[gpu:0]/GPUPowerMizerMode')"
+	echo "--- write test: set the level-${lvl} core offset to 0 (a no-op that proves permission) ---"
+	out=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$lvl]=0" 2>&1)
+	if echo "$out" | grep -q 'ERROR'; then
+		echo "PER_LEVEL_WRITE=DENIED"
+		echo "$out" | grep 'ERROR' | head -n 2
+	else
+		echo "PER_LEVEL_WRITE=ALLOWED"
+	fi
+	out=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=0" 2>&1)
+	if echo "$out" | grep -q 'ERROR'; then
+		echo "ALL_LEVELS_WRITE=DENIED (expected on this Coolbits value; per-level is the path)"
+	else
+		echo "ALL_LEVELS_WRITE=ALLOWED"
+	fi
+	echo "--- xorg Coolbits ---"
+	grep -r -i coolbits /etc/X11 2>/dev/null | head -n 4
+}
+
+cmd_probe() {
+	need nvidia-smi
+	echo "--- driver / card ---"
+	nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power.max_limit,clocks.max.graphics,clocks.max.memory --format=csv
+	echo "--- current state ---"
+	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.draw,temperature.gpu,fan.speed --format=csv
+	cmd_verify
+}
+
+# Apply to the top perf level (the one the card runs under load) and, best effort, the one below it
+# so a mid-load state is not left un-offset. Only the top level is allowed to fail the step.
+apply_level() {
+	al_lvl=$1
+	al_core=$2
+	al_mem=$3
+	al_strict=$4
+	outc=$(nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$al_lvl]=$al_core" 2>&1)
+	outm=$(nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$al_lvl]=$al_mem" 2>&1)
+	gotcore=$(ns_get "[gpu:0]/GPUGraphicsClockOffset[$al_lvl]")
+	gotmem=$(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$al_lvl]")
+	echo "level $al_lvl read_back: core=$gotcore mem=$gotmem"
+	if [ "$gotcore" = "$al_core" ] && [ "$gotmem" = "$al_mem" ]; then
+		return 0
+	fi
+	echo "$outc" | grep 'ERROR' | head -n 1
+	echo "$outm" | grep 'ERROR' | head -n 1
+	if [ "$al_strict" = "strict" ]; then
+		die "level $al_lvl did not take (asked core=$al_core mem=$al_mem, card reports core=$gotcore mem=$gotmem)"
+	fi
+	echo "level $al_lvl not applied (non-fatal)"
+	return 1
+}
+
+cmd_apply() {
+	need nvidia-settings
+	core=$1
+	mem=$2
+	echo "$core" | grep -Eq '^-?[0-9]+$' || die "core offset not an integer: $core"
+	echo "$mem" | grep -Eq '^-?[0-9]+$' || die "memory offset not an integer: $mem"
+	[ "$core" -le "$CORE_MAX" ] || die "core offset $core over the recipe cap +$CORE_MAX"
+	[ "$mem" -le "$MEM_MAX" ] || die "memory offset $mem over the recipe cap +$MEM_MAX"
+	lvl=$(perf_level)
+	apply_level "$lvl" "$core" "$mem" strict
+	below=$((lvl - 1))
+	if [ "$below" -gt 0 ]; then
+		apply_level "$below" "$core" "$mem" soft || true
+	fi
+	echo "APPLIED core=+$core mem=+$mem at perf level $lvl (verified by read-back; resets on X restart)"
+	echo "INVERSE: sh $0 revert"
+}
+
+cmd_verify() {
+	need nvidia-settings
+	lvl=$(perf_level)
+	echo "perf_level_top: $lvl"
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+	echo "powermizer_mode: $(ns_get '[gpu:0]/GPUPowerMizerMode')"
+	echo "core_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$lvl]")"
+	echo "mem_offset_level_${lvl}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$lvl]")"
+	below=$((lvl - 1))
+	echo "core_offset_level_${below}: $(ns_get "[gpu:0]/GPUGraphicsClockOffset[$below]")"
+	echo "mem_offset_level_${below}: $(ns_get "[gpu:0]/GPUMemoryTransferRateOffset[$below]")"
+	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.limit,power.draw,temperature.gpu,fan.speed --format=csv
+}
+
+cmd_meter() {
+	need nvidia-smi
+	id=$1
+	secs=${2:-300}
+	wait_max=${3:-900}
+	echo "$secs" | grep -Eq '^[0-9]+$' || die "seconds not an integer: $secs"
+	echo "$wait_max" | grep -Eq '^[0-9]+$' || die "wait seconds not an integer: $wait_max"
+	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
+	out=$METER_DIR/$id.dmon.csv
+	echo "ARMED: waiting up to ${wait_max}s for the GPU to reach 90% load."
+	echo "Start Superposition 1080p Extreme now — recording begins by itself when the run loads the card."
+	waited=0
+	loaded=0
+	while [ "$waited" -lt "$wait_max" ]; do
+		util=$(nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits | head -n 1 | tr -d ' ')
+		case "$util" in
+		'' | *[!0-9]*) util=0 ;;
+		esac
+		if [ "$util" -ge 90 ]; then
+			loaded=1
+			break
+		fi
+		if [ $((waited % 30)) -eq 0 ]; then
+			echo "  waiting... ${waited}s elapsed, gpu at ${util}%"
+		fi
+		sleep 2
+		waited=$((waited + 2))
+	done
+	if [ "$loaded" -eq 0 ]; then
+		die "no 90% load inside ${wait_max}s - nothing was recorded, so nothing can be claimed"
+	fi
+	echo "LOAD DETECTED after ${waited}s — recording ${secs}s into $out"
+	nvidia-smi dmon -s puc -d 1 -c "$secs" >"$out" 2>&1
+	echo "wrote $out"
+	peak=$(awk '/^#/ { next } { if ($2 + 0 > m) m = $2 + 0 } END { printf "%d", m }' "$out")
+	echo "peak_watts_seen: $peak"
+	if [ "$peak" -lt 150 ]; then
+		echo "WARNING: peak draw ${peak}W - the load stopped mid-run, treat this log as suspect"
+	fi
+	summary=$(dirname "$0")/gpu-dmon-summary
+	if [ -f "$summary" ]; then
+		echo "--- summary ---"
+		sh "$summary" "$out"
+	fi
+}
+
+cmd_meterbg() {
+	id=$1
+	secs=${2:-300}
+	wait_max=${3:-900}
+	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
+	log=$METER_DIR/$id.meter.log
+	nohup sh "$0" meter "$id" "$secs" "$wait_max" >"$log" 2>&1 &
+	echo "meter running in the background, pid $!"
+	echo "log: $log"
+	echo "this shell is free — start Superposition now, then read the log with:"
+	echo "cat $log"
+}
+
+cmd_superposition_probe() {
+	dir=${1:-$HOME/Downloads/Unigine_Superposition-1.1}
+	echo "dir: $dir"
+	ls -l "$dir" 2>&1 | head -n 20
+	echo "--- bin ---"
+	ls -l "$dir/bin" 2>&1 | head -n 20
+	echo "--- launchers found ---"
+	find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 20
+}
+
+# Search the roots this rig actually uses. MASTER recorded the install under ~/Downloads and it is
+# not there any more, so discovery beats a hardcoded path.
+superposition_find() {
+	# -L follows symlinks: on this rig ~/Downloads is a symlink to /mnt/games/Downloads, and a plain
+	# find never descends into it - which is exactly why the install looked deleted.
+	for root in "$HOME" /mnt/games /fast /bulk /opt /usr/local; do
+		[ -d "$root" ] || continue
+		find -L "$root" -maxdepth 5 -iname 'Unigine_Superposition*' -o -maxdepth 5 -iname 'superposition*' -type d 2>/dev/null
+	done | grep -v '/\.Superposition$' | sort -u
+}
+
+cmd_superposition_find() {
+	echo "--- candidates ---"
+	superposition_find
+	echo "--- score files (tell us where it has run before) ---"
+	find -L "$HOME" /bulk /fast -maxdepth 4 -iname 'Superposition_Benchmark*' 2>/dev/null | head -n 10
+	echo "--- symlinked dirs in HOME (a plain find will not enter these) ---"
+	find "$HOME" -maxdepth 1 -type l -ls 2>/dev/null | head -n 10
+	echo "--- direct check of the real Downloads target ---"
+	ls -l /mnt/games/Downloads 2>&1 | head -n 20
+	echo "--- steam/proton copies ---"
+	find -L "$HOME" /fast /bulk /mnt/games -maxdepth 6 -iname '*uperposition*' 2>/dev/null | head -n 20
+}
+
+cmd_superposition_run() {
+	dir=${1:-}
+	if [ -z "$dir" ] || [ ! -d "$dir" ]; then
+		for candidate in $(superposition_find); do
+			if [ -d "$candidate" ]; then
+				dir=$candidate
+				break
+			fi
+		done
+	fi
+	[ -n "$dir" ] && [ -d "$dir" ] || die "no Superposition install found - run superposition-find and paste the listing"
+	echo "install: $dir"
+	launcher=""
+	for candidate in "$dir/bin/launcher" "$dir/launcher" "$dir/bin/superposition" "$dir/Superposition"; do
+		if [ -x "$candidate" ]; then
+			launcher=$candidate
+			break
+		fi
+	done
+	if [ -z "$launcher" ]; then
+		launcher=$(find "$dir" -maxdepth 2 -type f -perm -u+x 2>/dev/null | head -n 1)
+	fi
+	[ -n "$launcher" ] || die "no executable found under $dir - run superposition-probe and paste the listing"
+	echo "launcher: $launcher"
+	# Unigine resolves its data paths relative to the working directory: launching it from anywhere
+	# else (ulauncher, a file manager, a random shell) is exactly why it appears to do nothing.
+	cd "$dir" || die "cannot cd $dir"
+	nohup "$launcher" >"$METER_DIR/superposition.log" 2>&1 &
+	echo "started pid $! with cwd $dir"
+	echo "log: $METER_DIR/superposition.log"
+}
+
+cmd_powerlimit() {
+	need nvidia-smi
+	[ "$(id -u)" -eq 0 ] || die "powerlimit needs root"
+	pct=$1
+	echo "$pct" | grep -Eq '^[0-9]+$' || die "percent not an integer: $pct"
+	[ "$pct" -ge "$PL_MIN_PCT" ] || die "percent $pct below the ${PL_MIN_PCT}% floor"
+	[ "$pct" -le "$PL_MAX_PCT" ] || die "percent $pct above 100: power.max_limit == default, raising is impossible"
+	def=$(nvidia-smi --query-gpu=power.default_limit --format=csv,noheader,nounits | head -n 1 | tr -d ' ')
+	echo "$def" | grep -Eq '^[0-9]+(\.[0-9]+)?$' || die "could not read default power limit (got: $def)"
+	watts=$(awk -v d="$def" -v p="$pct" 'BEGIN { printf "%d", (d * p) / 100 }')
+	nvidia-smi -pl "$watts" || die "power limit rejected (persistence mode or permissions)"
+	nvidia-smi --query-gpu=power.limit --format=csv
+	echo "POWER_LIMIT=${watts}W (${pct}% of ${def}W default)"
+	echo "INVERSE: sh $0 powerlimit 100"
+}
+
+cmd_fan() {
+	need nvidia-settings
+	pct=$1
+	if [ "$pct" = "auto" ]; then
+		ns_set "[gpu:0]/GPUFanControlState=0"
+		echo "FAN=auto"
+		return
+	fi
+	echo "$pct" | grep -Eq '^[0-9]+$' || die "fan percent not an integer: $pct"
+	[ "$pct" -ge 30 ] || die "fan percent $pct under 30: do not stall the fans"
+	[ "$pct" -le 100 ] || die "fan percent $pct over 100"
+	ns_set "[gpu:0]/GPUFanControlState=1"
+	ns_set "[fan:0]/GPUTargetFanSpeed=$pct"
+	ns_set "[fan:1]/GPUTargetFanSpeed=$pct"
+	echo "FAN=${pct}%  INVERSE: sh $0 fan auto"
+}
+
+cmd_perfmode() {
+	need nvidia-settings
+	# PowerMizer 1 = prefer maximum performance: pins the card at the top perf level so a bench is
+	# not measuring a clock-state transition. 0 = adaptive (the stock setting on this target).
+	case "$1" in
+	max) ns_set "[gpu:0]/GPUPowerMizerMode=1"; echo "POWERMIZER=max  INVERSE: sh $0 perfmode auto" ;;
+	auto) ns_set "[gpu:0]/GPUPowerMizerMode=0"; echo "POWERMIZER=auto" ;;
+	*) die "usage: perfmode max|auto" ;;
+	esac
+	echo "current_perf_level: $(ns_get GPUCurrentPerfLevel)"
+}
+
+cmd_revert() {
+	need nvidia-settings
+	lvl=$(perf_level)
+	# Per-level form only: AllPerformanceLevels is permission-denied on this Coolbits 28 setup.
+	apply_level "$lvl" 0 0 strict
+	below=$((lvl - 1))
+	if [ "$below" -gt 0 ]; then
+		apply_level "$below" 0 0 soft || true
+	fi
+	echo "REVERTED offsets to 0 (verified by read-back)"
+	echo "If a power limit was set, run as root: sh $0 powerlimit 100"
+	echo "If a fan speed was set: sh $0 fan auto"
+}
+
+action=${1:-}
+# `shift` is a POSIX special built-in: in dash a failed shift kills the script even with || true,
+# which silently ate the usage message. Guard it instead.
+if [ $# -gt 0 ]; then shift; fi
+case "$action" in
+caps) cmd_caps ;;
+probe) cmd_probe ;;
+apply) [ $# -eq 2 ] || die "usage: apply CORE_OFFSET MEM_OFFSET"; cmd_apply "$1" "$2" ;;
+verify) cmd_verify ;;
+meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECS] [WAIT_SECS]"; cmd_meter "$@" ;;
+meterbg) [ $# -ge 1 ] || die "usage: meterbg STEP_ID [SECS] [WAIT_SECS]"; cmd_meterbg "$@" ;;
+superposition-probe) cmd_superposition_probe "$@" ;;
+superposition-find) cmd_superposition_find ;;
+superposition-run) cmd_superposition_run "$@" ;;
+powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
+fan) [ $# -eq 1 ] || die "usage: fan PCT|auto"; cmd_fan "$1" ;;
+perfmode) [ $# -eq 1 ] || die "usage: perfmode max|auto"; cmd_perfmode "$1" ;;
+revert) cmd_revert ;;
+*)
+	echo "usage: sh gpu-oc-apply caps|probe|apply CORE MEM|verify|meter ID [SECS]|meterbg ID [SECS]|superposition-find|superposition-probe|superposition-run|powerlimit PCT|fan PCT|perfmode max|revert"
+	exit 2
+	;;
+esac

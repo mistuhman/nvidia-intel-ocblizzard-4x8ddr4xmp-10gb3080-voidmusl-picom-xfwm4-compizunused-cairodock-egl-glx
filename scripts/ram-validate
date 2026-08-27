@@ -1,0 +1,75 @@
+#!/bin/sh
+# ram-validate — run one memory profile through the full validation suite and print a receipt that
+# tools/ram-validate-parse.ts can read. Long-running by design: a 20 minute pass proves nothing on
+# its own, and on ZFS root the scrub is the gate that actually matters.
+#
+#   sh ram-validate quick  r3       ~20 min, catches an obviously broken profile
+#   sh ram-validate full   r3       ~1 h stress + scrub, the real gate
+#   sh ram-validate scrub  r3       scrub + status + dmesg only
+#
+# Run it inside tmux or screen: it outlives no shell on its own.
+set -u
+
+MODE=${1:-quick}
+ID=${2:-unnamed}
+OUT_DIR=${OUT_DIR:-$HOME/oc-meters}
+POOL=${POOL:-nvme}
+
+die() {
+	echo "RAM_VALIDATE=FAIL $1"
+	exit 1
+}
+
+command -v stress-ng >/dev/null 2>&1 || die "stress-ng is not installed"
+mkdir -p "$OUT_DIR" || die "cannot create $OUT_DIR"
+LOG=$OUT_DIR/ram-$ID.$MODE.log
+
+case "$MODE" in
+quick) SECS=1200 ;;
+full) SECS=3600 ;;
+scrub) SECS=0 ;;
+*) die "usage: sh ram-validate quick|full|scrub ID" ;;
+esac
+
+{
+	echo "=== ram-validate $MODE $ID ==="
+	date
+	echo "--- configured speed (what the board ACTUALLY trained, not what you typed in F10) ---"
+	if command -v dmidecode >/dev/null 2>&1; then
+		dmidecode -t memory 2>/dev/null | grep -E 'Configured Memory Speed|^\s+Speed:|Locator|Volt' | head -n 40
+	else
+		echo "dmidecode not available or needs root - re-run this section as root"
+	fi
+	echo "--- meminfo ---"
+	grep MemTotal /proc/meminfo
+
+	if [ "$SECS" -gt 0 ]; then
+		echo "--- stress-ng vm verify, ${SECS}s ---"
+		stress-ng --vm 12 --vm-bytes 80% --vm-method all --verify --metrics-brief --timeout "${SECS}s" 2>&1
+		echo "--- stress-ng cache/matrix cross-check, 300s ---"
+		stress-ng --cache 4 --matrix 4 --verify --metrics-brief --timeout 300s 2>&1
+	fi
+
+	echo "--- zfs integrity gate ---"
+	if command -v zpool >/dev/null 2>&1; then
+		echo "starting scrub on $POOL (this is the gate that catches silent corruption)"
+		zpool scrub "$POOL" 2>&1 || echo "scrub start returned nonzero (needs root?)"
+		while zpool status "$POOL" 2>/dev/null | grep -q 'scrub in progress'; do
+			sleep 60
+		done
+		zpool status "$POOL" 2>&1
+	else
+		echo "zpool not available"
+	fi
+
+	echo "--- dmesg machine-check / EDAC sweep ---"
+	echo "dmesg checked"
+	dmesg 2>/dev/null | grep -iE 'machine check|mce:|edac|hardware error' | tail -n 20
+	echo "(no lines above means clean)"
+	date
+	echo "=== end ram-validate $MODE $ID ==="
+} 2>&1 | tee "$LOG"
+
+echo "wrote $LOG"
+echo "paste this file (or its tail) into the ram-oc-validate workflow, or run:"
+echo "node tools/ram-validate-parse.ts parse --id=$ID --mts=MTS --vdimm=V --log=$LOG"

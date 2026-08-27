@@ -1,0 +1,120 @@
+name: gpu-oc-lab
+
+# Dry-run bench-before-you-apply. Sweeps clock/memory/power-limit candidates on the model, draws the
+# undervolt graph, and prints the console-safe apply + inverse blocks for the winners. Nothing here
+# touches the target: it produces the queue the operator pastes, in gate order.
+on:
+  workflow_dispatch:
+    inputs:
+      core:
+        description: 'core offset range min:max:step (MHz, cap +150)'
+        default: '0:150:30'
+      mem:
+        description: 'memory transfer-rate offset range min:max:step (MHz, cap +700)'
+        default: '0:800:200'
+      pl:
+        description: 'power-limit range in percent min:max:step (60..100 without the step-4 gate)'
+        default: '70:100:10'
+      sort:
+        description: 'rank by'
+        type: choice
+        options: [score, eff, watts]
+        default: score
+      top:
+        description: 'how many candidates to keep'
+        default: '20'
+      curve_core:
+        description: 'core offset held fixed for the undervolt graph'
+        default: '120'
+      curve_mem:
+        description: 'memory offset held fixed for the undervolt graph'
+        default: '500'
+      allow_pl_raise:
+        description: 'open the step-4 power-raise gate (needs PSU plug count + brand confirmed)'
+        type: boolean
+        default: false
+      receipts_path:
+        description: 'optional receipts ledger in-repo to calibrate the model against real runs'
+        default: 'receipts/gpu-oc-receipts.json'
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: selftests first
+        run: |
+          node tools/gpu-oc-plan.ts selftest
+          node tools/gpu-curve.ts selftest
+          node tools/gpu-bench-parse.ts selftest
+          node tools/gpu-oc-verify.ts selftest
+      - name: recipe ladder
+        run: |
+          mkdir -p out
+          node tools/gpu-oc-plan.ts ladder | tee out/ladder.txt
+          node tools/gpu-oc-plan.ts ladder --json --out=out/ladder.json
+      - name: sweep candidates
+        env:
+          RAISE: ${{ inputs.allow_pl_raise && '--allow-pl-raise' || '' }}
+        run: |
+          node tools/gpu-oc-plan.ts sweep --core='${{ inputs.core }}' --mem='${{ inputs.mem }}' --pl='${{ inputs.pl }}' --sort='${{ inputs.sort }}' --top='${{ inputs.top }}' $RAISE | tee out/sweep.txt
+          node tools/gpu-oc-plan.ts sweep --core='${{ inputs.core }}' --mem='${{ inputs.mem }}' --pl='${{ inputs.pl }}' --sort='${{ inputs.sort }}' --top='${{ inputs.top }}' $RAISE --json --out=out/sweep.json
+      - name: undervolt graph
+        run: |
+          MEASURED=""
+          if [ -f '${{ inputs.receipts_path }}' ]; then MEASURED="--measured=${{ inputs.receipts_path }}"; fi
+          node tools/gpu-curve.ts curve --core='${{ inputs.curve_core }}' --mem='${{ inputs.curve_mem }}' --pl='${{ inputs.pl }}' $MEASURED --csv=out/undervolt-curve.csv --svg=out/undervolt-curve.svg | tee out/curve.txt
+      - name: paste blocks for the top candidates
+        run: |
+          node - <<'NODE' > out/top-ids.txt
+          const fs = require('node:fs');
+          const sweep = JSON.parse(fs.readFileSync('out/sweep.json', 'utf8'));
+          const seen = new Set();
+          for (const row of sweep.rows) {
+            const key = `${row.coreOffset} ${row.memOffset} ${row.powerPct}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            if (seen.size > 5) break;
+            console.log(key);
+          }
+          NODE
+          : > out/paste-blocks.txt
+          while read -r core mem pl; do
+            echo "===== candidate core=+$core mem=+$mem pl=$pl% =====" >> out/paste-blocks.txt
+            node tools/gpu-oc-plan.ts blocks --core="$core" --mem="$mem" --pl="$pl" ${{ inputs.allow_pl_raise && '--allow-pl-raise' || '' }} >> out/paste-blocks.txt
+            echo >> out/paste-blocks.txt
+          done < out/top-ids.txt
+          cat out/paste-blocks.txt
+      - name: console-safety lint on every generated block
+        run: |
+          grep -v '^=====' out/paste-blocks.txt | grep -v '^#' | grep -v '^$' > out/blocks-only.txt
+          node tools/block-lint.ts --target-console out/blocks-only.txt
+      - name: job summary
+        run: |
+          {
+            echo '## GPU OC lab — projected queue (model, not measurement)'
+            echo
+            echo '### recipe ladder'
+            echo '```'
+            cat out/ladder.txt
+            echo '```'
+            echo '### sweep'
+            echo '```'
+            cat out/sweep.txt
+            echo '```'
+            echo '### undervolt graph'
+            echo '```'
+            cat out/curve.txt
+            echo '```'
+            echo '### pasteable blocks (console-safe, each with its inverse)'
+            echo '```'
+            cat out/paste-blocks.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gpu-oc-lab
+          path: out/

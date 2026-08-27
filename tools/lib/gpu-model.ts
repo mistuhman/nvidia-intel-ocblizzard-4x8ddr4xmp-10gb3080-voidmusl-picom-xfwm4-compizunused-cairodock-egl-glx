@@ -1,0 +1,184 @@
+// Deterministic RTX 3080 10GB clock/power model + safety rules for the OC lab.
+// MODEL, NOT MEASUREMENT: every projected number is labelled projected_* and is only a
+// pre-flight ordering aid. Truth order stays operator report > target output > this file.
+// Anchors come from MASTER.md objective.stockBaseline (Superposition 1080p Extreme 8717,
+// FPS avg 65.20, dmon peaks 201W / mclk 9501 / pclk 1935 / GPU temp 39-81C).
+
+export type Baseline = {
+  coreMHz: number;      // dmon pclk peak at stock
+  coreCeilingMHz: number; // clocks.max.graphics reported by the card - offsets past it do nothing
+  mclkMHz: number;      // dmon mclk peak at stock (memory clock, NOT transfer rate)
+  powerLimitW: number;  // card default power limit
+  powerMaxLimitW: number; // power.max_limit reported by the card
+  referenceW: number;   // MEASURED board draw at stock core under the official graphics meter
+  powerMinLimitW: number; // nvidia-smi "Min Power Limit" - the hard floor of the undervolt graph
+  score: number;        // Superposition 1080p Extreme score
+  fpsAvg: number;
+  tempIdleC: number;
+  tempMaxC: number;
+};
+
+// Target receipt 2026-08-27 (user shell, nvidia-smi --query-gpu):
+//   RTX 3080, driver 595.91.07, power.limit 320.00 W, power.default_limit 320.00 W,
+//   power.max_limit 320.00 W, clocks.max.graphics 2100 MHz, clocks.max.memory 9501 MHz
+//   nvidia-settings -q GPUGraphicsClockOffset -t -> 0  (Coolbits LIVE)
+//   nvidia-smi -q -d POWER: Min Power Limit 100.00 W, Max 320.00 W, Default 320.00 W
+//   GPUPerfModes: 5 levels, TOP IS perf=4 (memclock 9501 / memTransferRate 19002, nvclockmax 2100).
+//   Coolbits 28 in /etc/X11/xorg.conf.d/20-nvidia.conf; per-level writes ALLOWED, all-level DENIED.
+// Stock Superposition 1080p Extreme meter (gpu-stock-671-superpos.csv, 535 samples, summarized by
+// scripts/gpu-dmon-summary 2026-08-27): pwr_max 314 W, gtemp_max 81 C, pclk_max 1905, mclk_max 9501.
+// (The 1935 MHz in MASTER stockBaseline is the peak from the Geekbench-CPU-run log, not this meter.)
+export const STOCK: Baseline = {
+  coreMHz: 1905,
+  coreCeilingMHz: 2100,
+  mclkMHz: 9501,
+  powerLimitW: 320,
+  powerMaxLimitW: 320,
+  powerMinLimitW: 100,
+  referenceW: 314,
+  score: 8717,
+  fpsAvg: 65.2,
+  tempIdleC: 39,
+  tempMaxC: 81,
+};
+
+// Recipe caps: docs/oc-3080-gwe-recipe.md (core +150 / mem +700 hard ceiling, 83C stop rule).
+export const LIMITS = {
+  coreOffsetMax: 150,
+  coreOffsetWarn: 120,
+  memOffsetMax: 700,
+  memOffsetWarn: 500,
+  powerPctMin: 32,          // hardware: 100 W min limit / 320 W default
+  powerPctPracticalMin: 60, // below this the clock collapse makes the run useless as a comparison
+  powerPctMax: 100,     // hardware-fixed: power.max_limit == power.default_limit == 320 W
+  tempStopC: 83,
+};
+
+// Power grows superlinearly with clock; clock recovers sublinearly when the limit trips.
+const POWER_EXP = 1.35;
+// A clock offset shifts the V/F curve, so part of it survives even when the board is pinned at the
+// power limit (the normal Ampere case in Superposition). 0.7 is the modelled capture fraction.
+const OFFSET_CAPTURE_WHEN_LIMITED = 0.7;
+// Superposition 1080p Extreme is core-bound with a real memory tail.
+const CORE_WEIGHT = 0.75;
+const MEM_WEIGHT = 0.25;
+// nvidia-settings GPUMemoryTransferRateOffset is a TRANSFER RATE offset: 2 MHz rate = 1 MHz clock.
+// CONFIRMED by the 2026-08-27 GPUPerfModes receipt: perf=4 memclock 9501, memTransferRate 19002.
+export const MEM_OFFSET_TO_CLOCK = 0.5;
+
+export type Point = {
+  coreOffset: number;   // nvidia-settings GPUGraphicsClockOffset[3], MHz
+  memOffset: number;    // nvidia-settings GPUMemoryTransferRateOffset[3], MHz of transfer rate
+  powerPct: number;     // percent of the card default power limit (the Linux "undervolt" knob)
+};
+
+export type Projection = Point & {
+  powerLimitW: number;
+  requestedCoreMHz: number;
+  projectedCoreMHz: number;
+  projectedMemClkMHz: number;
+  projectedWatts: number;
+  projectedScore: number;
+  projectedFpsAvg: number;
+  projectedTempC: number;
+  projectedScorePerWatt: number;
+  deltaScorePct: number;
+  deltaWattPct: number;
+  powerLimited: boolean;
+  bandPct: number;      // model uncertainty band
+};
+
+function round(value: number, digits: number): number {
+  const f = 10 ** digits;
+  return Math.round(value * f) / f;
+}
+
+export function project(point: Point, base: Baseline = STOCK): Projection {
+  const requestedCore = base.coreMHz + point.coreOffset;
+  const memClk = base.mclkMHz + point.memOffset * MEM_OFFSET_TO_CLOCK;
+  const powerLimitW = round((base.powerLimitW * point.powerPct) / 100, 1);
+  const demandW = base.referenceW * (requestedCore / base.coreMHz) ** POWER_EXP;
+  const limited = demandW > powerLimitW;
+  // Not limited: the requested clock stands. Limited: the board falls back to the clock the power
+  // budget sustains, keeping the captured share of the offset.
+  const sustainedCore = base.coreMHz * (powerLimitW / base.referenceW) ** (1 / POWER_EXP);
+  // A power-limited board can never exceed the clock it would run unlimited.
+  const uncapped = limited ? Math.min(requestedCore, sustainedCore + point.coreOffset * OFFSET_CAPTURE_WHEN_LIMITED) : requestedCore;
+  // The card will not boost past clocks.max.graphics no matter what the offset says.
+  const coreMHz = Math.min(uncapped, base.coreCeilingMHz);
+  const watts = limited ? powerLimitW : demandW;
+  const perf = (coreMHz / base.coreMHz) ** CORE_WEIGHT * (memClk / base.mclkMHz) ** MEM_WEIGHT;
+  const score = base.score * perf;
+  const tempC = base.tempIdleC + (base.tempMaxC - base.tempIdleC) * (watts / base.referenceW) ** 0.8;
+  return {
+    ...point,
+    powerLimitW,
+    requestedCoreMHz: round(requestedCore, 0),
+    projectedCoreMHz: round(coreMHz, 0),
+    projectedMemClkMHz: round(memClk, 0),
+    projectedWatts: round(watts, 1),
+    projectedScore: Math.round(score),
+    projectedFpsAvg: round(base.fpsAvg * perf, 2),
+    projectedTempC: round(tempC, 1),
+    projectedScorePerWatt: round(score / watts, 2),
+    deltaScorePct: round(((score - base.score) / base.score) * 100, 2),
+    deltaWattPct: round(((watts - base.referenceW) / base.referenceW) * 100, 2),
+    powerLimited: limited,
+    bandPct: 3,
+  };
+}
+
+export type Verdict = { ok: boolean; errors: string[]; warnings: string[] };
+
+export function validate(point: Point, allowPlRaise: boolean, base: Baseline = STOCK): Verdict {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  if (!Number.isFinite(point.coreOffset) || !Number.isFinite(point.memOffset) || !Number.isFinite(point.powerPct)) {
+    errors.push('non-numeric knob value');
+    return { ok: false, errors, warnings };
+  }
+  if (point.coreOffset < 0) warnings.push('negative core offset: downclock, valid but not an OC step');
+  if (point.coreOffset > LIMITS.coreOffsetMax) errors.push(`core offset ${point.coreOffset} exceeds recipe hard cap +${LIMITS.coreOffsetMax}`);
+  else if (point.coreOffset > LIMITS.coreOffsetWarn) warnings.push(`core offset ${point.coreOffset} is past recipe step 3 (+${LIMITS.coreOffsetWarn}); a week of daily use is the gate`);
+  if (point.memOffset > LIMITS.memOffsetMax) errors.push(`memory offset ${point.memOffset} exceeds recipe hard cap +${LIMITS.memOffsetMax} (GDDR6X heat)`);
+  else if (point.memOffset > LIMITS.memOffsetWarn) warnings.push(`memory offset ${point.memOffset} is past recipe step 3 (+${LIMITS.memOffsetWarn})`);
+  if (point.powerPct > LIMITS.powerPctMax) {
+    // Receipt 2026-08-27: power.max_limit == power.default_limit == 320 W. The vBIOS has no headroom,
+    // so the old step-4 "PSU gate" is moot - nvidia-smi -pl will simply refuse the value.
+    errors.push(`power limit above 100% is impossible on this card: power.max_limit == power.default_limit == ${base.powerMaxLimitW}W (receipt 2026-08-27)${allowPlRaise ? '; --allow-pl-raise cannot override a vBIOS limit' : ''}`);
+  }
+  const requestedPlW = (base.powerLimitW * point.powerPct) / 100;
+  if (requestedPlW < base.powerMinLimitW) errors.push(`power limit ${point.powerPct}% = ${Math.round(requestedPlW)}W is under the card's Min Power Limit ${base.powerMinLimitW}W (receipt 2026-08-27): nvidia-smi will refuse it`);
+  else if (point.powerPct < LIMITS.powerPctPracticalMin) warnings.push(`power limit ${point.powerPct}% is under the ${LIMITS.powerPctPracticalMin}% practical floor: legal, but the clock collapse makes it a curiosity, not a daily profile`);
+  const requestedCore = base.coreMHz + point.coreOffset;
+  if (requestedCore > base.coreCeilingMHz) warnings.push(`requested ${requestedCore}MHz is over clocks.max.graphics ${base.coreCeilingMHz}MHz: everything past +${base.coreCeilingMHz - base.coreMHz} is dead offset`);
+  const p = project(point, base);
+  if (p.projectedTempC > LIMITS.tempStopC) warnings.push(`projected ${p.projectedTempC}C is at/over the ${LIMITS.tempStopC}C stop rule; abort the run if dmon confirms it`);
+  return { ok: errors.length === 0, errors, warnings };
+}
+
+export function parseRange(spec: string, name: string): number[] {
+  const parts = spec.split(':').map((x) => Number(x.trim()));
+  if (parts.some((x) => !Number.isFinite(x))) throw new Error(`bad ${name} range: ${spec} (want min:max:step or a single number)`);
+  if (parts.length === 1) return [parts[0]];
+  if (parts.length !== 3) throw new Error(`bad ${name} range: ${spec} (want min:max:step)`);
+  const [min, max, step] = parts;
+  if (step <= 0) throw new Error(`bad ${name} step: ${step}`);
+  const out: number[] = [];
+  for (let v = min; v <= max + 1e-9; v += step) out.push(Math.round(v * 100) / 100);
+  return out;
+}
+
+export function arg(name: string, fallback?: string): string | undefined {
+  const hit = process.argv.find((x) => x.startsWith(`--${name}=`));
+  return hit ? hit.slice(name.length + 3) : fallback;
+}
+
+export function flag(name: string): boolean {
+  return process.argv.includes(`--${name}`);
+}
+
+export function stepId(point: Point): string {
+  const sign = point.coreOffset < 0 ? 'm' : 'p';
+  return `c${sign}${Math.abs(point.coreOffset)}-m${point.memOffset}-pl${point.powerPct}`;
+}

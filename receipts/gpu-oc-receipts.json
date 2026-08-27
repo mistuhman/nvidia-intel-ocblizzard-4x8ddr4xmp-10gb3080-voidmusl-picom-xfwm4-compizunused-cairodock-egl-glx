@@ -1,0 +1,49 @@
+{
+  "schema": "gpu-oc-receipts.v1",
+  "baseline": {
+    "coreMHz": 1905,
+    "coreCeilingMHz": 2100,
+    "mclkMHz": 9501,
+    "powerLimitW": 320,
+    "powerMaxLimitW": 320,
+    "powerMinLimitW": 100,
+    "referenceW": 314,
+    "score": 8717,
+    "fpsAvg": 65.2,
+    "tempIdleC": 39,
+    "tempMaxC": 81
+  },
+  "runs": [
+    {
+      "id": "cp0-m0-pl100",
+      "coreOffset": 0,
+      "memOffset": 0,
+      "powerPct": 100,
+      "score": 8717,
+      "watts": 314,
+      "fpsAvg": 65.2,
+      "tempMaxC": 81,
+      "coreMHzMax": 1905,
+      "memClkMaxMHz": 9501,
+      "samples": 2,
+      "preset": "1080p Extreme",
+      "geekbench": {
+        "singleCore": 2715,
+        "multiCore": 14569,
+        "compute": 194800,
+        "url": "https://browser.geekbench.com/v6/cpu/19061796"
+      },
+      "verdict": "PASS",
+      "stopRuleHits": [],
+      "deltaScorePctVsStock": 0,
+      "scorePerWatt": 27.76,
+      "modelErrorPct": 0,
+      "predicted": {
+        "score": 8717,
+        "watts": 314,
+        "coreMHz": 1905,
+        "tempC": 81
+      }
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+name: ram-oc-validate
+
+# DDR4 4x8 @ 2DPC, XMP 3733 -> 4000 MT/s target. Two modes:
+#  - plan:   print the step (BIOS keying, risk, validation suite, inverse) before any power-on
+#  - ingest: paste the scripts/ram-validate log and get PASS / FAIL / UNPROVEN per gate
+# UNPROVEN is never a pass: on ZFS root an unvalidated memory profile is a silent-corruption risk.
+on:
+  workflow_dispatch:
+    inputs:
+      step_id:
+        description: 'ladder step (r0 baseline .. r3 4000@1.45V .. r4 4000@1.50V ceiling)'
+        type: choice
+        options: [r0, r1, r2, r3, r4]
+        default: r0
+      mode:
+        description: 'plan the step, or ingest a validation log'
+        type: choice
+        options: [plan, ingest]
+        default: plan
+      mts:
+        description: 'MT/s the profile asked for (ingest mode)'
+        default: '3733'
+      vdimm:
+        description: 'VDIMM used (ingest mode). Hard ceiling 1.50 - 1.55 already failed to boot'
+        default: '1.35'
+      validation_log:
+        description: 'paste the scripts/ram-validate output (ingest mode)'
+        default: ''
+      hours:
+        description: 'daily-use soak hours required by the suite'
+        default: '8'
+      commit:
+        description: 'commit the receipt ledger back to this branch (ingest mode)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  ram:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: selftests
+        run: |
+          node tools/ram-oc-plan.ts selftest
+          node tools/ram-validate-parse.ts selftest
+      - name: plan
+        run: |
+          mkdir -p out
+          node tools/ram-oc-plan.ts ladder | tee out/ladder.txt
+          node tools/ram-oc-plan.ts step --id='${{ inputs.step_id }}' --hours='${{ inputs.hours }}' | tee out/step.txt
+          node tools/ram-oc-plan.ts step --id='${{ inputs.step_id }}' --hours='${{ inputs.hours }}' --json > out/step.json
+      - name: ingest validation log
+        if: ${{ inputs.mode == 'ingest' }}
+        env:
+          VLOG: ${{ inputs.validation_log }}
+        run: |
+          mkdir -p receipts
+          printf '%s\n' "$VLOG" > out/validation.log
+          node tools/ram-validate-parse.ts parse \
+            --id='${{ inputs.step_id }}' \
+            --mts='${{ inputs.mts }}' \
+            --vdimm='${{ inputs.vdimm }}' \
+            --log=out/validation.log \
+            --append=receipts/ram-oc-receipts.json | tee out/verdict.txt
+      - name: job summary
+        run: |
+          {
+            echo '## DDR4 ${{ inputs.step_id }} (${{ inputs.mode }})'
+            echo '```'
+            cat out/step.txt
+            echo '```'
+            if [ -f out/verdict.txt ]; then
+              echo '### validation verdict'
+              echo '```'
+              cat out/verdict.txt
+              echo '```'
+            fi
+            echo '### ladder'
+            echo '```'
+            cat out/ladder.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ram-oc-${{ inputs.step_id }}-${{ inputs.mode }}
+          path: out/
+      - name: commit ledger
+        if: ${{ inputs.mode == 'ingest' && inputs.commit }}
+        run: |
+          git config user.name 'oc-lab'
+          git config user.email 'oc-lab@users.noreply.github.com'
+          git add receipts/ram-oc-receipts.json
+          git diff --cached --quiet || git commit -m "ram receipts: ${{ inputs.step_id }}"
+          git push origin HEAD:${{ github.ref_name }}

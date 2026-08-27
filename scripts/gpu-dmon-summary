@@ -1,0 +1,82 @@
+#!/bin/sh
+# gpu-dmon-summary — reduce a large nvidia-smi dmon log to a pasteable summary.
+# Prints the peaks, then a small dmon-format block that tools/gpu-bench-parse.ts ingests verbatim,
+# so a 47 KB meter file never has to travel through the console.
+#
+#   sh gpu-dmon-summary /home/sd/oc-meters/gpu-stock-671-superpos.csv
+set -eu
+
+file=${1:-}
+if [ -z "$file" ] || [ ! -f "$file" ]; then
+	echo "GPU_DMON_SUMMARY=FAIL usage: sh gpu-dmon-summary FILE"
+	exit 1
+fi
+
+echo "file: $file"
+echo "bytes: $(wc -c <"$file")"
+echo "--- header lines ---"
+grep '^#' "$file" | head -n 4 || true
+echo "--- peaks ---"
+awk '
+/^#/ {
+	# Learn the column layout from the header instead of guessing: nvidia-smi dmon column sets vary
+	# (-s pucm adds fb/bar1/ccpm and pushes mclk/pclk off the end of a positional guess).
+	if ($2 == "gpu" || $2 == "Idx") {
+		if ($2 == "gpu") {
+			for (i = 2; i <= NF; i++) col[$i] = i - 1
+		}
+	}
+	next
+}
+{
+	if (NF < 6) next
+	base = ($1 ~ /^[0-9][0-9][0-9][0-9]/) ? 2 : 0
+	pwr = (("pwr" in col) ? $(col["pwr"] + base) : $(base + 2)) + 0
+	gtemp = (("gtemp" in col) ? $(col["gtemp"] + base) : $(base + 3)) + 0
+	sm = (("sm" in col) ? $(col["sm"] + base) : $(base + 5)) + 0
+	mclk = (("mclk" in col) ? $(col["mclk"] + base) : $(NF - 1)) + 0
+	pclk = (("pclk" in col) ? $(col["pclk"] + base) : $(NF)) + 0
+	if (pwr <= 0) next
+	n++
+	pwrsum += pwr
+	smsum += sm
+	if (pwr > pwrmax) pwrmax = pwr
+	if (gtemp > tmax) tmax = gtemp
+	if (pclk > pclkmax) pclkmax = pclk
+	if (mclk > mclkmax) mclkmax = mclk
+	# Loaded samples only: idle/menu time drags the average and hides the real bench behaviour.
+	if (sm >= 90) {
+		ln++
+		lpwrsum += pwr
+		if (pwr > lpwrmax) lpwrmax = pwr
+		if (gtemp > ltmax) ltmax = gtemp
+		if (pclk > lpclkmax) lpclkmax = pclk
+	}
+}
+END {
+	if (n == 0) {
+		print "samples: 0 - columns not recognised, paste the first 3 data lines instead"
+		exit
+	}
+	printf "samples: %d\n", n
+	printf "pwr_max_w: %d\n", pwrmax
+	printf "pwr_avg_w: %.1f\n", pwrsum / n
+	printf "gtemp_max_c: %d\n", tmax
+	printf "sm_avg_pct: %.1f\n", smsum / n
+	printf "pclk_max_mhz: %d\n", pclkmax
+	printf "mclk_max_mhz: %d\n", mclkmax
+	printf "loaded_samples_sm90: %d\n", ln
+	if (ln > 0) {
+		printf "loaded_pwr_max_w: %d\n", lpwrmax
+		printf "loaded_pwr_avg_w: %.1f\n", lpwrsum / ln
+		printf "loaded_gtemp_max_c: %d\n", ltmax
+		printf "loaded_pclk_max_mhz: %d\n", lpclkmax
+	} else {
+		print "LOAD_CHECK=FAIL no sample reached 90% SM: the benchmark did not run during this log"
+	}
+	print "--- pasteable dmon block ---"
+	print "# gpu    pwr gtemp mtemp    sm   mem   enc   dec  mclk  pclk"
+	printf "    0    %d    %d     -   %d    0     0     0  %d  %d\n", pwrmax, tmax, smsum / n, mclkmax, pclkmax
+	printf "    0    %d    %d     -   %d    0     0     0  %d  %d\n", pwrsum / n, tmax, smsum / n, mclkmax, pclkmax
+}
+' "$file"

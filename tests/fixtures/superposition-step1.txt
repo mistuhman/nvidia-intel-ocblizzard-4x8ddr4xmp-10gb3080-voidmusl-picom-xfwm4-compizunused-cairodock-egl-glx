@@ -1,0 +1,5 @@
+Unigine Superposition Benchmark v1.1
+Preset: 1080p Extreme
+Score: 8901
+FPS Min: 20.11 Avg: 66.58 Max: 83.02
+GPU Temp min 40 max 77
