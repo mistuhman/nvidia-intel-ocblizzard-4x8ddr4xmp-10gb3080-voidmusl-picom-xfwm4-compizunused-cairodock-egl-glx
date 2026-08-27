@@ -122,6 +122,30 @@
         "coreMHz": 1923,
         "tempC": 79.9
       }
+    },
+    {
+      "id": "cp120-m500-pl95",
+      "coreOffset": 120,
+      "memOffset": 500,
+      "powerPct": 95,
+      "score": 8599,
+      "watts": 297.2,
+      "wattsNote": "loaded_pwr_avg from a PARTIAL dmon recording (286 samples, cut by the operator deliberate reboot mid-recording); loaded_pwr_max 299 W",
+      "fpsAvg": 64.32,
+      "fpsMin": 50.77,
+      "fpsMax": 82.6,
+      "tempMaxC": 79,
+      "coreMHzMax": 1920,
+      "memClkMaxMHz": 9751,
+      "samples": 174,
+      "preset": "1080p Extreme",
+      "geekbench": null,
+      "meterPartial": true,
+      "verdict": "PASS",
+      "stopRuleHits": [],
+      "deltaScorePctVsStock": -1.35,
+      "scorePerWatt": 28.93,
+      "note": "8599 vs cp90-m400-pl95 8576 = +0.27% -> inside the +-0.4% variance band: core offsets neutral at equal-or-lower watts (297.2 W loaded avg < 301 W, pwr_max 299 < 304 pin). Terminal condition met: +120/+500 buys nothing over +90/+400 at the 95% knee. loaded_pclk 1920 > stock 1905 (offset finally materialized in max clock, score still flat). Operator frametime observation (worse consistency / lower overall max) parked pending a .score SAVE - no new .score file was ever saved."
     }
   ]
 }
