@@ -44,6 +44,9 @@
 - [x] L0-A PASS: PartSurfer 2MO22432DX = OMEN 45L GT22-0139 / 575Q1AA (ARTICUNO). PSU FRU **M83827-001 POWER SUPPLY UNIT 800W ATX Gold** (HP itself says ATX), board M81915-601 BlizzardOC, **PCA LIGHTING CONTROL M82868-001 fitted**, cooler M82880-002 plain LCS 240 (no Cryo/TEC), RAM M85222-001 DDR4 3733 1.35V
 - [x] L0-C PASS: operator visual sweep = "no damage" (no burnt housings, bulged caps, scorch, smell, or debris)
 - [ ] L0-B OUTSTANDING (blocks L1): ONE photo — 24-pin at the board end, wire colours legible, latch visible. Green wire = PS_ON# pin 16; all-black harness = derive pin index from the photo, never from memory
+- [x] L3 = C: both CPU 4-pins out -> OMEN does NOTHING (no cord-in cycle, no button cycle). Ambiguous alone
+- [x] A1 = OMEN PSU M83827-001 powers the BENCH board and HOLDS: "fan spins and stays spinning, no post" -> PSU starts on request and does not latch; weight moves to OMEN board/CPU
+- [ ] Read the bench board's 2-digit POST code (new instrument), then run L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
 - [ ] OPERATOR GATE, one step per report, no power-on until named: L0 photos (PSU label + cable fan-out, zero power) -> L1 PSU alone, paperclip pin16 green/pin17 black + fan load -> L2 board only, 24-pin + both 4-pin EPS, every accessory off the PSU -> L3 both EPS unplugged (decisive on firmware-vs-electrical)
 - [ ] Operator free receipt (no OMEN touch): on Windows host run `dir /s /b` on the created recovery stick (root already shows EFI/Hewlett-Packard/HP) and on C:\SWSetup\sp167160; report whether Hewlett-Packard\BIOSUpdate\HpBiosUpdate.efi + .s09/.s12/.s14/.sig exist. Inspect only — stick stays unmodified.
 - [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.

@@ -318,3 +318,39 @@ L1 bridges two specific contacts; it is not run off a remembered pinout. Two out
 
 Until that photo exists, L1 is **not** authorised, regardless of how well-identified the PSU
 now is.
+
+
+---
+
+# Ladder results — live receipts (2026-08-27, operator-executed)
+
+| Step | Config | Operator report | Reading |
+|---|---|---|---|
+| **L3** | OMEN, 24-pin `SPWR` in, **both 4-pin CPU plugs OUT**, GPU/SATA/lighting all off, one board fan header | **"it was C, did nothing"** — no auto-cycle on cord-in, no cycle on the button | **Ambiguous by itself.** Two live readings: (a) the EC will not assert power with no CPU rail present, or (b) the trip lives on the CPU 12V path and removing it removed the start too. Does NOT yet convict firmware or hardware |
+| **A1** | **OMEN PSU `M83827-001` out of the case, on the desk, powering the bench Gigabyte G1 Gaming board** | board lights; **"i tapped the button, fan spins and stays spinning. no post"** | **The OMEN PSU accepts a power request and HOLDS its rails on a different motherboard.** It does not latch, retry, or instant-cycle. POST code not yet read; bench baseline on its own Thermaltake never taken and the bench GPU is out, so "no post" is unattributed |
+
+Bench PSU identified for later: **Thermaltake Smart 550 W 80+ Bronze** (`SP-550P` class:
+24-pin, **1× CPU 4+4**, 2× 6+2 PCIe, +12 V 42 A, +5VSB 3 A). Test B stays gated — old,
+budget, group-regulated, and no bench baseline exists.
+
+## What A1 changes
+
+The OMEN's instant cycle happens even at near-zero load — it cycled with the GPU out and
+with zero DIMMs. The same PSU, on a different board, starts and stays up. A global PSU
+protection fault that trips at near-zero load on one board but not on another is not a
+coherent story. Weight therefore moves off the PSU and onto the **OMEN board / CPU / its
+remaining loads** — provisionally.
+
+**Not proven:** PSU behaviour under the OMEN's full load; and the bench's "no post" is
+unattributed (its GPU is out, no baseline taken).
+
+## Immediately next
+
+1. **Read the bench board's 2-digit POST code display** — the first real diagnostic
+   instrument in this campaign. Its value, and whether it changes on power-up, says whether
+   the bench is executing at all.
+2. **L2 on the OMEN, never yet run cleanly:** 24-pin **plus both 4-pin CPU plugs**, and
+   **nothing else** on the PSU — no GPU, no SATA/Molex, no lighting board, no fan hub.
+   One button press.
+   - still instant-cycles → accessory class CLOSED, fault is board or CPU
+   - does not cycle → one accessory branch is the fault; re-add one branch per power-on
