@@ -96,6 +96,32 @@
         "coreMHz": 1829,
         "tempC": 78.2
       }
+    },
+    {
+      "id": "cp90-m400-pl95",
+      "coreOffset": 90,
+      "memOffset": 400,
+      "powerPct": 95,
+      "score": 8576,
+      "watts": 301,
+      "fpsAvg": 64.15,
+      "tempMaxC": 80,
+      "coreMHzMax": 1965,
+      "memClkMaxMHz": 9701,
+      "samples": 2,
+      "preset": "1080p Extreme",
+      "geekbench": null,
+      "verdict": "PASS",
+      "stopRuleHits": [],
+      "deltaScorePctVsStock": -1.62,
+      "scorePerWatt": 28.49,
+      "modelErrorPct": 2.89,
+      "predicted": {
+        "score": 8824,
+        "watts": 304,
+        "coreMHz": 1923,
+        "tempC": 79.9
+      }
     }
   ]
 }
