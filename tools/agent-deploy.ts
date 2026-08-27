@@ -20,6 +20,7 @@ const verify = fileLines(arg('verify') ?? '');
 const agents: Agent[] = [];
 
 agents.push({ id: 'context', task: `Reduce ${objective} to current facts and missing gates`, method: 'read README.md, MASTER.md, git state', inputs: ['README.md', 'MASTER.md', 'git status'], output: 'fact list with receipts only', gate: 'no claim without path/hash/output' });
+agents.push({ id: 'stall', task: 'Crisis halt vs continue', method: 'node tools/stall-check.ts', inputs: ['MASTER.md'], output: 'HALT_NEW_CHAT or CONTINUE', gate: 'HALT means no power-on block' });
 for (const [i, url] of urls.entries()) agents.push({ id: `web-${i + 1}`, task: `Scrape and summarize source ${url}`, method: 'node tools/web-scrape.ts URL', inputs: [url], output: 'source facts plus URL receipt', gate: 'source fetched and quoted, or marked unavailable' });
 for (const [i, h] of hypotheses.entries()) agents.push({ id: `hypothesis-${i + 1}`, task: h, method: 'prove or falsify one hypothesis only', inputs: ['repo', 'target transcript if provided'], output: 'pass/fail/unknown with receipt', gate: 'unknown is allowed; guessing is fail' });
 for (const [i, v] of verify.entries()) agents.push({ id: `verify-${i + 1}`, task: `Verify command block ${v}`, method: 'node tools/paste-proof.ts --target-console --root FILE', inputs: [v], output: 'lint and syntax result', gate: 'PASTE_PROOF=PASS before operator paste' });

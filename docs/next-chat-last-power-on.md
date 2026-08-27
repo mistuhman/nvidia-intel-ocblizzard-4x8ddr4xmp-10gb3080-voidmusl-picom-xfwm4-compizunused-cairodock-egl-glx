@@ -67,7 +67,13 @@ then plain power produced the same immediate loop with no USB activity. Do not r
 Win+V/Win+B combinations. The two alternate sticks are not the primary next test; they are a
 fallback only if the BBR/media artifact path requires them.
 
-## Selected next action — BBR and flasher artifact preflight, no power
+## Selected next action — HALT, then a new chat searches a new class
+
+Jumper class and USB class are **closed**. Do not select BBR, CMOS, or another stick.
+`node tools/stall-check.ts` must print HALT_NEW_CHAT. The spinning chat says:
+`this doesnt work, i need a fresh chat with new context`.
+
+## Retired — BBR preflight (do not run)
 
 1. Keep the OMEN unplugged and the PSU switch off. Photograph the untouched `FDO/PSWD/BBR`
    header straight-on with the blue cap still installed. The photo must show all three pins,
