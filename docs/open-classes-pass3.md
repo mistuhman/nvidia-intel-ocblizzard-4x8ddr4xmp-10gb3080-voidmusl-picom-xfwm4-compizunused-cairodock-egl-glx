@@ -379,3 +379,40 @@ OMEN `M83827-001`.
   was ever going to help.
 - **Instant cycle, or starts but never POSTs where A0 did** → the PSU is implicated after
   all, and that is the good ending: a replaceable part.
+
+
+## A1b — PASS (2026-08-27), pending one confirmation
+
+Bench Gigabyte G1 Gaming, **same config that passed A0** (EVGA card in the slot, same RAM,
+same Kingston drive, same monitor), **PSU swapped to the OMEN `M83827-001`**, CPU fed by the
+HP 2x2 plug(s) into the bench 8-pin socket.
+
+**Onboard POST code reads `AA`.** On AMI-based boards `AA` is the end-of-POST / boot-to-OS
+code — the board completed POST, initialised memory, initialised the GPU, and handed off.
+The 2-digit display is an instrument, not an inference: it says the platform executed.
+
+**Confirmation still required:** that the Thermaltake was fully disconnected and only the HP
+unit was powering the bench during this run. If yes:
+
+### Consequence — the PSU is exonerated
+
+`M83827-001` delivers real power, under real load, with a GPU attached, all the way through
+POST on a healthy board. Therefore:
+
+- the instant power-cycle on the OMEN is **not** a PSU fault;
+- combined with everything already closed, the fault is in the **OMEN board (`M81915-601`,
+  BlizzardOC) or the CPU (`M87648-003`, i7-12700KF)**;
+- **firmware was never the cause.** No jumper position, no recovery stick, no `HpBiosUpdate.efi`
+  route could have fixed a board that trips before it executes. Mechanism A (corrupt SPI
+  setup varstore) is dead, and the closed classes were closed for the right reason.
+
+### Remaining discriminator, and its honest limit
+
+**L2 on the OMEN** (24-pin + both 4-pin CPU plugs, nothing else on the PSU, one press) still
+has to run: it separates "an accessory branch trips the rail" from "the board/CPU itself
+trips". If L2 still instant-cycles with known-good power and zero accessories, the board/CPU
+verdict is receipted, not inferred.
+
+Board-vs-CPU **cannot** be split with the hardware on hand: the bench is DDR3/older-socket,
+so neither the 12700KF nor the DDR4 DIMMs can be cross-tested there. That split needs a part
+this campaign does not have, and the free ladder ends there.
