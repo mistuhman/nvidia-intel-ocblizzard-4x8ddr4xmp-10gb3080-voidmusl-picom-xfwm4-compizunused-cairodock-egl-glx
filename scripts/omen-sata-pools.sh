@@ -97,15 +97,18 @@ df -h /mnt/games 2>/dev/null || true
 # ------------------------------------------------------- tear down tank
 say "3/7 tear down the live tank pool"
 if zpool list -H -o name tank >/dev/null 2>&1; then
-	echo "unmounting tank datasets deepest-first (never a blanket -a)"
-	# zfs list -r is parent-first; unmounting tank while tank/games is
-	# mounted leaves the pool busy and `zpool destroy -f` fails (2026-08-27).
+	echo "unmounting tank datasets deepest-first (never a blanket -a, never lazy -l)"
+	# Lazy umount -l drops the path from the namespace but keeps the spa
+	# busy until every fd closes (nemo/Thunar/engrampa). Then export -f
+	# still says 'pool is busy' with nothing mounted (2026-08-27).
 	zfs list -H -o name -r tank 2>/dev/null | awk '{a[NR]=$0} END{for(i=NR;i>=1;i--) print a[i]}' | while read -r ds; do
 		run zfs unmount -f "$ds" 2>/dev/null || true
 	done
-	run umount -lf /mnt/games 2>/dev/null || true
-	run umount -lf /tank 2>/dev/null || true
-	echo "exporting tank (force) so destroy is not racing a busy spa"
+	run umount -f /mnt/games 2>/dev/null || true
+	run umount -f /tank 2>/dev/null || true
+	run zfs set canmount=off tank/games 2>/dev/null || true
+	run zfs set canmount=off tank 2>/dev/null || true
+	echo "exporting tank (force)"
 	run zpool export -f tank 2>/dev/null || true
 	if zpool list -H -o name tank >/dev/null 2>&1; then
 		echo "destroying pool tank"
