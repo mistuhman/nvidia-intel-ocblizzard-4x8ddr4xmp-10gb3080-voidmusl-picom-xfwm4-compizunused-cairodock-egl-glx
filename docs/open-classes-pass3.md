@@ -539,3 +539,23 @@ fan headers are reconnected.
 4. **Escape = ZBM** → boot `nvme/ROOT/void`.
 5. Only then re-add the remaining accessory branches **one power-on at a time** (lighting
    board, SATA/drives, fan hub, front panel) to find out whether one of them was the trip.
+
+
+## VOID BOOTS — 2026-08-27
+
+Operator: *"its booted into void multiple times, though ive just logged in and then rebooted
+via sudo."* The recovery is complete end to end: POST → HP firmware → ZBM → `nvme/ROOT/void`
+→ login. Multiple clean boots, not a one-off.
+
+Residual defect: **POST still reports `CPU Fan (90B)`** and requires an Enter press each
+boot, with the cooling cables reported as reconnected.
+
+`90B` is HP's *fan not operating correctly* check. It reads the tach on **one specific
+header**; several fan/pump headers (`CPU FAN`, `LCFAN`, `TFAN/LCFAN2`, `FFAN1`, `FFAN2`) were
+disconnected during this session's isolation ladder. So the likely cause is a pump/fan lead
+that is plugged in, but **into a different header than the one the EC watches** — or a lead
+that is seated but not spinning.
+
+Receipt tool authored: `etc/omen-90b-fan-probe.block` (root, read-only) — enumerates every
+hwmon fan tach, temperatures, PWM channels, pool and boot state. `PASTE_PROOF=PASS`,
+`BLOCK_LINT=PASS`. It names the header instead of guessing at it.

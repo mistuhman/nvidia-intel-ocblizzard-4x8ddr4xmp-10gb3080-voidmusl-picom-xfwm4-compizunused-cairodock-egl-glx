@@ -1,0 +1,33 @@
+id -u
+# omen-90b-fan-probe.block - ROOT shell on the target (run: sudo -i first, then paste). READ-ONLY.
+# Why: the OMEN recovered and boots Void again, but POST still reports CPU Fan (90B) and needs an Enter press every boot. HP's 90B check reads ONE header's tach; several fan/pump headers were disconnected during the 2026-08-27 isolation ladder. This records which fans actually report RPM, what the CPU temps are doing, and whether the pump is moving heat - so the fix names a header instead of guessing. Nothing is changed by this block.
+# Gate: paste the FULL output back. Empty or missing files are answers too. Do NOT load or stress the CPU until this receipt is read.
+df -h /
+uptime
+cat /sys/class/dmi/id/product_name
+cat /sys/class/dmi/id/board_name
+cat /sys/class/dmi/id/bios_version
+xbps-query -s lm_sensors
+sensors
+ls -l /sys/class/hwmon
+grep . /sys/class/hwmon/hwmon0/name
+grep . /sys/class/hwmon/hwmon1/name
+grep . /sys/class/hwmon/hwmon2/name
+grep . /sys/class/hwmon/hwmon3/name
+grep . /sys/class/hwmon/hwmon4/name
+grep . /sys/class/hwmon/hwmon5/name
+grep . /sys/class/hwmon/hwmon0/fan1_input
+grep . /sys/class/hwmon/hwmon1/fan1_input
+grep . /sys/class/hwmon/hwmon2/fan1_input
+grep . /sys/class/hwmon/hwmon3/fan1_input
+grep . /sys/class/hwmon/hwmon4/fan1_input
+grep . /sys/class/hwmon/hwmon5/fan1_input
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+find /sys/class/hwmon -maxdepth 2 -name temp\*_input
+find /sys/class/hwmon -maxdepth 2 -name pwm\*
+cat /proc/loadavg
+grep MHz /proc/cpuinfo
+zpool status -x nvme
+findmnt /
+nvidia-smi
+dmesg -T --level=err,warn

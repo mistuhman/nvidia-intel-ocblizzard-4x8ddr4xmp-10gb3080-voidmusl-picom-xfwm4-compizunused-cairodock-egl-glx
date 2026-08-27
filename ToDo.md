@@ -52,6 +52,8 @@
 - [x] ~~L2 RUN: DOES NOT CYCLE~~ **RETRACTED**: follow-up = "absolutely zero activity, no cpu power to my knowledge" -> same shape as L3=C, not an accessory pass. Verify PB header reconnected (unplugged since 2026-08-26!) and both CPU 4-pins seated before any further reading
 - [ ] ~~L2 RUN~~ with 24-pin + both CPU 4-pins and nothing else on the PSU -> an accessory branch is implicated (confirm: stays powered vs nothing at all)
 - [x] **PB header reconnected -> beeps returned (HP 3.3 = graphics init timeout, expected with GPU power off) -> GPU power restored -> HP POST SCREEN with CPU Fan (90B). THE MACHINE POSTS.**
+- [x] **VOID BOOTS AGAIN — multiple clean boots, POST -> ZBM -> nvme/ROOT/void -> login**
+- [ ] Residual: POST `CPU Fan (90B)` needs Enter each boot -> run `etc/omen-90b-fan-probe.block` (root, read-only) and paste full output; then move the pump/CPU-fan lead to the header the EC watches
 - [ ] Reconnect AIO pump + CPU fan headers (90B is real - no cooling right now), then F10 = BIOS, load defaults, memory XMP 3733 (never 4000), then Escape = ZBM -> Void
 - [ ] Cause UNATTRIBUTED (multi-variable fix). Re-add one branch per power-on: (1) 3080 + both 6+2, (2) lighting board M82868-001, (3) SATA/Molex drives, (4) fan hub/pump/front panel — the one that brings the cycle back is the fault
 - [ ] LAST FREE STEP — L2 on the OMEN: 24-pin + both CPU 4-pins, nothing else on the PSU, one press
