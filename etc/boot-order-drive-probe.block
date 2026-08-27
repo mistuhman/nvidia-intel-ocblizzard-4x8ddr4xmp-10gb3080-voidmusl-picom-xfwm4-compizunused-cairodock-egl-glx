@@ -1,0 +1,23 @@
+id -u
+# boot-order-drive-probe.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: four SATA drives were added in one pass (2 HDD + 2 SSD) during the 2026-08-27 reassembly.
+# Firmware can inject new SATA boot entries and push them ahead of the NVMe ZBM entry, causing
+# the primary display (NVIDIA/3080) to stay dark while the BIOS probes SATA - the tertiary
+# monitor sees POST video earlier because it gets the framebuffer during firmware init.
+# This block: (1) reads the true EFI BootOrder and every boot variable, (2) identifies all drives
+# by stable /dev/disk/by-id names, (3) reads lsblk with partition types and UUIDs, (4) reads the
+# ZBM and pool health, and (5) reads dmesg for any boot-device scan timing or SATA errors.
+# Nothing is changed. Paste the FULL output back.
+efibootmgr -v
+cat /proc/cmdline
+uname -r
+findmnt /
+df -h /
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE,UUID,MODEL,SERIAL
+ls -l /dev/disk/by-id
+ls -l /dev/disk/by-path
+zpool status
+zpool list -v
+zfs list -o name,mountpoint,used,avail
+dmesg -T | grep -i -E 'ata|sata|sda|sdb|sdc|sdd|nvme|boot|efi|timeout|error' | head -80
+dmesg -T | grep -i 'ahci\|rst\|nvme\|blk_update' | head -40
