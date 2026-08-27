@@ -231,19 +231,25 @@ cmd_superposition_probe() {
 # Search the roots this rig actually uses. MASTER recorded the install under ~/Downloads and it is
 # not there any more, so discovery beats a hardcoded path.
 superposition_find() {
-	for root in "$HOME" /fast /bulk /mnt/games /opt /usr/local /home; do
+	# -L follows symlinks: on this rig ~/Downloads is a symlink to /mnt/games/Downloads, and a plain
+	# find never descends into it - which is exactly why the install looked deleted.
+	for root in "$HOME" /mnt/games /fast /bulk /opt /usr/local; do
 		[ -d "$root" ] || continue
-		find "$root" -maxdepth 5 -iname 'Unigine_Superposition*' -o -maxdepth 5 -iname 'superposition' 2>/dev/null
-	done | sort -u
+		find -L "$root" -maxdepth 5 -iname 'Unigine_Superposition*' -o -maxdepth 5 -iname 'superposition*' -type d 2>/dev/null
+	done | grep -v '/\.Superposition$' | sort -u
 }
 
 cmd_superposition_find() {
 	echo "--- candidates ---"
 	superposition_find
 	echo "--- score files (tell us where it has run before) ---"
-	find "$HOME" /bulk /fast -maxdepth 4 -iname 'Superposition_Benchmark*' 2>/dev/null | head -n 10
+	find -L "$HOME" /bulk /fast -maxdepth 4 -iname 'Superposition_Benchmark*' 2>/dev/null | head -n 10
+	echo "--- symlinked dirs in HOME (a plain find will not enter these) ---"
+	find "$HOME" -maxdepth 1 -type l -ls 2>/dev/null | head -n 10
+	echo "--- direct check of the real Downloads target ---"
+	ls -l /mnt/games/Downloads 2>&1 | head -n 20
 	echo "--- steam/proton copies ---"
-	find "$HOME" /fast /bulk /mnt/games -maxdepth 6 -iname '*uperposition*' -type d 2>/dev/null | head -n 10
+	find -L "$HOME" /fast /bulk /mnt/games -maxdepth 6 -iname '*uperposition*' 2>/dev/null | head -n 20
 }
 
 cmd_superposition_run() {
