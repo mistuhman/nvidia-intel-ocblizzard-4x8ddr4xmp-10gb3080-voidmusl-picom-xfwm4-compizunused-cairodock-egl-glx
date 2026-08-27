@@ -13,10 +13,9 @@
             "README.md": "human bootstrap: cold-start protocol, project, machines, layout",
             "MASTER.md": "this JSON: workflow rules, brute doctrine, OC objective, machines, constraints",
             "ToDo.md": "operator-directed live checklist (OC + storage gates); operator-owned, agents quote it, do not rewrite it",
-            "commands/registry.json": "deterministic command registry replayed by tools/cmd.ts via ?(name) tokens",
+            "etc/": "target config files and canonical .block text saved for reuse",
             "tools/": "agent-facing TypeScript utilities run by node; zero dependency; deterministic stdout",
             "scripts/": "target-facing installed desktop and migration utilities",
-            "etc/": "target config files and canonical .block text that the registry wraps",
             "docs/": "OC + recovery history: oc-plan.md, oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md, omen-free-recovery-runbook.md, omen-reassembly-checklist.md, hardware-retrospective.md, next-chat-last-power-on.md, bios-flash-decision.md, recovery-research.md, open-classes-pass2.md, open-classes-pass3.md, games-receipts.md, perf-optimization-plan.md"
         }
     },
@@ -40,31 +39,21 @@
             "external web"
         ],
         "chatWorkflow": {
-            "mode": "commands and receipts flow through chat; the operator pastes target output back for main-model problem solving (operator directive 2026-08-25: commands in chat, one knob at a time, granular). etc/*.block files are the canonical text the registry wraps, not a separate delivery ritual.",
+            "mode": "commands and receipts flow through chat directly. Operator directive 2026-08-27: NO registry ceremony, NO ?(name) tokens. Agent writes pasteable command blocks inline in chat - one command per line, console-safe (no <>& chaining), root blocks start with id -u. Operator pastes output back, agent reads it, proposes next single knob.",
             "loop": [
-                "1. agent authors or selects the exact command set and registers it: node tools/cmd.ts add <name> --file=etc/<block>",
-                "2. agent quotes it in chat as `?(name)` plus only the prose the operator needs - never a re-typed or reworded block",
-                "3. operator runs it on target and pastes the FULL output back",
-                "4. agent records the paste verbatim: node tools/cmd.ts result <name>, quotes the actual verdict, attributes cause before proposing any fix",
-                "5. only then the next single knob or the next gate is proposed"
+                "1. agent writes pasteable bash blocks directly in chat, grouped by shell (root vs user)",
+                "2. operator runs on target and pastes the FULL output back",
+                "3. agent reads the output, quotes the verdict, attributes cause, proposes next step",
+                "4. one wave at a time until receipt returns"
             ],
-            "reciprocation": "every command sent expects its receipt returned; every receipt returned updates this JSON or ToDo before the next command ships - a reply without a verdict on the last command is a protocol failure",
+            "reciprocation": "every command sent expects its receipt returned before the next wave ships",
             "oneWaveAtATime": "hard rule from operator 2026-08-21: never send a second wave of target commands until the first wave output has arrived"
-        },
-        "commandRegistry": {
-            "tool": "tools/cmd.ts",
-            "registry": "commands/registry.json",
-            "semantics": "?(name) anywhere in chat means: replay the EXACT registered instruction set AND the EXACT recorded result, byte for byte, every time. Determinism is enforced by SHA-256 over canonical text (LF endings, trailing whitespace stripped, single final newline).",
-            "writePath": "add stores instructions (block-lint + bash -n enforced); result stores the operator's pasted output verbatim",
-            "readPath": "show / replay / expand / list / check are deterministic: sorted keys, stored bytes, fixed output order, no generated timestamps in replay output",
-            "failureModes": "unknown token or hash mismatch exits nonzero and must NOT be worked around by hand-typing the block; re-register or repair first",
-            "tokenForms": "? (name) matches with spaces, dashes, or case: the stored key is the lowercase slug; every form resolves to the same bytes"
         },
         "permission": {
             "agentOwned": [
                 "repo reads",
                 "sandbox authoring",
-                "syntax checks and registry management",
+                "syntax/lint checks on command blocks before delivery",
                 "commits to fixed branch"
             ],
             "operatorGated": [
@@ -93,9 +82,9 @@
         ]
     },
     "bruteProblemSolving": {
-        "doctrine": "Keep the method that solved the no-POST crisis: exhaustive context gathering, class enumeration, bounded agent fan-out, receipt-only merges - now pointed at overclocking and run through the chat + registry loop instead of file rituals.",
+        "doctrine": "Keep the method that solved the no-POST crisis: exhaustive context gathering, class enumeration, bounded agent fan-out, receipt-only merges - now pointed at overclocking and run through the direct chat loop (pasteable commands, no ceremony).",
         "required": [
-            "gather as much context as possible before acting: README, this file, ToDo, every docs/ file relevant to the objective, the registry, git log, and all returned target receipts; report what was NOT read",
+            "gather as much context as possible before acting: README, this file, ToDo, every docs/ file relevant to the objective, git log, and all returned target receipts; report what was NOT read",
             "run node tools/agent-deploy.ts --objective=<...> to print the bounded fan-out; one agent per source set / hypothesis / verification target",
             "free context first, then search (node tools/web-scrape.ts, node tools/recovery-research.ts --plan lanes, gh api), then hardware action last",
             "every claim traces to a path, command output, hash, or operator quote; receipts before conclusions",
@@ -114,12 +103,11 @@
             "include rollback before forward for every target-changing step",
             "name the pass/fail gate in the same message as the commands",
             "LOG THE INTERFACE, NOT JUST THE VALUE: every target-changing action records HOW it was applied - BIOS F10 menu path, efivar/efibootmgr, SMBus/i2c SPD write, sysfs node, package, or GUI app (born from the 1.55V incident that cost five diagnostic turns because the value was logged but not the mechanism)",
-            "every command quoted in chat is registry-backed: node tools/cmd.ts check passes and ?(name) resolves",
-            "node tools/paste-proof.ts --target-console --root <block> or an equivalent stricter check before pasting"
+            "every command block pasted into chat is console-safe: one command per line, no chaining (&&/||/;), no redirect/ampersand glitches, bash -n passes, root blocks start with id -u",
+            "run bash -n and a console-paste hygiene check on every block before pasting"
         ],
         "afterOperator": [
             "quote the actual verdict from the paste-back before interpreting it",
-            "record the verbatim output with node tools/cmd.ts result <name> first, then diagnose",
             "attribute cause before proposing fix",
             "edit this JSON to true current state; do not append contradictions",
             "when the operator says a setting was 'applied', establish applied HOW before diagnosing anything"
@@ -128,7 +116,7 @@
     "objective": {
         "id": "extreme-optimization-oc",
         "summary": "Operator directive 2026-08-25, resumed 2026-08-27 after recovery: absolute minimum processes and memory while keeping the desktop beautiful; EXTREME optimization for overclocking the 12700KF and the RTX 3080 10GB, with granular inspection before every step. Games campaign remains PARKED.",
-        "officialCompare": "Geekbench 6.7.1 (CPU + Compute) + Unigine Superposition 1.1 at 1080p Extreme - the same preset forever, meter every step with nvidia-smi dmon CSV (1s) + turbostat; the canonical protocol is registered as ?(oc-p7-baseline)",
+        "officialCompare": "Geekbench 6.7.1 (CPU + Compute) + Unigine Superposition 1.1 at 1080p Extreme - the same preset forever, meter every step with nvidia-smi dmon CSV (1s) + turbostat; stock baselines recorded below",
         "stockBaseline": [
             "Geekbench 6.7.1 CPU https://browser.geekbench.com/v6/cpu/19061796 SC 2715 MC 14569",
             "Geekbench 6.7.1 Compute OpenCL https://browser.geekbench.com/v6/compute/6845489 score 194800",
@@ -136,18 +124,18 @@
             "Meter peaks: cpu 811 samples PkgW 145.02W Bzy 4476MHz Tmp 70C; gpu 201W 47C mclk 9501 pclk 1935"
         ],
         "knobs": {
-            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench via ?(oc-p8-gwe-oc). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. No power-limit raise before PSU plug count is confirmed. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules.",
+            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench (same Geekbench+Superposition+dmon protocol as stock baseline). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. No power-limit raise before PSU plug count is confirmed. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules.",
             "cpu12700kf": "Multiplier locked by HP firmware; ratio/Vcore work is BIOS-only and operator-gated per docs/oc-cpu-bios-checklist.md (targets: all P-cores on, P 51-52 / E 41-42 try, 1.28-1.32V). Voltage offsets are blocked by Plundervolt mitigations per HP staff. Reversible software path first: read-only MSR probe (msr-tools), then PL1/PL2 via MSR 0x610 - usually writable even where voltage is locked and the biggest legal win since the KF is power-limited at stock. OS side already landed: governor powersave + EPP, BORE kernel, IRQ pinning; CPU knob persistence still undecided (runit service vs re-apply per boot - proven non-persistent).",
             "ddr4": "4x8GB Kingston HP37D4U1S8MR-8X (die UNVERIFIED), board 4-DIMM 2DPC so the IMC is the binding limit. Live baseline = XMP 3733 1.35V. 4000 @1.50V booted but was NEVER stability-validated - treat as marginal-unproven, not known-good. 1.55V FAILED to boot: do not repeat, and no further VDIMM beyond 1.50V without die ID and DIMM load temps. Never declare any memory OC stable without stress-ng --vm + memtest + clean zpool scrub (ZFS root means silent corruption is the failure mode, not just crashes). Before anything else: verify BIOS Advanced shows XMP 3733 with no remnant of the 4000 custom profile."
         },
         "liveGates": [
-            "1. First boot after reassembly: Escape -> ZBM -> nvme/ROOT/void explicitly, run ?(omen-postrecovery-probe) (root, read-only), paste FULL output; do not stress CPU or GPU until this receipt is read",
-            "2. If POST reports the 90B prompt again, run ?(omen-90b-fan-probe) and paste output before continuing",
-            "3. Boot order / monitor-delay track: run ?(boot-order-drive-probe); ?(boot-order-nvme-first) ships ONLY after that receipt is pasted back",
+            "1. First boot after reassembly: Escape -> ZBM -> nvme/ROOT/void explicitly, run the postboot diag (root, read-only), paste FULL output; do not stress CPU or GPU until this receipt is read",
+            "2. If POST reports the 90B prompt again, run a fan-probe and paste output before continuing",
+            "3. Boot order / monitor-delay track: run drive probe; boot-order fix ships ONLY after that receipt is pasted back",
             "4. AHCI vs RAID decision (ToDo Phase 3) gates all SATA storage work; switching is safe with NVMe root but is its own operator-gated step",
             "5. SATA -> zpool work (ToDo Options A-D): one drive per power-on, /dev/disk/by-id only, zpool status + zfs list pasted after each create, autotrim on SSD pools, scrub baseline at the end",
             "6. Verify memory XMP 3733 in BIOS, no 4000 remnant (gates any GPU/CPU stress)",
-            "7. GWE step 1 +60/+250 re-bench (?(oc-p8-gwe-oc)) after operator log-out/in makes Coolbits live",
+            "7. GWE step 1 +60/+250 re-bench after operator log-out/in makes Coolbits live",
             "8. CPU knob persistence decision, then CPU BIOS OC per docs/oc-cpu-bios-checklist.md - operator applies in F10 and reports stability/temps"
         ],
         "unconfirmedHandoff": [
@@ -238,7 +226,7 @@
             "do not paste JavaScript into shell"
         ],
         "targetSafety": [
-            "no CPU/GPU stress until the ?(omen-postrecovery-probe) receipt is read - cooling state must be proven by tach data, not memory",
+            "no CPU/GPU stress until the post-recovery diag receipt is read - cooling state must be proven by tach data, not memory",
             "BIOS flash is irreversible on 8917/BlizzardOC (one-way per F.57 PREREQUISITES, no dual BIOS, modified images fail Boot Guard and do not POST): requires explicit operator direction plus dmidecode SSID receipt before any flash command is authored; flashing also risks removing the memory-OC Advanced menu that currently works",
             "memory OC stays at or below 1.50V; a booted profile is not a stable profile; ZFS integrity gates apply",
             "SATA changes: one drive per power-on, /dev/disk/by-id paths only, never /dev/sdX - renames break live mounts",
@@ -251,7 +239,7 @@
         ],
         "consolePaste": [
             "root shell entry is separate from the root command block",
-            "target web console may escape < > & and stop after partial paste - prefer registry blocks authored for the console",
+            "target web console may escape < > & and stop after partial paste - author every block with one command per line, no chaining/redirects",
             "root blocks start with id -u",
             "one command per line",
             "avoid chaining, redirects, ampersands, and quotes when possible",
@@ -262,9 +250,8 @@
             "run node tools/pr-budget.ts main 405 before delivery",
             "never switch or push another branch; this session is fixed to repo.branchFixed",
             "run node tools/test-all.ts before delivery",
-            "no ad-hoc command blocks: every command set quoted into chat must first pass node tools/cmd.ts add (lint + hash); the registry text is canonical",
-            "when any chat message contains ?(name), reproduce it with node tools/cmd.ts expand and treat the output as the single source of truth for that command",
-            "after an operator paste-back, record it with node tools/cmd.ts result <name> before diagnosing - reciprocity is part of the contract",
+            "paste commands directly in chat; no registry/ceremony tokens. Blocks must be console-safe: one command per line, bash -n passes, no chaining/redirects that break on web-console paste, root blocks start with id -u",
+            "after an operator paste-back, read the output verbatim and attribute cause before proposing the next step - reciprocity is part of the contract",
             "do not conclude impossible; search a new class or gather more context first"
         ]
     },
