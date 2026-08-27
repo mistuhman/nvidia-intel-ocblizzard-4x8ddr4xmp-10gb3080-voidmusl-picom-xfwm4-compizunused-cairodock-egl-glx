@@ -1,5 +1,9 @@
 # Recovery research — 80-agent audit (2026-08-26)
 
+> **Pass 2 (2026-08-27):** the four open search classes were worked in
+> `docs/open-classes-pass2.md` — SoftPaq/`HpBiosUpdate.efi` evidence, BlizzardOC
+> literature, and 45L PSU/EC family reports. Read that next.
+
 ## Scope and method
 
 The operator asked for a real diagnosis rather than another pass through generic HP support

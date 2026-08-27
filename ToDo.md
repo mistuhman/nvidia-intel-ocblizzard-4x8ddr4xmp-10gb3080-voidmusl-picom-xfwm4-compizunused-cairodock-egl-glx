@@ -38,7 +38,8 @@
 - [x] No special tools (no DMM, no 3.3V SPI).
 - [x] One jumper-slide attempt FAIL. Jumper class CLOSED. Do not horseshoe to another cap.
 - [x] MASTER crisisDiscipline + tools/stall-check.ts (halt + new chat; search remaining classes).
-- [ ] New chat only: search openSearchClasses (SoftPaq inspect off-OMEN, 8917 literature that is not a 3-pin cap). No power-on from a spinning chat.
+- [x] New chat (2026-08-27, session 01a04157): openSearchClasses worked in docs/open-classes-pass2.md — HpBiosUpdate.efi proven a shipped HP artifact hidden in AMI UCP (@UAF) inside SoftPaqs; it is a normal EFI app needing POST+USB+F9 and Secure Boot off, so it CANNOT run on the no-POST board; BlizzardOC public vendor docs hold no recovery path beyond closed classes; 45L PSU/EC family reports recorded (standard-ATX vs non-standard-EPS conflict; auto-on mechanism unattributed).
+- [ ] Operator free receipt (no OMEN touch): on Windows host run `dir /s /b` on the created recovery stick (root already shows EFI/Hewlett-Packard/HP) and on C:\SWSetup\sp167160; report whether Hewlett-Packard\BIOSUpdate\HpBiosUpdate.efi + .s09/.s12/.s14/.sig exist. Inspect only — stick stays unmodified.
 - [ ] Boot Void (Escape = ZBM) only after a real recovery pass; then run post-recovery probes before OC.
 
 ## Keep

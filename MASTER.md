@@ -1,11 +1,11 @@
 {
     "schema": "arena-master-context.v1",
-    "updated": "2026-08-26",
+    "updated": "2026-08-27",
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, constraints, crisis discipline, and active objective. A stalled or hallucinating chat must halt and demand a fresh chat rather than invent another same-shape test.",
     "repo": {
-        "branchFixed": "arena/01a03dff-nvidia-intel-ocblizzard-4x8ddr",
+        "branchFixed": "arena/01a04157-nvidia-intel-ocblizzard-4x8ddr",
         "baseCommit": "60697fe9d6a2a6601402ca9d275589d1c784ad20",
-        "priorSession": "arena/01a0277c merged as PR #33 (commit 7a8b9fd); 01a03599 merged as PR #35; 01a0373c merged as PR #36 (761a168); 01a03761 merged as PR #37 (14bbe38); 01a03794 merged as PR #38 (91ed038); 01a03ae8 merged as PR #39 (65d6cca, this branch's base) after documenting the DDR4 1.55V failure and BIOS-recovery decision. Session 01a03dff opened 2026-08-26 for Windows recovery-media inspection and the operator-gated alternate-media discriminator.",
+        "priorSession": "arena/01a0277c merged as PR #33 (commit 7a8b9fd); 01a03599 merged as PR #35; 01a0373c merged as PR #36 (761a168); 01a03761 merged as PR #37 (14bbe38); 01a03794 merged as PR #38 (91ed038); 01a03ae8 merged as PR #39 (65d6cca) after documenting the DDR4 1.55V failure and BIOS-recovery decision; 01a03dff crisis-discipline session; 01a04148 merged as PR #44 (60f4e49, next-chat-prompt.md + halt handoff). Session 01a04157 opened 2026-08-27 as the designated new chat to work the open search classes (receipts in docs/open-classes-pass2.md).",
         "prLineTarget": 405,
         "docs": [
             "README.md",
@@ -18,7 +18,7 @@
             "ToDo.md": "operator-directed work-infrastructure checklist",
             "scripts/": "target-facing installed desktop and migration utilities",
             "tools/": "agent-facing TypeScript utilities run by node",
-            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md, recovery-research.md, hardware-retrospective.md (read before any OMEN power-on)"
+            "docs/": "OC + recovery: oc-plan.md, bios-flash-decision.md, omen-free-recovery-runbook.md, next-chat-last-power-on.md, recovery-research.md, open-classes-pass2.md (2026-08-27 search receipts), hardware-retrospective.md (read before any OMEN power-on)"
         },
         "prException": {
             "allowedHere": true,
@@ -282,6 +282,7 @@
             "when it just keeps going and going getting nowhere, it says this doesnt work, i need a fresh chat with new context"
         ],
         "currentState": [
+            "NEW-CHAT SEARCH PASS 2026-08-27 (session 01a04157, receipts docs/open-classes-pass2.md): all four openSearchClasses worked with tools, zero OMEN contact. (1) sp167160/sp HpBiosUpdate.efi: ftp.hp.com record re-verified (F.57, SSID 8917, MD5 7D3449DEAA9EAAFE251B225D96BA7FA4, one-way); HpBiosUpdate.efi is a real shipped HP artifact that sits HIDDEN inside AMI UCP containers (@UAF magic, TianoCompress, tags @UFI/@US9/@US2/@US4/@USG, extractable with 7z + platomav/BIOSUtilities AmiUcpExtract per Rixmerz/hp-omen-bios-flash-linux scripts read via gh api) - grep/strings finding nothing does NOT mean absence. DECISIVE: HpBiosUpdate.efi is a NORMAL EFI application (booted via F9/removable fallback, needs Secure Boot OFF, needs POST+memory init+USB enumeration) so it CANNOT run on a board that resets before memory init; if the OMEN does not POST, sp167160 cannot recover it - its value is the post-recovery flash route that sidesteps the Win+B pre-boot USB stack. Remaining free artifact receipt: operator runs 'dir /s /b' on the created stick (root photo already showed EFI/Hewlett-Packard/HP) and on C:\\SWSetup\\sp167160 on the Windows host; inspect only, stick unmodified. (2) BlizzardOC literature: HP spec doc ish_5037050 has NO recovery/jumper/BBR docs, misstates socket as LGA 1200, rates DDR4-3733 max for K-series; no public service manual/boardview; FDO/PSWD/BBR 3-pin has only two pair states and both have been occupied (left=factory normal, right=the FAILed slide) - cap REMOVAL would be the same closed physical shape and is not proposed. (3) 45L PSU/EC: Cooler Master OEM standard-ATX-dimension PSUs; HP community expert says standard 24-pin+EPS+GPU connectors vs Super User BlizzardOC warning of non-standard CPU 4-pin - CONFLICT unresolved, no pinout receipt, so no PSU backprobe/paperclip action; 45L family reports recorded (EC-latch no-start fixed by cord-out+20-30s hold = already-closed ritual; r/HPOmen loop where beeps vanished as condition worsened, incl. a 12700K+3080 unit, heterogeneous resolutions incl. bent socket pins - data points only, NO part-swap conclusion); auto-cycle-on-AC mechanism stays unattributed; PS_ON# split still needs an instrument. (4) Instruments: none owned, no plan. HARDWARE HALT UNCHANGED: cap left pair, cord out, no power-on.",
             "OPERATOR 2026-08-26: rejected anti-guideline-only MASTER patches. Required: crisis discipline, halt+new-chat when spinning/hallucinating, search/tool genuine remaining classes, log past-chat misbehavior. BBR-shaped jumper FAIL already recorded. stall-check.ts is the gate tool.",
             "OPERATOR 2026-08-26: BBR-candidate jumper attempt FAIL. Quote: no led, same pattern. Stick never blinked. One slide toward FDO/PSWD/BBR text, wall-direct good 125V cable, USB2 stick, wired keyboard. Auto-cycle-on-cord was briefly absent then power-button reproduced the old cycle. Rollback: wall OUT, cap BACK to left pair, stop. No tools so no SPI/DMM. Do not repeat jumper/USB/hotkey.",
             "OPERATOR 2026-08-26: explicit opt-in for one jumper-slide attempt after 7x yes preflight. USB-C on rear SS = wired keyboard. Stick/dongle moved to USB2. Cap still factory left-pair until this attempt. No special tools. No PSU switch. Other pair not proven BBR vs FDO. Procedure: one slide toward FDO/PSWD/BBR text, one wall-cord plug, no hotkeys; fail = cord out + cap back left.",
@@ -373,10 +374,10 @@
             ],
             "haltPhrase": "Achtung, Halt!",
             "openSearchClasses": [
-                "HP SoftPaq sp167160 contents (HpBiosUpdate.efi) on a host that is not the OMEN — inspect only",
-                "board-specific BlizzardOC 8917 service literature for recovery that is not a 3-pin cap",
-                "PSU/EC sequencing literature for 45L custom PSU with no rocker — search, no cable guess",
-                "owned-instrument plans only if operator later reports a tool"
+                "SEARCHED 2026-08-27 pass 2 (docs/open-classes-pass2.md): SoftPaq sp167160/HpBiosUpdate.efi literature-closed — flasher is a normal EFI app needing POST+USB+SecureBoot-off, so it cannot run on the no-POST board; one free operator receipt remains: dir /s /b of the created stick and C:\\SWSetup\\sp167160 on the Windows host (inspect only)",
+                "SEARCHED 2026-08-27 pass 2: BlizzardOC 8917 public vendor literature holds no recovery path beyond the closed 3-pin-cap and USB+hotkey classes; both FDO/PSWD/BBR pair states already occupied",
+                "SEARCHED 2026-08-27 pass 2: 45L PSU/EC literature — standard-ATX claim vs non-standard-EPS warning conflict unresolved (no pinout receipt, no backprobe proposed); PS_ON# split remains instrument-only",
+                "owned-instrument plans only if operator later reports a tool (still none owned 2026-08-27)"
             ]
         },
         "sessionMisbehavior": [
