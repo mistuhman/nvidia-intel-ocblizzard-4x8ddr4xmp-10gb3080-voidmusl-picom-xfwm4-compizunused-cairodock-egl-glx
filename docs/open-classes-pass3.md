@@ -1,0 +1,203 @@
+# Open search classes — pass 3 (2026-08-27, session 01a0416e)
+
+New-chat work per `interactionModel.crisisDiscipline.onHalt` ("a new chat reads README,
+MASTER, stall-check, hardware-retrospective, then searches a NEW class"). Operator
+directive for this pass: *"deploy web scraper tools and agents to not just explore hp
+articles but rather every possible mention."*
+
+**Zero OMEN contact in this pass. No power-on, no jumper, no cable, no USB permutation.**
+Cord out, cap on the left pair. `node tools/stall-check.ts` = `HALT_NEW_CHAT`; the halt
+line was printed before any work.
+
+Sandbox transport note (unchanged from pass 2): direct `fetch()` from the agent sandbox to
+`h30434.www3.hp.com`, `support.hp.com`, `cpumedics.com`, `pcmag.com` fails
+(`TypeError: fetch failed`, filtered TLS), so `tools/web-scrape.ts` could not hash these
+bodies. Sources below were read with the agent web-fetch/search tooling and are cited by
+URL + quoted text. Absence of a hash is a transport limit, not a weaker claim about the
+quote.
+
+---
+
+## What this pass was hunting
+
+Every previously named class was closed **as a class**: 3-pin blue-cap jumper (CMOS *and*
+FDO/PSWD/BBR), USB recovery media + Win+V/Win+B/plain power, front-panel `PB` isolation,
+zero-DIMM / minimal bench / CR2032, pump/0-RPM, UPS-vs-wall. Pass 2 additionally
+literature-closed `HpBiosUpdate.efi` (it is a normal EFI app; it needs POST) and found no
+board-specific recovery path in vendor literature.
+
+So the only useful question left is **not** "which firmware ritual next" but
+**"is the instant cycle even a firmware event at all, and which physical branch trips it?"**
+The searched-for object was a *new discriminator class that is free, needs no instrument,
+and whose two outcomes split live hypotheses.* That class was found. It is
+**PSU-side load isolation**, and it was unlocked by finally resolving the pinout conflict
+that pass 2 had to leave open.
+
+---
+
+## Class 3 (45L PSU / EPS pinout) — now CLOSED, resolved in favour of standard ATX
+
+Pass 2 recorded an unresolved conflict: an HP Community expert said the 45L is a standard
+ATX PSU, a Super User answer on BlizzardOC warned the CPU 4-pin *may not* be ATX-standard
+("HP is notorious for non-standard power-supplies… I wouldn't plug in anything").
+Three independent receipts now settle it:
+
+1. **HP employee accepted solution, OMEN 45L GT22-0000i** —
+   `h30434.www3.hp.com/t5/Gaming-Desktops/OMEN-45L-GT22-0959nz-PSU-upgrade/td-p/9323368`
+   (thread 9323368, accepted answer 9330242, HP agent zoey7886, 2025-03-03):
+   *"The HP motherboard uses two 4-pin EPS connectors for the CPU. Since your new PSU
+   provides 8-pin CPU power cables that can be split into 4-pins, you should be able to use
+   two of those split 4-pin connectors to match the existing setup."*
+   The thread author (same board family as ours) then reports:
+   *"I took 2 8-pin EPS, split both of them and used 1 4-pin connector from each 8-pin
+   cable. System is up and running 😀"* — a **retail MSI MPG A1000G ran this board**.
+2. **The factory PSU is a catalogued standard-ATX Cooler Master OEM unit.**
+   `M19770-003` / `M19770-013`, 800 W 80+ Gold, 155 × 87 × 150 mm, listed connectors:
+   *(1) 24-pin ATX, (2) +12V 4-pin, (3) SATA, (2) 6+2 PCIe*, rails
+   `+5V 18A / +3.3V 12A / +12V1 60A / +5.08Vsb 4A`
+   (cpumedics M19770-013 page; eBay listing 335497780463 lists the same unit as
+   "ATX / 24 Pin / 4+4 CPU / 6+2 PCIe").
+3. **HP's own OMEN PSU guidance** (`hp.com/us-en/shop/tech-takes/omen-desktop-power-supply-upgrade-guide`,
+   `…/how-to-choose-best-psu-omen-gaming-pc`): 35L/45L "featuring standard ATX mounting
+   points"; motherboard power = "24-pin ATX connector, plus 4-pin or 8-pin CPU power".
+
+**Consequence:** the 24-pin on this machine is a standard ATX 24-pin with a normal
+`PS_ON#` (pin 16, green) and `COM` (pin 17, black). That makes the classic
+**PSU jump/paperclip test** applicable to this rig — a free, instrument-free test that
+pass 2 had to refuse for lack of a pinout receipt. The Super User warning is now
+superseded by an HP-employee answer plus a working third-party-PSU install on the same
+board family; it was a caution, not a measurement.
+
+Safety gate kept: the operator must *see* a green wire in the expected position before
+bridging anything. If the 24-pin has no green wire where the standard puts it, stop.
+
+---
+
+## The NEW class: PSU-side load isolation (never tested on this machine)
+
+Everything closed so far isolated **board-side** devices (DIMMs, GPU, `PB` header, CMOS).
+Nothing has ever isolated the **PSU-side branches**. That matters on this exact chassis:
+
+- **PCMag, HP OMEN 45L ATX case review** (`pcmag.com/reviews/hp-omen-45l-atx-pc-case`):
+  the case's lighting controller "is **powered by a SATA power cable**, its SATA-style data
+  connector is completely undocumented", and HP's own documentation of the power-LED header
+  polarity is wrong — *"HP tells us that this arrow marks the positive connector… We
+  followed HP's instructions, found the RGB controller unresponsive, and reversed the
+  connector to fix the problem."*
+- **HP Community 9614053 (GT21/GT22 lighting control board)**: the board is fed from the
+  factory PSU through a Cooler Master **"P8"** connector; owners fitting a retail PSU find
+  no matching cable and simply **leave the controller unpowered** — *"I am running the PC
+  ok without powering the controller for now."*
+  So: this chassis has at least one undocumented, mis-documented, PSU-fed accessory board,
+  and it is *known to be safely removable*.
+- A shorted PSU-side branch produces exactly our symptom shape. Receipt:
+  r/buildapc `13zikwd` — everything stripped to board + CPU, still "two clicks and turning
+  off"; the same PSU booted a different machine fine; the culprit was a **SATA power
+  cable/branch** — *"As a last resort I removed the SATA power from both drives and… it just
+  booted. Wanted to see if it wasn't a fluke, so I connected the SATA power once more —
+  again two clicks and turning off."*
+- Behaviour change with **CPU power removed** is an accepted discriminator, not folklore:
+  Tom's Hardware 3504431 (*"pc does not do boot looping when I unplug cpu power cable"*),
+  Tom's Hardware 3439523 (*"pc only starts when cpu power cable is unplugged"* → answered as
+  board/CPU fault), AnandTech 2611287 (*"stuff will try to boot if you don't connect any cpu
+  power 8 pins… plugging the 8pins back reverts to old behavior"*).
+
+### Why this class is new, not a relabel
+
+| Closed class | Why the ladder is not it |
+|---|---|
+| minimal bench / zero-DIMM | removed *board-attached* parts; the PSU still fed the lighting board, fans, pump, drives, and the board's own 12V rails |
+| `PB` front-panel isolation | tested who *requests* power; not what *trips* it |
+| jumper (CMOS / FDO-PSWD-BBR) | changes a firmware setting; L3 below tests whether firmware is even involved |
+| USB media + hotkeys | needs a POSTing board; irrelevant pre-memory-init |
+
+### The ladder (operator-gated, one step per report, free, no instrument, no purchase)
+
+**L0 — no power at all.** Photograph the PSU label (expect `M19770-0xx`, 800 W) and
+photograph the PSU cable fan-out: which cables leave the PSU and what each one feeds
+(board 24-pin, two 4-pin EPS, GPU 6+2 ×2, SATA chain, lighting/P8 board, fan/pump feeds).
+Pure receipt. Nothing is moved.
+
+**L1 — PSU alone (jump test).** PSU disconnected from *everything* (board, GPU, drives,
+lighting board, fans). Optional dummy load: one case fan on a SATA/Molex lead. Bridge
+24-pin **pin 16 green → pin 17 black** with a bare paperclip, then plug the cord.
+- *Stays running ≥30 s* → the PSU can hold its rails; the trip is **downstream**. Go L2.
+- *No spin, or spins and cuts repeatedly* → the **PSU itself latches**. That is the answer;
+  and per the receipts above this chassis accepts any standard ATX unit, so it is a
+  known-good-part question, not a firmware question.
+
+**L2 — board only, every accessory off the PSU.** Reconnect **only** the 24-pin and the two
+4-pin EPS. Nothing else on the PSU: no GPU, no drives, no lighting/P8 board, no fan hub, no
+pump, no front-panel USB/audio headers on the board. One power-on.
+- *Cycle stops* (fans keep running; **no display is expected** — the 12700**KF** has no iGPU
+  and the GPU is out) → the fault is in **one accessory branch**; re-add one branch per
+  power-on until it returns.
+- *Identical instant cycle* → the fault is in the board/CPU/PSU core path. Go L3.
+
+**L3 — EPS off (the decisive one).** From the L2 state, unplug **both** 4-pin EPS. One
+power-on.
+- *Board now stays powered* (fans spin, obviously no POST) → the trip lives on the **CPU
+  12 V / VRM path**. No jumper, BIOS image, recovery stick or EFI flasher can address that.
+- *Still the same instant cycle with the CPU completely unpowered* → the trip is on the
+  24-pin / 5VSB side or is PSU protection. This also **kills Mechanism A**: firmware cannot
+  order a shutdown when the CPU has no power, so a corrupted SPI setup varstore was never
+  the cause, and every jumper/USB/flash class was doomed for a reason unrelated to
+  technique.
+
+Either L3 outcome is the first thing in this whole campaign that would *close the cause*
+rather than close another ritual. Neither outcome is promised to make it POST — say that
+plainly. **Light-the-USB requires POST**; if L3 shows an electrical trip, the stick will
+never blink no matter what media is written.
+
+---
+
+## Also searched this pass (no new class, recorded so it is not re-searched)
+
+- **HP's own desktop BIOS-recovery ladder is exhausted.** `support.hp.com` doc
+  `ish_3966820-3438449-16` ("HP Desktop PCs - Recovering the BIOS") lists exactly:
+  EC reset (cord out 5 s, replug, power on), CMOS reset (model-specific, else generic:
+  battery out, hold power ≥60 s, replug, **hold power 20 s**), automatic BIOS recovery, key
+  press combination, 4-in-1 USB key, USB recovery drive. Every entry is an already-closed
+  class on this machine. The doc also states PCs **with HP Sure Start do not support** the
+  manual/USB recovery methods (Sure Start repairs from the HP Endpoint Security
+  Controller); Sure Start is an EliteBook/ZBook/business feature (HP F10 setup white paper
+  c04685655: *"Only supported on EliteBook and ZBook notebooks"*), so the OMEN is a
+  *without-Sure-Start* consumer machine — which is consistent with USB recovery being the
+  intended path and with there being **no hidden auto-recovery controller** to appeal to.
+- **Auto-power-on-with-`PB`-unplugged is not exotic.** HP F10 setup exposes
+  **After Power Loss** (default *Off*, but settable to power-on/last-state); tomshardware
+  1962721 and Quora threads show HP desktops auto-starting on AC with that set. So the
+  cord-in auto-cycle is consistent with a stored setting plus a board that fails
+  immediately; it is not evidence of anything exotic. Mechanism unattributed, as before.
+- **45L family reports** (added to pass 2's set, still data points only, no part-swap
+  conclusion): HP 8328782 owners whose 45L "fans are spinning for a millisecond and the
+  light of the GPU shows for a millisecond" and is only revived by cord-out + 20-30 s hold
+  (already-closed ritual); one reports faint electrical noise near the CPU right before
+  cycle-off; r/HPOmen `1asef8z` 45L reboot loop that turned out to be **one faulty DIMM**;
+  r/Hewlett_Packard `n50a4p` 25L no-start finally fixed by a PSU replacement; r/GeekSquad
+  `17t9e5m` (the BBR thread already on file) where the tech had *already replaced the PSU*
+  and still looped. Heterogeneous outcomes: PSU, DIMM, board, CPU. None of these is a
+  diagnosis of this board — they are why the ladder above is ordered as isolation, not as
+  shopping.
+- **Front-panel USB / header short** as a loop cause is well documented (Tom's 3847093
+  USB overcurrent shutdown; LTT 1261577 board refuses to power with a mis-keyed front USB-C
+  header; anandtech 2269622 board will not power on with a USB header plugged). It is
+  **folded into L2**, not proposed as its own separate power-on.
+- **Nothing found** for: a BlizzardOC service manual / boardview / schematic; an HP-published
+  BlizzardOC jumper table; a third 3-pin cap state; an OMEN-45L-specific recall; any
+  software-only path into a pre-POST HP board.
+
+---
+
+## State after this pass
+
+| Class | Status |
+|---|---|
+| sp167160 / `HpBiosUpdate.efi` | literature-closed (pass 2); free `dir /s /b` receipt still open, Windows host only |
+| BlizzardOC vendor literature | closed; nothing beyond the closed classes exists publicly |
+| 45L PSU / EPS pinout | **CLOSED — standard ATX 24-pin + 2× 4-pin EPS, HP-employee + working retail-PSU receipts** |
+| PSU-side load isolation (L0–L3) | **NEW, OPEN — the named next action, operator opt-in required** |
+| Instruments | none owned; ladder above is deliberately instrument-free |
+
+Hardware halt unchanged until the operator explicitly names **L0** (photos, zero power) and
+then, separately, **L1**. One step, one report, no stacking.
