@@ -1,0 +1,22 @@
+id -u
+# sata-wipe-pools.block - ROOT. DESTRUCTIVE. Paste ONLY after sata-inventory.block
+# output is back and the four ata-* by-id names still match STATE.md.
+# Destroys the four internal SATA disks (Windows on MX500, Kingston, Seagate DATA,
+# Toshiba NTFS 50 + live tank/games). Does NOT touch the NVMe root pool.
+# Does NOT touch USB (Sabrent or any other).
+# Default layout: fast=MX500, bulk=2x2TB STRIPE (3.6T, no redundancy), Kingston L2ARC on bulk.
+# Mirror instead of stripe: add HDD_MIRROR=1 in front of the sh line.
+# Rollback after wipe: none. Rollback before paste: do not paste this block.
+df -h /
+ls -l /root/omen-fix
+mkdir -p /root/omen-fix
+git clone --depth 1 --branch arena/01a04419-nvidia-intel-ocblizzard-4x8ddr https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx.git /root/omen-fix/sata-pools
+ls -l /root/omen-fix/sata-pools/scripts/omen-sata-pools.sh
+ls -l /root/omen-fix/sata-pools/scripts/finder-storage-places.sh
+CONFIRM_WIPE=DESTROY-ALL-SATA CONFIRM_TANK=YES-KILL-TANK sh /root/omen-fix/sata-pools/scripts/omen-sata-pools.sh
+sh /root/omen-fix/sata-pools/scripts/finder-storage-places.sh
+zpool status -P
+zfs list -o name,used,avail,refer,mountpoint,compression,recordsize
+df -h /fast /bulk /mnt/games
+ls -l /home/sd/Storage
+date

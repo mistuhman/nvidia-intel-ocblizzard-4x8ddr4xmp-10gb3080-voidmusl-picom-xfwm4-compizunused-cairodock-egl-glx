@@ -97,13 +97,25 @@ df -h /mnt/games 2>/dev/null || true
 # ------------------------------------------------------- tear down tank
 say "3/7 tear down the live tank pool"
 if zpool list -H -o name tank >/dev/null 2>&1; then
-	echo "unmounting only tank's datasets (never a blanket -a, the desktop is live)"
-	zfs list -H -o name -r tank 2>/dev/null | while read -r ds; do
-		run zfs unmount "$ds" 2>/dev/null || true
+	echo "unmounting tank datasets deepest-first (never a blanket -a, never lazy -l)"
+	# Lazy umount -l drops the path from the namespace but keeps the spa
+	# busy until every fd closes (nemo/Thunar/engrampa). Then export -f
+	# still says 'pool is busy' with nothing mounted (2026-08-27).
+	zfs list -H -o name -r tank 2>/dev/null | awk '{a[NR]=$0} END{for(i=NR;i>=1;i--) print a[i]}' | while read -r ds; do
+		run zfs unmount -f "$ds" 2>/dev/null || true
 	done
-	run umount -l /mnt/games 2>/dev/null || true
-	echo "destroying pool tank"
-	run zpool destroy -f tank
+	run umount -f /mnt/games 2>/dev/null || true
+	run umount -f /tank 2>/dev/null || true
+	run zfs set canmount=off tank/games 2>/dev/null || true
+	run zfs set canmount=off tank 2>/dev/null || true
+	echo "exporting tank (force)"
+	run zpool export -f tank 2>/dev/null || true
+	if zpool list -H -o name tank >/dev/null 2>&1; then
+		echo "destroying pool tank"
+		run zpool destroy -f tank
+	else
+		echo "tank exported"
+	fi
 else
 	echo "tank not imported"
 fi
@@ -141,6 +153,11 @@ echo "--- fast (Crucial MX500 1TB SSD) ---"
 run zpool create -f $COMMON -O mountpoint=/fast fast "$SSD"
 run zfs create -o mountpoint=/fast/vm fast/vm
 run zfs create -o mountpoint=/fast/work fast/work
+run zfs create -o mountpoint=/fast/steam fast/steam
+# VM images: no lz4 win, 64K matches qcow2 clusters
+run zfs set recordsize=64K fast/vm
+run zfs set compression=off fast/vm
+run mkdir -p /fast/steam/steamapps/common
 zpool status fast 2>/dev/null || true
 
 echo "--- bulk (2 x 2TB HDD) ---"
@@ -155,6 +172,7 @@ fi
 run zfs create -o mountpoint=/mnt/games bulk/games
 run zfs create -o mountpoint=/bulk/media bulk/media
 run zfs create -o mountpoint=/bulk/archive bulk/archive
+run mkdir -p /mnt/games/steamapps/common
 zpool status bulk 2>/dev/null || true
 
 echo "--- attach the Kingston as L2ARC read cache on bulk ---"
@@ -177,6 +195,10 @@ done
 CRON
 chmod 0755 /etc/cron.weekly/zfs-trim
 run chown -R sd: /fast /bulk /mnt/games 2>/dev/null || true
+HERE=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+if [ "$DRYRUN" != "1" ] && [ -f "$HERE/finder-storage-places.sh" ]; then
+	sh "$HERE/finder-storage-places.sh" || echo "finder-storage-places failed (pools already created)"
+fi
 
 say "7/7 AFTER"
 zpool list -v
@@ -193,5 +215,6 @@ run zpool scrub bulk 2>/dev/null || true
 echo
 echo "Check progress any time with:  zpool status -t"
 echo "Or from Finder: right-click any folder -> ZFS: Pool status"
+echo "Finder hierarchy: ~/Storage  and Places sidebar Fast / Bulk / Games"
 echo "DONE omen-sata-pools"
 date

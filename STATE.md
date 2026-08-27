@@ -5,7 +5,7 @@ I repeatedly re-derived facts that were already in a receipt and got them wrong.
 Regenerate the live half with `scripts/omen-omni.sh`, which writes the whole
 capture to `/root/omen-state-latest.txt` — one file, paste it back wholesale.
 
-Last verified: **2026-08-27 13:10 UTC**
+Last verified: **2026-08-27 17:11 UTC** (SATA wipe + fast/bulk create)
 
 ---
 
@@ -41,18 +41,20 @@ Boot NVMe — **never a wipe target**:
 - p2 → pool `nvme` → `nvme/ROOT/void` → `/`
 - **DRAM-less / HMB** (`allocated 32 MiB host memory buffer`). See the autotrim trap.
 
-SATA, all four (`/dev/disk/by-id/ata-*`, never `sdX` — letters reshuffle):
+SATA, all four (`/dev/disk/by-id/ata-*`, never `sdX` — letters reshuffle).
+Wiped 2026-08-27 17:11 UTC (`CONFIRM_WIPE` + `CONFIRM_TANK`). Old Windows /
+NTFS DATA / NTFS 50 / `tank` 465G **gone**. Vesktop flatpak namespaces were
+what kept `tank` busy (`grep tank /proc/*/mounts`); host fuser was empty.
 
-| by-id | dev | size | was |
-|---|---|---|---|
-| `ata-CT1000MX500SSD1_2317E6CCE92E` | sda | 931.5 G | Crucial MX500 SSD, Windows install |
-| `ata-KINGSTON_SV300S37A240G_50026B7762054FB2` | sdb | 223.6 G | Kingston SV300, 2012 SandForce |
-| `ata-ST2000NM0033-9ZM175_Z1X6R7P5` | sdc | 1.8 T | Seagate HDD, NTFS "DATA" |
-| `ata-TOSHIBA_DT01ACA200_95CWVMJAS` | sdd | 1.8 T | Toshiba HDD, NTFS "50" + old `tank` |
+| by-id | pool role | mount |
+|---|---|---|
+| `ata-CT1000MX500SSD1_2317E6CCE92E` | `fast` (MX500) | `/fast` `/fast/vm` `/fast/work` `/fast/steam` |
+| `ata-ST2000NM0033-9ZM175_Z1X6R7P5` | `bulk` stripe | `/bulk` `/bulk/media` `/bulk/archive` `/mnt/games` |
+| `ata-TOSHIBA_DT01ACA200_95CWVMJAS` | `bulk` stripe | (same) |
+| `ata-KINGSTON_SV300S37A240G_50026B7762054FB2` | L2ARC on `bulk` | no dataset |
 
-Target layout (`scripts/omen-sata-pools.sh`): `fast`=sda, `bulk`=sdc+sdd,
-Kingston as **L2ARC cache vdev on bulk** (zero-risk role for an old drive).
-**Not yet confirmed built — no `zpool status` seen since the reboot.**
+Finder: `~/Storage/{Fast,Bulk,Games}` + gtk-3.0 Places. Do not `umount -l` a
+pool you still need to export — lazy unmount leaves the spa busy.
 
 ### Traps that cost real time
 * **`autotrim=on` on the SN530 destroys write speed.** DRAM-less FTL serialises
@@ -148,8 +150,7 @@ OpenCL **194800** · Superposition 1080p Extreme **8717**
 
 ## Open
 
-* `zpool status` / `cat /proc/cmdline` **unseen since the reboot** — pools and
-  KMS unverified.
+* Pools live 2026-08-27 17:11: `nvme` + `fast` + `bulk` (Kingston L2ARC). cmdline already has `nvidia_drm.modeset=1`.
 * plocate index built empty (`index entries:` blank) — needs checking.
 * `la-capitaine` + `OSX-Gunmetal` still in `/usr/share/icons`, unused.
 * XMP 3733 BIOS verification (Gate 6) — gates GPU/CPU stress.
