@@ -1,0 +1,18 @@
+id -u
+# fix-wave1-root.block - ROOT (sudo -i first). Filesystem + boot/display + latency.
+# Fetches auditable scripts from the repo instead of pasting escaped heredocs,
+# because the web console strips quotes (proved by perf-p2-root on 2026-08-25).
+# Read them first if you want: they are in scripts/ on branch
+# arena/01a04303-nvidia-intel-ocblizzard-4x8ddr
+# NOTHING DESTRUCTIVE. No wipefs, no labelclear, no zpool destroy, no repartition.
+mkdir -p /root/omen-fix
+cd /root/omen-fix
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/omen-fs-fix.sh -o omen-fs-fix.sh
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/omen-boot-display-fix.sh -o omen-boot-display-fix.sh
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/omen-latency-fix.sh -o omen-latency-fix.sh
+chmod 0755 omen-fs-fix.sh omen-boot-display-fix.sh omen-latency-fix.sh
+ls -l /root/omen-fix
+sh /root/omen-fix/omen-fs-fix.sh
+sh /root/omen-fix/omen-latency-fix.sh
+sh /root/omen-fix/omen-boot-display-fix.sh
+date

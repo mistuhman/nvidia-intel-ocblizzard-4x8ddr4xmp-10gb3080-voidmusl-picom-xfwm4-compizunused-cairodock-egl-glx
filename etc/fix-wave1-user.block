@@ -1,0 +1,12 @@
+id -u
+# fix-wave1-user.block - USER sd, inside the X session. NOT root.
+# Vesktop GPU flags (it was pegging a core at 98% doing software compositing)
+# plus CEntrance MicPort Pro routing. The mic is NOT broken - it enumerates
+# fine as ALSA card 0; the default source is easyeffects_source and EasyEffects
+# is holding the capture device.
+mkdir -p /home/sd/omen-fix
+cd /home/sd/omen-fix
+curl -fsSL https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a04303-nvidia-intel-ocblizzard-4x8ddr/scripts/omen-vesktop-fix.sh -o omen-vesktop-fix.sh
+chmod 0755 omen-vesktop-fix.sh
+sh /home/sd/omen-fix/omen-vesktop-fix.sh
+date
