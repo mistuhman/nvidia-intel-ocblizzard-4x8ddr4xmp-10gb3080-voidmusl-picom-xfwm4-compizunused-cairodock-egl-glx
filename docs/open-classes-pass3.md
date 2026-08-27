@@ -559,3 +559,42 @@ that is seated but not spinning.
 Receipt tool authored: `etc/omen-90b-fan-probe.block` (root, read-only) — enumerates every
 hwmon fan tach, temperatures, PWM channels, pool and boot state. `PASTE_PROOF=PASS`,
 `BLOCK_LINT=PASS`. It names the header instead of guessing at it.
+
+
+## BIOS reached — F10 OMEN Setup Utility, thermal page read (2026-08-27)
+
+Operator pressed Enter at `90B` and got into the **OMEN Setup Utility**. The Thermal panel
+names the fault outright:
+
+| Reading | Value |
+|---|---|
+| CPU Fan Speed | 734 |
+| Rear Fan Speed | 707 |
+| Front Fan #2 | 602 |
+| Front Fan #3 | 597 |
+| **Front Fan #1** | **N/A** |
+| **Pump Fan Speed** | **1565** |
+
+`CPU Fan Check` and `System Fan Check` are both **enabled**.
+
+- **Pump is running at 1565 RPM** — cooling is real, the AIO works, the CPU is not at risk.
+- **Front Fan #1 reads N/A** — that is the only dead reading, and it is what trips the check.
+  It matches the spare `F FAN` plug still in the operator's hand.
+
+Fix = land that fan on **`FFAN1`** (bottom edge, by `CPU FAN RGB` / `FRONT FAN RGB`), or, if
+no fan is physically present on that mount, turn **System Fan Check** off in this same page.
+Prefer the physical fix; a disabled check hides future failures.
+
+### Other settings captured from this page (receipts, not changes)
+
+- **After Power Loss = Off** — so the cord-in auto-cycle seen during the crisis was *not*
+  this setting. Mechanism remains unattributed, as recorded.
+- **SATA Emulation = RAID** — matters later: Intel RST/RAID mode can hide SATA disks from
+  Linux. The two staged HDDs and the spare 240 GB SSD should be added only after deciding
+  whether to move to **AHCI**. Root is NVMe (`nvme0n1`) and Void boots today, so nothing is
+  broken right now — but do not add SATA storage without settling this first.
+- Virtualization on, Hyper-Threading on, Num Lock on, S4/S5 Wake on LAN off, Legacy Game
+  Compatibility Mode disabled.
+
+**Still to verify in `Advanced`:** that memory is on **XMP 3733** or stock, and that no
+remnant of the **4000** custom profile survives.

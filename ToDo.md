@@ -53,6 +53,10 @@
 - [ ] ~~L2 RUN~~ with 24-pin + both CPU 4-pins and nothing else on the PSU -> an accessory branch is implicated (confirm: stays powered vs nothing at all)
 - [x] **PB header reconnected -> beeps returned (HP 3.3 = graphics init timeout, expected with GPU power off) -> GPU power restored -> HP POST SCREEN with CPU Fan (90B). THE MACHINE POSTS.**
 - [x] **VOID BOOTS AGAIN — multiple clean boots, POST -> ZBM -> nvme/ROOT/void -> login**
+- [x] **BIOS REACHED (F10 OMEN Setup Utility)**. Thermal: CPU 734, Rear 707, Front#2 602, Front#3 597, **Front#1 N/A**, **Pump 1565** -> cooling is real; Front Fan #1 is the only dead sensor and the cause of 90B
+- [ ] Plug spare F FAN into **FFAN1** (bottom edge) — or disable System Fan Check if no fan is mounted there
+- [ ] Verify in Advanced: memory XMP 3733 or stock, no remnant of the 4000 profile
+- [ ] Receipt: After Power Loss = Off (so it did NOT cause the cord-in auto-cycle); SATA Emulation = **RAID** — settle AHCI vs RAID before adding the HDDs/SSD
 - [ ] Reassembly by phase: docs/omen-reassembly-checklist.md (cooling -> test -> front panel -> LED hub alone -> test -> BIOS defaults + XMP 3733)
 - [ ] Storage deferred: 2 new HDDs + spare 240GB SSD, one drive per power-on, only after several clean boots (SATA adds rename sd* on ZFS root)
 - [ ] Residual: POST `CPU Fan (90B)` needs Enter each boot -> run `etc/omen-90b-fan-probe.block` (root, read-only) and paste full output; then move the pump/CPU-fan lead to the header the EC watches
