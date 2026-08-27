@@ -69,7 +69,7 @@ ZFS 2.4.3, ZBM 3.1.0. Escape = ZBM, F10 = BIOS.
 
 **Closed (operator 2026-08-26):** no 3.3 V SPI programmer, clip, or DMM — *“i dont have any special tools.”*
 
-**Open:** which of the two 3-pin pairs is BBR vs FDO (photo shows current = left pair; other = slide toward the label); `PS_ON#` vs PSU protection; `HpBiosUpdate.efi` inside sp167160.
+**Open:** which of the two 3-pin pairs is BBR vs FDO (photo shows current = left pair; other = slide toward the label; both pair states already occupied — right pair FAILed 2026-08-26); `PS_ON#` vs PSU protection; `HpBiosUpdate.efi` inside sp167160 (literature-resolved 2026-08-27: HP AMI SoftPaqs hide it in the UCP container and it needs a POSTing board — see `docs/open-classes-pass2.md`; stick/`C:\SWSetup` dir receipt still pending).
 
 ## Rear I/O photo 2026-08-26 (inspect-before-BBR)
 
