@@ -201,3 +201,65 @@ never blink no matter what media is written.
 
 Hardware halt unchanged until the operator explicitly names **L0** (photos, zero power) and
 then, separately, **L1**. One step, one report, no stacking.
+
+---
+
+# L0 — executing (operator named it 2026-08-27)
+
+**Zero power. Zero disassembly. Cord stays out, caps stay where they are, nothing is
+unplugged, nothing is unscrewed.** L0 is a look-and-photograph step whose only job is to
+make L1 safe and to tell us what is even attached to this PSU. If any item below needs a
+screwdriver or a tug, skip it and say so — a missing photo is fine, a moved part is not.
+
+## L0-A — zero-touch identity (do this on the Windows PC, not the OMEN)
+
+HP PartSurfer returns the factory bill of materials for a serial number.
+
+1. Read the **system serial number** from the OMEN's case label (rear or top sticker,
+   `S/N`, 10 characters). Do not open anything for this.
+2. On the Windows PC: `https://partsurfer.hp.com/` → enter that serial.
+3. Photograph or copy the whole parts list. What we want out of it:
+   - the **power-supply part number** (expect an `M19770-0xx` class Cooler Master 800 W),
+   - the **system-board part number** (BlizzardOC),
+   - any **lighting/LED control board** or cable-assembly part numbers.
+
+That gives us the PSU identity even if its label is unreadable in the case, and it is the
+only receipt in L0 that does not involve touching the machine at all.
+
+## L0-B — photographs (case side panel already off; do not remove anything else)
+
+Take these with the flash on, straight-on, one subject per photo. If a subject is hidden
+behind a shroud or another cable, photograph what *is* visible and say "blocked".
+
+| # | Subject | What it decides |
+|---|---|---|
+| 1 | The **PSU label** (wattage, model, rail table) — only if readable in place. **Do not unscrew or slide the PSU to reach it.** | confirms the `M19770`/800 W standard-ATX identity and the `+5Vsb` rating |
+| 2 | Where the **cable bundle leaves the PSU/shroud** — a wide shot showing every cable that exits | tells us how many PSU branches exist to isolate in L2 |
+| 3 | The **24-pin at the board end**, close and straight-on, wire colours legible, latch visible | **L1 safety gate**: we must see a single **green** wire and its position relative to the latch before anything is bridged. No green wire in the standard spot = L1 is cancelled |
+| 4 | The **two 4-pin CPU (EPS) plugs** at the board end | confirms the two-4-pin layout and gives us the exact plugs L3 will unplug |
+| 5 | The **lighting / RGB control board** and its power lead, plus where that lead terminates (Cooler Master `P8` or SATA) | this is the undocumented PSU-fed accessory; it is the prime L2 suspect |
+| 6 | Every **SATA / Molex** lead and what each one feeds (drives, fan hub, pump, controller) | a shorted SATA branch reproduces this exact symptom (r/buildapc `13zikwd`) |
+| 7 | **Fan and pump power leads** — which go to board headers vs straight to the PSU | separates board-side loads (already closed) from PSU-side loads (the new class) |
+| 8 | Wide shot of the **bottom chamber / cable routing** | catches a pinched or chafed cable against a case edge |
+
+## L0-C — free visual damage sweep (eyes only, no probing, no touching)
+
+While the panel is off, look for and photograph anything that matches:
+
+- **browning, melting or a shiny/glazed look** on any connector housing — especially the
+  24-pin, the two 4-pin EPS, and the GPU 6+2 plugs;
+- **bulged, domed or leaking capacitors** near the CPU socket (the VRM row between the
+  socket and the rear I/O) and on the PSU-side of the board;
+- any **dark scorch mark or soot** on the board, on a cable, or on an accessory board;
+- a **burnt / fishy / ozone smell** near the CPU VRM or the PSU vent (report it in words,
+  no photo needed);
+- any **loose screw, washer, or metal debris** lying on the board or under it.
+
+A hit on any of these can short-circuit the whole ladder — it would name the fault outright.
+A clean sweep is also a real result and makes L1 the right next step.
+
+## L0 gate
+
+Send: the PartSurfer parts list, photos 1–8 (or "blocked" for any you could not take
+without moving something), and the damage-sweep answer in words. Nothing gets powered,
+unplugged, or bridged until that comes back and L1 is separately named.
