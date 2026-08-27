@@ -97,8 +97,10 @@ df -h /mnt/games 2>/dev/null || true
 # ------------------------------------------------------- tear down tank
 say "3/7 tear down the live tank pool"
 if zpool list -H -o name tank >/dev/null 2>&1; then
-	echo "unmounting datasets"
-	run zfs unmount -a 2>/dev/null || true
+	echo "unmounting only tank's datasets (never a blanket -a, the desktop is live)"
+	zfs list -H -o name -r tank 2>/dev/null | while read -r ds; do
+		run zfs unmount "$ds" 2>/dev/null || true
+	done
 	run umount -l /mnt/games 2>/dev/null || true
 	echo "destroying pool tank"
 	run zpool destroy -f tank

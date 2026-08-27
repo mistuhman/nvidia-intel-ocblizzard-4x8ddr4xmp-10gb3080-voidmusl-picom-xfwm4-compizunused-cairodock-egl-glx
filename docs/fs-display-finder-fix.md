@@ -285,3 +285,60 @@ to `6.18.39-tkg-bore` is a deliberate, separate step.
 The `finder-zfs` smoke test printing nothing is expected, not a fault: with no
 args it defaults to `status`, which pipes through `yad`, and root had no
 DISPLAY. Invoked from Nemo it inherits the user's session and renders.
+
+---
+
+## Final pass — `scripts/omen-final.sh`
+
+One block, run as root, ending in a reboot. Order matters: vesktop first (so
+the runaway processes are killed before anything else competes for I/O), disks
+second, layout third, verification fourth, reboot last.
+
+### Storage model — "saved on the pools, launched from the NVMe"
+
+The NVMe keeps everything that governs **launch latency**: OS, binaries,
+configs, dotfiles, the Steam client itself, shader caches and Proton
+`compatdata` prefixes. The pools carry the **payload**. Same shape as the old
+`tank -> /mnt/games`, just wider:
+
+| Pool | Device | Mount | Holds |
+|---|---|---|---|
+| `nvme` | SN530 953 G | `/` | OS, apps, configs, Proton prefixes |
+| `fast` | MX500 930 G | `/fast` | SSD game library, VM disks, work |
+| `bulk` | 2×2 TB, 3.6 T | `/bulk`, `/mnt/games` | HDD library, media, archive |
+| cache | SV300 224 G | L2ARC on `bulk` | read cache only, no data |
+
+`fast/vm` gets `recordsize=64K` (matches qcow2 clusters) and `compression=off`
+— VM images are already-compressed guest filesystems and lz4 just burns CPU on
+them. `bulk` gets `recordsize=1M` for large media. `~/Games` symlinks to
+`/mnt/games`. libvirt's image dir is relinked to `/fast/vm` only if it is
+currently empty, otherwise it is left alone rather than risk moving live disks.
+
+Steam libraries are **not** auto-registered — writing `libraryfolders.vdf` by
+hand corrupts Steam's state often enough that it is not worth it. The
+`steamapps/common` skeletons are created so Steam's *Settings → Storage → +*
+picks them up immediately.
+
+### vesktop
+
+`ps` showed `vesktop.bin` at **98.2 %CPU**. Chromium blocklists the NVIDIA
+proprietary driver for GPU rasterisation on X11, so Vesktop paints every frame
+in software and uploads it. One saturated core starves compiz (8.0 %) and Xorg
+(6.5 %) — which is why *other* applications went choppy too, not just Discord.
+
+Fixed with a **user-level** `.desktop` override (the system copy is never
+touched) carrying `--ignore-gpu-blocklist --enable-gpu-rasterization
+--enable-zero-copy --disable-gpu-driver-bug-workarounds`. The awk injection was
+tested for `%U` preservation and for idempotency on a second pass. Vesktop's
+own `settings.json` `hardwareAcceleration` key is forced true, since it
+overrides the command line.
+
+Note this only became visible as *the* problem after the earlier fixes landed:
+with a 4 GiB ARC and `ForceFullCompositionPipeline` stacked on compiz, the
+choppiness had three independent causes and removing two of them left this one
+exposed.
+
+### Safety changes in this pass
+* `zpool destroy` path no longer calls a blanket `zfs unmount -a` — it
+  enumerates `tank`'s own datasets and unmounts only those. A blanket unmount
+  on a live desktop was an unnecessary risk.
