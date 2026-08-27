@@ -416,3 +416,35 @@ verdict is receipted, not inferred.
 Board-vs-CPU **cannot** be split with the hardware on hand: the bench is DDR3/older-socket,
 so neither the 12700KF nor the DDR4 DIMMs can be cross-tested there. That split needs a part
 this campaign does not have, and the free ladder ends there.
+
+
+## L2 — RUN 2026-08-27: **the cycle did not happen**
+
+Config: OMEN PSU `M83827-001` back in the case, **24-pin `SPWR` + both 4-pin CPU plugs
+connected, nothing else on the PSU** (no GPU, no SATA/Molex, no lighting board, no fan hub).
+CPU and all four DIMMs still fitted. Operator: *"plugged in the two cpu pins and the 24 pin
+mobo from the coolermaster omen psu, doesnt cycle upon turning it on."*
+
+**This is the branch of L2 that says an accessory branch is the fault.** Board + CPU + RAM +
+known-good power does **not** reproduce the instant cycle that this machine has produced on
+every attempt since 2026-08-25.
+
+Detail still needed before this is a clean PASS: does it now **stay powered** (fans running
+and staying) or does it do **nothing at all**? Those read very differently:
+
+- **stays powered** → the board holds a rail for the first time in the campaign; the trip is
+  in a branch that is currently unplugged
+- **nothing at all** → same shape as L3=C, and the EC may simply not be asserting power in
+  this configuration; not yet a pass
+
+No display is expected either way: the 12700**KF** has no iGPU and the 3080 is disconnected.
+
+### Re-add order (one branch per power-on, report each)
+
+1. **RTX 3080 + both 6+2** — also the only way to get video back
+2. **PCA lighting control `M82868-001`** and its `P8`/SATA feed
+3. **SATA / Molex** — drives, one at a time
+4. **Fan hub / pump / front-panel headers**
+
+The branch whose reconnection brings the instant cycle back **is the fault**. That is a
+part-level answer reached with zero purchases and zero instruments.
