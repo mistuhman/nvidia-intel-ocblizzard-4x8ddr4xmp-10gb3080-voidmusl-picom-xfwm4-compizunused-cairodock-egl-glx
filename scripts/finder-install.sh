@@ -41,8 +41,9 @@ TARGET_UID=$(id -u "$TARGET_USER")
 # they fail silently (that is why the last run printed "current icon theme:
 # unknown" even though the session is running).
 asuser() {
+	# HOME= is NOT optional: `su USER -c` (no dash) leaves HOME=/root.
 	su "$TARGET_USER" -s /bin/sh -c \
-		"DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$TARGET_UID/bus $*"
+		"HOME='$TARGET_HOME' USER='$TARGET_USER' LOGNAME='$TARGET_USER' DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$TARGET_UID/bus $*"
 }
 
 # --------------------------------------------------------------------- undo

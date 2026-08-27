@@ -99,10 +99,10 @@ echo "bus pid:  ${BUSPID:-none}"
 echo "bus addr: ${BUS:-none}"
 if [ -n "$BUS" ]; then
 	su "$TARGET_USER" -s /bin/sh -c \
-		"DISPLAY=${DISP:-:0} XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS='$BUS' xfconf-query -c xsettings -p /Net/IconThemeName -s OSX-Gunmetal" \
+		"HOME='$TARGET_HOME' DISPLAY=${DISP:-:0} XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS='$BUS' xfconf-query -c xsettings -p /Net/IconThemeName -s OSX-Gunmetal" \
 		&& echo "xfconf set OK"
 	su "$TARGET_USER" -s /bin/sh -c \
-		"DISPLAY=${DISP:-:0} XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS='$BUS' xfconf-query -c xsettings -p /Net/IconThemeName" \
+		"HOME='$TARGET_HOME' DISPLAY=${DISP:-:0} XDG_RUNTIME_DIR=/run/user/$TARGET_UID DBUS_SESSION_BUS_ADDRESS='$BUS' xfconf-query -c xsettings -p /Net/IconThemeName" \
 		|| true
 else
 	echo "!! could not find a session process to read the bus from."

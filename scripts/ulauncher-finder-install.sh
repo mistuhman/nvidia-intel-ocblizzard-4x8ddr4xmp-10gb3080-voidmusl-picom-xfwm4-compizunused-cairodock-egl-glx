@@ -103,7 +103,7 @@ python3 -m py_compile "$DEST/main.py" && echo "  main.py compiles"
 say "4/6 icons from the active theme"
 # Pull real icons out of whatever icon theme is actually selected, so the
 # extension matches the desktop instead of shipping generic art.
-THEME=$(su "$U" -s /bin/sh -c "DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$UID_ xfconf-query -c xsettings -p /Net/IconThemeName" 2>/dev/null || echo "")
+THEME=$(su "$U" -s /bin/sh -c "HOME='$UH' DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$UID_ xfconf-query -c xsettings -p /Net/IconThemeName" 2>/dev/null || echo "")
 echo "active icon theme: ${THEME:-unknown}"
 pick() { # pick <icon-name> <dest>
 	for base in "/usr/share/icons/$THEME" "$UH/.icons/$THEME" \
@@ -129,7 +129,7 @@ BPID=$(pgrep -u "$U" -x xfsettingsd || pgrep -u "$U" -x xfce4-panel || true)
 BUS=""
 [ -n "$BPID" ] && BUS=$(tr '\0' '\n' < "/proc/$BPID/environ" | sed -n 's/^DBUS_SESSION_BUS_ADDRESS=//p' | head -1)
 su "$U" -s /bin/sh -c \
-	"DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$UID_ ${BUS:+DBUS_SESSION_BUS_ADDRESS='$BUS'} nohup ulauncher --hide-window >/tmp/ulauncher.log 2>&1 &" || true
+	"HOME='$UH' USER='$U' LOGNAME='$U' DISPLAY=:0 XDG_RUNTIME_DIR=/run/user/$UID_ ${BUS:+DBUS_SESSION_BUS_ADDRESS='$BUS'} nohup ulauncher --hide-window >/tmp/ulauncher.log 2>&1 &" || true
 sleep 5
 sub "after"
 pgrep -u "$U" -af ulauncher | head -3 || echo "  FAILED to restart - start it from your menu"

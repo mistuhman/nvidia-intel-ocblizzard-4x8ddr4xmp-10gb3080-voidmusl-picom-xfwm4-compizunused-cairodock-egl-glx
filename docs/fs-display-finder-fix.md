@@ -342,3 +342,44 @@ exposed.
 * `zpool destroy` path no longer calls a blanket `zfs unmount -a` — it
   enumerates `tank`'s own datasets and unmounts only those. A blanket unmount
   on a live desktop was an unnecessary risk.
+
+---
+
+## The `HOME` bug — root cause of both vesktop failures
+
+`su USER -c '...'` **without a dash does not reset `HOME`.** Every `asuser`
+helper I shipped inherited root's environment. The operator's log said so
+plainly and I did not read it as the cause:
+
+```
+Unable to open /root/.local/share/flatpak/exports/share/dconf/profile/user: Permission denied
+MESA-LOADER: failed to open dri: /usr/lib/.../GL/lib/gbm/dri_gbm.so: Permission denied
+```
+
+vesktop ran **as `sd` but reading `/root`** — hence a blank config ("shows
+defaults"), no dconf, and a failed DRI load that froze it. The real profile in
+`~/.var/app/dev.vencord.Vesktop` was never touched. Fixed across all eight
+scripts by exporting `HOME` / `USER` / `LOGNAME` / `XAUTHORITY`; verified no
+`su` invocation is left without it.
+
+## The GL extension skew was real
+
+```
+before: nvidia-595-84       org.freedesktop.Platform.GL.nvidia-595-84      1.4  system
+host:   595.91.07
+after:  nvidia-595-91-07    org.freedesktop.Platform.GL.nvidia-595-91-07   1.4  system
+```
+
+A Flatpak cannot see the host driver; it needs a version-matched GL extension.
+The host moved 595.84 → 595.91.07 during the OpenCL work on 2026-08-25 and the
+extension did not follow, so vesktop was on **llvmpipe software rendering**.
+That, not Chromium's GPU blocklist, is why an Electron renderer sat at 98.2 %CPU.
+GPU flags were deliberately **not** re-applied on top of the fix — one change
+at a time, and the skew was the actual defect.
+
+## Process substitution race
+
+`exec > >(tee "$OUT")` returned before `tee` had flushed, so the capture file
+did not exist when the next command read it. Replaced with `main() { … }` and a
+single `main 2>&1 | tee "$OUT"`, which is deterministic and POSIX. Verified
+against a fixture including failing and nonexistent commands.

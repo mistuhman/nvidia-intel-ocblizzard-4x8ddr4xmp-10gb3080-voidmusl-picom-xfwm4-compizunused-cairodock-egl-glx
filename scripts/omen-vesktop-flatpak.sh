@@ -39,8 +39,11 @@ if [ -n "$BPID" ]; then
 	[ -n "$D" ] && DISP=$D
 fi
 asuser() {
+	# HOME= is NOT optional: `su USER -c` (no dash) leaves HOME=/root, which
+	# sent flatpak at /root/.local/share/flatpak, broke MESA's DRI load with
+	# "Permission denied", and made vesktop start with a blank config.
 	su "$U" -s /bin/sh -c \
-	"DISPLAY=$DISP XDG_RUNTIME_DIR=/run/user/$UID_ ${BUS:+DBUS_SESSION_BUS_ADDRESS='$BUS'} $*"
+	"HOME='$UH' USER='$U' LOGNAME='$U' XAUTHORITY='$UH/.Xauthority' DISPLAY=$DISP XDG_RUNTIME_DIR=/run/user/$UID_ ${BUS:+DBUS_SESSION_BUS_ADDRESS='$BUS'} $*"
 }
 
 say "1/5 driver vs flatpak GL extension"
