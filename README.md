@@ -42,6 +42,9 @@ Agent ↔ operator reciprocity loop: pasteable command block out → operator ru
 - `MASTER.md` — JSON context: screening rule, chat workflow, brute doctrine, objective, machines, constraints.
 - `ToDo.md` — operator-directed live checklist (OC + storage gates); operator-owned.
 - `tools/` — TypeScript agent tools (`orient.ts`, `next-gate.ts`, `agent-deploy.ts`, `paste-proof.ts`, `block-lint.ts`, `pr-budget.ts`, `test-all.ts`, `web-scrape.ts`, `github-files.ts`, `recovery-research.ts`). Run with `node tools/<name>.ts`.
+- `tools/` GPU OC lab (test before applying): `gpu-oc-plan.ts` (ladder / sweep / console-safe blocks), `gpu-curve.ts` (undervolt = power-trim graph, ASCII + CSV + SVG), `gpu-bench-parse.ts` (dmon + Superposition + Geekbench receipts), `gpu-oc-verify.ts` (ADVANCE/HOLD/REVERT + GWE profile), model in `tools/lib/gpu-model.ts`. Guide: `docs/oc-3080-oc-lab.md`.
+- `ci/workflows/` — workflow sources (`scripts/install-github-workflows.sh` copies them to `.github/workflows/`; the agent's GitHub App cannot push that path): `oc-tools-ci.yml` (selftests, shellcheck, determinism, PR budget), `gpu-oc-lab.yml` (manual sweep + curve + pasteable blocks), `gpu-clock-feature-matrix.yml` (one job per knob class), `gpu-receipt-ingest.yml` (paste receipts, get a verdict, commit the ledger).
+- `receipts/` — the metered run ledger; `tests/fixtures/` — parser fixtures.
 - `etc/` — target config files and reusable `.block` text.
 - `scripts/` — target-facing installed tools.
 - `docs/` — OC recipes (`oc-plan.md`, `oc-3080-gwe-recipe.md`, `oc-cpu-bios-checklist.md`) and recovery history.

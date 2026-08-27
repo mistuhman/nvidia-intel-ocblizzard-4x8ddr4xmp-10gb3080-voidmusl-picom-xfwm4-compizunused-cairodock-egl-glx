@@ -1,0 +1,4 @@
+Unigine Superposition Benchmark v1.1
+Preset: 1080p Extreme
+Score: 8402
+FPS Min: 19.02 Avg: 62.84 Max: 78.11

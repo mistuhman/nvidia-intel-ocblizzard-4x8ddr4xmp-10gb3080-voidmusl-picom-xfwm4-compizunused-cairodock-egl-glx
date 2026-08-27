@@ -1,0 +1,122 @@
+#!/bin/sh
+# gpu-oc-apply — target-facing RTX 3080 OC applier. Every mutation has an inverse, nothing persists
+# across an X restart, and all quoting lives HERE so chat blocks stay console-safe (no quotes, no
+# < > &, one command per line). Authored in the repo; deliver by git checkout or heredoc, never curl.
+#
+#   sh gpu-oc-apply probe
+#   sh gpu-oc-apply apply CORE_OFFSET MEM_OFFSET
+#   sh gpu-oc-apply verify
+#   sh gpu-oc-apply meter STEP_ID [SECONDS]
+#   sh gpu-oc-apply powerlimit PCT        (root)
+#   sh gpu-oc-apply revert
+set -u
+
+CORE_MAX=150
+MEM_MAX=700
+PL_MIN_PCT=60
+PL_MAX_PCT=100
+METER_DIR=${METER_DIR:-$HOME/oc-meters}
+PERF_LEVEL=${PERF_LEVEL:-3}
+
+die() {
+	echo "GPU_OC_APPLY=FAIL $1"
+	exit 1
+}
+
+need() {
+	command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+coolbits_live() {
+	nvidia-settings -q GPUGraphicsClockOffset -t >/dev/null 2>&1
+}
+
+cmd_probe() {
+	need nvidia-smi
+	echo "--- driver / card ---"
+	nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power.max_limit,clocks.max.graphics,clocks.max.memory --format=csv
+	echo "--- coolbits ---"
+	if coolbits_live; then
+		echo "COOLBITS=LIVE"
+		nvidia-settings -q GPUGraphicsClockOffset -t
+		nvidia-settings -q GPUMemoryTransferRateOffset -t
+	else
+		echo "COOLBITS=NOT_LIVE (log out and log back in; do NOT switch VT)"
+	fi
+	echo "--- current state ---"
+	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.draw,temperature.gpu,fan.speed --format=csv
+}
+
+cmd_apply() {
+	need nvidia-settings
+	core=$1
+	mem=$2
+	echo "$core" | grep -Eq '^-?[0-9]+$' || die "core offset not an integer: $core"
+	echo "$mem" | grep -Eq '^-?[0-9]+$' || die "memory offset not an integer: $mem"
+	[ "$core" -le "$CORE_MAX" ] || die "core offset $core over the recipe cap +$CORE_MAX"
+	[ "$mem" -le "$MEM_MAX" ] || die "memory offset $mem over the recipe cap +$MEM_MAX"
+	coolbits_live || die "Coolbits is not live: log out and log back in first"
+	nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffset[$PERF_LEVEL]=$core" || die "core offset rejected"
+	nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffset[$PERF_LEVEL]=$mem" || die "memory offset rejected"
+	echo "APPLIED core=+$core mem=+$mem (perf level $PERF_LEVEL, resets on X restart)"
+	echo "INVERSE: sh $0 revert"
+}
+
+cmd_verify() {
+	need nvidia-settings
+	echo "core_offset:"
+	nvidia-settings -q GPUGraphicsClockOffset -t
+	echo "mem_transfer_rate_offset:"
+	nvidia-settings -q GPUMemoryTransferRateOffset -t
+	nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.limit,power.draw,temperature.gpu --format=csv
+}
+
+cmd_meter() {
+	need nvidia-smi
+	id=$1
+	secs=${2:-300}
+	echo "$secs" | grep -Eq '^[0-9]+$' || die "seconds not an integer: $secs"
+	mkdir -p "$METER_DIR" || die "cannot create $METER_DIR"
+	out=$METER_DIR/$id.dmon.csv
+	echo "metering $secs s into $out — start Superposition 1080p Extreme NOW"
+	nvidia-smi dmon -s pucm -d 1 -c "$secs" -o DT >"$out" 2>&1
+	echo "wrote $out"
+	tail -n 3 "$out"
+}
+
+cmd_powerlimit() {
+	need nvidia-smi
+	[ "$(id -u)" -eq 0 ] || die "powerlimit needs root"
+	pct=$1
+	echo "$pct" | grep -Eq '^[0-9]+$' || die "percent not an integer: $pct"
+	[ "$pct" -ge "$PL_MIN_PCT" ] || die "percent $pct below the ${PL_MIN_PCT}% floor"
+	[ "$pct" -le "$PL_MAX_PCT" ] || die "percent $pct above 100: the step-4 PSU gate is not open"
+	def=$(nvidia-smi --query-gpu=power.default_limit --format=csv,noheader,nounits | head -n 1 | tr -d ' ')
+	echo "$def" | grep -Eq '^[0-9]+(\.[0-9]+)?$' || die "could not read default power limit (got: $def)"
+	watts=$(awk -v d="$def" -v p="$pct" 'BEGIN { printf "%d", (d * p) / 100 }')
+	nvidia-smi -pl "$watts" || die "power limit rejected (persistence mode or permissions)"
+	echo "POWER_LIMIT=${watts}W (${pct}% of ${def}W default)"
+	echo "INVERSE: sh $0 powerlimit 100"
+}
+
+cmd_revert() {
+	need nvidia-settings
+	nvidia-settings -a "[gpu:0]/GPUGraphicsClockOffsetAllPerformanceLevels=0" || die "core revert rejected"
+	nvidia-settings -a "[gpu:0]/GPUMemoryTransferRateOffsetAllPerformanceLevels=0" || die "memory revert rejected"
+	echo "REVERTED offsets to 0. If a power limit was set, run as root: sh $0 powerlimit 100"
+}
+
+action=${1:-}
+shift 2>/dev/null || true
+case "$action" in
+probe) cmd_probe ;;
+apply) [ $# -eq 2 ] || die "usage: apply CORE_OFFSET MEM_OFFSET"; cmd_apply "$1" "$2" ;;
+verify) cmd_verify ;;
+meter) [ $# -ge 1 ] || die "usage: meter STEP_ID [SECONDS]"; cmd_meter "$@" ;;
+powerlimit) [ $# -eq 1 ] || die "usage: powerlimit PCT"; cmd_powerlimit "$1" ;;
+revert) cmd_revert ;;
+*)
+	echo "usage: sh gpu-oc-apply probe|apply CORE MEM|verify|meter ID [SECS]|powerlimit PCT|revert"
+	exit 2
+	;;
+esac

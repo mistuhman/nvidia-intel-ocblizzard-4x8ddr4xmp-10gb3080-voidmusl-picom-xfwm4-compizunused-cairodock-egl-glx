@@ -1,0 +1,5 @@
+Unigine Superposition Benchmark v1.1
+Preset: 1080p Extreme
+Score: 8717
+FPS Min: 19.76 Avg: 65.20 Max: 81.37
+GPU Temp min 39 max 81 (dmon power column not captured on this run)

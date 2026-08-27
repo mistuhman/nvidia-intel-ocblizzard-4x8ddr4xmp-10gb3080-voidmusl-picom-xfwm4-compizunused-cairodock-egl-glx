@@ -1,0 +1,5 @@
+# gpu    pwr gtemp mtemp    sm   mem   enc   dec  mclk  pclk
+# Idx      W     C     C     %     %     %     %   MHz   MHz
+    0    254    64     -   100    62     0     0  9626  1801
+    0    256    67     -   100    63     0     0  9626  1795
+    0    255    68     -   100    63     0     0  9626  1788

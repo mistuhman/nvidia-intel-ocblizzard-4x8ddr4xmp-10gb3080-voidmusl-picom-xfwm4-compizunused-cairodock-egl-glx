@@ -1,0 +1,8 @@
+mkdir -p /home/sd/oc-meters
+ls -l /home/sd/oc-meters
+which nvidia-smi
+which nvidia-settings
+nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power.max_limit,clocks.max.graphics,clocks.max.memory --format=csv
+nvidia-settings -q GPUGraphicsClockOffset -t
+nvidia-settings -q GPUMemoryTransferRateOffset -t
+nvidia-smi --query-gpu=clocks.gr,clocks.mem,power.draw,temperature.gpu,fan.speed --format=csv

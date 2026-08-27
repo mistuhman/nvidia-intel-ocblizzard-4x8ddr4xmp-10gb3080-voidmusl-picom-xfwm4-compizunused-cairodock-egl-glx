@@ -4,19 +4,22 @@
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, chat workflow, brute-problem-solving doctrine, OC objective, and constraints. It is JSON context, not prose policy.",
     "debloated": "2026-08-27 (session 01a042f7, operator directive): removed the halt machinery and all crisis-era junk - tools/stall-check.ts deleted, interactionModel.crisisDiscipline, requiredHaltLine/haltWhen/onHalt/haltRepoFreeze, crisis.closedTestClasses, crisis.openSearchClasses, sessionMisbehavior, and the 47KB currentState append-log all removed. Brute problem solving is kept and elevated as doctrine below. Recovery history stays readable in docs/ and ToDo.md receipts; it is not policy.",
     "repo": {
-        "branchFixed": "arena/01a042f7-nvidia-intel-ocblizzard-4x8ddr",
-        "baseCommit": "1623537312241fc48263731929024a8dd8497374",
+        "branchFixed": "arena/01a04446-nvidia-intel-ocblizzard-4x8ddr",
+        "baseCommit": "ebeee828ab7ebec5b3fecf314010c15cc33eff19",
         "priorSessions": "01a0277c PR #33 through 01a04148 PR #44 (DDR4 1.55V failure, BIOS-recovery decision, crisis sessions); 01a04157 + 01a0416e worked the no-POST recovery to completion (THE OMEN POSTS AGAIN 2026-08-27); 01a042f7 remade README/MASTER for the OC-era chat workflow and built the deterministic command registry.",
         "prLineTarget": 405,
-        "prNote": "This remake (README + MASTER rewrite + tools/cmd.ts + registry + stall-check removal) exceeds the normal line target BY NECESSITY: the operator explicitly ordered the files remade and debloated. Future feature PRs return to prLineTarget unless the operator explicitly overrides again.",
+        "prNote": "This remake (README + MASTER rewrite + tools/cmd.ts + registry + stall-check removal) exceeds the normal line target BY NECESSITY: the operator explicitly ordered the files remade and debloated. Future feature PRs return to prLineTarget unless the operator explicitly overrides again. Session 01a04446 (GPU OC lab: 5 tools + 4 workflows + target applier + fixtures) also exceeds prLineTarget by operator direction (\"deploy agents to make tools for github workflows\"); feature PRs after it return to 405.",
         "files": {
             "README.md": "human bootstrap: cold-start protocol, project, machines, layout",
             "MASTER.md": "this JSON: workflow rules, brute doctrine, OC objective, machines, constraints",
             "ToDo.md": "operator-directed live checklist (OC + storage gates); operator-owned, agents quote it, do not rewrite it",
             "etc/": "target config files and canonical .block text saved for reuse",
-            "tools/": "agent-facing TypeScript utilities run by node; zero dependency; deterministic stdout",
+            "tools/": "agent-facing TypeScript utilities run by node; zero dependency; deterministic stdout; GPU OC lab = lib/gpu-model.ts + gpu-oc-plan.ts + gpu-curve.ts + gpu-bench-parse.ts + gpu-oc-verify.ts, target applier scripts/gpu-oc-apply, guide docs/oc-3080-oc-lab.md",
             "scripts/": "target-facing installed desktop and migration utilities",
-            "docs/": "OC + recovery history: oc-plan.md, oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md, omen-free-recovery-runbook.md, omen-reassembly-checklist.md, hardware-retrospective.md, next-chat-last-power-on.md, bios-flash-decision.md, recovery-research.md, open-classes-pass2.md, open-classes-pass3.md, games-receipts.md, perf-optimization-plan.md"
+            "docs/": "OC + recovery history: oc-plan.md, oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md, omen-free-recovery-runbook.md, omen-reassembly-checklist.md, hardware-retrospective.md, next-chat-last-power-on.md, bios-flash-decision.md, recovery-research.md, open-classes-pass2.md, open-classes-pass3.md, games-receipts.md, perf-optimization-plan.md",
+            ".github/workflows/": "CI + GPU OC lab workflows: oc-tools-ci (selftests, shellcheck, determinism, pr-budget), gpu-oc-lab (manual sweep + undervolt graph + pasteable blocks), gpu-clock-feature-matrix (core-only / memory-only / power-trim / combined / efficiency-hunt), gpu-receipt-ingest (paste dmon + Superposition, get ADVANCE/HOLD/REVERT and commit the ledger)",
+            "receipts/": "gpu-oc-receipts.json: normalized metered runs (the only thing that outranks the model)",
+            "tests/": "fixtures for the receipt parsers (dmon, Superposition, Geekbench)"
         }
     },
     "promptScreening": {
@@ -124,7 +127,7 @@
             "Meter peaks: cpu 811 samples PkgW 145.02W Bzy 4476MHz Tmp 70C; gpu 201W 47C mclk 9501 pclk 1935"
         ],
         "knobs": {
-            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench (same Geekbench+Superposition+dmon protocol as stock baseline). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. No power-limit raise before PSU plug count is confirmed. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules.",
+            "gpu3080": "GWE 0.15.5 needs Coolbits live (operator logs out/in, no VT switch). Step 1 = +60 graphics / +250 memory then re-bench (same Geekbench+Superposition+dmon protocol as stock baseline). Linux has NO voltage-curve undervolt for Pascal+ - scope is power limit + offsets. No power-limit raise before PSU plug count is confirmed. Meter with dmon; docs/oc-3080-gwe-recipe.md holds slider values and stop rules. Lab added 2026-08-27: plan/sweep/curve/parse/verify tools plus GitHub workflows model every candidate and rank it BEFORE anything is pasted; power limit above 100% stays refused without the step-4 PSU gate.",
             "cpu12700kf": "Multiplier locked by HP firmware; ratio/Vcore work is BIOS-only and operator-gated per docs/oc-cpu-bios-checklist.md (targets: all P-cores on, P 51-52 / E 41-42 try, 1.28-1.32V). Voltage offsets are blocked by Plundervolt mitigations per HP staff. Reversible software path first: read-only MSR probe (msr-tools), then PL1/PL2 via MSR 0x610 - usually writable even where voltage is locked and the biggest legal win since the KF is power-limited at stock. OS side already landed: governor powersave + EPP, BORE kernel, IRQ pinning; CPU knob persistence still undecided (runit service vs re-apply per boot - proven non-persistent).",
             "ddr4": "4x8GB Kingston HP37D4U1S8MR-8X (die UNVERIFIED), board 4-DIMM 2DPC so the IMC is the binding limit. Live baseline = XMP 3733 1.35V. 4000 @1.50V booted but was NEVER stability-validated - treat as marginal-unproven, not known-good. 1.55V FAILED to boot: do not repeat, and no further VDIMM beyond 1.50V without die ID and DIMM load temps. Never declare any memory OC stable without stress-ng --vm + memtest + clean zpool scrub (ZFS root means silent corruption is the failure mode, not just crashes). Before anything else: verify BIOS Advanced shows XMP 3733 with no remnant of the 4000 custom profile."
         },

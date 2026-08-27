@@ -1,0 +1,76 @@
+name: gpu-clock-feature-matrix
+
+# One job per knob CLASS so a change in the model or the caps is caught per feature, not in a blob:
+# core-only, memory-only, power-trim-only, combined, and the gated power-raise tier. Each class emits
+# its own ranked table, curve and pasteable blocks, and each is linted for console safety.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * 1'
+
+jobs:
+  feature:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - class: core-only
+            core: '0:150:15'
+            mem: '0'
+            pl: '100'
+            sort: score
+          - class: memory-only
+            core: '0'
+            mem: '0:700:50'
+            pl: '100'
+            sort: score
+          - class: power-trim
+            core: '0'
+            mem: '0'
+            pl: '60:100:5'
+            sort: eff
+          - class: combined
+            core: '0:150:30'
+            mem: '0:700:100'
+            pl: '70:100:10'
+            sort: score
+          - class: efficiency-hunt
+            core: '60:150:30'
+            mem: '200:700:100'
+            pl: '60:90:10'
+            sort: eff
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: sweep ${{ matrix.class }}
+        run: |
+          mkdir -p out
+          node tools/gpu-oc-plan.ts sweep --core='${{ matrix.core }}' --mem='${{ matrix.mem }}' --pl='${{ matrix.pl }}' --sort='${{ matrix.sort }}' --top=15 | tee 'out/${{ matrix.class }}.txt'
+          node tools/gpu-oc-plan.ts sweep --core='${{ matrix.core }}' --mem='${{ matrix.mem }}' --pl='${{ matrix.pl }}' --sort='${{ matrix.sort }}' --top=15 --json --out='out/${{ matrix.class }}.json'
+      - name: curve for ${{ matrix.class }}
+        run: |
+          node tools/gpu-curve.ts curve --core=120 --mem=500 --pl='${{ matrix.pl == '100' && '60:100:5' || matrix.pl }}' --csv='out/${{ matrix.class }}-curve.csv' --svg='out/${{ matrix.class }}-curve.svg' | tee 'out/${{ matrix.class }}-curve.txt'
+      - name: cap enforcement must hold
+        run: |
+          if node tools/gpu-oc-plan.ts blocks --core=200 --mem=0 --pl=100; then echo 'core cap not enforced'; exit 1; fi
+          if node tools/gpu-oc-plan.ts blocks --core=0 --mem=900 --pl=100; then echo 'memory cap not enforced'; exit 1; fi
+          if node tools/gpu-oc-plan.ts blocks --core=0 --mem=0 --pl=110; then echo 'power-raise gate not enforced'; exit 1; fi
+          node tools/gpu-oc-plan.ts blocks --core=0 --mem=0 --pl=110 --allow-pl-raise > /dev/null
+      - name: summary
+        run: |
+          {
+            echo '## ${{ matrix.class }}'
+            echo '```'
+            cat 'out/${{ matrix.class }}.txt'
+            echo '```'
+            echo '```'
+            cat 'out/${{ matrix.class }}-curve.txt'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: feature-${{ matrix.class }}
+          path: out/
