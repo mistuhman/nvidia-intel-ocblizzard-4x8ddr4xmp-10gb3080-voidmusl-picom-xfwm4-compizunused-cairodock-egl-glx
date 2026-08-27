@@ -68,8 +68,11 @@ for pool in nvme tank; do
 done
 # Electron/Chromium/sqlite are small-random. 128K records amplify every 4K write.
 zfs list -H -o name nvme/ROOT/void >/dev/null 2>&1 && zfs set recordsize=128K nvme/ROOT/void || true
-# ashift/autotrim: NVMe pool should be trimming. Harmless if already on.
-zpool set autotrim=on nvme 2>/dev/null || true
+# autotrim is deliberately NOT enabled. The SN530 is DRAM-less/HMB and stalls
+# writes when ZFS issues TRIM ranges every transaction group. A weekly manual
+# `zpool trim` (installed by omen-write-diag.sh) gives the same benefit without
+# the per-TXG penalty. See docs/fs-display-finder-fix.md.
+zpool set autotrim=off nvme 2>/dev/null || true
 
 # ---------------------------------------------------------------- 3. sysctl (and make it STICK)
 say "3/6 sysctl file + boot-time application (this was silently dead)"
