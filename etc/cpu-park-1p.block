@@ -1,0 +1,23 @@
+id -u
+# cpu-park-1p.block - ROOT shell (sudo -i).
+# Idle holders + true 1C proof (CPU0 only). 8P isolation still ran at 4700 because
+# the other 7 P-cores stayed 4-9 percent busy (desktop). Gate: CPU0 Bzy_MHz >= 4900
+# with only CPU0 online. Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+uptime
+fuser -v /dev/cpu_dma_latency
+pidof xwinwrap
+pidof mpv
+pidof compiz
+pidof pipewire
+sv status omen-perf
+nvidia-smi --query-gpu=utilization.gpu,power.draw,clocks.current.graphics --format=csv
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl park-one
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+date

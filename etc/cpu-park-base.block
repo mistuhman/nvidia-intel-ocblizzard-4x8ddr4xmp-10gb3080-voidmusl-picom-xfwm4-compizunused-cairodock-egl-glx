@@ -1,0 +1,16 @@
+id -u
+# cpu-park-base.block - ROOT shell (sudo -i).
+# Apply the stock-ratio BASE profile (no 51x), then 1C freq-proof all-online and isolated 8P.
+# Why: live stock Geekbench is 2581/13706 not 2715/14569. cpu_capacity 1024=1024 and 1C=4700.
+# Gate: cpu_capacity CPU16 readback 778 if writable; cpuidle=menu; isolated 1C Bzy_MHz >= 4900.
+# No Geekbench this wave. Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl base
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl freq-proof
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+date

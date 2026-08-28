@@ -1,0 +1,15 @@
+id -u
+# cpu-park-clock.block - ROOT shell (sudo -i).
+# Reapply 1C 51x after base + pstate 51x request. Gate: park-one Bzy_MHz >= 5100.
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl clock-high
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl park-one
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+date

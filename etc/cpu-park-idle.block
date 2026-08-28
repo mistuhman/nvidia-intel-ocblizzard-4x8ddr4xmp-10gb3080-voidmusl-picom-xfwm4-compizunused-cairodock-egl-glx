@@ -1,0 +1,10 @@
+id -u
+# cpu-park-idle.block - ROOT shell (sudo -i). READ-ONLY idle snapshot.
+# 1C silicon gate already PASS (CPU0-only Bzy 4999). This names rest C0 / dma
+# holders. Does not kill Zen (keep). Does not open /dev/cpu_dma_latency.
+df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl idle-snap
+date

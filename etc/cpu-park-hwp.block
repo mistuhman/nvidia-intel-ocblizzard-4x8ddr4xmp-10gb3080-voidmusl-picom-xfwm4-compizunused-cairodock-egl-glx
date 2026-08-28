@@ -1,0 +1,15 @@
+id -u
+# cpu-park-hwp.block - ROOT shell (sudo -i).
+# Unbreak HWP max 51 (Bzy 3999). restore writes 0x774 max=64. Gate: 0x774
+# readback 8000400b AND park-one Bzy_MHz >= 4900.
+df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+rdmsr -p 0 -x 0x774
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl park-one
+turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+rdmsr -p 0 -x 0x774
+date
