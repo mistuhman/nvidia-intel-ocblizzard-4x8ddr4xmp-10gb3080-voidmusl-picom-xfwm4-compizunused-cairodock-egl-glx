@@ -13,6 +13,7 @@
 #   sh cpu-park-ctrl park-ecores     Offline CPU 16-19 (returns 100% ring bus & power budget to P-cores)
 #   sh cpu-park-ctrl park-smt        Offline CPU 1,3,5,7,9,11,13,15 (leaves 8 pure physical P-cores)
 #   sh cpu-park-ctrl park-one        Offline CPU 1-19 (CPU0 only - true 1C turbo gate)
+#   sh cpu-park-ctrl idle-snap       Rest C0 / dma_latency holders / top pcpu (read-only, does not open /dev/cpu_dma_latency)
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
 #   sh cpu-park-ctrl bench-oc        1-2C 5.1GHz OC + stock 3-8C ladder + park-idle (powersave) + HWP 51 + PL1 241W
@@ -235,6 +236,47 @@ cmd_park_one() {
 	echo "CPU_PARK_CTRL=OK CPU0 only (CPU 1-19 offline)"
 }
 
+# Never open /dev/cpu_dma_latency - open() registers a QoS constraint.
+cmd_idle_snap() {
+	need_root
+	echo "=== dma_latency fds ==="
+	found=0
+	for pidpath in /proc/[0-9]*; do
+		pid=${pidpath#/proc/}
+		[ -d "$pidpath/fd" ] || continue
+		for fd in "$pidpath"/fd/*; do
+			link=$(readlink "$fd" 2>/dev/null) || continue
+			case "$link" in
+			*cpu_dma_latency*)
+				comm=$(cat "$pidpath/comm" 2>/dev/null || echo "?")
+				echo "pid=$pid comm=$comm target=$link"
+				found=1
+				;;
+			esac
+		done
+	done
+	if [ "$found" = 0 ]; then
+		echo "(none)"
+	fi
+	echo "=== resume latency ==="
+	if [ -r /sys/devices/system/cpu/cpu0/power/pm_qos_resume_latency_us ]; then
+		echo "cpu0_resume_us=$(cat /sys/devices/system/cpu/cpu0/power/pm_qos_resume_latency_us)"
+	fi
+	echo "=== keep-list pids ==="
+	echo "pipewire=$(pidof pipewire 2>/dev/null || echo none)"
+	echo "compiz=$(pidof compiz 2>/dev/null || echo none)"
+	echo "zen=$(pidof zen 2>/dev/null || echo none)"
+	echo "=== top pcpu ==="
+	ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,16p'
+	echo "=== idle turbostat 8s ==="
+	if command -v turbostat >/dev/null 2>&1; then
+		turbostat --quiet sleep 8
+	else
+		echo "turbostat missing"
+	fi
+	echo "CPU_PARK_CTRL=OK idle-snap"
+}
+
 cmd_park_game() {
 	need_root
 	cmd_park_ecores
@@ -450,6 +492,7 @@ pl-restore) cmd_pl_restore ;;
 park-ecores) cmd_park_ecores ;;
 park-smt) cmd_park_smt ;;
 park-one) cmd_park_one ;;
+idle-snap) cmd_idle_snap ;;
 park-game) cmd_park_game ;;
 asym-game) cmd_asym_game ;;
 bench-oc) cmd_bench_oc ;;
