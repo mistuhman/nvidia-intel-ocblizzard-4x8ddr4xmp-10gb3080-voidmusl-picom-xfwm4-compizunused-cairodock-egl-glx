@@ -29,6 +29,9 @@ run('bash', ['-n', 'scripts/cpu-park-ctrl']);
 // every cmd_* in a target script must actually be reachable from its dispatcher
 run('node', ['tools/script-dispatch-check.ts', 'scripts/gpu-oc-apply']);
 run('node', ['tools/script-dispatch-check.ts', 'scripts/cpu-park-ctrl']);
+// CPU OC tally: ledger + gate verdicts (real ledger validates JSON shape in CI)
+run('node', ['tools/cpu-oc-tally.ts']);
+run('node', ['tools/cpu-oc-tally.ts', 'selftest']);
 // DDR4 lab: 3733 baseline -> 4000 MT/s target, with the ZFS integrity gate
 run('node', ['tools/ram-oc-plan.ts', 'selftest']);
 run('node', ['tools/ram-validate-parse.ts', 'selftest']);

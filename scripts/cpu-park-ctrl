@@ -17,14 +17,18 @@
 #   sh cpu-park-ctrl clock-high      1C 51x MSR only; 2-8C stock. Do not write HWP max 51.
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
-#   sh cpu-park-ctrl bench-oc        1-2C 5.1GHz OC + stock 3-8C ladder + park-idle (powersave) + HWP 51 + PL1 241W
+#   sh cpu-park-ctrl bench-oc        All-core 5.0GHz (1-2C 5.1) + E-core 4.0GHz + PL1 241W + menu idle
 #   sh cpu-park-ctrl base            Stock ratios/PL1 + cpuidle menu + E-core capacity 778 (P-first scheduler)
-#   sh cpu-park-ctrl freq-proof      8s 1C loop all-online, then 8s 1C with E+SMT parked (5.0 GHz isolation gate)
+#   sh cpu-park-ctrl freq-proof      8s loops: CPU0 all-online, CPU0 isolated 8P, CPU16 E-core (freq gates)
 #   sh cpu-park-ctrl restore         Restore all 20 threads online + powersave + balance_performance + 125W
 #   sh cpu-park-ctrl bench-geekbench Run geekbench6 --cpu under per-core turbostat meter & summarize
 #   sh cpu-park-ctrl oc-probe        Probe MSR 0x194, 0xce, 0x1ad, 0x610 and allow_writes state
 #   sh cpu-park-ctrl oc-turbo50      Program 50x (5.0 GHz) all-core P-core turbo ratio to MSR 0x1ad
 #   sh cpu-park-ctrl oc-restore      Restore stock turbo ratios (0x2f2f303031313132) and stock limits
+#   sh cpu-park-ctrl uncore <ratio>  Set uncore (ring/L3) max ratio via MSR 0x620 (e.g. 48 = 4.8 GHz)
+#   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz on loaded samples of a bench CSV (or latest)
+#   sh cpu-park-ctrl irq-pin-bench   Pin nvidia/nvkm IRQs to CPU18 + NIC IRQs to CPU19 (backup kept)
+#   sh cpu-park-ctrl irq-restore     Restore IRQ affinities from the /tmp backup
 #
 # Safety: All actions are runtime-only sysfs/MSR changes; reboot fully reverts all states.
 set -u
@@ -329,17 +333,33 @@ cmd_bench_oc() {
 	need_root
 	allow_msr
 	online_all
-	# 1C=51x 2C=51x (5.1 GHz priority OC) + STOCK all-core ladder.
-	# Do NOT raise 8C: all-core 5.0 GHz is unreachable at this board's ~145 W EC wall.
-	wrmsr -a 0x1ad 0x2f2f303031313333 2>/dev/null || true
+	# 5.1 GHz 1-2C + 5.0 GHz 3-8C All-Core P-core Overclock
+	# Prior run with stock 3-8C (0x2f2f303031313333) clamped Bzy_MHz to 4700 MHz because
+	# background desktop tasks wake up other P-cores.
+	# 0x3232323232323333 programs 51x (5.1 GHz) on 1-2C and 50x (5.0 GHz) on 3-8C.
+	wrmsr -a 0x1ad 0x3232323232323333 2>/dev/null || true
 	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo read-error)
-	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x2f2f303031313333 readback=$ACTUAL"
+	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x3232323232323333 readback=$ACTUAL"
+	# E-core ratio left STOCK (0x2424242424242626): 40x proved execution-clamped
+	# (freq-proof pinned CPU16 at 3598 MHz with 40x live) and MC trended down 14549 -> 14433
+	# after it was added. Best MC (19080771) ran the stock E ladder.
+	wrmsr -a 0x1ae 0x2424242424242626 2>/dev/null || true
+	EACTUAL=$(rdmsr -p 0 -x 0x1ae 2>/dev/null || echo read-error)
+	echo "CPU_PARK_CTRL: MSR 0x1ae written=stock(2424242424242626) readback=$EACTUAL"
 	# Park-idle: powersave lets unused cores C-state. EPP performance on P-cores
 	# races the busy core to 1C turbo. E-cores keep 3.8 GHz max (MC needs them).
-	# A 2.4 GHz unused floor is a min-freq and is anti-park; idle ~800 MHz is stronger.
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
 	set_gov_epp "16 17 18 19" powersave balance_performance
 	reset_scaling_max
+	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
+		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
+	fi
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 778 > "$CAP" 2>/dev/null || true
+		fi
+	done
 	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
 		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
 	fi
@@ -349,17 +369,29 @@ cmd_bench_oc() {
 	cmd_pl_unlock
 	echo "CPU_PARK_CTRL: HWP 0x774 CPU0=$(rdmsr -p 0 -x 0x774 2>/dev/null || echo fail) CPU16=$(rdmsr -p 16 -x 0x774 2>/dev/null || echo fail)"
 	echo "CPU_PARK_CTRL: scaling_max CPU0=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null) cpuinfo_max=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq 2>/dev/null)"
-	echo "CPU_PARK_CTRL=OK bench-oc: park-idle + 1-2C=5.1GHz request + stock 3-8C + E 3.8GHz + PL1=241W"
+	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
+	echo "CPU_PARK_CTRL: cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
+	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle + E cap 778"
 }
 
 cmd_restore() {
 	need_root
 	allow_msr
 	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
+	wrmsr -a 0x1ae 0x2424242424242626 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x1ae restored=$(rdmsr -p 16 -x 0x1ae 2>/dev/null || echo fail)"
+	wrmsr -a 0x620 0x2e08 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x620 restored=$(rdmsr -x 0x620 2>/dev/null || echo fail)"
 	hwp_restore_p
 	online_all
 	reset_scaling_max
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19" powersave balance_performance
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 1024 > "$CAP" 2>/dev/null || true
+		fi
+	done
 	if [ -w /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost ]; then
 		echo 0 > /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost 2>/dev/null || true
 	fi
@@ -411,6 +443,9 @@ cmd_freq_proof() {
 	cmd_park_ecores
 	cmd_park_smt
 	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+	online_all
+	echo "=== freq-proof E-core loop CPU16 8s all-online (gate: Bzy_MHz >= 3900 with 40x; 3800 = clamped to stock 1-2C) ==="
+	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 16
 	online_all
 	echo "CPU_PARK_CTRL=OK freq-proof done, all 20 threads online"
 }
@@ -472,24 +507,119 @@ cmd_oc_probe() {
 
 cmd_oc_turbo50() {
 	need_root
-	modprobe msr 2>/dev/null || true
-	if [ -w /sys/module/msr/parameters/allow_writes ]; then
-		echo on > /sys/module/msr/parameters/allow_writes
-	fi
+	allow_msr
+	online_all
 	echo "CPU_PARK_CTRL: Programming 50x (5.0GHz) All-Core P-core turbo to MSR 0x1ad..."
 	wrmsr -a 0x1ad 0x3232323232323232 2>/dev/null || true
 	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo "read-error")
 	echo "MSR 0x1ad readback: $ACTUAL"
+	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
+	set_gov_epp "16 17 18 19" powersave balance_performance
+	reset_scaling_max
+	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
+		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
+	fi
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 778 > "$CAP" 2>/dev/null || true
+		fi
+	done
+	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
+		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
+	fi
+	if [ -w /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost ]; then
+		echo 1 > /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost 2>/dev/null || true
+	fi
+	cmd_pl_unlock
 	if [ "$ACTUAL" = "3232323232323232" ]; then
 		echo "CPU_PARK_CTRL=OK All-Core 5.0 GHz Turbo Ratio APPLIED"
 	else
 		echo "CPU_PARK_CTRL=NOTICE Hardware returned $ACTUAL"
 	fi
-	cmd_pl_unlock
+}
+
+# Pin device IRQs off the P-cores for bench runs (backup written for irq-restore).
+# Receipt 2026-08-28: NIC 705k IRQs had drifted onto P-core CPU2, GPU 1.08M on CPU4.
+cmd_irq_pin_bench() {
+	need_root
+	BACKUP=/tmp/oc-irq-affinity-backup
+	: > "$BACKUP"
+	for PAT in nvidia nvkm enp ens; do
+		for L in $(grep -E "$PAT" /proc/interrupts 2>/dev/null | awk -F: '$1 ~ /^[ ]*[0-9]+$/ {print $1}' | tr -d ' '); do
+			[ -n "$L" ] || continue
+			CUR=$(cat /proc/irq/$L/smp_affinity_list 2>/dev/null || echo "?")
+			TARGET=18
+			[ "$PAT" = "enp" ] || [ "$PAT" = "ens" ] && TARGET=19
+			echo "$L $CUR" >> "$BACKUP"
+			echo $TARGET > /proc/irq/$L/smp_affinity_list 2>/dev/null || true
+			echo "CPU_PARK_CTRL: irq $L ($PAT) $CUR -> $(cat /proc/irq/$L/smp_affinity_list 2>/dev/null || echo fail)"
+		done
+	done
+	echo "CPU_PARK_CTRL=OK irq-pin-bench: nvidia/nvkm->CPU18 nic->CPU19 (backup $BACKUP)"
+}
+
+cmd_irq_restore() {
+	need_root
+	BACKUP=/tmp/oc-irq-affinity-backup
+	if [ ! -r "$BACKUP" ]; then
+		echo "CPU_PARK_CTRL=FAIL no backup at $BACKUP"
+		exit 1
+	fi
+	while read -r L CUR; do
+		[ -n "$L" ] || continue
+		echo "$CUR" > /proc/irq/$L/smp_affinity_list 2>/dev/null || true
+		echo "CPU_PARK_CTRL: irq $L -> $CUR"
+	done < "$BACKUP"
+	echo "CPU_PARK_CTRL=OK irq-restore done"
 }
 
 cmd_oc_restore() {
 	cmd_restore
+}
+
+# Uncore (ring/L3) ratio via MSR 0x620: bits 15:8 max ratio, bits 7:0 min ratio.
+# Stock on this board receipts as 800-4600 MHz = 0x2e08. 48x = 0x3008.
+cmd_uncore() {
+	need_root
+	allow_msr
+	RATIO=${1:-48}
+	case "$RATIO" in
+	''|*[!0-9]*)
+		echo "CPU_PARK_CTRL=FAIL uncore needs a ratio number 20-60 (e.g. 48)"
+		exit 1
+		;;
+	esac
+	if [ "$RATIO" -lt 20 ] || [ "$RATIO" -gt 60 ]; then
+		echo "CPU_PARK_CTRL=FAIL uncore ratio $RATIO out of range 20-60"
+		exit 1
+	fi
+	echo "CPU_PARK_CTRL: 0x620 before=$(rdmsr -x 0x620 2>/dev/null || echo read-error)"
+	HEX=$(printf '0x%04x' $(( (RATIO << 8) | 8 )))
+	wrmsr -a 0x620 "$HEX" 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x620 written=$HEX (max ${RATIO}x min 8x) readback=$(rdmsr -x 0x620 2>/dev/null || echo read-error)"
+	for U in /sys/devices/system/cpu/intel_uncore_frequency/package_00_die_00/current_max_freq /sys/devices/system/cpu/intel_uncore_frequency/package_00_die_00/max_freq_khz; do
+		if [ -r "$U" ]; then
+			echo "CPU_PARK_CTRL: sysfs $U=$(cat "$U")"
+		fi
+	done
+	echo "CPU_PARK_CTRL=OK uncore max ${RATIO}00 MHz requested (turbostat UncMHz line is the proof)"
+}
+
+# Per-core Bzy_MHz average over loaded samples (Busy% at or above 90) of a bench CSV.
+# Answers: did P-cores hold 5000 during Geekbench MC, or sag under the ~150W package wall?
+cmd_mc_bzy() {
+	CSV=${1:-latest}
+	if [ "$CSV" = "latest" ]; then
+		CSV=$(ls -t /home/sd/oc-meters/cpu-bench-*.csv 2>/dev/null | head -n 1)
+	fi
+	if [ -z "$CSV" ] || [ ! -r "$CSV" ]; then
+		echo "CPU_PARK_CTRL=FAIL csv not found: $CSV"
+		exit 1
+	fi
+	echo "=== mc-bzy: per-core avg Bzy_MHz on Busy% samples at or above 90 ($CSV) ==="
+	awk -F, '/^Core,/{gsub(/ /,"");for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i}next} c&&$c~/^[0-9]+$/{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++}}END{for(i=0;i<20;i++)if(n[i])printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i];if(!n[0])print "mc-bzy: no loaded rows matched (dump: head -n 3 of the csv)"}' "$CSV"
+	echo "CPU_PARK_CTRL=OK mc-bzy (P 0-15, E 16-19; 5000 = all-core OC held under MC load)"
 }
 
 action=${1:-status}
@@ -513,11 +643,15 @@ bench-geekbench) cmd_bench_geekbench ;;
 oc-probe) cmd_oc_probe ;;
 oc-turbo50) cmd_oc_turbo50 ;;
 oc-restore) cmd_oc_restore ;;
+uncore) cmd_uncore ;;
+mc-bzy) cmd_mc_bzy ;;
+irq-pin-bench) cmd_irq_pin_bench ;;
+irq-restore) cmd_irq_restore ;;
 help|--help)
-	sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore"
 	exit 1
 	;;
 esac
