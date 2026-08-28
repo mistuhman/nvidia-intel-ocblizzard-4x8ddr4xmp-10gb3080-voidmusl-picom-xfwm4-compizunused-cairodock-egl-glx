@@ -1,0 +1,16 @@
+id -u
+# cpu-park-wave2.block - ROOT shell (sudo -i).
+# Fetch session branch, read MSR 0x771 across all cores, test PL1 unlock via cpu-park-ctrl.
+# Why: Identify the exact 5.0 GHz golden cores and raise PL1 from 125W to 241W.
+# Gate: df -h / passes, rdmsr prints 20 lines, git pull updates oc-lab, ls -l shows cpu-park-ctrl, status verifies PL1=241W.
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl pl-restore (restores PL1 to 125.0W).
+df -h /
+rdmsr -a -x 0x771
+git -C /home/sd/oc-lab fetch origin arena/01a0451e-nvidia-intel-ocblizzard-4x8ddr
+git -C /home/sd/oc-lab checkout arena/01a0451e-nvidia-intel-ocblizzard-4x8ddr
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl pl-unlock
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+date

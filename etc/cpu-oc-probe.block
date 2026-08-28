@@ -1,0 +1,15 @@
+id -u
+# cpu-oc-probe.block - ROOT shell (sudo -i separately first).
+# Probe MSR 0xce/0x1ad write capability, test 50x all-core turbo OC, verify immediate restore.
+# Why: Verify whether MSR 0x1ad allows all-core 5.0 GHz P-core overclocking on 12700KF.
+# Gate: df -h / passes, allow_writes reports on, MSR 0x1ad read-back confirms state, restore resets to stock.
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-restore (or reboot).
+df -h /
+git -C /home/sd/oc-lab pull
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-probe
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-turbo50
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-restore
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+date

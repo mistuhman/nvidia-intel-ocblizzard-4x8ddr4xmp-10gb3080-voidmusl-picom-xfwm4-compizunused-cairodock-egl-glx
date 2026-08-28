@@ -1,0 +1,13 @@
+id -u
+# cpu-park-wave3.block - ROOT shell (sudo -i).
+# Test the dynamic gaming park profile and verify instant rollback.
+# Why: Verify E-cores & SMT parking (leaving 8 pure boosted P-cores) and restore.
+# Gate: df -h / passes, status shows 8 P-cores online & 12 parked, then restore returns all 20 threads.
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+df -h /
+ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl park-game
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
+date
