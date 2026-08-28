@@ -1,0 +1,40 @@
+{
+  "schema": "cpu-oc-receipts.v1",
+  "updated": "2026-08-28",
+  "meter": "turbostat per-core CSV in /home/sd/oc-meters/cpu-bench-<epoch>.csv via cpu-park-ctrl bench-geekbench",
+  "stockBaseline": {
+    "date": "2026-08-25",
+    "url": "https://browser.geekbench.com/v6/cpu/19061796",
+    "singleCore": 2715,
+    "multiCore": 14569,
+    "meter": "811 samples, PkgW peak 145.02 W, Bzy 4476 MHz, 70 C, XMP 3733"
+  },
+  "gates": { "singleCore101": 2743, "multiCore101": 14715 },
+  "runs": [
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077155", "sc": 2583, "mc": 13714, "condition": "restore profile, JEDEC 3200 (XMP lost in recovery BIOS defaults), stock ratios" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077207", "sc": 2583, "mc": 13380, "condition": "bench-oc v1: 1-2C 51x + STOCK 3-8C ladder, 3200; peak Bzy 4700 (8C 47x clamp), EPP perf, PL1 241W" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077283", "sc": 2696, "mc": 13581, "condition": "bench-oc v2: 0x1ad 3232323232323333 all-core 50x + 1-2C 51x, 3200; compute SC subs above stock, memory subs below" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080704", "sc": 2737, "mc": 13705, "condition": "repeat of v2, 3200 (XMP step missed); brackets run noise SC 2696-2737" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080771", "sc": 2759, "mc": 14549, "condition": "v2 + BIOS XMP 3733 Profile 1 (dmidecode 3733 x4); SC 101.6 percent PASS first time, MC 99.86" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080818", "sc": 2774, "mc": 14433, "condition": "v2 + 3733 + E-core 40x via 0x1ae 2828282828282828; SC 102.2 percent record, MC -0.8 percent (noise: Background Blur -17 vs Asset +6)" }
+  ],
+  "bestScores": { "singleCore": { "score": 2774, "url": "https://browser.geekbench.com/v6/cpu/19080818" }, "multiCore": { "score": 14549, "url": "https://browser.geekbench.com/v6/cpu/19080771" } },
+  "winningProfileSoFar": {
+    "interface": "runtime MSR writes from cpu-park-ctrl bench-oc (lost on reboot; BIOS XMP is the only persistent part)",
+    "msr0x1ad": "0x3232323232323333 (P 1-2C 51x, 3-8C 50x; 51x executes as fused 50x max)",
+    "msr0x1ae": "0x2828282828282828 (E-core cluster 40x)",
+    "epp": "P cores powersave+performance, E cores powersave+balance_performance",
+    "cpuidle": "menu",
+    "pl1": "241 W sysfs (package wall stays ~150 W regardless)",
+    "memory": "BIOS XMP DDR4-3733 Profile 1"
+  },
+  "deadKnobs": [
+    "MSR 0x1ad 51x executes as 5000 MHz (fused 50x clamp); 5.1 GHz unreachable from OS",
+    "PL1 241 W does not move the ~146-151 W package wall (board/EC limit, not RAPL)",
+    "E-core cpu_capacity sysfs is read-only (Permission denied as root); sched_itmt_enabled file absent on 6.18.35-tkg-bore",
+    "stress-ng --taskset takes CPU numbers 0-19, not masks (65536 rejected)"
+  ],
+  "openNextKnobs": [
+    "uncore ratio MSR 0x620 stock 0x2e08 (800-4600) -> 48x 0x3008; targets persistent MC holes: Object Remover -10, HDR -8, FileComp -5, ObjDet -4, Navigation -3 percent"
+  ]
+}

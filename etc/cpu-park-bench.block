@@ -1,22 +1,22 @@
 id -u
-# cpu-park-bench.block v4 - ROOT shell (sudo -i FIRST).
-# bench-oc: P-cores all-core 5.0 GHz (1-2C 5.1) + E-core cluster 4.0 GHz (0x1ae 40x)
-# + PL1 241 W + powersave/performance EPP + cpuidle menu.
-# PREREQ (BIOS F10): XMP DDR4-3733 Profile 1 (receipted 3733 x4 on 2026-08-28 run 19080771:
-# SC 2759 = 101.6 percent PASSED, MC 14549 = 99.86 percent, 166 short of 14715).
-# NEVER the 4000 MT/s 1.45V custom profile. NEVER 1.50V+ (1.55V killed a boot already).
-# Gate: 0x1ad readback 3232323232323333; 0x1ae readback 2828282828282828; freq-proof E Bzy >= 3900;
-# Geekbench SC >= 2743 AND MC >= 14715 in the SAME run (101 percent shared).
-# Receipted dead knobs: 51x executes as 5000 (fused 50x); PL1 241W does not move the ~146W wall;
-# cpu_capacity sysfs read-only (Permission denied as root); sched_itmt file absent.
-# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore (0x1ad + 0x1ae stock) or any reboot.
+# cpu-park-bench v5 uncore wave - ROOT shell (sudo -i FIRST).
+# Receipted: SC 2774 = 102.2 percent PASS (run 19080818). MC 14433 = 99.07 percent, gate
+# 14715 NOT met (best MC 14549 = 99.86). E-core 40x was MC-neutral (noise), SC-positive: STAYS.
+# NEW single knob this wave: uncore ratio 46x -> 48x via MSR 0x620 (ring+L3 +200 MHz).
+# Targets persistent MC holes vs stock: Object Remover -10, HDR -8, File Comp -5,
+# Object Detection -4, Navigation -3 percent. XMP 3733 stays. NEVER the 4000/1.45V profile.
+# Gate: 0x620 readback 0x3008; turbostat UncMHz 4800; freq-proof E Bzy >= 3900;
+# Geekbench SC >= 2743 AND MC >= 14715 in the SAME run.
+# Attribution first (read-only): mc-bzy on the 19080818 CSV - did P-cores hold 5000 in MC?
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore (0x1ad+0x1ae+0x620 stock) or reboot.
 df -h /
-dmidecode -t memory | grep -E 'Configured Memory Speed' | head -n 8
 git -C /home/sd/oc-lab pull
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy /home/sd/oc-meters/cpu-bench-1787945270.csv
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl probe-itmt
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl uncore 48
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl freq-proof
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy latest
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 date

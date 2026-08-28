@@ -25,6 +25,8 @@
 #   sh cpu-park-ctrl oc-probe        Probe MSR 0x194, 0xce, 0x1ad, 0x610 and allow_writes state
 #   sh cpu-park-ctrl oc-turbo50      Program 50x (5.0 GHz) all-core P-core turbo ratio to MSR 0x1ad
 #   sh cpu-park-ctrl oc-restore      Restore stock turbo ratios (0x2f2f303031313132) and stock limits
+#   sh cpu-park-ctrl uncore <ratio>  Set uncore (ring/L3) max ratio via MSR 0x620 (e.g. 48 = 4.8 GHz)
+#   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz on loaded samples of a bench CSV (or latest)
 #
 # Safety: All actions are runtime-only sysfs/MSR changes; reboot fully reverts all states.
 set -u
@@ -376,6 +378,8 @@ cmd_restore() {
 	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
 	wrmsr -a 0x1ae 0x2424242424242626 2>/dev/null || true
 	echo "CPU_PARK_CTRL: 0x1ae restored=$(rdmsr -p 16 -x 0x1ae 2>/dev/null || echo fail)"
+	wrmsr -a 0x620 0x2e08 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x620 restored=$(rdmsr -x 0x620 2>/dev/null || echo fail)"
 	hwp_restore_p
 	online_all
 	reset_scaling_max
@@ -439,7 +443,7 @@ cmd_freq_proof() {
 	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
 	online_all
 	echo "=== freq-proof E-core loop CPU16 8s all-online (gate: Bzy_MHz >= 3900 with 40x; 3800 = clamped to stock 1-2C) ==="
-	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 65536
+	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 16
 	online_all
 	echo "CPU_PARK_CTRL=OK freq-proof done, all 20 threads online"
 }
@@ -537,6 +541,50 @@ cmd_oc_restore() {
 	cmd_restore
 }
 
+# Uncore (ring/L3) ratio via MSR 0x620: bits 15:8 max ratio, bits 7:0 min ratio.
+# Stock on this board receipts as 800-4600 MHz = 0x2e08. 48x = 0x3008.
+cmd_uncore() {
+	need_root
+	allow_msr
+	RATIO=${1:-48}
+	case "$RATIO" in
+	''|*[!0-9]*)
+		echo "CPU_PARK_CTRL=FAIL uncore needs a ratio number 20-60 (e.g. 48)"
+		exit 1
+		;;
+	esac
+	if [ "$RATIO" -lt 20 ] || [ "$RATIO" -gt 60 ]; then
+		echo "CPU_PARK_CTRL=FAIL uncore ratio $RATIO out of range 20-60"
+		exit 1
+	fi
+	echo "CPU_PARK_CTRL: 0x620 before=$(rdmsr -x 0x620 2>/dev/null || echo read-error)"
+	HEX=$(printf '0x%04x' $(( (RATIO << 8) | 8 )))
+	wrmsr -a 0x620 "$HEX" 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x620 written=$HEX (max ${RATIO}x min 8x) readback=$(rdmsr -x 0x620 2>/dev/null || echo read-error)"
+	for U in /sys/devices/system/cpu/intel_uncore_frequency/package_00_die_00/current_max_freq /sys/devices/system/cpu/intel_uncore_frequency/package_00_die_00/max_freq_khz; do
+		if [ -r "$U" ]; then
+			echo "CPU_PARK_CTRL: sysfs $U=$(cat "$U")"
+		fi
+	done
+	echo "CPU_PARK_CTRL=OK uncore max ${RATIO}00 MHz requested (turbostat UncMHz line is the proof)"
+}
+
+# Per-core Bzy_MHz average over loaded samples (Busy% at or above 90) of a bench CSV.
+# Answers: did P-cores hold 5000 during Geekbench MC, or sag under the ~150W package wall?
+cmd_mc_bzy() {
+	CSV=${1:-latest}
+	if [ "$CSV" = "latest" ]; then
+		CSV=$(ls -t /home/sd/oc-meters/cpu-bench-*.csv 2>/dev/null | head -n 1)
+	fi
+	if [ -z "$CSV" ] || [ ! -r "$CSV" ]; then
+		echo "CPU_PARK_CTRL=FAIL csv not found: $CSV"
+		exit 1
+	fi
+	echo "=== mc-bzy: per-core avg Bzy_MHz on Busy% samples at or above 90 ($CSV) ==="
+	awk -F, 'NR==1{for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i}next} c && $c!="-" && $c!=""{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++}}END{for(i=0;i<20;i++)if(n[i])printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i]}' "$CSV"
+	echo "CPU_PARK_CTRL=OK mc-bzy (P 0-15, E 16-19; 5000 = all-core OC held under MC load)"
+}
+
 action=${1:-status}
 case "$action" in
 status) cmd_status ;;
@@ -558,11 +606,13 @@ bench-geekbench) cmd_bench_geekbench ;;
 oc-probe) cmd_oc_probe ;;
 oc-turbo50) cmd_oc_turbo50 ;;
 oc-restore) cmd_oc_restore ;;
+uncore) cmd_uncore ;;
+mc-bzy) cmd_mc_bzy ;;
 help|--help)
-	sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy"
 	exit 1
 	;;
 esac
