@@ -1,16 +1,15 @@
 id -u
 # cpu-park-bench.block - ROOT shell (sudo -i).
-# Run official Geekbench 6 CPU benchmark under turbostat meter with 5.0 GHz all-core OC + park-game.
-# Why: Measure Single-Core and Multi-Core boost, peak PkgWatt, peak Bzy_MHz, and thermals at 5.0 GHz all-core.
-# Gate: Geekbench 6 uploads result URL; turbostat summarizes peak watts/clocks/temp; oc-restore returns 20 threads.
-# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-restore
+# Run official Geekbench 6 CPU benchmark under turbostat meter with asym-game profile.
+# Why: P-cores at 5.0 GHz max boost, E-cores resting at 2.4 GHz (power EPP), all 20 threads online.
+# Gate: Geekbench 6 uploads result URL; turbostat summarizes peak watts/clocks/temp; restore returns daily state.
+# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 df -h /
 git -C /home/sd/oc-lab pull
 ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl park-game
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-turbo50
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl asym-game
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl oc-restore
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 date
