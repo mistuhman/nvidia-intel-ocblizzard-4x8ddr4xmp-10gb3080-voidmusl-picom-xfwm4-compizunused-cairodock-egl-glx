@@ -153,18 +153,23 @@ cmd_asym_game() {
 	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
 		echo 1 > "/sys/devices/system/cpu/cpu$c/online" 2>/dev/null || true
 	done
-	wrmsr -a 0x1ad 0x3232323232323232 2>/dev/null || true
+	wrmsr -a 0x1ad 0x3232323232323333 2>/dev/null || true
 	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
 		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
 		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
 	done
 	for c in 16 17 18 19; do
-		echo powersave > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
-		echo power > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
-		echo 2400000 > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
+		if [ -r "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" ]; then
+			cat "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
+		fi
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo balance_performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
 	done
+	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
+		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
+	fi
 	cmd_pl_unlock
-	echo "CPU_PARK_CTRL=OK Asymmetric profile: P-cores at 5.0 GHz, E-cores resting at 2.4 GHz (power EPP)"
+	echo "CPU_PARK_CTRL=OK 20T Boost: P-cores 5.1/5.0GHz, E-cores 3.8GHz, ITMT favored scheduling active"
 }
 
 cmd_restore() {
