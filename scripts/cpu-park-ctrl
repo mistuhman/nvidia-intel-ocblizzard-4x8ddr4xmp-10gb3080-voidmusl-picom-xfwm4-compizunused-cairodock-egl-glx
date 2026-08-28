@@ -12,6 +12,7 @@
 #   sh cpu-park-ctrl pl-restore      Restore PL1 to stock 125W
 #   sh cpu-park-ctrl park-ecores     Offline CPU 16-19 (returns 100% ring bus & power budget to P-cores)
 #   sh cpu-park-ctrl park-smt        Offline CPU 1,3,5,7,9,11,13,15 (leaves 8 pure physical P-cores)
+#   sh cpu-park-ctrl park-one        Offline CPU 1-19 (CPU0 only - true 1C turbo gate)
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
 #   sh cpu-park-ctrl bench-oc        1-2C 5.1GHz OC + stock 3-8C ladder + park-idle (powersave) + HWP 51 + PL1 241W
@@ -226,6 +227,14 @@ cmd_park_smt() {
 	echo "CPU_PARK_CTRL=OK SMT siblings (CPU 1,3,5,7,9,11,13,15) taken offline"
 }
 
+cmd_park_one() {
+	need_root
+	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
+		echo 0 > "/sys/devices/system/cpu/cpu$c/online" 2>/dev/null || true
+	done
+	echo "CPU_PARK_CTRL=OK CPU0 only (CPU 1-19 offline)"
+}
+
 cmd_park_game() {
 	need_root
 	cmd_park_ecores
@@ -323,7 +332,10 @@ cmd_base() {
 		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
 	fi
 	for c in 16 17 18 19; do
-		echo 778 > "/sys/devices/system/cpu/cpu$c/cpu_capacity" 2>/dev/null || true
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 778 > "$CAP" 2>/dev/null || true
+		fi
 	done
 	cmd_pl_restore
 	echo "CPU_PARK_CTRL: 0x1ad=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo fail)"
@@ -437,6 +449,7 @@ pl-unlock) cmd_pl_unlock ;;
 pl-restore) cmd_pl_restore ;;
 park-ecores) cmd_park_ecores ;;
 park-smt) cmd_park_smt ;;
+park-one) cmd_park_one ;;
 park-game) cmd_park_game ;;
 asym-game) cmd_asym_game ;;
 bench-oc) cmd_bench_oc ;;
@@ -448,10 +461,10 @@ oc-probe) cmd_oc_probe ;;
 oc-turbo50) cmd_oc_turbo50 ;;
 oc-restore) cmd_oc_restore ;;
 help|--help)
-	sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'
+	sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-game|asym-game|bench-oc|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
 	exit 1
 	;;
 esac
