@@ -146,29 +146,34 @@ cmd_park_game() {
 
 cmd_asym_game() {
 	need_root
-	# Ensure all cores are online
+	modprobe msr 2>/dev/null || true
+	if [ -w /sys/module/msr/parameters/allow_writes ]; then
+		echo on > /sys/module/msr/parameters/allow_writes
+	fi
 	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
-		if [ -w "/sys/devices/system/cpu/cpu$c/online" ]; then
-			echo 1 > "/sys/devices/system/cpu/cpu$c/online"
-		fi
+		echo 1 > "/sys/devices/system/cpu/cpu$c/online" 2>/dev/null || true
 	done
-	# Boost P-cores
+	wrmsr -a 0x1ad 0x3232323232323232 2>/dev/null || true
 	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-		echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
-		echo "performance" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
 	done
-	# Downclock E-cores to base & save power
 	for c in 16 17 18 19; do
-		echo "powersave" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
-		echo "power" > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+		echo powersave > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo power > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
 		echo 2400000 > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
 	done
 	cmd_pl_unlock
-	echo "CPU_PARK_CTRL=OK Asymmetric profile active: P-cores boosted, E-cores downclocked to 2.4GHz"
+	echo "CPU_PARK_CTRL=OK Asymmetric profile: P-cores at 5.0 GHz, E-cores resting at 2.4 GHz (power EPP)"
 }
 
 cmd_restore() {
 	need_root
+	modprobe msr 2>/dev/null || true
+	if [ -w /sys/module/msr/parameters/allow_writes ]; then
+		echo on > /sys/module/msr/parameters/allow_writes
+	fi
+	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
 	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
 		echo 1 > "/sys/devices/system/cpu/cpu$c/online" 2>/dev/null || true
 	done
@@ -182,7 +187,7 @@ cmd_restore() {
 		echo balance_performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
 	done
 	cmd_pl_restore
-	echo "CPU_PARK_CTRL=OK All 20 threads online, powersave/balance_performance restored"
+	echo "CPU_PARK_CTRL=OK All 20 threads online, powersave/balance_performance restored, stock turbo ratios"
 }
 
 cmd_bench_geekbench() {
@@ -260,14 +265,7 @@ cmd_oc_turbo50() {
 }
 
 cmd_oc_restore() {
-	need_root
-	modprobe msr 2>/dev/null || true
-	if [ -w /sys/module/msr/parameters/allow_writes ]; then
-		echo on > /sys/module/msr/parameters/allow_writes
-	fi
-	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
 	cmd_restore
-	echo "CPU_PARK_CTRL=OK Stock turbo ratios (2f2f303031313132) and daily power limits restored"
 }
 
 action=${1:-status}
