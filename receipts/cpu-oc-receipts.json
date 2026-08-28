@@ -1,6 +1,6 @@
 {
   "schema": "cpu-oc-receipts.v1",
-  "updated": "2026-08-28T23:20Z",
+  "updated": "2026-08-29T00:10Z",
   "meter": "turbostat per-core CSV in /home/sd/oc-meters/cpu-bench-<epoch>.csv via cpu-park-ctrl bench-geekbench",
   "stockBaseline": {
     "date": "2026-08-25",
@@ -341,6 +341,13 @@
       "condition": "v10 block: pkill -STOP -x compiz before bench-geekbench on the live X session",
       "verdict": "OPERATOR: 'that crashed my pc' - hard freeze, hard reset. SIGSTOP on the GL compositor stalls the display pipeline; CLASS CLOSED, never SIGSTOP the compositor on a live session. Reboot cleared all knobs. Operator directive: make the 19081392 profile permanent -> persist-install (runit service cpu-park-oc) authored. The 209-pt MC gap chase is PARKED by operator direction.",
       "meter": "none (crashed before bench)"
+    },
+    {
+      "date": "2026-08-28",
+      "id": "v7-final-bench-CRASH",
+      "condition": "persistent profile live (bench-oc 50x/51x + PL1 241W + IRQ pins via /etc/sv/cpu-park-oc), final bench-geekbench run",
+      "verdict": "OPERATOR: 'that crashed' - second hard freeze, NO compositor signal involved this time (SIGSTOP class was already closed). Same knobs ran 3 clean Geekbench passes earlier (149.6 W / 74 C), so 50x all-core at stock voltage is now a MARGINAL-STABILITY SUSPECT under sustained MC load. Operator stops the Geekbench chase; daily meter = Superposition (GPU-bound, light CPU). Standing exit if it freezes again in ordinary use: sh /etc/sv/cpu-park-oc/cpu-park-ctrl persist-remove + reboot = stock.",
+      "meter": "none (crashed during run)"
     }
   ]
 }
