@@ -1,13 +1,18 @@
 id -u
 # cpu-park-bench.block - ROOT shell (sudo -i).
-# Run official Geekbench 6 CPU benchmark under turbostat meter with asym-game profile.
-# Why: P-cores at 5.0 GHz max boost, E-cores resting at 2.4 GHz (power EPP), all 20 threads online.
-# Gate: Geekbench 6 uploads result URL; turbostat summarizes peak watts/clocks/temp; restore returns daily state.
+# Run official Geekbench 6 CPU benchmark under turbostat meter with the bench-oc profile.
+# Why: single-core OC (1-2 P-cores 5.1 GHz) + STOCK all-core ladder (4.7 GHz, sustainable at this
+#      board's ~145 W power wall) + full E-cores (3.8 GHz) + PL1 241 W (removes the 125 W Tau clamp).
+# Gate: readback of MSR 0x1ad must equal 2f2f303031313333 (write took); Geekbench uploads result URL;
+#       turbostat summarizes peak watts/clocks/temp; restore returns daily state.
+# Expected vs stock (2715 / 14569): SC ~101%+ (5.1 GHz single-core OC), MC ~100%+ (sustained 4.7 all-core).
 # Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 df -h /
+git -C /home/sd/oc-lab fetch origin
+git -C /home/sd/oc-lab checkout arena/01a045e0-nvidia-intel-ocblizzard-4x8ddr
 git -C /home/sd/oc-lab pull
 ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl asym-game
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore

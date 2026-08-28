@@ -14,8 +14,9 @@
 #   sh cpu-park-ctrl park-smt        Offline CPU 1,3,5,7,9,11,13,15 (leaves 8 pure physical P-cores)
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
+#   sh cpu-park-ctrl bench-oc        OC 1-2 P-cores to 5.1GHz + STOCK all-core ladder + E 3.8GHz + PL1 241W (benchmark profile)
 #   sh cpu-park-ctrl restore         Restore all 20 threads online + powersave + balance_performance + 125W
-#   sh cpu-park-ctrl bench-geekbench Run geekbench6 --benchmark under turbostat meter & summarize
+#   sh cpu-park-ctrl bench-geekbench Run geekbench6 --cpu under turbostat meter & summarize
 #   sh cpu-park-ctrl oc-probe        Probe MSR 0x194, 0xce, 0x1ad, 0x610 and allow_writes state
 #   sh cpu-park-ctrl oc-turbo50      Program 50x (5.0 GHz) all-core P-core turbo ratio to MSR 0x1ad
 #   sh cpu-park-ctrl oc-restore      Restore stock turbo ratios (0x2f2f303031313132) and stock limits
@@ -84,16 +85,34 @@ cmd_probe_itmt() {
 		echo "CPU_PARK_CTRL=FAIL rdmsr not found; run: xbps-install -y msr-tools"
 		exit 1
 	fi
-	echo "=== MSR 0x771 HWP Capabilities ==="
-	echo "P-Cores (CPU 0-15):  Highest=64 (6.4GHz cap) Guaranteed=46 (4.6GHz base) [raw=0x10d2e40]"
-	echo "E-Cores (CPU 16-19): Highest=38 (3.8GHz cap) Guaranteed=27 (2.7GHz base) [raw=0x10a1b26]"
+	echo "=== MSR 0x771 HWP Capabilities (read live) ==="
+	echo "P-core (CPU 0):  $(rdmsr -p 0  -x 0x771 2>/dev/null || echo read-failed)"
+	echo "E-core (CPU 16): $(rdmsr -p 16 -x 0x771 2>/dev/null || echo read-failed)"
 	echo ""
-	echo "=== MSR 0x1ad Turbo Ratio Limits (Active Scaling Tiers) ==="
-	echo "1 P-Core Active:    50x (5000 MHz)"
-	echo "2-4 P-Cores Active: 49x (4900 MHz)"
-	echo "5-6 P-Cores Active: 48x (4800 MHz)"
-	echo "7-8 P-Cores Active: 47x (4700 MHz)"
-	echo "E-Cores Turbo:      38x (3800 MHz)"
+	echo "=== MSR 0x1ad Turbo Ratio Limits (read live; byte0=1C .. byte7=8C, hex is MSB-first) ==="
+	RAW=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo "")
+	if [ -n "$RAW" ] && [ "$RAW" != "read-failed" ]; then
+		echo "raw: 0x$RAW"
+		printf '%s' "$RAW" | awk '{
+			s = tolower($0)
+			for (j = 0; j < 8; j++) {
+				start = length(s) - 2 * j - 1
+				b = substr(s, start, 2)
+				v = 0
+				for (k = 1; k <= 2; k++) {
+					d = substr(b, k, 1)
+					if (d ~ /[0-9]/) { d2 = d + 0 } else { d2 = index("abcdef", d) + 9 }
+					v = v * 16 + d2
+				}
+				printf "  %dC active: %dx (%d MHz)\n", j + 1, v, v * 100
+			}
+		}'
+	else
+		echo "raw: (read failed)"
+	fi
+	echo ""
+	echo "=== MSR 0x1ae E-core Turbo Ratio (read live) ==="
+	echo "raw: $(rdmsr -p 16 -x 0x1ae 2>/dev/null || echo read-failed)"
 }
 
 cmd_pl_unlock() {
@@ -170,6 +189,36 @@ cmd_asym_game() {
 	fi
 	cmd_pl_unlock
 	echo "CPU_PARK_CTRL=OK 20T Boost: P-cores 5.1/5.0GHz, E-cores 3.8GHz, ITMT favored scheduling active"
+}
+
+cmd_bench_oc() {
+	need_root
+	modprobe msr 2>/dev/null || true
+	if [ -w /sys/module/msr/parameters/allow_writes ]; then
+		echo on > /sys/module/msr/parameters/allow_writes
+	fi
+	for c in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19; do
+		echo 1 > "/sys/devices/system/cpu/cpu$c/online" 2>/dev/null || true
+	done
+	# Single-core OC (1C=51x, 2C=51x = 5.1 GHz) + STOCK all-core ladder (3C=49 4C=49 5C=48 6C=48 7C=47 8C=47).
+	# Do NOT raise the 8C group: all-core 5.0 GHz is unreachable at this board's ~145 W power wall and throttles.
+	# stock = 0x2f2f303031313132 ; bench-oc = 0x2f2f303031313333
+	wrmsr -a 0x1ad 0x2f2f303031313333 2>/dev/null || true
+	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo read-error)
+	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x2f2f303031313333 readback=$ACTUAL"
+	for c in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+	done
+	for c in 16 17 18 19; do
+		if [ -r "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" ]; then
+			cat "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
+		fi
+		echo performance > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_governor" 2>/dev/null || true
+		echo balance_performance > "/sys/devices/system/cpu/cpu$c/cpufreq/energy_performance_preference" 2>/dev/null || true
+	done
+	cmd_pl_unlock
+	echo "CPU_PARK_CTRL=OK bench-oc: 1-2C=5.1GHz OC, 3-8C=stock 4.9-4.7, E-cores 3.8GHz, PL1=241W"
 }
 
 cmd_restore() {
@@ -283,6 +332,7 @@ park-ecores) cmd_park_ecores ;;
 park-smt) cmd_park_smt ;;
 park-game) cmd_park_game ;;
 asym-game) cmd_asym_game ;;
+bench-oc) cmd_bench_oc ;;
 restore) cmd_restore ;;
 bench-geekbench) cmd_bench_geekbench ;;
 oc-probe) cmd_oc_probe ;;
@@ -292,7 +342,7 @@ help|--help)
 	sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-game|asym-game|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-game|asym-game|bench-oc|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore"
 	exit 1
 	;;
 esac
