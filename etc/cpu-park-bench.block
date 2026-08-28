@@ -1,26 +1,17 @@
 id -u
-# cpu-park-bench v10 compiz-quiesce wave - ROOT shell (sudo -i FIRST).
-# USER SHELL FIRST (separate paste, not root): git -C /home/sd/oc-lab pull
-#   v9 receipt 19081392 ran the OLD v8 script (throttle-probe hit the usage line, no
-#   nice banner) because the pull step was skipped. The pull is MANDATORY this wave.
-# Receipt ladder, MC vs load: 14243 (browsers open) -> 14331 (windows closed) ->
-# 14506 (processes killed) = +263 from load removal alone; SC 2770 held all three runs.
-# Remaining burn is compiz 35.3 + Xorg 9.9 pcpu = ~0.45 core = ~2% of 20T = the 209 gap.
-# This wave: SIGSTOP compiz for the bench window (freezes the compositor - the desktop
-# will not repaint until SIGCONT; the bench does not need it painting), bench at nice -10
-# (v9 script), then SIGCONT immediately after. throttle-probe finally names the 149 W
-# limiter (PL1/PL2/EDP-IccMax/thermal) with the v9 dispatcher.
-# Gates (operator 2026-08-28): SC >= 2770 (102 percent) AND MC >= 14715 (101 percent) same run.
-# Rollback: kill -CONT compiz (in-block), irq-restore + restore; reboot clears everything.
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl throttle-probe
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-pin-bench
+# cpu-park-persist v11 - ROOT shell (sudo -i FIRST).
+# USER SHELL FIRST (separate paste): git -C /home/sd/oc-lab pull
+# v10 SIGSTOP-compiz CRASHED the PC (hard freeze): SIGSTOP-on-compositor class is
+# CLOSED FOREVER - this block replaces v10 and contains no compositor signals.
+# Operator directive: make the 19081392 profile permanent (SC 2770 = 102.0%, MC 14506;
+# peaks 149.6 W / 74 C). Mechanism = runit service /etc/sv/cpu-park-oc -> /var/service:
+# applies bench-oc (P 50x + 51x 1-2C, E 3.8 stock, PL1 241 W, menu idle) + IRQ pins at
+# every boot; own script copy + sha; log /var/log/cpu-park-oc.log.
+# Inverse: sh cpu-park-ctrl persist-remove (next boot stock); live revert: restore.
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl persist-install
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
-pkill -STOP -x compiz
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
-pkill -CONT -x compiz
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy latest
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-restore
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
-ps -eo pcpu,pid,stat,comm --sort=-pcpu | sed -n '1,6p'
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-pin-bench
+sv status cpu-park-oc
+ls -l /etc/sv/cpu-park-oc
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 date
