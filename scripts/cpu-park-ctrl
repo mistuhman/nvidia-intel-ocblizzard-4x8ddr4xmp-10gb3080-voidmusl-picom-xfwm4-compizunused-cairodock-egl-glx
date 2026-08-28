@@ -17,9 +17,9 @@
 #   sh cpu-park-ctrl clock-high      1C 51x MSR only; 2-8C stock. Do not write HWP max 51.
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
-#   sh cpu-park-ctrl bench-oc        1-2C 5.1GHz OC + stock 3-8C ladder + park-idle (powersave) + HWP 51 + PL1 241W
+#   sh cpu-park-ctrl bench-oc        All-core 5.0GHz (1-2C 5.1) + E-core 4.0GHz + PL1 241W + menu idle
 #   sh cpu-park-ctrl base            Stock ratios/PL1 + cpuidle menu + E-core capacity 778 (P-first scheduler)
-#   sh cpu-park-ctrl freq-proof      8s 1C loop all-online, then 8s 1C with E+SMT parked (5.0 GHz isolation gate)
+#   sh cpu-park-ctrl freq-proof      8s loops: CPU0 all-online, CPU0 isolated 8P, CPU16 E-core (freq gates)
 #   sh cpu-park-ctrl restore         Restore all 20 threads online + powersave + balance_performance + 125W
 #   sh cpu-park-ctrl bench-geekbench Run geekbench6 --cpu under per-core turbostat meter & summarize
 #   sh cpu-park-ctrl oc-probe        Probe MSR 0x194, 0xce, 0x1ad, 0x610 and allow_writes state
@@ -336,6 +336,12 @@ cmd_bench_oc() {
 	wrmsr -a 0x1ad 0x3232323232323333 2>/dev/null || true
 	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo read-error)
 	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x3232323232323333 readback=$ACTUAL"
+	# E-core cluster 40x (4.0 GHz) via secondary turbo ratio 0x1ae
+	# (stock 0x2424242424242626 = 38x 1-2C / 36x 3-8C). Geekbench MC uses all 20
+	# threads; +11 percent on the 4 E-cores is the biggest remaining MC lever.
+	wrmsr -a 0x1ae 0x2828282828282828 2>/dev/null || true
+	EACTUAL=$(rdmsr -p 0 -x 0x1ae 2>/dev/null || rdmsr -p 16 -x 0x1ae 2>/dev/null || echo read-error)
+	echo "CPU_PARK_CTRL: MSR 0x1ae written=0x2828282828282828 readback=$EACTUAL"
 	# Park-idle: powersave lets unused cores C-state. EPP performance on P-cores
 	# races the busy core to 1C turbo. E-cores keep 3.8 GHz max (MC needs them).
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
@@ -368,6 +374,8 @@ cmd_restore() {
 	need_root
 	allow_msr
 	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
+	wrmsr -a 0x1ae 0x2424242424242626 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x1ae restored=$(rdmsr -p 16 -x 0x1ae 2>/dev/null || echo fail)"
 	hwp_restore_p
 	online_all
 	reset_scaling_max
@@ -429,6 +437,9 @@ cmd_freq_proof() {
 	cmd_park_ecores
 	cmd_park_smt
 	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+	online_all
+	echo "=== freq-proof E-core loop CPU16 8s all-online (gate: Bzy_MHz >= 3900 with 40x; 3800 = clamped to stock 1-2C) ==="
+	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 65536
 	online_all
 	echo "CPU_PARK_CTRL=OK freq-proof done, all 20 threads online"
 }
