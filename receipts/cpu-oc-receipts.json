@@ -1,6 +1,6 @@
 {
   "schema": "cpu-oc-receipts.v1",
-  "updated": "2026-08-28T22:50Z",
+  "updated": "2026-08-28T23:05Z",
   "meter": "turbostat per-core CSV in /home/sd/oc-meters/cpu-bench-<epoch>.csv via cpu-park-ctrl bench-geekbench",
   "stockBaseline": {
     "date": "2026-08-25",
@@ -287,6 +287,16 @@
       "condition": "best-MC config + IRQs pinned + Zen/Brave/vesktop windows closed (compiz 37.4 + Xorg 9.7 + Isolated Web Co 9.3 + zen 6.6 pcpu STILL resident, load 1.02); dual-zone pl-unlock (MMIO zone ABSENT on this board)",
       "verdict": "SC 2770 = 102.0% GATE MET (2nd time >= 2770). MC 14331 = 98.4% FAIL but +88 vs 14243 - first MC RISE in 6 runs, correlating with partial load removal; browsers were closed but processes survived and compiz burned 37.4 pcpu. mc-bzy on the 19080943 csv: MC cores sagged to 4613-4987 (NOT 5000) at 145.0 W loaded avg = the 12-core turbo is power/EDP-limited below the 241 W PL1, limiter unnamed -> throttle-probe (MSR 0x64F) added. MMIO RAPL zone ABSENT = MSR zone is the only writable limit; the 147/155 W ceiling is enforced elsewhere (EDP/IccMax suspect).",
       "meter": "5698 rows, PkgW peak 155.81 W, Bzy peak 5000, 72 C, csv cpu-bench-1787956467.csv; per-core loaded avg 4613-4999"
+    },
+    {
+      "date": "2026-08-28",
+      "url": "https://browser.geekbench.com/v6/cpu/19081392",
+      "id": "v5-browsers-killed",
+      "sc": 2770,
+      "mc": 14506,
+      "condition": "best-MC config + IRQs pinned + browser processes pkilled (ps clean: compiz 35.3 + Xorg 9.9 remain); RAN OLD v8 SCRIPT - target never pulled v9, so no nice -10 and throttle-probe hit the usage line (limiter still unnamed)",
+      "verdict": "SC 2770 = 102.0% MET (3rd run at/above 2770). MC 14506 = 99.6% FAIL by 209. Load-removal ladder now receipted: 14243 (browsers open) -> 14331 (windows closed) -> 14506 (processes killed) = +263 MC from load alone. Remaining burn = compiz 35.3 + Xorg 9.9 pcpu (~0.45 core ~ 2% of 20T ~ the missing 209). Next knob = v9 nice -10 bench (preempt compiz instead of time-slicing) + throttle-probe actually executing.",
+      "meter": "5676 rows, PkgW peak 149.64 W, Bzy peak 5000, 74 C, csv cpu-bench-1787957311.csv; loaded avg 4613-4998, loaded PkgWatt avg 149.6 W"
     }
   ],
   "bestScores": {
