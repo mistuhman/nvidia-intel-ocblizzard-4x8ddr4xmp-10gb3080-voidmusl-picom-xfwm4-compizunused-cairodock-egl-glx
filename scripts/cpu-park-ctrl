@@ -211,8 +211,8 @@ cmd_bench_geekbench() {
 	echo "CPU_PARK_CTRL: Starting turbostat background meter -> $TLOG"
 	turbostat --quiet --Summary -i 1 --out "$TLOG" &
 	TPID=$!
-	echo "CPU_PARK_CTRL: Starting geekbench6 --benchmark..."
-	geekbench6 --benchmark
+	echo "CPU_PARK_CTRL: Starting geekbench6 --cpu..."
+	geekbench6 --cpu
 	GB_RC=$?
 	kill $TPID 2>/dev/null || true
 	wait $TPID 2>/dev/null || true
