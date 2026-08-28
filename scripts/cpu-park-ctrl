@@ -27,6 +27,8 @@
 #   sh cpu-park-ctrl oc-restore      Restore stock turbo ratios (0x2f2f303031313132) and stock limits
 #   sh cpu-park-ctrl uncore <ratio>  Set uncore (ring/L3) max ratio via MSR 0x620 (e.g. 48 = 4.8 GHz)
 #   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz on loaded samples of a bench CSV (or latest)
+#   sh cpu-park-ctrl irq-pin-bench   Pin nvidia/nvkm IRQs to CPU18 + NIC IRQs to CPU19 (backup kept)
+#   sh cpu-park-ctrl irq-restore     Restore IRQ affinities from the /tmp backup
 #
 # Safety: All actions are runtime-only sysfs/MSR changes; reboot fully reverts all states.
 set -u
@@ -537,6 +539,41 @@ cmd_oc_turbo50() {
 	fi
 }
 
+# Pin device IRQs off the P-cores for bench runs (backup written for irq-restore).
+# Receipt 2026-08-28: NIC 705k IRQs had drifted onto P-core CPU2, GPU 1.08M on CPU4.
+cmd_irq_pin_bench() {
+	need_root
+	BACKUP=/tmp/oc-irq-affinity-backup
+	: > "$BACKUP"
+	for PAT in nvidia nvkm enp ens; do
+		for L in $(grep -E "$PAT" /proc/interrupts 2>/dev/null | awk -F: '$1 ~ /^[ ]*[0-9]+$/ {print $1}' | tr -d ' '); do
+			[ -n "$L" ] || continue
+			CUR=$(cat /proc/irq/$L/smp_affinity_list 2>/dev/null || echo "?")
+			TARGET=18
+			[ "$PAT" = "enp" ] || [ "$PAT" = "ens" ] && TARGET=19
+			echo "$L $CUR" >> "$BACKUP"
+			echo $TARGET > /proc/irq/$L/smp_affinity_list 2>/dev/null || true
+			echo "CPU_PARK_CTRL: irq $L ($PAT) $CUR -> $(cat /proc/irq/$L/smp_affinity_list 2>/dev/null || echo fail)"
+		done
+	done
+	echo "CPU_PARK_CTRL=OK irq-pin-bench: nvidia/nvkm->CPU18 nic->CPU19 (backup $BACKUP)"
+}
+
+cmd_irq_restore() {
+	need_root
+	BACKUP=/tmp/oc-irq-affinity-backup
+	if [ ! -r "$BACKUP" ]; then
+		echo "CPU_PARK_CTRL=FAIL no backup at $BACKUP"
+		exit 1
+	fi
+	while read -r L CUR; do
+		[ -n "$L" ] || continue
+		echo "$CUR" > /proc/irq/$L/smp_affinity_list 2>/dev/null || true
+		echo "CPU_PARK_CTRL: irq $L -> $CUR"
+	done < "$BACKUP"
+	echo "CPU_PARK_CTRL=OK irq-restore done"
+}
+
 cmd_oc_restore() {
 	cmd_restore
 }
@@ -581,7 +618,7 @@ cmd_mc_bzy() {
 		exit 1
 	fi
 	echo "=== mc-bzy: per-core avg Bzy_MHz on Busy% samples at or above 90 ($CSV) ==="
-	awk -F, '/^Core,/{for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i}next} c&&$c~/^[0-9]+$/{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++}}END{for(i=0;i<20;i++)if(n[i])printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i]}' "$CSV"
+	awk -F, '/^Core,/{gsub(/ /,"");for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i}next} c&&$c~/^[0-9]+$/{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++}}END{for(i=0;i<20;i++)if(n[i])printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i];if(!n[0])print "mc-bzy: no loaded rows matched (dump: head -n 3 of the csv)"}' "$CSV"
 	echo "CPU_PARK_CTRL=OK mc-bzy (P 0-15, E 16-19; 5000 = all-core OC held under MC load)"
 }
 
@@ -608,11 +645,13 @@ oc-turbo50) cmd_oc_turbo50 ;;
 oc-restore) cmd_oc_restore ;;
 uncore) cmd_uncore ;;
 mc-bzy) cmd_mc_bzy ;;
+irq-pin-bench) cmd_irq_pin_bench ;;
+irq-restore) cmd_irq_restore ;;
 help|--help)
 	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore"
 	exit 1
 	;;
 esac

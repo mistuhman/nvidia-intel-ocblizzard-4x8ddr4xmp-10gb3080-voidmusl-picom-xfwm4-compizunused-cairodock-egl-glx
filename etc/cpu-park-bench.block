@@ -1,21 +1,24 @@
 id -u
-# cpu-park-bench v6 clean-room wave - ROOT shell (sudo -i FIRST).
-# Receipted dead: uncore 48x (MC 14316, pkg 161 W) -> stays STOCK. E-core 40x placebo
-# (CPU16 ran 3598 MHz at 40x live) -> bench-oc (after this pull) writes the STOCK ladder.
-# So this wave = EXACT best-MC config (19080771: P 50x + XMP 3733 = SC 2759 / MC 14549)
-# + bench hygiene: wallpaper stack OFF (never verified off in any bench today) and an
-# IRQ attribution printout (~22.5k IRQ/s fanned over all 20 CPUs in every meter window).
-# MC gap to gate: 166 points = 1.14 percent. SC gate has 16+ points of margin in 4 runs.
-# Gate: Geekbench SC >= 2743 AND MC >= 14715 in the SAME run (101 percent shared).
-# Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore (0x1ad + 0x1ae + 0x620 stock) or reboot.
+# cpu-park-bench v7 IRQ-off-P wave - ROOT shell (sudo -i FIRST).
+# Receipt: MC fell AGAIN at identical config (14549 -> 14433 -> 14316 -> 14265) = external
+# load, not knobs. /proc/interrupts: NIC 705k IRQs on P-CORE CPU2 (pin drifted), GPU 1.08M
+# on CPU4. Disk used grew 123G -> 156G during today's session (something big is running).
+# This wave: pin nvidia/nvkm IRQs to CPU18 + NIC to CPU19 (E-cores, off the bench), then
+# inventory load (uptime, top ps, zpool scrub check, free) then bench the SAME profile.
+# Gates (operator 2026-08-28): SC >= 2770 (102 percent) AND MC >= 14715 (101 percent) same run.
+# Rollback: cpu-park-ctrl irq-restore + cpu-park-ctrl restore; reboot clears everything.
 df -h /
+uptime
+ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,10p'
+zpool status nvme | sed -n '1,6p'
+free -h
 git -C /home/sd/oc-lab pull
-pkill -x xwinwrap
-pkill -x mpv
-grep -E 'CPU0|nvkm|nvidia|enp|ens' /proc/interrupts | head -n 12
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-pin-bench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy latest
+head -n 3 /home/sd/oc-meters/cpu-bench-1787947051.csv
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 date
