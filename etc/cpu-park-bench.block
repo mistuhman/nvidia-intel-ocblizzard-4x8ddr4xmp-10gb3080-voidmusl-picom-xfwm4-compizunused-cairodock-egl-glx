@@ -1,23 +1,20 @@
 id -u
 # cpu-park-bench.block - ROOT shell (sudo -i).
-# Park-idle bench-oc: 1-2C 5.1 GHz request + STOCK all-core ladder + powersave (unused cores
-# C-state park) + EPP performance on P-cores + ITMT + PL1 241 W.
-# Why: the previous bench-oc used performance governor which is anti-park (E-cores sat at
-#      3.6 GHz idle) and scored SC 2582 / MC 13757 (95.1% / 94.4% of stock 2715 / 14569).
-# Gate: 0x1ad readback 2f2f303031313333; freq-proof 1C peak Bzy_MHz >= 5000 (5100 = 51x took);
+# bench-oc: All-Core 5.0 GHz (3-8C=50x) + 5.1 GHz Priority (1-2C=51x) + E-core 3.8 GHz +
+# PL1 241 W + powersave/performance EPP + cpuidle menu + E-core capacity 778.
+# Why: 0x2f2f303031313333 clamped Bzy_MHz to 4700 MHz because active desktop threads woke
+#      up all 8 P-cores. 0x3232323232323333 enforces 5.0 GHz across all 8 P-cores continuously.
+# Gate: 0x1ad readback 3232323232323333; freq-proof Bzy_MHz >= 5000 (5100 on 1C);
 #       Geekbench URL; restore returns daily state.
-# Expected vs stock (2715 / 14569): SC 101%+ IF 5.1 GHz actually clocks; MC recover to ~100%+
-#      (governor fix). MC 101% at the 145 W EC wall is the next knob if this lands ~stock.
 # Rollback: sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 df -h /
 git -C /home/sd/oc-lab fetch origin
-git -C /home/sd/oc-lab checkout arena/01a045e0-nvidia-intel-ocblizzard-4x8ddr
+git -C /home/sd/oc-lab checkout arena/01a04647-nvidia-intel-ocblizzard-4x8ddr
 git -C /home/sd/oc-lab pull
 ls -l /home/sd/oc-lab/scripts/cpu-park-ctrl
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl probe-itmt
-intel-undervolt read
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl freq-proof
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore

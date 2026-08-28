@@ -329,17 +329,27 @@ cmd_bench_oc() {
 	need_root
 	allow_msr
 	online_all
-	# 1C=51x 2C=51x (5.1 GHz priority OC) + STOCK all-core ladder.
-	# Do NOT raise 8C: all-core 5.0 GHz is unreachable at this board's ~145 W EC wall.
-	wrmsr -a 0x1ad 0x2f2f303031313333 2>/dev/null || true
+	# 5.1 GHz 1-2C + 5.0 GHz 3-8C All-Core P-core Overclock
+	# Prior run with stock 3-8C (0x2f2f303031313333) clamped Bzy_MHz to 4700 MHz because
+	# background desktop tasks wake up other P-cores.
+	# 0x3232323232323333 programs 51x (5.1 GHz) on 1-2C and 50x (5.0 GHz) on 3-8C.
+	wrmsr -a 0x1ad 0x3232323232323333 2>/dev/null || true
 	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo read-error)
-	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x2f2f303031313333 readback=$ACTUAL"
+	echo "CPU_PARK_CTRL: MSR 0x1ad written=0x3232323232323333 readback=$ACTUAL"
 	# Park-idle: powersave lets unused cores C-state. EPP performance on P-cores
 	# races the busy core to 1C turbo. E-cores keep 3.8 GHz max (MC needs them).
-	# A 2.4 GHz unused floor is a min-freq and is anti-park; idle ~800 MHz is stronger.
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
 	set_gov_epp "16 17 18 19" powersave balance_performance
 	reset_scaling_max
+	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
+		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
+	fi
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 778 > "$CAP" 2>/dev/null || true
+		fi
+	done
 	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
 		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
 	fi
@@ -349,7 +359,9 @@ cmd_bench_oc() {
 	cmd_pl_unlock
 	echo "CPU_PARK_CTRL: HWP 0x774 CPU0=$(rdmsr -p 0 -x 0x774 2>/dev/null || echo fail) CPU16=$(rdmsr -p 16 -x 0x774 2>/dev/null || echo fail)"
 	echo "CPU_PARK_CTRL: scaling_max CPU0=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null) cpuinfo_max=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq 2>/dev/null)"
-	echo "CPU_PARK_CTRL=OK bench-oc: park-idle + 1-2C=5.1GHz request + stock 3-8C + E 3.8GHz + PL1=241W"
+	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
+	echo "CPU_PARK_CTRL: cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
+	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle + E cap 778"
 }
 
 cmd_restore() {
@@ -360,6 +372,12 @@ cmd_restore() {
 	online_all
 	reset_scaling_max
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19" powersave balance_performance
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 1024 > "$CAP" 2>/dev/null || true
+		fi
+	done
 	if [ -w /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost ]; then
 		echo 0 > /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost 2>/dev/null || true
 	fi
@@ -472,20 +490,36 @@ cmd_oc_probe() {
 
 cmd_oc_turbo50() {
 	need_root
-	modprobe msr 2>/dev/null || true
-	if [ -w /sys/module/msr/parameters/allow_writes ]; then
-		echo on > /sys/module/msr/parameters/allow_writes
-	fi
+	allow_msr
+	online_all
 	echo "CPU_PARK_CTRL: Programming 50x (5.0GHz) All-Core P-core turbo to MSR 0x1ad..."
 	wrmsr -a 0x1ad 0x3232323232323232 2>/dev/null || true
 	ACTUAL=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo "read-error")
 	echo "MSR 0x1ad readback: $ACTUAL"
+	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
+	set_gov_epp "16 17 18 19" powersave balance_performance
+	reset_scaling_max
+	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
+		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
+	fi
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		if [ -w "$CAP" ]; then
+			echo 778 > "$CAP" 2>/dev/null || true
+		fi
+	done
+	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
+		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
+	fi
+	if [ -w /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost ]; then
+		echo 1 > /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost 2>/dev/null || true
+	fi
+	cmd_pl_unlock
 	if [ "$ACTUAL" = "3232323232323232" ]; then
 		echo "CPU_PARK_CTRL=OK All-Core 5.0 GHz Turbo Ratio APPLIED"
 	else
 		echo "CPU_PARK_CTRL=NOTICE Hardware returned $ACTUAL"
 	fi
-	cmd_pl_unlock
 }
 
 cmd_oc_restore() {
