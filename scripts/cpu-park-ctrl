@@ -15,7 +15,8 @@
 #   sh cpu-park-ctrl park-game       Park E-cores + SMT + governor performance + EPP performance + 241W
 #   sh cpu-park-ctrl asym-game       Keep 20T online, downclock E-cores to 2.4GHz & boost P-cores to max
 #   sh cpu-park-ctrl bench-oc        1-2C 5.1GHz OC + stock 3-8C ladder + park-idle (powersave) + HWP 51 + PL1 241W
-#   sh cpu-park-ctrl freq-proof      8s 1C (CPU0) then 8s 20T load; print per-core Bzy_MHz (the 5.1 GHz gate)
+#   sh cpu-park-ctrl base            Stock ratios/PL1 + cpuidle menu + E-core capacity 778 (P-first scheduler)
+#   sh cpu-park-ctrl freq-proof      8s 1C loop all-online, then 8s 1C with E+SMT parked (5.0 GHz isolation gate)
 #   sh cpu-park-ctrl restore         Restore all 20 threads online + powersave + balance_performance + 125W
 #   sh cpu-park-ctrl bench-geekbench Run geekbench6 --cpu under per-core turbostat meter & summarize
 #   sh cpu-park-ctrl oc-probe        Probe MSR 0x194, 0xce, 0x1ad, 0x610 and allow_writes state
@@ -131,6 +132,10 @@ cmd_status() {
 		echo "PL1 (sustained): ${PL1_W} W"
 		echo "PL2 (burst):     ${PL2_W} W"
 	fi
+	echo ""
+	echo "=== Scheduler / idle ==="
+	echo "cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
+	echo "cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
 }
 
 cmd_probe_itmt() {
@@ -303,6 +308,30 @@ cmd_restore() {
 	echo "CPU_PARK_CTRL=OK All 20 threads online, powersave/balance_performance restored, stock turbo ratios"
 }
 
+# Stock clocks + the two base-profile knobs that Aug-25 2715/14569 needs and live 2581/13706 lacks:
+# 1. cpuidle menu (ladder left idle P-cores in C1, so 1C turbo ran at the 8C 47x = 4700)
+# 2. E-core cpu_capacity 778 (live is 1024=1024, no ITMT, so CFS places SC on E-cores)
+cmd_base() {
+	need_root
+	allow_msr
+	wrmsr -a 0x1ad 0x2f2f303031313132 2>/dev/null || true
+	online_all
+	reset_scaling_max
+	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15" powersave performance
+	set_gov_epp "16 17 18 19" powersave balance_performance
+	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
+		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
+	fi
+	for c in 16 17 18 19; do
+		echo 778 > "/sys/devices/system/cpu/cpu$c/cpu_capacity" 2>/dev/null || true
+	done
+	cmd_pl_restore
+	echo "CPU_PARK_CTRL: 0x1ad=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo fail)"
+	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
+	echo "CPU_PARK_CTRL: cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
+	echo "CPU_PARK_CTRL=OK base: stock 50x/47x + PL1 125W + menu idle + E capacity 778"
+}
+
 cmd_freq_proof() {
 	need_root
 	if ! command -v stress-ng >/dev/null 2>&1; then
@@ -313,11 +342,14 @@ cmd_freq_proof() {
 		echo "CPU_PARK_CTRL=FAIL turbostat not found"
 		exit 1
 	fi
-	echo "=== freq-proof 1C CPU0 8s (gate: peak Bzy_MHz >= 5000, 5100 means 51x took) ==="
-	turbostat -i 1 stress-ng --cpu 1 --timeout 8 --taskset 0
-	echo "=== freq-proof 20T 8s (all-core at the ~145 W wall; expect ~4400-4700) ==="
-	turbostat -i 1 stress-ng --cpu 20 --timeout 8
-	echo "CPU_PARK_CTRL=OK freq-proof done"
+	echo "=== freq-proof 1C loop CPU0 8s all-online (gate: Bzy_MHz >= 4900) ==="
+	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+	echo "=== freq-proof 1C loop CPU0 8s isolated 8P (E+SMT parked; gate: >= 4900 proves silicon 1C) ==="
+	cmd_park_ecores
+	cmd_park_smt
+	turbostat -i 1 stress-ng --cpu 1 --cpu-method loop --timeout 8 --taskset 0
+	online_all
+	echo "CPU_PARK_CTRL=OK freq-proof done, all 20 threads online"
 }
 
 cmd_bench_geekbench() {
@@ -408,6 +440,7 @@ park-smt) cmd_park_smt ;;
 park-game) cmd_park_game ;;
 asym-game) cmd_asym_game ;;
 bench-oc) cmd_bench_oc ;;
+base) cmd_base ;;
 freq-proof) cmd_freq_proof ;;
 restore) cmd_restore ;;
 bench-geekbench) cmd_bench_geekbench ;;
