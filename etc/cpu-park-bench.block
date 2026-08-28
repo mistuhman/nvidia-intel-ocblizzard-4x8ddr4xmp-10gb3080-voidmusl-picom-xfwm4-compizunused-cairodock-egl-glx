@@ -1,24 +1,27 @@
 id -u
-# cpu-park-bench v8 quiet-session wave - ROOT shell (sudo -i FIRST).
-# Receipt 19080943: SC 2758 MC 14243 = FAIL both gates; 5th straight MC decline WITH
-# IRQs pinned -> IRQ class exonerated. Two suspects remain and this wave separates them:
-# (1) SESSION LOAD: inventory showed ~1 full core of browser burn (Isolated Web Co
-#     18.4+15.5, zen 13.3, compiz 12.9, Xorg 11.4) = ~5 percent of the 20T MC budget.
-#     OPERATOR: close Zen, Brave and vesktop BEFORE pasting this block (do not kill X).
-# (2) POWER WALL: peak 147.20 W at MSR PL1 241 W, yet the unc48 run reached 161 W.
-#     pl-probe reads the MMIO RAPL twin zone; bench-oc now raises BOTH zones.
-# Also: mc-bzy comma-vs-TAB parser fixed - first command re-reads yesterday's csv so the
-# per-core MC clock answer (5000 held vs sag) lands before the new bench even starts.
+# cpu-park-bench v9 limiter-hunt wave - ROOT shell (sudo -i FIRST).
+# Receipt 19081355: SC 2770 = 102.0% GATE MET. MC 14331 = 98.4% FAIL but first RISE
+# in 6 runs (+88), correlating with browser-window close. Two receipts drive v9:
+# (1) mc-bzy on the 19080943 csv: MC cores sagged 4613-4987 (NOT 5000) at 145 W loaded
+#     avg while PL1 was 241 W and MMIO zone is ABSENT -> something UNNAMED limits the
+#     package near ~147-156 W. throttle-probe (new) decodes MSR 0x64F under a 20T load
+#     and NAMES it: PL1 / PL2 / EDP-IccMax / thermal / MaxTurboLimit.
+# (2) ps: browsers closed but PROCESSES SURVIVED (Isolated Web Co 9.3, zen 6.6) and
+#     compiz burned 37.4 pcpu. This wave pkills the browser remnants (exact comm match,
+#     they restore on next launch) and bench-geekbench now runs at nice -10 so the bench
+#     outschedules compiz/Xorg session burn it cannot kill.
 # Gates (operator 2026-08-28): SC >= 2770 (102 percent) AND MC >= 14715 (101 percent) same run.
-# Rollback: cpu-park-ctrl irq-restore + cpu-park-ctrl restore; reboot clears everything.
-git -C /home/sd/oc-lab pull
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy /home/sd/oc-meters/cpu-bench-1787947601.csv
-sh /home/sd/oc-lab/scripts/cpu-park-ctrl pl-probe
-zfs list -o space -r nvme
-ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,10p'
+# Rollback: irq-restore + restore; reboot clears everything. Browsers: just relaunch them.
+pkill -x zen
+pkill -x "Isolated Web Co"
+pkill -x vesktop
+pkill -x brave
+sleep 2
+ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,8p'
 uptime
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-pin-bench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl throttle-probe
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy latest
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-restore

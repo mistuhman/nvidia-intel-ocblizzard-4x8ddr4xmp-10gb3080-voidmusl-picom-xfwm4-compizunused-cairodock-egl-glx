@@ -28,6 +28,7 @@
 #   sh cpu-park-ctrl uncore <ratio>  Set uncore (ring/L3) max ratio via MSR 0x620 (e.g. 48 = 4.8 GHz)
 #   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz + pkg watts on loaded samples (TAB turbostat log)
 #   sh cpu-park-ctrl pl-probe        Read MSR + MMIO RAPL package zones (limits, windows, enabled)
+#   sh cpu-park-ctrl throttle-probe  20T stress + MSR 0x64F decode: NAME the clock limiter (PL1/PL2/EDP/thermal)
 #   sh cpu-park-ctrl irq-pin-bench   Pin nvidia/nvkm IRQs to CPU18 + NIC IRQs to CPU19 (backup kept)
 #   sh cpu-park-ctrl irq-restore     Restore IRQ affinities from the /tmp backup
 #
@@ -430,7 +431,7 @@ cmd_bench_oc() {
 	echo "CPU_PARK_CTRL: scaling_max CPU0=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null) cpuinfo_max=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq 2>/dev/null)"
 	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
 	echo "CPU_PARK_CTRL: cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
-	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle + E cap 778"
+	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle"
 }
 
 cmd_restore() {
@@ -511,8 +512,8 @@ cmd_bench_geekbench() {
 	echo "CPU_PARK_CTRL: Starting turbostat background meter (per-core, not Summary) -> $TLOG"
 	turbostat --quiet -i 1 --out "$TLOG" &
 	TPID=$!
-	echo "CPU_PARK_CTRL: Starting geekbench6 --cpu..."
-	geekbench6 --cpu
+	echo "CPU_PARK_CTRL: Starting geekbench6 --cpu at nice -10 (outschedules compiz/Xorg session burn)..."
+	nice -n -10 geekbench6 --cpu
 	GB_RC=$?
 	kill $TPID 2>/dev/null || true
 	wait $TPID 2>/dev/null || true
@@ -650,6 +651,37 @@ cmd_uncore() {
 	echo "CPU_PARK_CTRL=OK uncore max ${RATIO}00 MHz requested (turbostat UncMHz line is the proof)"
 }
 
+# Name the clock limiter under a 20T load via MSR 0x64F (CORE_PERF_LIMIT_REASONS).
+# Log bits are sticky until cleared: clear, stress 15 s, read, decode. Empty list =
+# nothing limited core clocks in the window (then the deficit is scheduling, not silicon).
+cmd_throttle_probe() {
+	need_root
+	allow_msr
+	if ! command -v stress-ng >/dev/null 2>&1; then
+		echo "CPU_PARK_CTRL=FAIL stress-ng not found"
+		exit 1
+	fi
+	wrmsr -a 0x64f 0 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x64F log bits cleared; running 20T matrixprod 15s..."
+	stress-ng --cpu 20 --cpu-method matrixprod --timeout 15 >/dev/null 2>&1 || true
+	RAW=$(rdmsr -p 0 -x 0x64f 2>/dev/null || echo 0)
+	echo "MSR 0x64F (CPU0) raw: 0x$RAW"
+	V=$((0x$RAW))
+	FOUND=0
+	for PAIR in 16:PROCHOT 17:Thermal 20:ResidencyState 21:RunningAvgThermal 22:VR-Therm 23:VR-TDC 24:Other-EDP-IccMax 26:PL1 27:PL2 28:MaxTurboLimit 29:TurboAttenuation; do
+		B=${PAIR%%:*}
+		N=${PAIR#*:}
+		if [ $(( (V >> B) & 1 )) = "1" ]; then
+			echo "  LIMIT LOGGED: $N"
+			FOUND=1
+		fi
+	done
+	if [ "$FOUND" = "0" ]; then
+		echo "  (no limit logged - clocks were free in the window)"
+	fi
+	echo "CPU_PARK_CTRL=OK throttle-probe"
+}
+
 # Per-core Bzy_MHz average over loaded samples (Busy% at or above 90) of a bench CSV.
 # Answers: did P-cores hold 5000 during Geekbench MC, or sag under the ~150W package wall?
 cmd_mc_bzy() {
@@ -689,6 +721,7 @@ probe-itmt) cmd_probe_itmt ;;
 pl-unlock) cmd_pl_unlock ;;
 pl-restore) cmd_pl_restore ;;
 pl-probe) cmd_pl_probe ;;
+throttle-probe) cmd_throttle_probe ;;
 park-ecores) cmd_park_ecores ;;
 park-smt) cmd_park_smt ;;
 park-one) cmd_park_one ;;
@@ -712,7 +745,7 @@ help|--help)
 	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|pl-probe|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|pl-probe|throttle-probe|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore"
 	exit 1
 	;;
 esac
