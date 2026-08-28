@@ -1,6 +1,6 @@
 {
   "schema": "cpu-oc-receipts.v1",
-  "updated": "2026-08-28T20:01Z",
+  "updated": "2026-08-28T20:30Z",
   "meter": "turbostat per-core CSV in /home/sd/oc-meters/cpu-bench-<epoch>.csv via cpu-park-ctrl bench-geekbench",
   "stockBaseline": {
     "date": "2026-08-25",
@@ -267,6 +267,16 @@
           "Structure from Motion": 17455
         }
       }
+    },
+    {
+      "date": "2026-08-28",
+      "url": "https://browser.geekbench.com/v6/cpu/19080943",
+      "id": "v3-irqpin",
+      "sc": 2758,
+      "mc": 14243,
+      "condition": "best-MC config + nvidia irq168 CPU4->18 + NIC irq186 ->19; browsers still open (Isolated Web Co 18.4+15.5, zen 13.3, compiz 12.9, Xorg 11.4 pcpu, load 1.0)",
+      "verdict": "FAIL both gates (SC 2758 < 2770, MC 14243 < 14715). 5th consecutive MC decline WITH IRQs pinned -> IRQ class exonerated; residual suspects = session load (~1 core of browser/compositor burn) + power wall (peak 147.20 W at MSR PL1 241 W, unc48 run proved 161 W is reachable -> MMIO RAPL clamp suspected). mc-bzy receipt lost to the comma-vs-TAB parser bug (fixed); csv cpu-bench-1787947601.csv retained on target for re-read.",
+      "meter": "5698 rows, PkgW peak 147.20 W, Bzy peak 5000 MHz, 74 C, csv cpu-bench-1787947601.csv"
     }
   ],
   "bestScores": {

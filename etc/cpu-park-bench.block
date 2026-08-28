@@ -1,23 +1,26 @@
 id -u
-# cpu-park-bench v7 IRQ-off-P wave - ROOT shell (sudo -i FIRST).
-# Receipt: MC fell AGAIN at identical config (14549 -> 14433 -> 14316 -> 14265) = external
-# load, not knobs. /proc/interrupts: NIC 705k IRQs on P-CORE CPU2 (pin drifted), GPU 1.08M
-# on CPU4. Disk used grew 123G -> 156G during today's session (something big is running).
-# This wave: pin nvidia/nvkm IRQs to CPU18 + NIC to CPU19 (E-cores, off the bench), then
-# inventory load (uptime, top ps, zpool scrub check, free) then bench the SAME profile.
+# cpu-park-bench v8 quiet-session wave - ROOT shell (sudo -i FIRST).
+# Receipt 19080943: SC 2758 MC 14243 = FAIL both gates; 5th straight MC decline WITH
+# IRQs pinned -> IRQ class exonerated. Two suspects remain and this wave separates them:
+# (1) SESSION LOAD: inventory showed ~1 full core of browser burn (Isolated Web Co
+#     18.4+15.5, zen 13.3, compiz 12.9, Xorg 11.4) = ~5 percent of the 20T MC budget.
+#     OPERATOR: close Zen, Brave and vesktop BEFORE pasting this block (do not kill X).
+# (2) POWER WALL: peak 147.20 W at MSR PL1 241 W, yet the unc48 run reached 161 W.
+#     pl-probe reads the MMIO RAPL twin zone; bench-oc now raises BOTH zones.
+# Also: mc-bzy comma-vs-TAB parser fixed - first command re-reads yesterday's csv so the
+# per-core MC clock answer (5000 held vs sag) lands before the new bench even starts.
 # Gates (operator 2026-08-28): SC >= 2770 (102 percent) AND MC >= 14715 (101 percent) same run.
 # Rollback: cpu-park-ctrl irq-restore + cpu-park-ctrl restore; reboot clears everything.
-df -h /
-uptime
-ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,10p'
-zpool status nvme | sed -n '1,6p'
-free -h
 git -C /home/sd/oc-lab pull
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy /home/sd/oc-meters/cpu-bench-1787947601.csv
+sh /home/sd/oc-lab/scripts/cpu-park-ctrl pl-probe
+zfs list -o space -r nvme
+ps -eo pcpu,rss,pid,comm --sort=-pcpu | sed -n '1,10p'
+uptime
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-pin-bench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-oc
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl bench-geekbench
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl mc-bzy latest
-head -n 3 /home/sd/oc-meters/cpu-bench-1787947051.csv
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl irq-restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl restore
 sh /home/sd/oc-lab/scripts/cpu-park-ctrl status
