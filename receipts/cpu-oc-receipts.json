@@ -7,34 +7,52 @@
     "url": "https://browser.geekbench.com/v6/cpu/19061796",
     "singleCore": 2715,
     "multiCore": 14569,
-    "meter": "811 samples, PkgW peak 145.02 W, Bzy 4476 MHz, 70 C, XMP 3733"
+    "meter": "811 samples, PkgW peak 145.02 W, Bzy 4476 MHz, 70 C, XMP 3733",
+    "subtests": {
+      "sc": { "File Compression": 2571, "Navigation": 2717, "HTML5 Browser": 2667, "PDF Renderer": 2583, "Photo Library": 2405, "Clang": 2641, "Text Processing": 2777, "Asset Compression": 2535, "Object Detection": 2550, "Background Blur": 3323, "Horizon Detection": 3127, "Object Remover": 2565, "HDR": 2664, "Photo Filter": 3397, "Ray Tracer": 2573, "Structure from Motion": 3040 },
+      "mc": { "File Compression": 7846, "Navigation": 18144, "HTML5 Browser": 15976, "PDF Renderer": 18511, "Photo Library": 18507, "Clang": 27362, "Text Processing": 3355, "Asset Compression": 26205, "Object Detection": 8338, "Background Blur": 15801, "Horizon Detection": 18759, "Object Remover": 17366, "HDR": 14163, "Photo Filter": 9609, "Ray Tracer": 32087, "Structure from Motion": 15570 }
+    }
   },
   "gates": { "singleCore101": 2743, "multiCore101": 14715 },
   "runs": [
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077155", "sc": 2583, "mc": 13714, "condition": "restore profile, JEDEC 3200 (XMP lost in recovery BIOS defaults), stock ratios" },
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077207", "sc": 2583, "mc": 13380, "condition": "bench-oc v1: 1-2C 51x + STOCK 3-8C ladder, 3200; peak Bzy 4700 (8C 47x clamp), EPP perf, PL1 241W" },
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077283", "sc": 2696, "mc": 13581, "condition": "bench-oc v2: 0x1ad 3232323232323333 all-core 50x + 1-2C 51x, 3200; compute SC subs above stock, memory subs below" },
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080704", "sc": 2737, "mc": 13705, "condition": "repeat of v2, 3200 (XMP step missed); brackets run noise SC 2696-2737" },
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080771", "sc": 2759, "mc": 14549, "condition": "v2 + BIOS XMP 3733 Profile 1 (dmidecode 3733 x4); SC 101.6 percent PASS first time, MC 99.86" },
-    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080818", "sc": 2774, "mc": 14433, "condition": "v2 + 3733 + E-core 40x via 0x1ae 2828282828282828; SC 102.2 percent record, MC -0.8 percent (noise: Background Blur -17 vs Asset +6)" }
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077155", "id": "restore-3200", "sc": 2583, "mc": 13714, "condition": "restore profile, JEDEC 3200 (XMP lost in recovery BIOS defaults), stock ratios" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077207", "id": "v1-stockladder", "sc": 2583, "mc": 13380, "condition": "bench-oc v1: 1-2C 51x + STOCK 3-8C ladder, 3200; peak Bzy 4700 (8C 47x clamp)" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19077283", "id": "v2-ac50", "sc": 2696, "mc": 13581, "condition": "0x1ad 3232323232323333 all-core 50x + 1-2C 51x, 3200; compute SC subs above stock" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080704", "id": "v2-repeat", "sc": 2737, "mc": 13705, "condition": "repeat of v2, 3200 (XMP step missed); brackets noise SC 2696-2737" },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080771", "id": "v2-xmp3733", "sc": 2759, "mc": 14549, "condition": "P 50x + BIOS XMP 3733 Profile 1 (dmidecode 3733 x4); best MC", "subtests": {
+      "sc": { "File Compression": 2380, "Navigation": 2516, "HTML5 Browser": 2703, "PDF Renderer": 2758, "Photo Library": 2545, "Clang": 2793, "Text Processing": 2900, "Asset Compression": 2693, "Object Detection": 2618, "Background Blur": 3297, "Horizon Detection": 3263, "Object Remover": 2483, "HDR": 2771, "Photo Filter": 3217, "Ray Tracer": 2736, "Structure from Motion": 3122 },
+      "mc": { "File Compression": 7437, "Navigation": 17868, "HTML5 Browser": 15926, "PDF Renderer": 18881, "Photo Library": 18091, "Clang": 26804, "Text Processing": 3613, "Asset Compression": 24805, "Object Detection": 7935, "Background Blur": 15214, "Horizon Detection": 18607, "Object Remover": 15524, "HDR": 13187, "Photo Filter": 12036, "Ray Tracer": 32372, "Structure from Motion": 18083 }
+    } },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080818", "id": "v2-e40", "sc": 2774, "mc": 14433, "condition": "+ E-core 40x via 0x1ae (later proven execution-clamped); best SC", "subtests": {
+      "sc": { "File Compression": 2477, "Navigation": 2537, "HTML5 Browser": 2702, "PDF Renderer": 2768, "Photo Library": 2535, "Clang": 2783, "Text Processing": 2901, "Asset Compression": 2678, "Object Detection": 2642, "Background Blur": 3441, "Horizon Detection": 3267, "Object Remover": 2489, "HDR": 2774, "Photo Filter": 3187, "Ray Tracer": 2733, "Structure from Motion": 3127 },
+      "mc": { "File Compression": 7470, "Navigation": 17562, "HTML5 Browser": 15912, "PDF Renderer": 18931, "Photo Library": 18170, "Clang": 27060, "Text Processing": 3657, "Asset Compression": 26365, "Object Detection": 7977, "Background Blur": 12564, "Horizon Detection": 18823, "Object Remover": 15622, "HDR": 13046, "Photo Filter": 11680, "Ray Tracer": 31864, "Structure from Motion": 17254 }
+    } },
+    { "date": "2026-08-28", "url": "https://browser.geekbench.com/v6/cpu/19080870", "id": "v2-e40-unc48", "sc": 2765, "mc": 14316, "condition": "+ uncore 48x via 0x620 0x3008 (took: header 4800-800); MC negative, pkg peak 161.46 W", "subtests": {
+      "sc": { "File Compression": 2470, "Navigation": 2513, "HTML5 Browser": 2657, "PDF Renderer": 2733, "Photo Library": 2520, "Clang": 2752, "Text Processing": 2909, "Asset Compression": 2689, "Object Detection": 2639, "Background Blur": 3434, "Horizon Detection": 3267, "Object Remover": 2508, "HDR": 2777, "Photo Filter": 3217, "Ray Tracer": 2735, "Structure from Motion": 3116 },
+      "mc": { "File Compression": 7404, "Navigation": 17334, "HTML5 Browser": 15836, "PDF Renderer": 18271, "Photo Library": 17996, "Clang": 26938, "Text Processing": 3624, "Asset Compression": 26142, "Object Detection": 8096, "Background Blur": 12360, "Horizon Detection": 18834, "Object Remover": 15734, "HDR": 12967, "Photo Filter": 11444, "Ray Tracer": 31490, "Structure from Motion": 17233 }
+    } }
   ],
   "bestScores": { "singleCore": { "score": 2774, "url": "https://browser.geekbench.com/v6/cpu/19080818" }, "multiCore": { "score": 14549, "url": "https://browser.geekbench.com/v6/cpu/19080771" } },
   "winningProfileSoFar": {
     "interface": "runtime MSR writes from cpu-park-ctrl bench-oc (lost on reboot; BIOS XMP is the only persistent part)",
     "msr0x1ad": "0x3232323232323333 (P 1-2C 51x, 3-8C 50x; 51x executes as fused 50x max)",
-    "msr0x1ae": "0x2828282828282828 (E-core cluster 40x)",
+    "msr0x1ae": "STOCK 0x2424242424242626 (40x proved execution-clamped: CPU16 ran 3598 MHz with 40x live)",
+    "msr0x620": "STOCK 0x2e08 (48x took in the register and header 4800-800 but MC fell 14433 -> 14316, pkg 151 -> 161 W)",
     "epp": "P cores powersave+performance, E cores powersave+balance_performance",
     "cpuidle": "menu",
-    "pl1": "241 W sysfs (package wall stays ~150 W regardless)",
+    "pl1": "241 W sysfs (package wall ~150 W; 161 W seen with uncore 48x)",
     "memory": "BIOS XMP DDR4-3733 Profile 1"
   },
   "deadKnobs": [
     "MSR 0x1ad 51x executes as 5000 MHz (fused 50x clamp); 5.1 GHz unreachable from OS",
-    "PL1 241 W does not move the ~146-151 W package wall (board/EC limit, not RAPL)",
+    "MSR 0x1ae 40x: register takes it, silicon runs E-cores ~3.6 GHz regardless (freq-proof CPU16 3598 MHz)",
+    "MSR 0x620 uncore 48x: takes effect (header 4800) but MC -117 and +10 W package; negative knob",
+    "PL1 241 W does not move the ~150 W package wall (board/EC limit, not RAPL)",
     "E-core cpu_capacity sysfs is read-only (Permission denied as root); sched_itmt_enabled file absent on 6.18.35-tkg-bore",
     "stress-ng --taskset takes CPU numbers 0-19, not masks (65536 rejected)"
   ],
   "openNextKnobs": [
-    "uncore ratio MSR 0x620 stock 0x2e08 (800-4600) -> 48x 0x3008; targets persistent MC holes: Object Remover -10, HDR -8, FileComp -5, ObjDet -4, Navigation -3 percent"
+    "bench hygiene: wallpaper stack (xwinwrap+mpv) never verified OFF during the 2026-08-28 benches; ~22.5k IRQ/s fanned across all 20 CPUs in every meter window (attribution + kill)",
+    "MC persistent holes vs baseline: Background Blur noise band 12360-15801, Object Remover -10, HDR -8, File Comp -5, Object Det -4, Navigation -3 percent"
   ]
 }
