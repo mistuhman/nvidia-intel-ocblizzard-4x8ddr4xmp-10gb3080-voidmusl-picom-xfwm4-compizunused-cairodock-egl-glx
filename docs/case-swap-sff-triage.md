@@ -308,14 +308,16 @@ Intel's own mapping (AC-8265 and later, including AX2xx): **Antenna 1 / AUX = Wi
 Bluetooth. Antenna 2 / MAIN = Wi-Fi only.** One cable on jack 2 gives the BT radio no
 RF. The cable label "2" is not a reason to land it on jack 2.
 
-Do **not** move it until `etc/case-swap-bluetooth-probe.block` says the controller
-exists (`/sys/class/bluetooth` non-empty, `bluetoothd` up). A missing `hci0` is BIOS /
-firmware / USB, not the U.FL. A present `hci0` with no devices is the jack.
+**Probe 2026-08-30 (operator paste-back): the controller EXISTS.** `hci0` present,
+rfkill soft/hard **no**, `bluetoothd` running 3151 s, `bluetoothctl show` **Powered: yes
+Pairable: yes**, USB `8087:0026 Intel Corp. AX201 Bluetooth`, CNVi `8086:7af0` Alder
+Lake-S PCH. `dmesg` was typed as `err,warn0` and returned empty. Software/firmware/USB
+class is **closed**. A present `hci0` with no RF is the jack.
 
 When that receipt is in: cord out, hold case button 20–30 s, lift the one cable off jack
 2 / MAIN, snap it onto jack **1 / AUX**, leave jack 2 empty. U.FL is fragile — press
-straight down, do not yank the pigtail. Wi-Fi unused is fine. Then one power-on, re-run
-the same block.
+straight down, do not yank the pigtail. Wi-Fi unused is fine. Then one power-on and try
+to pair. Do not F10 4000 in the same step.
 
 Lighting board still out.
 
