@@ -1,0 +1,14 @@
+id -u
+# case-swap-bluetooth-probe.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: operator moved the BlizzardOC into the SFF case with only the antenna labelled 2 landed on the M.2 wireless card, and wants Bluetooth working (Ethernet for data, Wi-Fi unused). Intel combo cards put Bluetooth RF on antenna 1 / AUX; antenna 2 / MAIN is Wi-Fi only. This block records whether the BT controller even enumerates (hci, btusb, rfkill, bluetoothd) so a missing adapter is not mis-blamed on the cable, and a present adapter with no range is blamed on the jack.
+# Gate: paste the FULL output back. Empty output is an answer too. Do NOT move the antenna until this receipt is read. Do NOT install the M82868-001 lighting board. Do NOT F10 the 4000 drop in the same step.
+rfkill list
+ls /sys/class/bluetooth
+ls /sys/class/ieee80211
+ls /sys/bus/usb/drivers/btusb
+lsusb
+lspci -nn
+sv status bluetoothd
+bluetoothctl list
+bluetoothctl show
+dmesg -T --level=err,warn
