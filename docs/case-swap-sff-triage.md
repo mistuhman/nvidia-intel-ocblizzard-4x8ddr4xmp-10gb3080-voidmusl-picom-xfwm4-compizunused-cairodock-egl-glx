@@ -293,6 +293,9 @@ connector is **undocumented and unused** (PCMag 45L case review: control is a fa
 OpenRGB will not see the panel until that USB 2.0 header is on `FRONT-USB2` / `MUSB`
 (or another free 9-pin USB 2 header). OMEN Gaming Hub is Windows-only.
 
+**Receipt 2026-08-30:** OpenRGB sees the hub, no cycling. Lights dark. Next: 2-pin
+`M82873` → `PWR_LED` (not `PB`); reverse if already on. Direct / 100% / Apply.
+
 **The path to RGB, once a clean baseline exists:**
 
 1. Get **three consecutive clean cold boots** with the hub still unplugged. That is the
