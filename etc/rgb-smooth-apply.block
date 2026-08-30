@@ -1,0 +1,15 @@
+id -u
+# rgb-smooth-apply.block - ROOT shell on the target (sudo -i first, then paste).
+# Operator directive 2026-08-30, verbatim intent: "after applying, only ONCE and only after
+# applying does the entire rgb layout change color" + "it needs to change colors smoothly".
+# So this wave: remove every rgb service (incl. the health poll installed earlier today),
+# do ONE smooth fade of all 7 zones to #031CC0, install the boot fade-in (once per boot,
+# from black), and attribute the 3 MCE/EDAC/Xid dmesg lines the first health read caught.
+# Gate: paste the FULL output back - the dmesg grep line especially. Inverse of the persist
+# step: sh /home/sd/oc-lab/scripts/rgb-omen unpersist
+df -h /
+sh /home/sd/oc-lab/scripts/rgb-omen unpersist
+sh /home/sd/oc-lab/scripts/rgb-omen apply 031CC0
+dmesg | grep -iE "machine check|hardware error|xid|edac"
+sh /home/sd/oc-lab/scripts/rgb-omen persist apply 031CC0 000000
+sv status omen-rgb
