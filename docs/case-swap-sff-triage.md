@@ -293,8 +293,9 @@ connector is **undocumented and unused** (PCMag 45L case review: control is a fa
 OpenRGB will not see the panel until that USB 2.0 header is on `FRONT-USB2` / `MUSB`
 (or another free 9-pin USB 2 header). OMEN Gaming Hub is Windows-only.
 
-**Receipt 2026-08-30:** OpenRGB sees the hub, no cycling. Lights dark. Next: 2-pin
-`M82873` → `PWR_LED` (not `PB`); reverse if already on. Direct / 100% / Apply.
+**CLOSED 2026-08-30 (operator):** "everything works" / "rgb works and is on" / "light
+bar is in new case". Superposition 1080p Extreme **9079** (stock 8717; min 51.58 avg
+67.91 max 86.38; GPU 36–85C). Hub in circuit, no cycling. 4000 r3 still UNPROVEN.
 
 **The path to RGB, once a clean baseline exists:**
 
@@ -341,7 +342,7 @@ When that receipt is in: cord out, hold case button 20–30 s, lift the one cabl
 straight down, do not yank the pigtail. Wi-Fi unused is fine. Then one power-on and try
 to pair. Do not F10 4000 in the same step.
 
-Lighting board still out.
+Lighting board in. BT closed (works without Wi-Fi).
 
 ## Sources
 
