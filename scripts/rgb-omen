@@ -6,7 +6,10 @@
 #
 # Debug status light (2026-08-30): `health` paints one zone (default 4=CPU LED) with system
 # state - green OK / amber warn / red crit / magenta scrub - while the fans keep the art wave.
-# `persist-health` installs the runit poll loop so it stays live. See
+# SMOOTH APPLY (operator directive 2026-08-30): `apply HEX [FROM_HEX] [STEPS] [DELAY_MS]`
+# fades the ENTIRE layout (statics + fan wave, all 7 zones) to the target color ONCE, and
+# nothing repaints after it. `persist apply HEX 000000` = boot fade-in from black, once per
+# boot. `health` / `persist-health` are ON-DEMAND only - not the boot path. See
 # docs/feature-pack-accessories.md for the hardware debug channels this complements.
 
 set -u
@@ -85,7 +88,7 @@ def health_eval():
     mce = -1
     try:
         dm = subprocess.run(['dmesg'], capture_output=True, text=True, timeout=10).stdout
-        mce = len(re.findall(r'Machine check|Hardware Error|EDAC|Xid', dm))
+        mce = sum(1 for l in dm.splitlines() if re.search(r'Machine check|Hardware Error|Xid|EDAC.*[Ee]rror', l))
     except Exception:
         pass
     det['mce'] = mce
@@ -123,6 +126,17 @@ def health_eval():
 
     return state, reasons, det
 
+def lerp(a, b, t):
+    return tuple(min(255, max(0, round(a[i] + (b[i] - a[i]) * t))) for i in range(3))
+
+def hexs(c):
+    return '%02x%02x%02x' % c
+
+STATE_FILE = '/var/lib/rgb-omen/last-color'
+
+def layout_reps(col, spd=2):
+    return [r for z in STATIC_ZONES for r in build_rep(z, 1, col)] + [r for z in FAN_ZONES for r in build_rep(z, 9, col, spd)]
+
 def main():
     act, dev = sys.argv[1], find_dev()
     if not dev: sys.exit("ERROR: TracerLED (103c:84fd) hidraw device not found")
@@ -155,6 +169,35 @@ def main():
         print("DETAIL pools={0} scrub={1} mce={2} cpu_c={3} gpu_c={4}".format(
             det.get('pools', '?'), det.get('scrub', '?'), det.get('mce', '?'), det.get('cpu_c'), det.get('gpu_c')))
         if reasons: print("REASON=" + '; '.join(reasons))
+    elif act == 'apply':
+        import time
+        target = parse_rgb(sys.argv[2] if len(sys.argv) > 2 else '031CC0')
+        steps = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[4].isdigit() else 24
+        delay = (float(sys.argv[5]) / 1000.0) if len(sys.argv) > 5 and sys.argv[5].isdigit() else 0.05
+        prev = None
+        try:
+            prev = parse_rgb(open(STATE_FILE).read().strip())
+        except Exception:
+            pass
+        if len(sys.argv) > 3 and sys.argv[3]:
+            start = parse_rgb(sys.argv[3])
+        elif prev and prev != target:
+            start = prev
+        else:
+            start = (0, 0, 0)
+        try:
+            for s in range(1, steps + 1):
+                send(dev, layout_reps(lerp(start, target, s / steps)))
+                time.sleep(delay)
+        except Exception as e:
+            print(f"WARN fade interrupted ({e}); forcing final color")
+        send(dev, layout_reps(target))
+        try:
+            os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+            open(STATE_FILE, 'w').write(hexs(target))
+        except Exception:
+            pass
+        print(f"APPLY=OK smooth from=#{hexs(start)} to=#{hexs(target).upper()} steps={steps} delay_ms={int(delay * 1000)} dev={dev}")
 
 if __name__ == '__main__': main()
 PYEOF
@@ -174,9 +217,10 @@ cmd_wave_all()  { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py wave-all "${1
 cmd_set_zone()  { [ "$(id -u)" -eq 0 ] || die "needs root"; [ $# -ge 3 ] || die "usage: set-zone ZONE MODE HEX [SPEED]"; run_py set-zone "$@"; }
 cmd_color()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-00d0ff}"; }
 cmd_health()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py health "${1:-031CC0}" "${2:-4}"; }
+cmd_apply()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py apply "${1:-031CC0}" "${2:-}" "${3:-}" "${4:-}"; }
 
-cmd_apply() {
-    [ $# -ge 1 ] || die "usage: apply PROFILE"
+cmd_profile() {
+    [ $# -ge 1 ] || die "usage: profile NAME"
     [ -f "$ROOT_CFG/$1.orp" ] || [ ! -f "$USER_CFG/$1.orp" ] || { mkdir -p "$ROOT_CFG" && cp -f "$USER_CFG/$1.orp" "$ROOT_CFG/$1.orp"; }
     openrgb --profile "$1" 2>&1 && echo "APPLY=OK profile '$1' sent via OpenRGB"
 }
@@ -239,6 +283,7 @@ action="${1:-}"
 case "$action" in
 probe) cmd_probe ;;
 apply) shift; cmd_apply "$@" ;;
+profile) shift; cmd_profile "$@" ;;
 fans-wave) shift; cmd_fans_wave "$@" ;;
 static) shift; cmd_static "$@" ;;
 wave-all) shift; cmd_wave_all "$@" ;;
@@ -249,5 +294,5 @@ persist) shift; cmd_persist "$@" ;;
 persist-health) shift; cmd_persist_health "$@" ;;
 unpersist) cmd_unpersist ;;
 status) cmd_status ;;
-*) echo "usage: sh rgb-omen probe|apply|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
+*) echo "usage: sh rgb-omen probe|apply|profile|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
 esac

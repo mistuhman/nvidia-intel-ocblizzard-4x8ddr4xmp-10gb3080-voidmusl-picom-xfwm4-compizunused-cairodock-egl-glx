@@ -50,16 +50,21 @@ instrument — that is exactly how we used it in A0/A1b.
 
 ---
 
-## 2. Debug RGB — the software half (`rgb-omen health`)
+## 2. Debug RGB — the software half (`rgb-omen`)
 
 The TracerLED hub is USB (`103c:84fd`) with no save-to-device, so **pre-POST lighting cannot
-show debug state** — the factory rainbow owns the window before the OS enumerates USB. But from
-boot onward the RGB can be a real status light. New in `scripts/rgb-omen` (2026-08-30):
+show debug state** — the factory rainbow owns the window before the OS enumerates USB.
+Operator directive 2026-08-30 (verbatim intent): *"after applying, only ONCE and only after
+applying does the entire rgb layout change color"* and *"it needs to change colors smoothly"* —
+so `rgb-omen apply HEX` does exactly that: one ~2 s fade of all 7 zones to the theme color
+(`#031CC0`), nothing repaints afterwards, and `persist apply HEX 000000` fades in from black
+once per boot. Details: `docs/oc-rgb-persist.md`.
+
+Still available **on demand** (never persisted — a poll loop repaints zones, which the
+apply-once directive forbids):
 
 ```sh
-sh rgb-omen health 031CC0 4      # fans keep the #031CC0 wave; zone 4 (CPU LED) = status
-sh rgb-omen health 031CC0 all    # zones 1,2,4 (Logo/Bar/CPU) all show status
-sh rgb-omen persist-health 031CC0 4 15   # runit poll loop, every 15 s (survives reboot)
+sh rgb-omen health 031CC0 4      # manual probe: paints zone 4 with state, fans keep the wave
 ```
 
 | Status zone colour | Meaning | Trigger |
@@ -67,14 +72,14 @@ sh rgb-omen persist-health 031CC0 4 15   # runit poll loop, every 15 s (survives
 | green `#00ff00` | OK | everything below clean |
 | magenta `#ff00ff` | housekeeping | a zpool `scrub in progress` |
 | amber `#ffb400` | warn | CPU ≥ 90 °C, GPU ≥ 80 °C (stop rule 83), any pool `DEGRADED` |
-| red `#ff2000` | crit | pool `FAULTED`/`UNAVAIL`/`OFFLINE`, `Machine check`/`EDAC`/`Hardware Error`/NVIDIA `Xid` in dmesg, CPU ≥ 100 °C, GPU ≥ 85 °C |
+| red `#ff2000` | crit | pool `FAULTED`/`UNAVAIL`/`OFFLINE`, `Machine check`/`Hardware Error`/NVIDIA `Xid`/EDAC-error lines in dmesg, CPU ≥ 100 °C, GPU ≥ 85 °C |
 
 Probes are read-only (`zpool status`, `dmesg`, coretemp hwmon, `nvidia-smi` query) — nothing
 stresses the machine, and an unreadable probe degrades to a quieter verdict, never a false red.
 `Xid` is included deliberately: the 2026-08-30 runtime crash class shows up as Xid lines in
-dmesg, so a red CPU LED after a crash names the GPU driver without opening a terminal.
-
-Debug color legend for the fans/art stays whatever `health` was called with (default `031CC0`).
+dmesg, so a red CPU LED after a crash names the GPU driver without opening a terminal. First
+live read caught 3 matching dmesg lines at idle — attribution pending (see
+`docs/oc-rgb-persist.md`).
 
 ---
 

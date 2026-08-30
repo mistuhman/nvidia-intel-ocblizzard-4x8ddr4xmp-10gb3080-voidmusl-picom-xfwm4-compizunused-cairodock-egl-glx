@@ -59,18 +59,41 @@ protocol supports independent per-zone modes via `usb_buf[0x03]` and zone index 
 - **`set-zone ZONE MODE HEX_COLOR [SPEED]`**: Granular single-zone configuration.
 - **`apply PROFILE_NAME`**: Loads a standard OpenRGB `.orp` profile (e.g. `s3`).
 
-## Debug status light (2026-08-30): `health`
+## Smooth apply — once, whole layout (operator directive 2026-08-30)
 
-Operator theme color is now **`#031CC0`** (deep blue). On top of the art modes, `rgb-omen`
-can turn one zone into a live system-health light — the "debugging RGB" ask:
+Operator directive, verbatim intent: *"after applying, only ONCE and only after applying does
+the entire rgb layout change color"* and *"it needs to change colors smoothly."* So the boot
+model is: **one smooth fade of all 7 zones per apply, then nothing touches the lights.**
 
-- **`health [HEX] [ZONE|all]`**: fans keep the art wave (default `031CC0`), the status zone
-  (default `4` = CPU cooler LED) paints system state — green OK, magenta scrub running,
-  amber warn (CPU ≥ 90 °C / GPU ≥ 80 °C / pool DEGRADED), red crit (pool FAULTED/UNAVAIL,
-  MCE/EDAC/Xid in dmesg, CPU ≥ 100 °C, GPU ≥ 85 °C). Probes are read-only.
-- **`persist-health [HEX] [ZONE] [SECONDS]`**: runit loop (`/etc/sv/omen-rgb-health`) that
-  re-evaluates every N seconds (default 15) — the status light survives reboot like `persist`.
-  `unpersist` now removes both services.
+- **`apply [HEX] [FROM_HEX] [STEPS] [DELAY_MS]`** — the one command. Fades the entire layout
+  (Logo/Bar/CPU solid + fan wave re-based each step) to the target over 24 steps × 50 ms
+  (≈1.5–2 s), then writes the exact final color. Default HEX is the operator theme
+  **`#031CC0`**. Start color resolution: explicit `FROM_HEX`, else the last applied color
+  (remembered in `/var/lib/rgb-omen/last-color`), else black. Same color as last time →
+  fade-in from black (never a silent no-op, so a post-reboot factory rainbow always fades).
+- **`persist apply HEX 000000`** — boot service that fades in from black **once per boot**,
+  then parks. No polling, no status zone, no repaint.
+- `unpersist` removes every rgb service (inverse). `profile NAME` is the old OpenRGB `.orp`
+  loader (apply no longer means OpenRGB profile).
+
+One honest limit: the hub is write-only with no read-back, so the very first frame out of an
+unknown state (factory rainbow at power-on) is a step, not a fade — everything after that
+first frame is interpolated. Between two known colors (apply → apply) the whole transition
+is smooth.
+
+## `health` — on-demand only (not a boot path)
+
+- **`health [HEX] [ZONE|all]`**: manual probe + optional paint — fans keep the art wave, the
+  status zone (default `4` = CPU cooler LED) shows system state: green OK, magenta scrub
+  running, amber warn (CPU ≥ 90 °C / GPU ≥ 80 °C / pool DEGRADED), red crit (pool
+  FAULTED/UNAVAIL/OFFLINE, MCE/Hardware-Error/Xid/EDAC-error lines in dmesg, CPU ≥ 100 °C,
+  GPU ≥ 85 °C). Probes are read-only. Run it when you want a verdict; it is **not** persisted
+  (the poll-service experiment was unpersisted on target the same day — it repaints zones,
+  which the apply-once directive forbids).
+- First live read (2026-08-30) caught **3 MCE/EDAC/Xid-matching dmesg lines at idle** — the
+  original regex also over-matched benign `EDAC MC: Ver:` boot lines; refined since. If the
+  refined probe still reports lines, attribute them (`dmesg | grep -iE "machine check|
+  hardware error|xid|edac"`) — possible real Xid from the runtime-crash class.
 
 Pre-POST debug state is impossible on this hub (no save-to-device; USB enumerates late) — for
 the hardware half of debugging (beep codes, blink codes, and why POST-code cards don't exist
@@ -82,21 +105,19 @@ for this board) see `docs/feature-pack-accessories.md`.
 # Probe hub, hidraw node, OpenRGB, and profile state:
 sh rgb-omen probe
 
-# Test fans-wave immediately with the operator color (#031CC0) or any custom hex color:
+# ONE smooth fade of the entire layout to the operator color #031CC0:
 sudo -i
-sh rgb-omen fans-wave 031CC0 med
+sh rgb-omen apply 031CC0
 
-# Debug status light demo (fans art + status zone), then make it permanent:
+# Boot persistence: fade in from black ONCE per boot, then never touch the lights:
+sh rgb-omen unpersist
+sh rgb-omen persist apply 031CC0 000000
+sv status omen-rgb
+
+# On-demand health probe (fans art + status zone; manual only, never persisted):
 sh rgb-omen health 031CC0 4
-sh rgb-omen persist-health 031CC0 4 15
 
-# Or plain art across boots instead (installs /etc/sv/omen-rgb):
-sh rgb-omen persist fans-wave 031CC0 med
-
-# Check service status:
-sh rgb-omen status
-
-# Reverse / disable boot service:
+# Inverse / disable boot service:
 sh rgb-omen unpersist
 ```
 
