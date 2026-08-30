@@ -280,17 +280,30 @@ to add while a cold-boot cycling fault is still open.
 2. The machine is *already* cycling cold. Adding load to a rail that is itself a suspect
    cannot help, and if it tips the machine into no-POST we lose the ability to read anything.
 
+**SATA data vs SATA power (operator 2026-08-30: four drives still need the four ports).**
+The hub does **not** take `SATA1`–`SATA4` on the BlizzardOC. Those four are **data** and
+stay on the two HDDs + two SSDs (`bulk` stripe + `fast` + L2ARC). The hub's gold fingers
+are a **15-pin SATA power** edge, fed from the PSU, same as a drive's power plug. Drive
+data and hub power do not compete. If the PSU is short one power plug, add a SATA-power
+Y-lead on a PSU cable — never steal a motherboard SATA data port.
+
 **The path to RGB, once a clean baseline exists:**
 
 1. Get **three consecutive clean cold boots** with the hub still unplugged. That is the
    baseline; nothing else gets added until it holds.
-2. Install the hub **alone**, as the single changed variable: SATA power from the PSU → hub,
-   hub data cable → its board header, then the `CPU RGB` and `LOGO` leads.
-3. **`LOGO` is marked 5V only.** Never land it on a 12V header.
+2. Install the hub **alone**, as the single changed variable. Mount on the two plated
+   holes with standoffs — **not against bare metal.** Then:
+   - PSU SATA **power** (spare plug, not a drive's) → gold fingers on the hub
+   - Hub lighting harness (`M82873-001` 2-pin / `M82874-001` 5/10-pin) → board RGB
+     headers, **not** `SATA1`–`SATA4`
+   - Hub outs: `FFAN ARGB` / `TFAN ARGB` to case fans; `LOGO` only if the 5V logo
+     module is present
+3. **`LOGO` is marked 5V only.** Never land it on a 12V `GRB` header.
 4. One power-on. **Clean boot → hub cleared, RGB is yours.**
-   **Cycling returns → the hub is the fault**; unplug it and keep it unplugged.
+   **Cycling returns → the hub is the fault**; unplug the SATA *power* to the hub and
+   keep the four drive data ports as they are.
 5. If the hub does prove to be the fault, RGB is still reachable another way: a standard 5V
-   ARGB controller on its own feed, leaving the HP hub out of circuit permanently.
+   ARGB controller on its own PSU feed, leaving the HP hub out of circuit permanently.
 
 That order is not caution for its own sake — it is the fastest route to *keeping* RGB.
 
