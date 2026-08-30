@@ -1,0 +1,23 @@
+id -u
+# case-swap-coldboot-probe.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: after the move into the SFF case the machine POWER-CYCLES on every COLD boot but reboots warm cleanly, and the first post-swap boot ended in a CMOS reset. A cold-only failure means the boot path does something a warm reboot SKIPS, and there are exactly five such things: full memory training (MRC), simultaneous device inrush on the PSU, a full PCIe cold reset, AC-present RTC/CMOS backing, and firmware re-posting stored settings. This block records what the machine is ACTUALLY running right now - configured memory speed (did the reset wipe the 4000 profile?), RTC health (a dead CR2032 loses settings ONLY when AC is off, which is exactly a cold boot), MCE/EDAC/PCIe/NVMe errors, fan tachs and temps, pool health, and the GPU link width (a card reseated in a tight case often lands at x8 instead of x16).
+# Gate: paste the FULL output back. Empty output is an answer too. Do NOT stress the CPU or GPU, and do NOT install the M82868-001 lighting board, until this receipt is read.
+df -h /
+uptime
+date
+hwclock -r
+cat /sys/class/dmi/id/product_name
+cat /sys/class/dmi/id/board_name
+cat /sys/class/dmi/id/bios_version
+dmidecode -t memory
+free -g
+sensors
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+find /sys/class/hwmon -maxdepth 2 -name temp\*_input
+zpool status
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MODEL,SERIAL
+nvidia-smi
+nvidia-smi --query-gpu=name,pcie.link.gen.current,pcie.link.gen.max,pcie.link.width.current,pcie.link.width.max,power.limit --format=csv
+dmesg -T --level=err,warn
+last -x reboot
+efibootmgr -v

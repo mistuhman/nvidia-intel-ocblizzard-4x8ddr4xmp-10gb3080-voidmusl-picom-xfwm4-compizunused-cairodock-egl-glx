@@ -36,6 +36,37 @@ hole is a direct short under the board.
 
 ---
 
+## 0b. Cold boot vs warm reboot — the decisive discriminator (2026-08-30)
+
+Operator receipt: **it reaches Void. It power-cycles on every cold boot from off. Warm
+reboots are always clean.** It also cold-cycled with Void **before** the swap.
+
+That last clause reframes the job: the swap did not create this fault, it **aggravated a
+pre-existing cold-only one**. The fix is not "undo the swap" — it is "find what only happens
+cold."
+
+A warm reboot skips exactly five things. The fault is one of them.
+
+| Cold-only step | How it fails | Tell |
+|---|---|---|
+| **Full memory training (MRC)** | retrain loop → cycle → firmware gives up → CMOS reset | slower cycles, fans spin 10–30 s each time; 2–4 cycles then boots |
+| **Simultaneous device inrush** — pump, 6 fans, 4 SATA drives, GPU, VRM caps, all at once | rail sag or OCP → dropout | fast rhythmic cycles, 1–3 s, starting the instant the button is pressed |
+| **AC-present RTC/CMOS backing** | a weak CR2032 loses settings **only** when AC is off | clock/date wrong after a cold boot, correct after a warm one |
+| **Full PCIe cold reset + link training** | GPU trains badly in the new case | card lands at x8, or `PCIe Bus Error` in dmesg |
+| **Firmware re-posting stored settings** | `After Power Loss` reverted by the reset → every dropout self-restarts | cycling continues *after* the original trigger is gone |
+
+**Software is the initiator only if the resets happen after the HP splash** — Linux has not
+loaded before then. Firmware *settings* are still software, though: `After Power Loss`,
+`Memory Fast Boot`, XMP. They live in CMOS, which is exactly what got reset. That is the
+software-hardware interface on this machine.
+
+Read the rhythm and the sequence before changing anything:
+
+- How many cycles, and how long is each one?
+- Does the HP splash appear **before** the first reset, or not at all?
+- Does ZBM appear **between** cycles? If yes, the fault is past firmware and moves into
+  ZBM / ZFS / the early kernel.
+
 ## 1. Cause classes, ranked
 
 Ranked by fit to *cycling **then** booting to a CMOS reset*, with this machine's history.
@@ -180,6 +211,8 @@ not 4000.
 
 ## 5. Standing rules for the duration of the swap
 
+- **Do not install the M82868-001 lighting board yet.** It is the standing prime suspect for
+  the original cycling fault and it is fed straight from the PSU. See section 5b.
 - **Do not re-apply the 4000 MT/s @ 1.45 V profile.** It was never validated and it is the
   leading suspect. The CMOS reset removed it; treat that as a fix, not a loss.
 - **No CPU or GPU stress** until Gate D's thermal/tach receipt is read. Cooling state must be
@@ -188,6 +221,35 @@ not 4000.
 - **One physical change per power-on.** Multi-variable changes are what left the original
   fault unattributed.
 - The `CMOS` and `FDO/PSWD/BBR` caps stay where they are. Do not jump them.
+
+## 5b. Getting RGB back — the M82868-001 lighting board
+
+The hub is the **standing prime suspect for the original instant-power-cycle crisis**. It was
+deliberately left unplugged to keep it out of circuit, and the cause was never attributed.
+Note *how* it is powered: **SATA power straight from the PSU**, not from the board. That is
+exactly why it was capable of tripping the PSU side — and exactly why it is the wrong thing
+to add while a cold-boot cycling fault is still open.
+
+**Do not install it now.** Two reasons:
+
+1. It would stack a second unexonerated variable on top of an unresolved fault. That is
+   precisely the mistake that left the August cause unattributed.
+2. The machine is *already* cycling cold. Adding load to a rail that is itself a suspect
+   cannot help, and if it tips the machine into no-POST we lose the ability to read anything.
+
+**The path to RGB, once a clean baseline exists:**
+
+1. Get **three consecutive clean cold boots** with the hub still unplugged. That is the
+   baseline; nothing else gets added until it holds.
+2. Install the hub **alone**, as the single changed variable: SATA power from the PSU → hub,
+   hub data cable → its board header, then the `CPU RGB` and `LOGO` leads.
+3. **`LOGO` is marked 5V only.** Never land it on a 12V header.
+4. One power-on. **Clean boot → hub cleared, RGB is yours.**
+   **Cycling returns → the hub is the fault**; unplug it and keep it unplugged.
+5. If the hub does prove to be the fault, RGB is still reachable another way: a standard 5V
+   ARGB controller on its own feed, leaving the HP hub out of circuit permanently.
+
+That order is not caution for its own sake — it is the fastest route to *keeping* RGB.
 
 ## Sources
 
