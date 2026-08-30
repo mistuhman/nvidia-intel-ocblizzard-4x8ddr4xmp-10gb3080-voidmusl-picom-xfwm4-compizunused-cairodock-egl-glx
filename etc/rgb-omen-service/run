@@ -1,0 +1,38 @@
+#!/bin/sh
+# /etc/sv/omen-rgb/run  (runit service, runs as root)
+#
+# WHY THIS EXISTS
+# The HP OMEN "TracerLED" hub (USB 103c:84fd) is a small microcontroller fed by
+# SATA power. It lights up before the CPU/BIOS finish and shows the factory
+# default ("omen rainbow") because it has NO onboard profile storage - OpenRGB's
+# driver for it is explicitly marked @save :x: (no save-to-device). So it can
+# only hold whatever the last HID write set, and it loses that whenever the USB
+# device re-enumerates (i.e. every boot) and whenever power is lost.
+#
+# Therefore "make OpenRGB permanent across boots" for this hub is NOT a saved
+# profile - it is a boot-time RE-APPLY of your configuration.
+#
+# REVERSE:  rm /var/service/omen-rgb   (disable + stop)
+
+exec 2>&1
+
+i=0
+while [ "$i" -lt 90 ]; do
+    if lsusb 2>/dev/null | grep -qi "103c:84fd"; then
+        break
+    fi
+    sleep 2
+    i=$((i + 1))
+done
+
+sleep 1
+
+# Apply configured lighting: fans-wave with universal color or OpenRGB profile
+if [ -x "/usr/local/bin/rgb-omen" ]; then
+    /usr/local/bin/rgb-omen fans-wave 00d0ff med
+elif command -v openrgb >/dev/null 2>&1; then
+    openrgb --profile /root/.config/OpenRGB/s3.orp >/dev/null 2>&1 || true
+fi
+
+# Park: keep the service in the "running" state so runsv does not restart it
+exec sleep 86400
