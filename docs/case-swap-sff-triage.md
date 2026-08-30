@@ -287,6 +287,12 @@ are a **15-pin SATA power** edge, fed from the PSU, same as a drive's power plug
 data and hub power do not compete. If the PSU is short one power plug, add a SATA-power
 Y-lead on a PSU cable — never steal a motherboard SATA data port.
 
+The hub also has a **second SATA-shaped edge** that looks like data. On the 45L that
+connector is **undocumented and unused** (PCMag 45L case review: control is a factory
+**USB 2.0** 9-pin lead, not SATA protocol). Do **not** land it on `SATA1`–`SATA4`.
+OpenRGB will not see the panel until that USB 2.0 header is on `FRONT-USB2` / `MUSB`
+(or another free 9-pin USB 2 header). OMEN Gaming Hub is Windows-only.
+
 **The path to RGB, once a clean baseline exists:**
 
 1. Get **three consecutive clean cold boots** with the hub still unplugged. That is the
