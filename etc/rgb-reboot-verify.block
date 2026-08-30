@@ -8,7 +8,8 @@ id -u
 # Gate: paste FULL output back. Expect: PERSIST=OK, sv run, and an APPLY=OK smooth
 # from=#000000 to=#031CC0 line in /var/log/omen-rgb.log dated NOW. The rig should quick-fade
 # blue on its own ~7s after persist (service runs once at enable).
-# WATCH: after the log check, the last two lines REBOOT the machine.
+# REBOOT IS OPERATOR-GATED: after pasting this output back and the log line checks out,
+# reboot yourself when ready (reboot), then run etc/rgb-postreboot-verify.block.
 df -h /
 sh /home/sd/oc-lab/scripts/rgb-omen unpersist
 sh /home/sd/oc-lab/scripts/rgb-omen persist apply 031CC0 000000
