@@ -294,6 +294,31 @@ to add while a cold-boot cycling fault is still open.
 
 That order is not caution for its own sake — it is the fastest route to *keeping* RGB.
 
+## 5c. Bluetooth with one antenna (SFF, 2026-08-30)
+
+Operator: only the antenna labelled **2** is plugged into the M.2 wireless card.
+Wanted: Bluetooth. Not wanted: Wi-Fi (Ethernet carries data). F10 4000 drop is parked
+this wave.
+
+The antenna does **not** go on the Realtek Ethernet PHY (`r8169` at `0000:02:00.0` in the
+06:44 dmesg). It goes on the **M.2 Intel combo card** (iwlwifi already enumerated:
+`iwlwifi_1-virtual-0` at 36 °C in the same probe).
+
+Intel's own mapping (AC-8265 and later, including AX2xx): **Antenna 1 / AUX = Wi-Fi +
+Bluetooth. Antenna 2 / MAIN = Wi-Fi only.** One cable on jack 2 gives the BT radio no
+RF. The cable label "2" is not a reason to land it on jack 2.
+
+Do **not** move it until `etc/case-swap-bluetooth-probe.block` says the controller
+exists (`/sys/class/bluetooth` non-empty, `bluetoothd` up). A missing `hci0` is BIOS /
+firmware / USB, not the U.FL. A present `hci0` with no devices is the jack.
+
+When that receipt is in: cord out, hold case button 20–30 s, lift the one cable off jack
+2 / MAIN, snap it onto jack **1 / AUX**, leave jack 2 empty. U.FL is fragile — press
+straight down, do not yank the pigtail. Wi-Fi unused is fine. Then one power-on, re-run
+the same block.
+
+Lighting board still out.
+
 ## Sources
 
 - Board mATX / standard ATX PSU: Digital Trends OMEN 45L review; HP community teardown thread.
