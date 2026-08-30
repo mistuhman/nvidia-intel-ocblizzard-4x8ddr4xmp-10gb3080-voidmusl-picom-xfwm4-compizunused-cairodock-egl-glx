@@ -1,0 +1,142 @@
+#!/bin/sh
+# scripts/rgb-omen - HP OMEN TracerLED (USB 103c:84fd) per-zone control + boot persistence
+# Zones: 1=Logo, 2=Light Bar, 3=Front Fan, 4=CPU, 5=Bottom Fan, 6=Middle Fan, 7=Top Fan.
+# OpenRGB exposes only one device-wide mode. This script drives the 58-byte HID protocol directly
+# to allow per-zone modes (e.g. Wave on all fans while Logo/Bar/CPU stay solid static).
+
+set -u
+SVC_DIR="/etc/sv/omen-rgb"
+SVC_LINK="/var/service/omen-rgb"
+USER_CFG="/home/sd/.config/OpenRGB"
+ROOT_CFG="/root/.config/OpenRGB"
+HUB_ID="103c:84fd"
+
+die() { echo "rgb-omen: $*" >&2; exit 1; }
+
+run_py() {
+    python3 - "$@" <<'PYEOF'
+import sys, os, glob
+
+FAN_ZONES, STATIC_ZONES, ALL_ZONES = [3, 5, 6, 7], [1, 2, 4], list(range(1, 8))
+MODES = {'static': 1, 'direct': 4, 'off': 5, 'breathing': 6, 'cycle': 7, 'blinking': 8, 'wave': 9, 'radial': 10}
+SPEEDS = {'slow': 1, 'med': 2, 'medium': 2, 'fast': 3, '1': 1, '2': 2, '3': 3}
+
+def find_dev():
+    for p in glob.glob('/sys/class/hidraw/hidraw*'):
+        ue = os.path.join(p, 'device', 'uevent')
+        if os.path.isfile(ue) and '103C' in open(ue).read().upper() and '84FD' in open(ue).read().upper():
+            return os.path.join('/dev', os.path.basename(p))
+    return '/dev/hidraw0' if os.path.exists('/dev/hidraw0') else None
+
+def parse_rgb(v):
+    v = v.lstrip('#')
+    return tuple(int(v[i:i+2], 16) for i in (0, 2, 4)) if len(v) == 6 else tuple(int(v[i]*2, 16) for i in range(3))
+
+def build_rep(zone, mode, col, spd=2):
+    idx, reps = zone - 1, []
+    if mode == 5: # OFF
+        b = bytearray(58); b[2], b[3], b[54], b[55] = 0x12, 5, zone, 1
+        return [bytes(b)]
+    if mode == 1: # STATIC
+        b = bytearray(58); b[2], b[3], b[4], b[5], b[48], b[49], b[54], b[55], b[57] = 0x12, 1, 1, 1, 100, 2, zone, 1, spd
+        b[8+idx*3], b[9+idx*3], b[10+idx*3] = col[0], col[1], col[2]
+        return [bytes(b)]
+    # WAVE / changing
+    cols = [(int(col[0]*f), int(col[1]*f), int(col[2]*f)) for f in (0.1, 0.35, 0.7, 1.0, 0.7, 0.35)] if mode == 9 else [col]
+    for i, c in enumerate(cols):
+        b = bytearray(58); b[2], b[3], b[4], b[5], b[48], b[49], b[54], b[55], b[57] = 0x12, mode, len(cols), i+1, 100, 10, zone, 1, spd
+        b[8+idx*3], b[9+idx*3], b[10+idx*3] = c[0], c[1], c[2]
+        reps.append(bytes(b))
+    return reps
+
+def send(dev, reps):
+    with open(dev, 'wb') as f:
+        for r in reps: f.write(r); f.flush()
+
+def main():
+    act, dev = sys.argv[1], find_dev()
+    if not dev: sys.exit("ERROR: TracerLED (103c:84fd) hidraw device not found")
+    if act == 'fans-wave':
+        col, spd = parse_rgb(sys.argv[2] if len(sys.argv) > 2 else '00d0ff'), SPEEDS.get(sys.argv[3] if len(sys.argv) > 3 else 'med', 2)
+        reps = [r for z in STATIC_ZONES for r in build_rep(z, 1, col, spd)] + [r for z in FAN_ZONES for r in build_rep(z, 9, col, spd)]
+        send(dev, reps); print(f"FANS_WAVE=OK color=#{sys.argv[2] if len(sys.argv)>2 else '00d0ff'} speed={spd} dev={dev}")
+    elif act in ('static', 'color'):
+        col = parse_rgb(sys.argv[2] if len(sys.argv) > 2 else '00d0ff')
+        send(dev, [r for z in ALL_ZONES for r in build_rep(z, 1, col)])
+        print(f"STATIC_ALL=OK color=#{sys.argv[2] if len(sys.argv)>2 else '00d0ff'} dev={dev}")
+    elif act == 'wave-all':
+        col, spd = parse_rgb(sys.argv[2] if len(sys.argv) > 2 else '00d0ff'), SPEEDS.get(sys.argv[3] if len(sys.argv) > 3 else 'med', 2)
+        send(dev, [r for z in ALL_ZONES for r in build_rep(z, 9, col, spd)])
+        print(f"WAVE_ALL=OK color=#{sys.argv[2] if len(sys.argv)>2 else '00d0ff'} speed={spd} dev={dev}")
+    elif act == 'set-zone':
+        z, m, col = int(sys.argv[2]), MODES.get(sys.argv[3].lower(), 1), parse_rgb(sys.argv[4]) if sys.argv[3] != 'off' else (0, 0, 0)
+        spd = SPEEDS.get(sys.argv[5] if len(sys.argv) > 5 else 'med', 2)
+        send(dev, build_rep(z, m, col, spd)); print(f"SET_ZONE=OK zone={z} mode={sys.argv[3]} dev={dev}")
+
+if __name__ == '__main__': main()
+PYEOF
+}
+
+cmd_probe() {
+    echo "=== USB Hub ==="; lsusb | grep -i "$HUB_ID" || echo "  103c:84fd not found"
+    echo "=== OpenRGB Devices ==="; openrgb --list-devices 2>&1 || true
+    echo "=== Profiles (user: $USER_CFG) ==="; ls -la "$USER_CFG" 2>/dev/null | grep -E '\.(orp|json)$' || true
+    echo "=== Profiles (root: $ROOT_CFG) ==="; ls -la "$ROOT_CFG" 2>/dev/null | grep -E '\.(orp|json)$' || true
+    echo "=== Service Status ==="; sv status "$SVC_LINK" 2>&1 || true
+}
+
+cmd_fans_wave() { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py fans-wave "${1:-00d0ff}" "${2:-med}"; }
+cmd_static()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-00d0ff}"; }
+cmd_wave_all()  { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py wave-all "${1:-00d0ff}" "${2:-med}"; }
+cmd_set_zone()  { [ "$(id -u)" -eq 0 ] || die "needs root"; [ $# -ge 3 ] || die "usage: set-zone ZONE MODE HEX [SPEED]"; run_py set-zone "$@"; }
+cmd_color()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-00d0ff}"; }
+
+cmd_apply() {
+    [ $# -ge 1 ] || die "usage: apply PROFILE"
+    [ -f "$ROOT_CFG/$1.orp" ] || [ ! -f "$USER_CFG/$1.orp" ] || { mkdir -p "$ROOT_CFG" && cp -f "$USER_CFG/$1.orp" "$ROOT_CFG/$1.orp"; }
+    openrgb --profile "$1" 2>&1 && echo "APPLY=OK profile '$1' sent via OpenRGB"
+}
+
+cmd_persist() {
+    [ "$(id -u)" -eq 0 ] || die "persist needs root"
+    subcmd="${1:-fans-wave}"; shift || true
+    sp=$(readlink -f "$0" 2>/dev/null || echo "/usr/local/bin/rgb-omen")
+    mkdir -p "$SVC_DIR"
+    cat > "$SVC_DIR/run" <<EOF
+#!/bin/sh
+exec 2>&1
+i=0; while [ "\$i" -lt 90 ]; do lsusb 2>/dev/null | grep -qi "${HUB_ID}" && break; sleep 2; i=\$((i + 1)); done
+sleep 1
+[ -x "${sp}" ] && "${sp}" ${subcmd} "$@" || { [ -x "/usr/local/bin/rgb-omen" ] && /usr/local/bin/rgb-omen ${subcmd} "$@"; }
+exec sleep 86400
+EOF
+    chmod 0755 "$SVC_DIR/run"
+    mkdir -p /var/service; [ -L "$SVC_LINK" ] || ln -s "$SVC_DIR" "$SVC_LINK" || die "failed to symlink $SVC_LINK"
+    echo "PERSIST=OK boot service enabled via $SVC_LINK (${subcmd} $*)"
+}
+
+cmd_unpersist() {
+    [ "$(id -u)" -eq 0 ] || die "unpersist needs root"
+    [ -L "$SVC_LINK" ] && rm -f "$SVC_LINK" && echo "UNPERSIST=OK removed $SVC_LINK" || echo "UNPERSIST=OK no link"
+}
+
+cmd_status() {
+    echo "=== Service ==="; sv status "$SVC_LINK" 2>&1 || true
+    echo "=== Run Script ==="; [ -f "$SVC_DIR/run" ] && sed -n '1,25p' "$SVC_DIR/run" 2>&1 || echo "(no run file)"
+    echo "=== Hub ==="; lsusb | grep -i "$HUB_ID" || echo "(103c:84fd not found)"
+}
+
+action="${1:-}"
+case "$action" in
+probe) cmd_probe ;;
+apply) shift; cmd_apply "$@" ;;
+fans-wave) shift; cmd_fans_wave "$@" ;;
+static) shift; cmd_static "$@" ;;
+wave-all) shift; cmd_wave_all "$@" ;;
+set-zone) shift; cmd_set_zone "$@" ;;
+color) shift; cmd_color "$@" ;;
+persist) shift; cmd_persist "$@" ;;
+unpersist) cmd_unpersist ;;
+status) cmd_status ;;
+*) echo "usage: sh rgb-omen probe|apply|fans-wave|static|wave-all|set-zone|color|persist|unpersist|status" >&2; exit 1 ;;
+esac

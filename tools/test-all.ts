@@ -26,9 +26,11 @@ run('node', ['tools/gpu-oc-verify.ts', 'selftest']);
 run('bash', ['-n', 'scripts/gpu-oc-apply']);
 run('bash', ['-n', 'scripts/gpu-dmon-summary']);
 run('bash', ['-n', 'scripts/cpu-park-ctrl']);
+run('bash', ['-n', 'scripts/rgb-omen']);
 // every cmd_* in a target script must actually be reachable from its dispatcher
 run('node', ['tools/script-dispatch-check.ts', 'scripts/gpu-oc-apply']);
 run('node', ['tools/script-dispatch-check.ts', 'scripts/cpu-park-ctrl']);
+run('node', ['tools/script-dispatch-check.ts', 'scripts/rgb-omen']);
 // CPU OC tally: ledger + gate verdicts (real ledger validates JSON shape in CI)
 run('node', ['tools/cpu-oc-tally.ts']);
 run('node', ['tools/cpu-oc-tally.ts', 'selftest']);
