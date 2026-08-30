@@ -81,10 +81,9 @@ model is: **one smooth fade of all 7 zones per apply, then nothing touches the l
 - `unpersist` removes every rgb service (inverse). `profile NAME` is the old OpenRGB `.orp`
   loader (apply no longer means OpenRGB profile).
 
-Palette (tune later per operator: "this green doesnt translate well in real life"):
-`omen-blue #031CC0 · azure #007FFF · ice-cyan #00D0FF · teal #00FFB4 · true-green #00FF00 ·
-amber #FFB400 · orange #FF6A00 · red #FF2000 · magenta #FF2FD6 · violet #7A5CFF ·
-warm-white #FFE7C2 · white #FFFFFF`
+Palette = operator-refined 2026-08-30 (replaces the starter 12; yellow rejected as
+"kinda abrasive to the eyes"): `red #FF0000 · green #1EFF00 · purple #9000FF ·
+orange #FF2600`. Preview returns to the last applied color, so blue still shows last.
 
 One honest limit: the hub is write-only with no read-back, so the very first frame out of an
 unknown state (factory rainbow at power-on) is a step, not a fade — everything after that

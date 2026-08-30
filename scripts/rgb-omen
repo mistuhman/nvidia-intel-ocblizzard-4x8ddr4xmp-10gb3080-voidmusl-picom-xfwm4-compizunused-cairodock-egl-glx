@@ -142,9 +142,7 @@ def hexs(c):
 STATE_FILE = '/var/lib/rgb-omen/last-color'
 
 PALETTE = [
-    ('omen-blue', '031CC0'), ('azure', '007FFF'), ('ice-cyan', '00D0FF'), ('teal', '00FFB4'),
-    ('true-green', '00FF00'), ('amber', 'FFB400'), ('orange', 'FF6A00'), ('red', 'FF2000'),
-    ('magenta', 'FF2FD6'), ('violet', '7A5CFF'), ('warm-white', 'FFE7C2'), ('white', 'FFFFFF'),
+    ('red', 'FF0000'), ('green', '1EFF00'), ('purple', '9000FF'), ('orange', 'FF2600'),
 ]
 
 def layout_reps(col, spd=2):
