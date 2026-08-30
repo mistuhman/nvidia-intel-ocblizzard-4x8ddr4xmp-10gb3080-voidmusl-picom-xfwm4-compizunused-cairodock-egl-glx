@@ -127,6 +127,14 @@ Canonical waves: `etc/rgb-reboot-verify.block` (pre-reboot: regenerate the fixed
 watch the log line appear, then reboot) and `etc/rgb-postreboot-verify.block` (after login:
 service receipt, boot log, state file, rehearse).
 
+**Runit symlink race (receipt 2026-08-30, phase-1 attempt):** `unpersist` → `persist` in one
+paste finished inside runsvdir's ~5 s scan window, so runit never saw the service disappear —
+the old supervisor kept running the OLD run file (`sv status` showed pid 1169 at 3147 s = the
+original run-2 instance), the new logging run never executed (no `/var/log/omen-rgb.log`, no
+live fade, "no lighting changes"). Fix: `persist` now explicitly `sv restart`s an already
+supervised service (guarded — first enable still waits for runsvdir), so a regenerated run
+file activates immediately and leaves its log receipt within seconds.
+
 ## `health` — on-demand only (not a boot path)
 
 - **`health [HEX] [ZONE|all]`**: manual probe + optional paint — fans keep the art wave, the

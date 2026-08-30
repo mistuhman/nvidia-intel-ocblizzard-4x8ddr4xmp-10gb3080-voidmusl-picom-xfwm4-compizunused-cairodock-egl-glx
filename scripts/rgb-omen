@@ -331,6 +331,15 @@ exec sleep 86400
 EOF
     chmod 0755 "$SVC_DIR/run"
     mkdir -p /var/service; [ -L "$SVC_LINK" ] || ln -s "$SVC_DIR" "$SVC_LINK" || die "failed to symlink $SVC_LINK"
+    # ACTIVATION: rm+re-link inside runsvdir's ~5s scan window is invisible to runit - the
+    # old supervisor keeps running the OLD run file forever (receipt 2026-08-30: pid 1169
+    # 3147s = the original instance; new run/log never executed). Restart if supervised so
+    # the new run file fires NOW and leaves its log receipt within seconds.
+    if sv status "$SVC_LINK" >/dev/null 2>&1; then
+        sv restart "$SVC_LINK" && echo "ACTIVATE=OK live service restarted (new run file executed now)"
+    else
+        echo "ACTIVATE=PENDING first enable - runsvdir starts it within 5s"
+    fi
     echo "PERSIST=OK boot service enabled via $SVC_LINK (${subcmd} $*)"
     echo "RECEIPT: after boot, cat /var/log/omen-rgb.log (boot applies are logged there)"
 }
