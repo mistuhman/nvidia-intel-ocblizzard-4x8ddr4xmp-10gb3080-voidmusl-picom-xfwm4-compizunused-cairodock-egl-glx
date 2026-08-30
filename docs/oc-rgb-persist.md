@@ -59,18 +59,39 @@ protocol supports independent per-zone modes via `usb_buf[0x03]` and zone index 
 - **`set-zone ZONE MODE HEX_COLOR [SPEED]`**: Granular single-zone configuration.
 - **`apply PROFILE_NAME`**: Loads a standard OpenRGB `.orp` profile (e.g. `s3`).
 
+## Debug status light (2026-08-30): `health`
+
+Operator theme color is now **`#031CC0`** (deep blue). On top of the art modes, `rgb-omen`
+can turn one zone into a live system-health light — the "debugging RGB" ask:
+
+- **`health [HEX] [ZONE|all]`**: fans keep the art wave (default `031CC0`), the status zone
+  (default `4` = CPU cooler LED) paints system state — green OK, magenta scrub running,
+  amber warn (CPU ≥ 90 °C / GPU ≥ 80 °C / pool DEGRADED), red crit (pool FAULTED/UNAVAIL,
+  MCE/EDAC/Xid in dmesg, CPU ≥ 100 °C, GPU ≥ 85 °C). Probes are read-only.
+- **`persist-health [HEX] [ZONE] [SECONDS]`**: runit loop (`/etc/sv/omen-rgb-health`) that
+  re-evaluates every N seconds (default 15) — the status light survives reboot like `persist`.
+  `unpersist` now removes both services.
+
+Pre-POST debug state is impossible on this hub (no save-to-device; USB enumerates late) — for
+the hardware half of debugging (beep codes, blink codes, and why POST-code cards don't exist
+for this board) see `docs/feature-pack-accessories.md`.
+
 ## Target Usage
 
 ```sh
 # Probe hub, hidraw node, OpenRGB, and profile state:
 sh rgb-omen probe
 
-# Test fans-wave immediately with icy blue (#00d0ff) or any custom hex color:
+# Test fans-wave immediately with the operator color (#031CC0) or any custom hex color:
 sudo -i
-sh rgb-omen fans-wave 00d0ff med
+sh rgb-omen fans-wave 031CC0 med
 
-# Make it permanent across boots (installs /etc/sv/omen-rgb):
-sh rgb-omen persist fans-wave 00d0ff med
+# Debug status light demo (fans art + status zone), then make it permanent:
+sh rgb-omen health 031CC0 4
+sh rgb-omen persist-health 031CC0 4 15
+
+# Or plain art across boots instead (installs /etc/sv/omen-rgb):
+sh rgb-omen persist fans-wave 031CC0 med
 
 # Check service status:
 sh rgb-omen status

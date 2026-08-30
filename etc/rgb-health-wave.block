@@ -1,0 +1,27 @@
+# rgb-health-wave.block — apply the operator color #031CC0 + debug status light (2026-08-30)
+# USER half (shell as sd): resync the target clone to this session branch.
+
+cd /home/sd/oc-lab
+git fetch origin
+git checkout arena/01a05359-nvidia-intel-ocblizzard-4x8ddr
+git pull origin arena/01a05359-nvidia-intel-ocblizzard-4x8ddr
+ls -l scripts/rgb-omen
+
+# ROOT half (sudo -i first): apply color, demo the health status light, then persist.
+# Fans keep the #031CC0 wave; zone 4 (CPU cooler LED) becomes the status light:
+#   green OK / magenta scrub / amber warn / red crit. Read-only probes.
+
+id -u
+sh /home/sd/oc-lab/scripts/rgb-omen fans-wave 031CC0 med
+sh /home/sd/oc-lab/scripts/rgb-omen health 031CC0 4
+
+# Persist A (status light; replaces the plain boot service):
+sh /home/sd/oc-lab/scripts/rgb-omen unpersist
+sh /home/sd/oc-lab/scripts/rgb-omen persist-health 031CC0 4 15
+sv status omen-rgb-health
+
+# Persist B (plain art only, no status zone) — use INSTEAD of the three lines above:
+# sh /home/sd/oc-lab/scripts/rgb-omen persist fans-wave 031CC0 med
+# sv status omen-rgb
+
+# Inverse for A: sh /home/sd/oc-lab/scripts/rgb-omen unpersist  (removes BOTH services)

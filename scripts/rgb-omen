@@ -3,10 +3,17 @@
 # Zones: 1=Logo, 2=Light Bar, 3=Front Fan, 4=CPU, 5=Bottom Fan, 6=Middle Fan, 7=Top Fan.
 # OpenRGB exposes only one device-wide mode. This script drives the 58-byte HID protocol directly
 # to allow per-zone modes (e.g. Wave on all fans while Logo/Bar/CPU stay solid static).
+#
+# Debug status light (2026-08-30): `health` paints one zone (default 4=CPU LED) with system
+# state - green OK / amber warn / red crit / magenta scrub - while the fans keep the art wave.
+# `persist-health` installs the runit poll loop so it stays live. See
+# docs/feature-pack-accessories.md for the hardware debug channels this complements.
 
 set -u
 SVC_DIR="/etc/sv/omen-rgb"
 SVC_LINK="/var/service/omen-rgb"
+HSVC_DIR="/etc/sv/omen-rgb-health"
+HSVC_LINK="/var/service/omen-rgb-health"
 USER_CFG="/home/sd/.config/OpenRGB"
 ROOT_CFG="/root/.config/OpenRGB"
 HUB_ID="103c:84fd"
@@ -53,6 +60,69 @@ def send(dev, reps):
     with open(dev, 'wb') as f:
         for r in reps: f.write(r); f.flush()
 
+HEALTH_COLORS = {'ok': '00ff00', 'warn': 'ffb400', 'crit': 'ff2000', 'scrub': 'ff00ff'}
+HEALTH_RANK = {'ok': 0, 'scrub': 1, 'warn': 2, 'crit': 3}
+
+def health_eval():
+    # Read-only system probes -> (state, reasons, details). Never stresses anything.
+    import subprocess, re, glob as g
+    state, reasons, det = 'ok', [], {}
+
+    ps = ''
+    try:
+        ps = subprocess.run(['zpool', 'status'], capture_output=True, text=True, timeout=10).stdout
+    except Exception:
+        det['pools'] = 'unreadable'
+    if ps:
+        bad = [w for w in ('FAULTED', 'UNAVAIL', 'OFFLINE') if w in ps]
+        if bad: state, _ = 'crit', reasons.append('pool ' + '/'.join(bad))
+        elif 'DEGRADED' in ps: state, _ = 'warn', reasons.append('pool DEGRADED')
+        det['pools'] = 'bad' if bad or 'DEGRADED' in ps else 'ok'
+        det['scrub'] = 'yes' if 'scrub in progress' in ps else 'no'
+        if det['scrub'] == 'yes' and HEALTH_RANK['scrub'] > HEALTH_RANK[state]:
+            state = 'scrub'
+
+    mce = -1
+    try:
+        dm = subprocess.run(['dmesg'], capture_output=True, text=True, timeout=10).stdout
+        mce = len(re.findall(r'Machine check|Hardware Error|EDAC|Xid', dm))
+    except Exception:
+        pass
+    det['mce'] = mce
+    if mce > 0 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
+        state, _ = 'crit', reasons.append(f'{mce} MCE/EDAC/Xid line(s) in dmesg')
+
+    ct = None
+    for h in g.glob('/sys/class/hwmon/hwmon*'):
+        try:
+            if open(h + '/name').read().strip() == 'coretemp':
+                v = [int(open(t).read()) for t in g.glob(h + '/temp*_input')]
+                if v: ct = max(ct or 0, max(v))
+        except Exception:
+            pass
+    det['cpu_c'] = round(ct / 1000) if ct else None
+    if ct is not None:
+        if ct >= 100000 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
+            state, _ = 'crit', reasons.append(f'cpu {det["cpu_c"]}C')
+        elif ct >= 90000 and HEALTH_RANK['warn'] > HEALTH_RANK[state]:
+            state, _ = 'warn', reasons.append(f'cpu {det["cpu_c"]}C')
+
+    gt = None
+    try:
+        o = subprocess.run(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits'],
+                           capture_output=True, text=True, timeout=5).stdout.split()
+        gt = int(o[0])
+    except Exception:
+        pass
+    det['gpu_c'] = gt
+    if gt is not None:
+        if gt >= 85 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
+            state, _ = 'crit', reasons.append(f'gpu {gt}C')
+        elif gt >= 80 and HEALTH_RANK['warn'] > HEALTH_RANK[state]:
+            state, _ = 'warn', reasons.append(f'gpu {gt}C')
+
+    return state, reasons, det
+
 def main():
     act, dev = sys.argv[1], find_dev()
     if not dev: sys.exit("ERROR: TracerLED (103c:84fd) hidraw device not found")
@@ -72,6 +142,19 @@ def main():
         z, m, col = int(sys.argv[2]), MODES.get(sys.argv[3].lower(), 1), parse_rgb(sys.argv[4]) if sys.argv[3] != 'off' else (0, 0, 0)
         spd = SPEEDS.get(sys.argv[5] if len(sys.argv) > 5 else 'med', 2)
         send(dev, build_rep(z, m, col, spd)); print(f"SET_ZONE=OK zone={z} mode={sys.argv[3]} dev={dev}")
+    elif act == 'health':
+        art_hex = (sys.argv[2] if len(sys.argv) > 2 else '031CC0').lstrip('#')
+        zsel = sys.argv[3] if len(sys.argv) > 3 else '4'
+        art = parse_rgb(art_hex)
+        szones = [1, 2, 4] if zsel == 'all' else ([int(zsel)] if zsel.isdigit() and 1 <= int(zsel) <= 7 else [4])
+        state, reasons, det = health_eval()
+        scol = parse_rgb(HEALTH_COLORS[state])
+        reps = [r for z in FAN_ZONES for r in build_rep(z, 9, art, 2)] + [r for z in szones for r in build_rep(z, 1, scol)]
+        send(dev, reps)
+        print(f"HEALTH={state.upper()} status_color=#{HEALTH_COLORS[state]} zones={szones} art=#{art_hex} dev={dev}")
+        print("DETAIL pools={0} scrub={1} mce={2} cpu_c={3} gpu_c={4}".format(
+            det.get('pools', '?'), det.get('scrub', '?'), det.get('mce', '?'), det.get('cpu_c'), det.get('gpu_c')))
+        if reasons: print("REASON=" + '; '.join(reasons))
 
 if __name__ == '__main__': main()
 PYEOF
@@ -90,6 +173,7 @@ cmd_static()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-
 cmd_wave_all()  { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py wave-all "${1:-00d0ff}" "${2:-med}"; }
 cmd_set_zone()  { [ "$(id -u)" -eq 0 ] || die "needs root"; [ $# -ge 3 ] || die "usage: set-zone ZONE MODE HEX [SPEED]"; run_py set-zone "$@"; }
 cmd_color()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-00d0ff}"; }
+cmd_health()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py health "${1:-031CC0}" "${2:-4}"; }
 
 cmd_apply() {
     [ $# -ge 1 ] || die "usage: apply PROFILE"
@@ -118,10 +202,35 @@ EOF
 cmd_unpersist() {
     [ "$(id -u)" -eq 0 ] || die "unpersist needs root"
     [ -L "$SVC_LINK" ] && rm -f "$SVC_LINK" && echo "UNPERSIST=OK removed $SVC_LINK" || echo "UNPERSIST=OK no link"
+    [ -L "$HSVC_LINK" ] && rm -f "$HSVC_LINK" && echo "UNPERSIST=OK removed $HSVC_LINK" || echo "UNPERSIST=OK no health link"
+}
+
+cmd_persist_health() {
+    [ "$(id -u)" -eq 0 ] || die "persist-health needs root"
+    art="${1:-031CC0}"; zone="${2:-4}"; interval="${3:-15}"
+    case "$interval" in ''|*[!0-9]*) die "interval must be seconds";; esac
+    sp=$(readlink -f "$0" 2>/dev/null || echo "/usr/local/bin/rgb-omen")
+    mkdir -p "$HSVC_DIR"
+    cat > "$HSVC_DIR/run" <<EOF
+#!/bin/sh
+# omen-rgb-health: poll system health and paint the status zone (rgb-omen health).
+# REVERSE: rm /var/service/omen-rgb-health
+exec 2>&1
+i=0; while [ "\$i" -lt 90 ]; do lsusb 2>/dev/null | grep -qi "${HUB_ID}" && break; sleep 2; i=\$((i + 1)); done
+sleep 1
+while :; do
+    if [ -x "${sp}" ]; then "${sp}" health ${art} ${zone}; else /usr/local/bin/rgb-omen health ${art} ${zone}; fi
+    sleep ${interval}
+done
+EOF
+    chmod 0755 "$HSVC_DIR/run"
+    mkdir -p /var/service; [ -L "$HSVC_LINK" ] || ln -s "$HSVC_DIR" "$HSVC_LINK" || die "failed to symlink $HSVC_LINK"
+    echo "PERSIST_HEALTH=OK poll loop enabled via $HSVC_LINK (art=#${art} zone=${zone} every ${interval}s)"
 }
 
 cmd_status() {
     echo "=== Service ==="; sv status "$SVC_LINK" 2>&1 || true
+    echo "=== Health Service ==="; sv status "$HSVC_LINK" 2>&1 || true
     echo "=== Run Script ==="; [ -f "$SVC_DIR/run" ] && sed -n '1,25p' "$SVC_DIR/run" 2>&1 || echo "(no run file)"
     echo "=== Hub ==="; lsusb | grep -i "$HUB_ID" || echo "(103c:84fd not found)"
 }
@@ -135,8 +244,10 @@ static) shift; cmd_static "$@" ;;
 wave-all) shift; cmd_wave_all "$@" ;;
 set-zone) shift; cmd_set_zone "$@" ;;
 color) shift; cmd_color "$@" ;;
+health) shift; cmd_health "$@" ;;
 persist) shift; cmd_persist "$@" ;;
+persist-health) shift; cmd_persist_health "$@" ;;
 unpersist) cmd_unpersist ;;
 status) cmd_status ;;
-*) echo "usage: sh rgb-omen probe|apply|fans-wave|static|wave-all|set-zone|color|persist|unpersist|status" >&2; exit 1 ;;
+*) echo "usage: sh rgb-omen probe|apply|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
 esac
