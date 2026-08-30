@@ -8,9 +8,13 @@
 # state - green OK / amber warn / red crit / magenta scrub - while the fans keep the art wave.
 # SMOOTH APPLY (operator directive 2026-08-30): `apply HEX [FROM_HEX] [STEPS] [DELAY_MS]`
 # fades the ENTIRE layout (statics + fan wave, all 7 zones) to the target color ONCE, and
-# nothing repaints after it. `persist apply HEX 000000` = boot fade-in from black, once per
-# boot. `health` / `persist-health` are ON-DEMAND only - not the boot path. See
-# docs/feature-pack-accessories.md for the hardware debug channels this complements.
+# nothing repaints after it. Defaults are QUICK (10 steps x 20 ms ~ 0.3 s) per operator
+# "the fades kinda slow, just a quick transition" (2026-08-30, second receipt).
+# `preview [HOLD_MS] [STEPS] [DELAY_MS]` quick-cycles a named 12-color palette (~2.5 s each)
+# for on-hardware color selection, then returns to the last applied color. `persist apply
+# HEX 000000` = boot fade-in from black, once per boot. `health` / `persist-health` are
+# ON-DEMAND only - not the boot path. See docs/feature-pack-accessories.md for the hardware
+# debug channels this complements.
 
 set -u
 SVC_DIR="/etc/sv/omen-rgb"
@@ -88,7 +92,10 @@ def health_eval():
     mce = -1
     try:
         dm = subprocess.run(['dmesg'], capture_output=True, text=True, timeout=10).stdout
-        mce = sum(1 for l in dm.splitlines() if re.search(r'Machine check|Hardware Error|Xid|EDAC.*[Ee]rror', l))
+        # Error-bearing lines only. Bare 'EDAC' caught version boot noise; bare 'Xid' would
+        # catch the r8169 NIC chip-id line "XID 541" (target receipt 2026-08-30). NVIDIA Xid
+        # errors always print as "NVRM: Xid (PCI:..):" - anchor on that.
+        mce = sum(1 for l in dm.splitlines() if re.search(r'Machine check|Hardware Error|NVRM.*Xid|Xid \(PCI|EDAC.*[Ee]rror', l))
     except Exception:
         pass
     det['mce'] = mce
@@ -134,8 +141,26 @@ def hexs(c):
 
 STATE_FILE = '/var/lib/rgb-omen/last-color'
 
+PALETTE = [
+    ('omen-blue', '031CC0'), ('azure', '007FFF'), ('ice-cyan', '00D0FF'), ('teal', '00FFB4'),
+    ('true-green', '00FF00'), ('amber', 'FFB400'), ('orange', 'FF6A00'), ('red', 'FF2000'),
+    ('magenta', 'FF2FD6'), ('violet', '7A5CFF'), ('warm-white', 'FFE7C2'), ('white', 'FFFFFF'),
+]
+
 def layout_reps(col, spd=2):
     return [r for z in STATIC_ZONES for r in build_rep(z, 1, col)] + [r for z in FAN_ZONES for r in build_rep(z, 9, col, spd)]
+
+def fade(dev, start, target, steps, delay_s):
+    import time
+    for s in range(1, steps + 1):
+        send(dev, layout_reps(lerp(start, target, s / steps)))
+        time.sleep(delay_s)
+
+def read_last():
+    try:
+        return parse_rgb(open(STATE_FILE).read().strip())
+    except Exception:
+        return None
 
 def main():
     act, dev = sys.argv[1], find_dev()
@@ -170,15 +195,10 @@ def main():
             det.get('pools', '?'), det.get('scrub', '?'), det.get('mce', '?'), det.get('cpu_c'), det.get('gpu_c')))
         if reasons: print("REASON=" + '; '.join(reasons))
     elif act == 'apply':
-        import time
         target = parse_rgb(sys.argv[2] if len(sys.argv) > 2 else '031CC0')
-        steps = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[4].isdigit() else 24
-        delay = (float(sys.argv[5]) / 1000.0) if len(sys.argv) > 5 and sys.argv[5].isdigit() else 0.05
-        prev = None
-        try:
-            prev = parse_rgb(open(STATE_FILE).read().strip())
-        except Exception:
-            pass
+        steps = int(sys.argv[4]) if len(sys.argv) > 4 and sys.argv[4].isdigit() else 10
+        delay = (float(sys.argv[5]) / 1000.0) if len(sys.argv) > 5 and sys.argv[5].isdigit() else 0.02
+        prev = read_last()
         if len(sys.argv) > 3 and sys.argv[3]:
             start = parse_rgb(sys.argv[3])
         elif prev and prev != target:
@@ -186,9 +206,7 @@ def main():
         else:
             start = (0, 0, 0)
         try:
-            for s in range(1, steps + 1):
-                send(dev, layout_reps(lerp(start, target, s / steps)))
-                time.sleep(delay)
+            fade(dev, start, target, steps, delay)
         except Exception as e:
             print(f"WARN fade interrupted ({e}); forcing final color")
         send(dev, layout_reps(target))
@@ -198,6 +216,24 @@ def main():
         except Exception:
             pass
         print(f"APPLY=OK smooth from=#{hexs(start)} to=#{hexs(target).upper()} steps={steps} delay_ms={int(delay * 1000)} dev={dev}")
+    elif act == 'preview':
+        import time
+        hold = (float(sys.argv[2]) / 1000.0) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 2.5
+        steps = int(sys.argv[3]) if len(sys.argv) > 3 and sys.argv[3].isdigit() else 8
+        delay = (float(sys.argv[4]) / 1000.0) if len(sys.argv) > 4 and sys.argv[4].isdigit() else 0.02
+        back = read_last() or parse_rgb('031CC0')
+        print(f"PREVIEW=START colors={len(PALETTE)} hold_s={hold} steps={steps} delay_ms={int(delay * 1000)} dev={dev}")
+        cur = back
+        for name, hx in PALETTE:
+            print(f"SHOW {name} #{hx}")
+            tgt = parse_rgb(hx)
+            fade(dev, cur, tgt, steps, delay)
+            send(dev, layout_reps(tgt))
+            time.sleep(hold)
+            cur = tgt
+        fade(dev, cur, back, steps, delay)
+        send(dev, layout_reps(back))
+        print(f"PREVIEW=DONE back=#{hexs(back).upper()} (last applied color; state file untouched)")
 
 if __name__ == '__main__': main()
 PYEOF
@@ -218,6 +254,7 @@ cmd_set_zone()  { [ "$(id -u)" -eq 0 ] || die "needs root"; [ $# -ge 3 ] || die 
 cmd_color()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-00d0ff}"; }
 cmd_health()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py health "${1:-031CC0}" "${2:-4}"; }
 cmd_apply()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py apply "${1:-031CC0}" "${2:-}" "${3:-}" "${4:-}"; }
+cmd_preview()   { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py preview "${1:-}" "${2:-}" "${3:-}"; }
 
 cmd_profile() {
     [ $# -ge 1 ] || die "usage: profile NAME"
@@ -283,6 +320,7 @@ action="${1:-}"
 case "$action" in
 probe) cmd_probe ;;
 apply) shift; cmd_apply "$@" ;;
+preview) shift; cmd_preview "$@" ;;
 profile) shift; cmd_profile "$@" ;;
 fans-wave) shift; cmd_fans_wave "$@" ;;
 static) shift; cmd_static "$@" ;;
@@ -294,5 +332,5 @@ persist) shift; cmd_persist "$@" ;;
 persist-health) shift; cmd_persist_health "$@" ;;
 unpersist) cmd_unpersist ;;
 status) cmd_status ;;
-*) echo "usage: sh rgb-omen probe|apply|profile|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
+*) echo "usage: sh rgb-omen probe|apply|preview|profile|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
 esac

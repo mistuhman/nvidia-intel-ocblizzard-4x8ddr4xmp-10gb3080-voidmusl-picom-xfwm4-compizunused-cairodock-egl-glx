@@ -1,0 +1,12 @@
+id -u
+# rgb-preview.block - ROOT shell on the target (sudo -i first, then paste).
+# Why: operator receipt 2026-08-30 - fade speed fine-tuned ("kinda slow, just a quick
+# transition" -> apply now defaults to 10x20ms ~= 0.3s), the green statics were the removed
+# health loop's last gasp (cannot recur), and the operator wants to SEE every color before
+# refining ("i want a preview of every color... we can refine the colors later").
+# Gate: WATCH THE RIG while preview runs (~35s) and note which names you like; paste the
+# output back. Preview returns to your last applied color (031CC0) by itself - it does not
+# change the applied color, and the boot service is untouched.
+df -h /
+sv status omen-rgb
+sh /home/sd/oc-lab/scripts/rgb-omen preview

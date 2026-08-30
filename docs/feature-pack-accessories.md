@@ -78,8 +78,9 @@ Probes are read-only (`zpool status`, `dmesg`, coretemp hwmon, `nvidia-smi` quer
 stresses the machine, and an unreadable probe degrades to a quieter verdict, never a false red.
 `Xid` is included deliberately: the 2026-08-30 runtime crash class shows up as Xid lines in
 dmesg, so a red CPU LED after a crash names the GPU driver without opening a terminal. First
-live read caught 3 matching dmesg lines at idle — attribution pending (see
-`docs/oc-rgb-persist.md`).
+live read flagged 3 dmesg lines — attributed **benign** with the grep receipt (EDAC version
+boot noise; the r8169 NIC prints its chip ID as `XID 541`, not an NVIDIA Xid); pattern
+hardened and the class is closed (`docs/oc-rgb-persist.md`).
 
 ---
 
