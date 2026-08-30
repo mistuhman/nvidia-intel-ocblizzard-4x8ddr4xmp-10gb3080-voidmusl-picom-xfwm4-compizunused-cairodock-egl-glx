@@ -1,0 +1,14 @@
+id -u
+# rgb-postreboot-verify.block - ROOT shell (sudo -i, paste) AFTER the machine is back up
+# and you are logged in. PHASE 2 of the reboot proof (etc/rgb-reboot-verify.block = 1).
+# Gate: paste FULL output back, and CONFIRM in your paste what the rig looks like.
+# PASS = all of: sv run omen-rgb / log line dated THIS boot with APPLY=OK to=#031CC0 /
+# state file 031cc0 / REHEARSE=PASS 4/4 / rig visually blue wave+static, then rehearse
+# showed green->magenta->amber->red ~3s each and returned to blue.
+df -h /
+uptime
+sv status omen-rgb
+cat /var/log/omen-rgb.log
+cat /var/lib/rgb-omen/last-color
+sh /home/sd/oc-lab/scripts/rgb-omen rehearse
+true

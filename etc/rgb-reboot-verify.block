@@ -1,0 +1,18 @@
+id -u
+# rgb-reboot-verify.block - ROOT shell (sudo -i, paste). PHASE 1 of the reboot proof.
+# Why: the operator's reboot-survival demand caught a real bug - "$@" inside the persist
+# heredoc collapsed to ONE arg, so the boot service ran apply "031CC0 000000" and the old
+# len-3 parse fallback silently painted #003311 (the mystery green). BOTH fixed; this wave
+# regenerates the service with the FIXED generator + boot logging, proves the log works
+# BEFORE rebooting, then reboots.
+# Gate: paste FULL output back. Expect: PERSIST=OK, sv run, and an APPLY=OK smooth
+# from=#000000 to=#031CC0 line in /var/log/omen-rgb.log dated NOW. The rig should quick-fade
+# blue on its own ~7s after persist (service runs once at enable).
+# WATCH: after the log check, the last two lines REBOOT the machine.
+df -h /
+sh /home/sd/oc-lab/scripts/rgb-omen unpersist
+sh /home/sd/oc-lab/scripts/rgb-omen persist apply 031CC0 000000
+sleep 6
+sv status omen-rgb
+cat /var/log/omen-rgb.log
+true

@@ -43,8 +43,16 @@ def find_dev():
     return '/dev/hidraw0' if os.path.exists('/dev/hidraw0') else None
 
 def parse_rgb(v):
-    v = v.lstrip('#')
-    return tuple(int(v[i:i+2], 16) for i in (0, 2, 4)) if len(v) == 6 else tuple(int(v[i]*2, 16) for i in range(3))
+    # STRICT: exactly 3 or 6 hex chars. The old len-3 fallback silently accepted ANY
+    # other length (e.g. the heredoc-collapsed '031CC0 000000' -> expanded 0,3,1 -> #003311,
+    # the mystery boot green, receipt 2026-08-30). Invalid input must FAIL LOUDLY.
+    v = v.lstrip('#').strip()
+    hexok = all(c in '0123456789abcdefABCDEF' for c in v)
+    if len(v) == 6 and hexok:
+        return tuple(int(v[i:i+2], 16) for i in (0, 2, 4))
+    if len(v) == 3 and hexok:
+        return tuple(int(v[i]*2, 16) for i in range(3))
+    raise SystemExit(f'ERROR: invalid hex color {v!r} (want RRGGBB or RGB)')
 
 def build_rep(zone, mode, col, spd=2):
     idx, reps = zone - 1, []
@@ -70,16 +78,33 @@ def send(dev, reps):
 HEALTH_COLORS = {'ok': '00ff00', 'warn': 'ffb400', 'crit': 'ff2000', 'scrub': 'ff00ff'}
 HEALTH_RANK = {'ok': 0, 'scrub': 1, 'warn': 2, 'crit': 3}
 
-def health_eval():
+# Deterministic condition fixtures for `rehearse` - fire every trigger on demand so the
+# operator can WATCH each status color without waiting for a real pool fault/overheat.
+SIM_POOLS_OK = 'pool: nvme\nstate: ONLINE\nall pools are healthy\n'
+SIM_POOLS_SCRUB = 'pool: nvme\nstate: ONLINE\nscan: scrub in progress since Mon Aug 31 00:00:00 2026\n'
+SIM_POOLS_FAULTED = 'pool: bulk\nstate: FAULTED\none or more devices are faulted\n'
+SIM_DM_XID = 'NVRM: Xid (PCI:0000:01:00.0): 79 GPU has fallen off the bus\n'
+REHEARSAL = [
+    ('ok', 'pools ONLINE, no error lines, cpu 55C, gpu 45C', dict(zp=SIM_POOLS_OK, dm='', ct=55000, gt=45)),
+    ('scrub', 'zpool scrub in progress', dict(zp=SIM_POOLS_SCRUB, dm='', ct=55000, gt=45)),
+    ('warn', 'cpu 95C (warn band 90-99C)', dict(zp=SIM_POOLS_OK, dm='', ct=95000, gt=45)),
+    ('crit', 'pool FAULTED + NVRM Xid line in dmesg', dict(zp=SIM_POOLS_FAULTED, dm=SIM_DM_XID, ct=55000, gt=45)),
+]
+
+def health_eval(sim=None):
     # Read-only system probes -> (state, reasons, details). Never stresses anything.
+    # sim (used by `rehearse`): dict with optional zp (zpool status text), dm (dmesg text),
+    # ct (cpu millidegrees), gt (gpu deg C) - when given, those probes are simulated and
+    # deterministic instead of live.
     import subprocess, re, glob as g
     state, reasons, det = 'ok', [], {}
 
-    ps = ''
-    try:
-        ps = subprocess.run(['zpool', 'status'], capture_output=True, text=True, timeout=10).stdout
-    except Exception:
-        det['pools'] = 'unreadable'
+    ps = sim.get('zp') if sim is not None else ''
+    if sim is None:
+        try:
+            ps = subprocess.run(['zpool', 'status'], capture_output=True, text=True, timeout=10).stdout
+        except Exception:
+            det['pools'] = 'unreadable'
     if ps:
         bad = [w for w in ('FAULTED', 'UNAVAIL', 'OFFLINE') if w in ps]
         if bad: state, _ = 'crit', reasons.append('pool ' + '/'.join(bad))
@@ -90,26 +115,31 @@ def health_eval():
             state = 'scrub'
 
     mce = -1
-    try:
-        dm = subprocess.run(['dmesg'], capture_output=True, text=True, timeout=10).stdout
-        # Error-bearing lines only. Bare 'EDAC' caught version boot noise; bare 'Xid' would
-        # catch the r8169 NIC chip-id line "XID 541" (target receipt 2026-08-30). NVIDIA Xid
-        # errors always print as "NVRM: Xid (PCI:..):" - anchor on that.
+    if sim is not None:
+        dm = sim.get('dm', '')
         mce = sum(1 for l in dm.splitlines() if re.search(r'Machine check|Hardware Error|NVRM.*Xid|Xid \(PCI|EDAC.*[Ee]rror', l))
-    except Exception:
-        pass
+    else:
+        try:
+            dm = subprocess.run(['dmesg'], capture_output=True, text=True, timeout=10).stdout
+            # Error-bearing lines only. Bare 'EDAC' caught version boot noise; bare 'Xid' would
+            # catch the r8169 NIC chip-id line "XID 541" (target receipt 2026-08-30). NVIDIA Xid
+            # errors always print as "NVRM: Xid (PCI:..):" - anchor on that.
+            mce = sum(1 for l in dm.splitlines() if re.search(r'Machine check|Hardware Error|NVRM.*Xid|Xid \(PCI|EDAC.*[Ee]rror', l))
+        except Exception:
+            pass
     det['mce'] = mce
     if mce > 0 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
         state, _ = 'crit', reasons.append(f'{mce} MCE/EDAC/Xid line(s) in dmesg')
 
-    ct = None
-    for h in g.glob('/sys/class/hwmon/hwmon*'):
-        try:
-            if open(h + '/name').read().strip() == 'coretemp':
-                v = [int(open(t).read()) for t in g.glob(h + '/temp*_input')]
-                if v: ct = max(ct or 0, max(v))
-        except Exception:
-            pass
+    ct = sim.get('ct') if sim is not None else None
+    if sim is None:
+        for h in g.glob('/sys/class/hwmon/hwmon*'):
+            try:
+                if open(h + '/name').read().strip() == 'coretemp':
+                    v = [int(open(t).read()) for t in g.glob(h + '/temp*_input')]
+                    if v: ct = max(ct or 0, max(v))
+            except Exception:
+                pass
     det['cpu_c'] = round(ct / 1000) if ct else None
     if ct is not None:
         if ct >= 100000 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
@@ -117,13 +147,14 @@ def health_eval():
         elif ct >= 90000 and HEALTH_RANK['warn'] > HEALTH_RANK[state]:
             state, _ = 'warn', reasons.append(f'cpu {det["cpu_c"]}C')
 
-    gt = None
-    try:
-        o = subprocess.run(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits'],
-                           capture_output=True, text=True, timeout=5).stdout.split()
-        gt = int(o[0])
-    except Exception:
-        pass
+    gt = sim.get('gt') if sim is not None else None
+    if sim is None:
+        try:
+            o = subprocess.run(['nvidia-smi', '--query-gpu=temperature.gpu', '--format=csv,noheader,nounits'],
+                               capture_output=True, text=True, timeout=5).stdout.split()
+            gt = int(o[0])
+        except Exception:
+            pass
     det['gpu_c'] = gt
     if gt is not None:
         if gt >= 85 and HEALTH_RANK['crit'] > HEALTH_RANK[state]:
@@ -232,6 +263,25 @@ def main():
         fade(dev, cur, back, steps, delay)
         send(dev, layout_reps(back))
         print(f"PREVIEW=DONE back=#{hexs(back).upper()} (last applied color; state file untouched)")
+    elif act == 'rehearse':
+        import time
+        zone = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 4
+        hold = (float(sys.argv[3]) / 1000.0) if len(sys.argv) > 3 and sys.argv[3].isdigit() else 3.0
+        art = read_last() or parse_rgb('031CC0')
+        print(f"REHEARSE=START zone={zone} hold_s={hold} dev={dev}")
+        fails = 0
+        for want, desc, sim in REHEARSAL:
+            state, reasons, det = health_eval(sim)
+            good = state == want
+            fails += 0 if good else 1
+            send(dev, build_rep(zone, 1, parse_rgb(HEALTH_COLORS[state])))
+            print(f"SCENARIO {desc}")
+            print(f"  TRIGGER->{state.upper()} color=#{HEALTH_COLORS[state]} match={'PASS' if good else 'FAIL'} reason={'; '.join(reasons) if reasons else 'none'}")
+            time.sleep(hold)
+        send(dev, layout_reps(art))
+        print(f"REHEARSE={'FAIL' if fails else 'PASS'} ({len(REHEARSAL) - fails}/{len(REHEARSAL)} triggers mapped correctly) layout restored to #{hexs(art).upper()}")
+        if fails:
+            sys.exit(1)
 
 if __name__ == '__main__': main()
 PYEOF
@@ -253,6 +303,7 @@ cmd_color()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py static "${1:-
 cmd_health()    { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py health "${1:-031CC0}" "${2:-4}"; }
 cmd_apply()     { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py apply "${1:-031CC0}" "${2:-}" "${3:-}" "${4:-}"; }
 cmd_preview()   { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py preview "${1:-}" "${2:-}" "${3:-}"; }
+cmd_rehearse()  { [ "$(id -u)" -eq 0 ] || die "needs root"; run_py rehearse "${1:-}" "${2:-}"; }
 
 cmd_profile() {
     [ $# -ge 1 ] || die "usage: profile NAME"
@@ -267,15 +318,21 @@ cmd_persist() {
     mkdir -p "$SVC_DIR"
     cat > "$SVC_DIR/run" <<EOF
 #!/bin/sh
+# omen-rgb: ONE boot-time apply (quick fade), then park. Output is APPENDED to
+# /var/log/omen-rgb.log so every boot leaves a durable receipt (the hub cannot
+# be read back - the log is how we prove the boot apply ran).
+# REVERSE: rm /var/service/omen-rgb
 exec 2>&1
 i=0; while [ "\$i" -lt 90 ]; do lsusb 2>/dev/null | grep -qi "${HUB_ID}" && break; sleep 2; i=\$((i + 1)); done
 sleep 1
-[ -x "${sp}" ] && "${sp}" ${subcmd} "$@" || { [ -x "/usr/local/bin/rgb-omen" ] && /usr/local/bin/rgb-omen ${subcmd} "$@"; }
+echo "\$(date '+%Y-%m-%d %H:%M:%S') omen-rgb boot apply (${subcmd} $*)" >> /var/log/omen-rgb.log
+if [ -x "${sp}" ]; then "${sp}" ${subcmd} $* >> /var/log/omen-rgb.log 2>&1; else /usr/local/bin/rgb-omen ${subcmd} $* >> /var/log/omen-rgb.log 2>&1; fi
 exec sleep 86400
 EOF
     chmod 0755 "$SVC_DIR/run"
     mkdir -p /var/service; [ -L "$SVC_LINK" ] || ln -s "$SVC_DIR" "$SVC_LINK" || die "failed to symlink $SVC_LINK"
     echo "PERSIST=OK boot service enabled via $SVC_LINK (${subcmd} $*)"
+    echo "RECEIPT: after boot, cat /var/log/omen-rgb.log (boot applies are logged there)"
 }
 
 cmd_unpersist() {
@@ -310,6 +367,8 @@ EOF
 cmd_status() {
     echo "=== Service ==="; sv status "$SVC_LINK" 2>&1 || true
     echo "=== Health Service ==="; sv status "$HSVC_LINK" 2>&1 || true
+    echo "=== Last Applied Color ==="; cat /var/lib/rgb-omen/last-color 2>/dev/null || echo "(none)"
+    echo "=== Boot Log (last 5) ==="; tail -5 /var/log/omen-rgb.log 2>/dev/null || echo "(no log yet)"
     echo "=== Run Script ==="; [ -f "$SVC_DIR/run" ] && sed -n '1,25p' "$SVC_DIR/run" 2>&1 || echo "(no run file)"
     echo "=== Hub ==="; lsusb | grep -i "$HUB_ID" || echo "(103c:84fd not found)"
 }
@@ -319,6 +378,7 @@ case "$action" in
 probe) cmd_probe ;;
 apply) shift; cmd_apply "$@" ;;
 preview) shift; cmd_preview "$@" ;;
+rehearse) shift; cmd_rehearse "$@" ;;
 profile) shift; cmd_profile "$@" ;;
 fans-wave) shift; cmd_fans_wave "$@" ;;
 static) shift; cmd_static "$@" ;;
@@ -330,5 +390,5 @@ persist) shift; cmd_persist "$@" ;;
 persist-health) shift; cmd_persist_health "$@" ;;
 unpersist) cmd_unpersist ;;
 status) cmd_status ;;
-*) echo "usage: sh rgb-omen probe|apply|preview|profile|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
+*) echo "usage: sh rgb-omen probe|apply|preview|rehearse|profile|fans-wave|static|wave-all|set-zone|color|health|persist|persist-health|unpersist|status" >&2; exit 1 ;;
 esac

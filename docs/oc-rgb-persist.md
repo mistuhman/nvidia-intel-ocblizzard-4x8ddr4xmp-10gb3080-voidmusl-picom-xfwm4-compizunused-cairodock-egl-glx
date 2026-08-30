@@ -92,6 +92,41 @@ is smooth. Same applies after an **OpenRGB GUI session**: OpenRGB-written colors
 invisible to the state file, so the next `apply` fades from *our* last recorded color, not
 what OpenRGB last set (first frame may step).
 
+## Reboot survival & trigger verification (2026-08-30)
+
+Operator: "we need to make sure it survives reboot. both the wave+static blue profile but
+the color switching itself. and how can i know itll work on each circumstances trigger?"
+That question caught a **real bug**, receipted by regenerating the service file in the
+sandbox: `"$@"` inside the unquoted persist heredoc collapses to ONE quoted argument, so the
+boot service actually ran `apply "031CC0 000000"` — and the old len-3 fallback in
+`parse_rgb` silently expanded `0,3,1` → **`#003311`**. That is the true source of the
+mystery dark green in the state file (the earlier OpenRGB attribution is superseded by this
+mechanism receipt). Boot survival was broken since the first `persist`. Fixed both ways:
+
+- the generated run file now word-splits correctly (`apply 031CC0 000000`), and
+- `parse_rgb` is strict — exactly 3 or 6 hex chars or it exits loudly instead of guessing.
+
+How each half is now provable:
+
+1. **Layout survives reboot** — the runit service quick-fades the full layout (statics +
+   fan wave) once per boot, and now **appends every boot apply to `/var/log/omen-rgb.log`**
+   with a timestamp. The hub can't be read back, so that log IS the receipt: after a reboot,
+   `cat /var/log/omen-rgb.log` must show a fresh `APPLY=OK smooth from=#000000
+   to=#031CC0` line, and the rig must visually be blue wave+static.
+2. **Color switching survives reboot** — the toolkit is the script itself
+   (`/home/sd/oc-lab/scripts/rgb-omen`); after reboot run `rehearse` (below) or
+   `preview`/`apply` as usual. `status` now also prints the state file and boot-log tail.
+3. **Every trigger, proven on demand** — `rehearse [ZONE] [HOLD_MS]` fires all four
+   conditions through the REAL evaluation code with canned inputs and paints each status
+   color on the rig (~3 s each): green = pools ONLINE/no errors/temps normal, magenta =
+   scrub in progress, amber = cpu 95 °C, red = pool FAULTED + Xid line. It self-checks the
+   mapping (`REHEARSE=PASS 4/4`, exit 1 on any mismatch) and restores the blue layout.
+   You watch each trigger fire; no real failure needed.
+
+Canonical waves: `etc/rgb-reboot-verify.block` (pre-reboot: regenerate the fixed service,
+watch the log line appear, then reboot) and `etc/rgb-postreboot-verify.block` (after login:
+service receipt, boot log, state file, rehearse).
+
 ## `health` — on-demand only (not a boot path)
 
 - **`health [HEX] [ZONE|all]`**: manual probe + optional paint — fans keep the art wave, the
