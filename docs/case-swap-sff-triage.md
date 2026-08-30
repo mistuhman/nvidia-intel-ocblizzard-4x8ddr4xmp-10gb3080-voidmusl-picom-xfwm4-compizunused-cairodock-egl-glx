@@ -67,6 +67,42 @@ Read the rhythm and the sequence before changing anything:
 - Does ZBM appear **between** cycles? If yes, the fault is past firmware and moves into
   ZBM / ZFS / the early kernel.
 
+## 0c. Cold-boot probe receipt — 2026-08-30 06:44 UTC (operator paste-back)
+
+Interface: root shell, `etc/case-swap-coldboot-probe.block` (operator started at `date`,
+skipped `df`/`uptime`/`product_name`/`board_name`/`lsblk`; `efibootmgr -v` was typed as
+`efibootmgr -v0` and returned empty). Same paste arrived twice; timestamps identical, so
+it is one receipt.
+
+Operator quotes, verbatim:
+
+- "it does it randomly, ~3 times"
+- "warm reboots like when my pc crashes and i shut it off then turn it on again are seamless"
+- "and while this was generating my pc crashed and i rebooted"
+
+| Probe | Value | Verdict |
+|---|---|---|
+| `date` vs `hwclock -r` | 06:44:32 UTC vs 06:44:31.932070+00:00 | **RTC healthy.** CR2032 is not the cold-only tell. AC-present CMOS class is **down**. |
+| BIOS | F.51 | unchanged |
+| `dmidecode` Configured Memory Speed | **4000 MT/s @ 1.45 V on all four DIMMs** (`HP37D4U1S8MR-8X`, locators DIMM 1–4) | **The CMOS reset did NOT wipe r3.** C1 is still live. Gate 10's "most likely wiped" line is wrong. |
+| `free -g` | 31 | all four sticks enumerated |
+| Package temp | 47 °C | idle-healthy; not a thermal trip |
+| `hp-isa-0000` fan1/fan2 | **0 RPM** | tach gap, not a cycling tell. 90B is a prompt, not a ~3-cycle loop. No `fan*_input` nodes returned. |
+| `zpool status` | `nvme`/`fast`/`bulk` ONLINE, 0 CKSUM | not a pool fault |
+| GPU | 3080 present, 41 °C, 27 W / 320 W, **width 16 / 16**, gen 2 current / 4 max | PCIe class **down** (x8 would have been the tell; gen 2 at P5 idle is ASPM, not a bad seat) |
+| `dmesg -T --level=err,warn` | no MCE, no EDAC, no `PCIe Bus Error`, no nvme reset. ACPI `AE_AML_BUFFER_LIMIT` / `hp_bioscfg 0x300a` / yeetmouse udev — pre-existing HP/WMI noise | Linux is **not** the cold-cycle initiator. The runtime crash during generation is a *separate* 4000-shaped event (unvalidated IMC), not a new class. |
+| `last -x reboot` | 06:42 still running, 06:17 still running (unclean previous), plus historical `Fri Jan 1 00:01` / `00:04` CMOS-clock stamps | previous session did not shut down cleanly; RTC-epoch stamps are **historical**, not this boot |
+
+**Attribution.** The ~3 random cold cycles, warm-after-crash-then-power-on seamless, first
+post-swap CMOS reset, *and* the runtime crash while the previous reply was generating, are
+one class: **Z690 MRC retrain on the never-validated 4000 MT/s @ 1.45 V profile (C1).**
+Warm path skips full MRC. A crash that is only a short power-off leaves the IMC warm /
+training cache intact, so the next button-press looks "seamless." Sitting off does a full
+retrain; 2–4 firmware reboots then a boot is the textbook Z690 training loop.
+
+**C1 is not self-resolved.** Standing rule "do not re-apply 4000" still holds — the
+correct move is the inverse: take it off.
+
 ## 1. Cause classes, ranked
 
 Ranked by fit to *cycling **then** booting to a CMOS reset*, with this machine's history.
@@ -84,8 +120,13 @@ A case swap is the perfect trigger for a marginal profile: the board is unbolted
 re-bolted (new flex), the AIO block is remounted (new socket pressure — see C5), and the
 DIMMs have been handled.
 
-**This class is already self-resolved.** The CMOS reset wiped the 4000 profile. *Do not put
-it back.* Ladder r3 stays blocked until the case swap is qualified.
+**This class is NOT self-resolved.** Probe 2026-08-30 06:44 UTC: all four DIMMs still
+**Configured Memory Speed 4000 MT/s @ 1.45 V.** The CMOS-reset screen did not clear r3
+(HP NVRAM / dual-BIOS / "load previous" — unattributed; the value is what matters).
+Operator rhythm "~3 times", random, cold-only, matches the 2–4 training-reboot tell.
+*Do not put 4000 back; take it off.* Next knob is F10 → XMP Profile 1 (3733 @ 1.35 V),
+which is ladder r0. Ladder r3 stays blocked until the case swap is qualified **and** r0
+has a real suite pass.
 
 ### Class E1/C4 — improvised power button / momentary rail loss
 A pinched or intermittently shorting `PB` adapter sends repeated power signals. A momentary
@@ -183,8 +224,10 @@ Cord in, power on, `F10`.
 - Read **`After Power Loss`**. If it is not **Off**, set it to Off. This breaks the possible
   self-sustaining restart loop (C2) before anything else is judged.
 - Read the **Thermal** page. Every fan must show a number; `N/A` means a header is empty (C3).
-- Read the **memory speed** in Advanced. It should now be JEDEC (2133/3200), **not 4000**.
-  A 4000 reading means the profile survived and C1 is still live.
+- Read the **memory speed** in Advanced. Probe already proved it is **4000 @ 1.45 V**, so
+  C1 is still live. The Gate A *change* is XMP Profile 1 (3733 @ 1.35 V) — one knob.
+  After that cold boot, `dmidecode` must report Configured Memory Speed **3733 MT/s**,
+  not 4000 and not a silent train-down.
 - Confirm the clock/date is wrong. A wrong clock *confirms* a real CMOS reset rather than
   a benign checksum prompt.
 - Save and exit.
