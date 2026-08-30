@@ -88,7 +88,9 @@ orange #FF2600`. Preview returns to the last applied color, so blue still shows 
 One honest limit: the hub is write-only with no read-back, so the very first frame out of an
 unknown state (factory rainbow at power-on) is a step, not a fade — everything after that
 first frame is interpolated. Between two known colors (apply → apply) the whole transition
-is smooth.
+is smooth. Same applies after an **OpenRGB GUI session**: OpenRGB-written colors are
+invisible to the state file, so the next `apply` fades from *our* last recorded color, not
+what OpenRGB last set (first frame may step).
 
 ## `health` — on-demand only (not a boot path)
 
