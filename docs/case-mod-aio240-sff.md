@@ -238,3 +238,13 @@ Lighting (later steps, physical notes only):
   inner face (not floating in the now-open rack window), LEDs close to the plastic so
   light actually leaks through the vents instead of scattering. LOGO stays 5V only (triage
   §5b rule — unchanged by relitigation).
+
+## 8d. Cut-line gate — photo 3 verdict, 2026-08-31
+
+Operator photo (case on its back, carpet): yellow tape X on the bay panel top = rad+2-fan
+zone vs the slotted crossbar (kept; also lightbar housing per §8c). "Marked area is the
+minimum clearance for 2 fans/rad." Verdict: approved, three amendments — (1) +30 mm at the
+tube-end for endcap/braid bend, else mount tubes-down; (2) crossbar top+bottom mounting tabs
+stay in the keep zone; (3) cut on the waste side, panel wood-sandwiched and clamped —
+carpet gives no support. Next gate after cut+deburr+seal+sweep: open-zone photo, then the
+§8b hole-pitch decision for the mount method.
