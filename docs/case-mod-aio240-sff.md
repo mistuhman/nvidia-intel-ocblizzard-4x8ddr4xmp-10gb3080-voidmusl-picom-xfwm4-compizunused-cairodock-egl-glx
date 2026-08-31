@@ -182,6 +182,33 @@ positions or sacrifice-and-re-drill one basket section. Housekeeping accepted in
 state: damp-cloth + magnet swarf/debris sweep (dark specks visible on the floor), standoff
 audit, AIO re-paste, sawing off-dresser with the panel clamped.
 
+## 8b. Operator decision 2026-08-31 (photo 2): FRONT-vertical mount, no native rad holes
+
+Operator: "old case, no rad mount... front mount for space and aesthetics, cut out the
+bottom rack and cover it up with the slot covers." Dry-fit photo = rad+fan stood vertical
+at mid-depth; the assembly reads ~64 % of interior height, clear space to tray and front.
+
+- **Orientation**: vertical column, tubes at TOP (as demoed) = pump below rad top = correct
+  air-bubble geometry for this case.
+- **Mount method, in order**: 1) measure the front wall's existing fan grid — 105 mm
+  within-fan pitch means the rad's 4 corners share the standard 240 pattern
+  (105/15/225) and bolt straight to the sheet with M4/#6-32 + washers + nuts.
+  2) If 140-pitch (124.5): fan-screw mount — fans bolt to wall, rad to fans (30 mm screws),
+  the standard no-mount solution for ~1 kg. 3) Slotted holes = 120/140 universal, slide to
+  align.
+- **Rack cut**: the 5.25 cage STAYS (top-front); the louvered lower rack is the cut zone,
+  the RGB-rad column sits above it, the non-RGB GPU intake lands on the nearest CLEAN hole
+  grid — do not bolt fans to floating sawn sheet. Slot covers = blanking only, never over
+  a live fan face (louvers baffle). Keep the front wall's return flange; cut rack side
+  flanges only.
+- **Clearances to verify dry-fit**: rad top endcap + tubes vs retained 5.25 cage floor
+  (if tight, that frame joins the same saw session); tube reach with the BLOCK SEATED on
+  the socket, fresh paste, even torque (LGA1700 pressure = POST-fault class); GPU face to
+  intake stack (budget ~55 mm).
+- **Flow map unchanged**: 2× RGB = rad intakes, non-RGB = GPU intake, rear = exhaust,
+  pump `FAN1`, rad fans `LCFAN`/`TFAN-LCFAN2`, front `FFAN1` — no header left empty;
+  F10 Thermal all-numeric is still the first boot gate after reassembly.
+
 ## 8. Unverified / limits
 
 - Exact case model never named by the operator; every dimension here assumes a standard
