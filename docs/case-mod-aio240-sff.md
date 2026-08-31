@@ -155,6 +155,33 @@ say so and this table gets re-cut.
 4. If the pump block came off: new paste, even torque, and re-verify the memory training
    lesson (LGA1700 clamp pressure is a known POST-fault source — triage §C5/Sources).
 
+## 8a. Receipt — empty-case photo, 2026-08-31 (chat attachment, not repo-persisted)
+
+Operator: "everything is out currently". The photo (case on a dresser, side panel and
+plastic bezel off; front to camera-right, rear to camera-left) changes three plan items:
+
+1. **Top-rear PSU plate confirmed** — rectangular cable window + two bare screw holes at
+   the rear half of the top. The front half is open rail with visible screw holes: if they
+   are 120-pitch (105 within-fan / 225 outer-outer), the 240 rad bolts to **top-front**
+   without drilling; that is the pump-low optimum and needs no new holes.
+2. **The 5.25" cage is tool-less** (oval rail-latch cutouts, screws only at the top
+   bracket) and the 3.5" trays sit on floor pads: **unbolt before sawing**. Saw only what
+   is riveted. Keep the cage top rail regardless — it doubles as the rad mount. Do not cut
+   the front return bend.
+3. **Pre-drilled 120 patterns may already exist in the front metal** (vertical round-hole
+   row at fan height on the front wall): if the non-RGB intake lines up, it bolts to steel,
+   not plastic. The bezel then only needs vent windows — round every inside corner of a
+   bezel cut and stop-drill cut endpoints (ABS crack-starters).
+
+Open checks the photo cannot settle (tape measure in frame, or one more photo each):
+rad hole pitch on the top rail; tube reach from a top-front rad to the mATX socket
+(fall-back = front-high mount, same RGB fans pushing through); rear fan hole alignment
+into a likely-140 honeycomb; and **the four SATA drives need decided homes** (bulk HDDs +
+2 SSDs lived in the bay column) before the cut line is drawn — keep the floor tray
+positions or sacrifice-and-re-drill one basket section. Housekeeping accepted in the empty
+state: damp-cloth + magnet swarf/debris sweep (dark specks visible on the floor), standoff
+audit, AIO re-paste, sawing off-dresser with the panel clamped.
+
 ## 8. Unverified / limits
 
 - Exact case model never named by the operator; every dimension here assumes a standard
