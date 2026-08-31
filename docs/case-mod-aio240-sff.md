@@ -221,3 +221,20 @@ at mid-depth; the assembly reads ~64 % of interior height, clear space to tray a
   `STATE.md`, `MASTER.md` durableFacts, or `case-swap-sff-triage.md`; the saw/mount
   material is standard workshop practice (fan bolt/nut pattern corroborated 2026-08-31),
   not observed data.
+
+## 8c. Order correction + lighting plan (operator, 2026-08-31)
+
+Operator: "cut first — if the radiator doesn't go in the front then two or more intake fans
+do." Correct: the rack cut is branch-independent, so sawing precedes any rad/fan mounting
+decision. §8b dry-fit checks move AFTER the cut; the cut itself is gated only by the
+mark-photo (line short of the return flange, fan grid holes intact, solid metal around
+every future bolt hole).
+
+Lighting (later steps, physical notes only):
+- Lightbar strip hides INSIDE the front crossbar channel; LEDs face the crossbar's open
+  slot so it acts as the emitter — drop-in + adhesive, wire exits through an existing
+  hole, connector end left reachable. Do not cut the crossbar to fit it (it is a brace).
+- LOGO module goes behind the plastic bezel's bottom vent strip, stuck to the bezel's
+  inner face (not floating in the now-open rack window), LEDs close to the plastic so
+  light actually leaks through the vents instead of scattering. LOGO stays 5V only (triage
+  §5b rule — unchanged by relitigation).
