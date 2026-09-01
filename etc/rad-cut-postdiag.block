@@ -1,0 +1,16 @@
+id -u
+# rad-cut-postdiag.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: the panel was sawn for the 240 rad + 2 fans. This receipt proves the cut did not damage anything electrical before any bench runs: fan tachs + temps (a fan clipped by the cut edge, a knocked header, or 90B shows here), the four SATA drives still enumerated (saw vibration walks cables), pool health (ZFS root means silent corruption is the failure mode), memory profile unchanged (case handling + CR2032 on the bottom edge), GPU link width x16 (card shaken in its slot lands at x8), and dmesg clean of MCE/EDAC/PCIe errors.
+# Gate: paste the FULL output back. No Superposition, Geekbench, or any CPU/GPU stress until this receipt is read - cooling is proven by tach data, not by the block feeling snug.
+date
+uptime
+sensors
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+find /sys/class/hwmon -maxdepth 2 -name temp\*_input
+dmidecode -t memory
+zpool status
+lsblk -o NAME,SIZE,TYPE,FSTYPE,LABEL,MODEL,SERIAL
+nvidia-smi
+nvidia-smi --query-gpu=name,pcie.link.gen.current,pcie.link.gen.max,pcie.link.width.current,pcie.link.width.max,power.limit --format=csv
+dmesg -T --level=err,warn
+last -x reboot
