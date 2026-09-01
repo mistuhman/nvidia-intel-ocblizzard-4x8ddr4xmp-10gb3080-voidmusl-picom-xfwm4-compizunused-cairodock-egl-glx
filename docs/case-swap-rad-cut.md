@@ -95,8 +95,36 @@ Effort = one of these four, never "not strong enough":
 Escalation ladder if it stays miserable after blade + wax + rigid holding:
 jigsaw fine bi-metal (faster, more swarf) → hand nibbler ~$10 (slow, boring-safe,
 tiny curls) → aviation snips (thick old panels may be past cheap snips) →
-angle-grinder cutoff wheel **LAST**: hot abrasive swarf is the worst version of §4;
-panel comes off the machine first, no exceptions.
+angle-grinder cutoff wheel — **OPERATOR DECISION 2026-09-01: adopted** ("incredibly
+tedious, ill just use an angle grinder instead and clean it thoroughly"). The gates
+that move with it are in §3c.
+
+## 3c. Angle grinder path (operator decision 2026-09-01)
+
+The grinder erases the hand-kerf, and tape stops guiding once sparks fly — re-mark
+with a fresh marker line over the tape first. A grinder fails differently than a saw
+(wheel lets go, kicks back, throws 1500 °C sparks 3–5 m that bounce), so four gates
+are non-negotiable:
+
+1. **Panel OFF the case, cut away from the machine.** Sparks are molten steel: they
+   scorch paint, embed into PCBs and PSU grilles, and bounce off everything. Cut on
+   a different table/room over bare floor or concrete — never over cardboard or rags
+   (smolder risk), never within spark range of the case.
+2. **Rigid mount is doubly mandatory.** Kickback on springy sheet either yanks the
+   panel out from under you or shatters the wheel. Screws through the vent holes
+   into a board; support BOTH sides near the line so the offcut cannot pinch the
+   wheel mid-cut; never cut across an unsupported span.
+3. **Wheel:** thin type-1 cutoff ≤1.5 mm, RPM-rated for the grinder, undamaged
+   (any chip/crack = replace before use), guard ON.
+4. **PPE:** face shield over glasses (cutoff wheels occasionally disintegrate),
+   ear, dust mask (paint particulates), tight sleeves, NO gloves at the wheel
+   (catch hazard) — gloves only for handling the panel afterward.
+
+Technique: score the full line shallow first, then deepen — the score keeps the deep
+passes honest. Let the wheel cut at its own pace; forcing = heat + bind + shatter.
+Expect: the edge comes out HOT (wait or quench before touching), paint gets burned
+5–10 mm each side (cosmetic — and after filing, dab paint or clear on the bare edge
+or it will rust), and a bigger burr than a saw — same file → 150/220 finish.
 
 ## 4. The electrical gate — swarf kills this specific rig
 
@@ -115,6 +143,18 @@ not just a crash.
 - **Deburr the full edge** (file tilted ~45° both faces, then 150–220 grit). A raw
   sawn edge will saw through fan wires, rad hoses, and fingers over time. If a wire or
   hose can ever touch the edge, tape it or fit edge trim.
+
+### Grinder swarf — what "clean it thoroughly" means on the 2026-09-01 path
+
+Sparks solidify into sharp micro-filings plus spent abrasive, and they travel and
+bounce. After the panel is cool: rag/tack-wipe the panel itself → vacuum the cutting
+area AND the floor around it (sparks land meters away) → then the CASE gets an
+interior check even though the panel was off (same room): vacuum, low-pressure air
+from a distance, cloth-wrapped magnet sweep over the board, GPU, and PSU exterior,
+bright light into the PSU intake grilles and the GPU backplate valleys, then
+tip-and-tap the case and re-vacuum whatever shakes out. First power-on happens with
+the side panel off — eyes and ears on any fan scrape — then run
+`etc/rad-cut-postdiag.block` before a single benchmark.
 
 ## 5. Vibration recheck — the saw shakes exactly the old suspects
 
