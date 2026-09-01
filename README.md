@@ -6,6 +6,16 @@
 
 Read every operator message with high-definition screening before acting. Decompose it into a numbered demand list: every clause, every named file, tool, syntax, format, and prohibition is its own requirement. Deliver every item or report it as skipped with a reason. Latest instruction wins over earlier ones. Full rule: `MASTER.md` → `promptScreening`.
 
+## Capability gate — step 0, before anything else
+
+Operator directive 2026-09-01: **if this chat's model does not have the full agent mode feature list, it just stops.** Verify every one of: bash in the sandbox checkout, file read/write/edit, `node` for `tools/*`, git + gh authenticated against the fixed branch, web search + page fetch, background process tools. If ANY is missing, reply with exactly:
+
+```
+STOP — NOT FULL AGENT MODE. Reopen this chat in Arena Agent Mode.
+```
+
+…then end the turn. No degraded-mode work, no advice-only fallback, no simulated or role-played tool output, no substitute workflow invented on the spot. Stopping cold with that line is the correct behavior; a model that "tries anyway" is the failure mode this gate exists to catch. Full rule: `MASTER.md` → `capabilityGate`.
+
 ## Start protocol
 
 Run in one pass, parallel where independent:
