@@ -73,6 +73,31 @@ keep the one irreversible step of the case swap careful.
 - PPE: safety glasses (metal slivers), gloves for *handling and filing* the cut panel,
   not while sawing near the blade.
 
+## 3b. High-effort cut troubleshooting (2026-09-01, operator receipt: "takes a lot
+of effort to chew through anything"; cut started, blade reaches both ends = clearance
+confirmed)
+
+First: **slow is normal, stalled is not.** Old-case steel runs 0.9–1.2 mm; a ~280 mm
+hand cut is 10–20 minutes of proper stroking. Read the kerf:
+**chips = cutting (keep going) · shiny polished line + dust only = blade is glazed,
+replace it.** A dull blade never gets easier and is the grab/jump injury mechanism.
+
+Effort = one of these four, never "not strong enough":
+1. **Lube** — candle wax / bar soap / WD-40 rubbed into the kerf, re-applied every
+   few cm. Biggest free effort-drop.
+2. **Blade** — 24–32 TPI bi-metal, fresh, for sheet steel. Count teeth per 25 mm;
+   general-purpose or worn blades are misery by design in 1 mm steel.
+3. **Stroke** — full blade length, slow (40–60/min), cut on the PUSH, lift on the
+   pull. Pressing harder once it stops chipping only polishes the steel.
+4. **Holding** — a flexing panel eats strokes (§2). Rigid panel = the saw does the
+   work. Jigsaw variant: slowest speed, orbital OFF, no pushing — let it feed.
+
+Escalation ladder if it stays miserable after blade + wax + rigid holding:
+jigsaw fine bi-metal (faster, more swarf) → hand nibbler ~$10 (slow, boring-safe,
+tiny curls) → aviation snips (thick old panels may be past cheap snips) →
+angle-grinder cutoff wheel **LAST**: hot abrasive swarf is the worst version of §4;
+panel comes off the machine first, no exceptions.
+
 ## 4. The electrical gate — swarf kills this specific rig
 
 Steel filings are conductive. One shaving across the motherboard, the GPU PCB, or into
