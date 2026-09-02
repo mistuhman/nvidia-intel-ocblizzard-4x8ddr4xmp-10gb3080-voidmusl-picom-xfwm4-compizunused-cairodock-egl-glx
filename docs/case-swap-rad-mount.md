@@ -589,3 +589,151 @@ cleared `90B`), and RGB power for a non-HP fan goes to a standard 5 V ARGB sourc
   2026-08-30 CLOSED / 2026-09-02c), hose/tube-end orientation lock (ORIENTATION
   SUPERSESSION 2026-09-02), header map and 90B (`docs/case-swap-sff-triage.md` §5),
   5 V-only ARGB rule (`MASTER.md` caseSwap RGB path).
+
+---
+
+# Appendix D — Closed panel, 440 W, sealed metal box: the thermal plan (2026-09-02h)
+
+**Operator, verbatim:** "rgb is only one face. which is fine i was thinking of buying new
+fans anyway and it is a closed side panel, so we need really good thermals for it to work
+in whats basically just a metal oven thats tightly packed"
+
+## D.1 Two decisions fall out immediately
+
+**1. Do not buy RGB fans for the radiator.** Closed side panel + solid bezel inner wall =
+those four fans are **never seen** once the case is shut. RGB there is money spent on a
+light inside a sealed box. The animated lighting the operator wants is already delivered
+by the **light bar** (installed, working, `MASTER.md` 2026-08-30 CLOSED). The single-sided
+ring question is therefore **moot** — the flip costs nothing, because nothing is visible
+either way.
+
+**Buy static pressure instead of colour.** Same budget, several °C.
+
+**2. The "metal oven" framing is right in one way and wrong in another.** A closed box is
+not an oven **if the flow-through is real**; it is an oven the moment intake CFM is
+choked. The failure mode here is not the panel — it is the **orifice** (bezel perimeter
+gaps). Everything below is ranked by how much CFM it buys per unit of effort.
+
+## D.2 The number that decides everything
+
+Air carries heat at a fixed rate. For a case in steady state:
+
+```
+ΔT (°C rise inside the case)  =  1.76 × Watts / CFM
+```
+
+(1 CFM of air ≈ 0.569 W per °C.) With the current load — GPU pinned **314 W** + CPU PL1
+**125 W** + board/drives ≈ **~460 W**:
+
+| Effective through-flow | Interior air rise over room | Verdict |
+|---|---|---|
+| 20 CFM | **+40 °C** | oven; thermal throttle guaranteed |
+| 40 CFM | **+20 °C** | GPU inhales 41 °C air in a 21 °C room — fails the 81 °C gate |
+| 60 CFM | +13.5 °C | marginal |
+| 80 CFM | **+10 °C** | workable |
+| 120 CFM | +6.7 °C | comfortable |
+
+**Effective** is the operative word: not the fans' rated free-air CFM (4 × 60 = 240 CFM on
+the box) but what actually gets through the bezel gaps, the rad, and out the back. A
+restrictive intake can easily cut a 60 CFM fan to 20 CFM of real flow.
+
+**So: the goal is ≥ 80 CFM of real through-flow, and the intake orifice is what caps it.**
+
+## D.3 Levers, ranked by °C per unit of effort
+
+**1. Open the intake orifice — the biggest lever by far, and currently the binding one.**
+The bezel inner wall is solid; air enters only via perimeter clip-tab gaps. No fan can
+out-muscle that: flow through an orifice goes as **√Δp**, so doubling fan pressure buys
+only ~41 % more flow, while doubling the open area buys ~100 %. Options already on file:
+the reversible **10–15 mm bezel standoff** (`MASTER.md` 2026-09-02b) is listed as the
+"escalation lever if still starved" — **with a closed side panel and 460 W, promote it
+from escalation to expected**. It is reversible, invisible from the front at the right
+depth, and it is worth more than any fan purchase.
+
+**2. Add a second exhaust — the second-biggest lever, and possibly free.** One rear
+`FFAN1` cannot pass what four front fans push; the surplus stalls and recirculates. The
+empty-chassis photo shows a **rear-top grinder opening** in addition to the front-middle
+one. If that opening is not already occupied, a fan there (exhaust) roughly doubles the
+outflow path and directly raises effective CFM. Hot air also *wants* to go there.
+
+**3. Buy pressure-optimised fans, not airflow-optimised ones.** Through a rad **and** a
+choked bezel, the spec that matters is **static pressure (mmH₂O)**, not free-air CFM.
+Target **≥ 2.0 mmH₂O**, 4-pin PWM, and prefer the P-series/pressure variant where a
+vendor sells both (e.g. Arctic **P**12 = pressure, **F**12 = flow). Four good pressure
+fans at low RPM beat two loud ones — the push-pull doctrine already locked
+(`MASTER.md` 2026-09-02c). Since nothing is visible, optimise price/performance/noise
+only.
+
+**4. Clear the corridor.** "Tightly packed" is itself a thermal setting. Cables crossing
+the front-to-rear path, a drive cage in the stream, or the PSU intake facing a solid wall
+each cost real CFM. Route every cable out of the corridor between the rad and the rear
+fan, and confirm the PSU (top-back) has an unobstructed intake — the operator's own
+flagged open item (`docs/case-swap-sff-triage.md` §10).
+
+**5. Remove watts instead of moving air — the lever unique to this rig, and it is
+already proven.** The OC campaign measured it: at the **95 % knee (304 W)** the card
+scored **8576–8599 vs 8717 stock (−1.6 %)** at **79–80 °C**, and at **90 % (288 W)** it
+scored 8447 (−3.1 %) at **77 °C** — 3–4 °C cooler than stock for ~1–3 % score. In a
+sealed box, **16–32 W removed at the source is worth more than the same watts fought with
+airflow**, and it costs a percent of a benchmark nobody watches. Same logic for the CPU:
+PL1 is writable (MSR 0x610, lock bit 0) and it is a power-limited KF. The daily profile
+candidate `cp90-m400-pl95` is now also the *thermal* answer, not just the efficiency one.
+
+**6. The spare non-RGB fan as a VRM/CPU spot fan** (Step 3, already accepted) stays
+worth it: in a packed box the dead zone around the VRM has no natural flow.
+
+## D.4 Fan shopping spec (nothing visible, so buy performance)
+
+- **Size/count:** 4 × 120 mm for the rad sandwich (+1 if the rear-top opening gets a
+  second exhaust). Reuse the existing rear `FFAN1` fan and the spare non-RGB for the spot
+  duty.
+- **Static pressure:** ≥ 2.0 mmH₂O; ≥ 2.5 preferred given the double restriction.
+- **PWM 4-pin**, so the fan curve can idle them quietly and only ramp under load.
+- **Noise:** with 4 fans on a rad, low-RPM-high-count is the quiet configuration; a fan
+  that hits its pressure spec at lower RPM is worth paying for.
+- **Class examples** (price ladder, all pressure-oriented): Arctic P12 / P12 Max at the
+  value end; be quiet! Silent Wings, Noctua NF-A12x25, Phanteks T30 at the premium end.
+  Verify the current spec sheet at purchase time — this is a class recommendation, not a
+  benchmarked receipt.
+- **Skip ARGB entirely** unless a fan happens to be cheaper with it.
+
+## D.5 Headers — the count now binds
+
+Available: `FAN1` (pump), `LCFAN`, `TFAN/LCFAN2` (rad pair), `FFAN1` (rear exhaust),
+`FFAN2`, `FFAN3`. That is the pump + **5** fan headers, and the EC's `90B` check watches
+the named ones.
+
+Planned fans: 2 push + 2 pull + rear + (optional second exhaust) + VRM spot = **6–7**.
+So **1–2 Y-splitters** are needed. Rule unchanged: splitters are allowed on the
+**non-watched pairs only** (the pull pair, the spot fan) — **never on the pump**, and
+`FFAN1` keeps a real fan with a real tach because that is the header that cleared `90B`.
+
+## D.6 How this gets proven
+
+Unchanged, and it is now doing double duty as the fan-purchase verdict:
+
+1. `etc/rad-cut-postdiag.block` root paste-back — tach receipt first, no exceptions.
+2. Superposition 1080p Extreme + `dmon`: **PASS = GPU ≤ 81 °C and CPU ≤ 70 °C at fan %
+   at-or-below the old case.**
+3. If it fails, the ladder is already ranked: bezel standoff → second exhaust →
+   power-trim to the 304 W knee → (last) front-rad-to-exhaust, which remains rejected
+   while it is the only intake.
+
+The pre-cut **9079** Superposition result was recorded in this chassis before the rad
+opening existed and does not represent the final airflow — it is a reference point, not
+the baseline.
+
+## D.7 Sources
+
+- Sensible-heat relation ΔT = 1.76 × W / CFM (air ≈ 0.569 W per CFM per °C) — standard
+  psychrometrics, computed here from ρ = 1.2 kg/m³ and cp = 1005 J/kg·K.
+- Orifice-limited flow scales as √Δp (hence area beats fan pressure) — the
+  already-recorded doctrine in `MASTER.md` caseSwap 2026-09-02c.
+- Pressure-vs-airflow fan naming (Arctic P = pressure, F = flow) — PC airflow guides,
+  retrieved 2026-09-02.
+- GPU power/score/temperature tiers 320 W→8635 @ 80 °C, 304 W→8576/8599 @ 79–80 °C,
+  288 W→8447 @ 77 °C, stock 8717; CPU PL1 125 W / PL2 241 W, MSR 0x610 lock bit 0 —
+  `MASTER.md` durableFacts.gpu / durableFacts.cpu, `receipts/gpu-oc-receipts.json`.
+- Bezel standoff as the reversible escalation lever, solid bezel inner wall, rear-top and
+  front-middle grinder openings, PSU intake open item — `MASTER.md` caseSwap
+  2026-09-02/b/c, `docs/case-swap-sff-triage.md` §10.
