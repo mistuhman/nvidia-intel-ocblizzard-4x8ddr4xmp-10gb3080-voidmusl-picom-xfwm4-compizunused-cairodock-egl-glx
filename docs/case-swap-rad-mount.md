@@ -737,3 +737,146 @@ the baseline.
 - Bezel standoff as the reversible escalation lever, solid bezel inner wall, rear-top and
   front-middle grinder openings, PSU intake open item — `MASTER.md` caseSwap
   2026-09-02/b/c, `docs/case-swap-sff-triage.md` §10.
+
+---
+
+# Appendix E — The riser kit is the one thing that can break this build (2026-09-02i)
+
+**Operator, verbatim:** "the rear is gonna have an exhaust, and theres an extra rgb fan
+with non working rgb for vrm's. as for the fan purchase, thats up to me, im buying them
+alongside a riser kit solely for aesthetics because sometimes i take the side panel off
+to look at my cool pc, which is why the lightbar is there too. though i still want to
+optimize for the case being closed, since that's the extremity of encapsulating the
+airlfow"
+
+## E.1 Settled, no further discussion
+
+- **Rear exhaust: confirmed.** `FFAN1` keeps its real fan and real tach (the header that
+  cleared `90B`).
+- **VRM spot fan: confirmed** — the spare RGB fan with dead lighting. Dead RGB is
+  irrelevant for that role; it is buried at the VRM.
+- **Fan purchase: operator's call.** Noted and respected. Appendix D's pressure spec
+  (≥ 2.0 mmH₂O, 4-pin PWM) stands as information, not as a gate. The panel-off viewing
+  habit makes RGB on the rad a legitimate purchase reason after all — Appendix D.1's
+  "never seen" argument is **narrowed**: they are unseen *while closed*, which is most of
+  the time, but not always. Buying lit fans is not a mistake, it is a preference with a
+  known cost of zero thermal impact.
+- **Design target: closed-panel worst case.** Correct instinct, and it is the right one to
+  optimise for — a build tuned for panel-off is a build that throttles when shut.
+
+## E.2 The riser kit is NOT in the same category, and it needs a receipt before purchase
+
+A vertical GPU mount is not a cosmetic change in this chassis; it is a **thermal change,
+and specifically the one that attacks the component this build is already tightest on**.
+
+The measured relationship, from multiple independent sources:
+
+| GPU-fan-to-panel clearance | Solid panel | Mesh/open panel |
+|---|---|---|
+| 10–15 mm | **+5 to +15 °C**, throttling risk | — |
+| ~20 mm | still a meaningful delta | near-neutral at 20 mm+ |
+| 25–30 mm+ | borderline acceptable, still warmer | neutral |
+| Panel off | no penalty | no penalty |
+
+Community and reviewer testing puts common cases at **+7 to +13 °C** (one LTT-forum
+report: 67 °C horizontal → 75 °C vertical on a 2080, same game) and notes GPU output
+losses of **3–8 %** once throttling starts.
+
+**Why that number is fatal here, specifically:**
+
+- The 3080 already runs **80–81 °C** at the 314 W pin in the *old, roomier* chassis
+  (`MASTER.md` durableFacts.gpu). The stop rule is **83 °C** and the new-case PASS gate
+  is **≤ 81 °C**.
+- **80 °C + even the mildest vertical penalty (+5 °C) = 85 °C = past the stop rule
+  before the case is even closed.** The +10 to +15 °C end of the range is not a
+  discussion; it is a throttling machine.
+- This is an **older SFF case with a solid side panel**. Vertical mounting is *only*
+  neutral with mesh at 20 mm+ or with an open bench. Neither applies.
+- The GPU is currently the **only** component being fed directly by the front intake
+  corridor; vertical mounting rotates the card into the intake path *and* faces its fans
+  at a sealed steel wall.
+
+**Verdict: as an unqualified purchase, the riser is REJECTED for closed-panel operation.
+As a qualified one, it has exactly one gate — clearance.**
+
+## E.3 The clearance gate — measure before you buy
+
+Vertical mounting is defensible **if and only if** the measured distance from the
+**GPU fan intake face to the inside of the closed side panel is ≥ 25–30 mm**, and better
+still if the panel can be vented in that zone.
+
+Measure now, with nothing bought:
+
+1. Hold the 3080 in the intended vertical position (or lay a straightedge where the card
+   would sit — riser brackets typically place the card **40–60 mm** off the motherboard
+   plane, i.e. much closer to the panel than a slotted card).
+2. Measure fan-face to panel-inside. Write the number down.
+3. **≥ 30 mm** → proceed, expect a small penalty, prove it at the gate.
+   **20–30 mm** → proceed only if you accept a likely 81 °C+ result and a power-trim to
+   compensate. **< 20 mm with a solid panel** → do not buy the riser for closed use.
+
+**A note on the card's thickness:** a 3080 is typically 2.2–2.7 slots (~50–60 mm). In an
+SFF chassis the vertical position frequently leaves **10–20 mm**, which is the failing
+band. That is why this needs a tape measure, not an opinion.
+
+## E.4 If the clearance fails but the riser is still wanted
+
+Ranked, all compatible with "closed panel is the design target":
+
+1. **Buy the riser, run it panel-off only** — mount vertically when the machine is on
+   display, and accept that closed operation stays horizontal. Costs a five-minute swap,
+   and the riser is not wasted.
+2. **Vent the side panel in the GPU zone.** The grinder is already in the toolkit and the
+   panel is already a modified part. Mesh or a hole field opposite the GPU fans converts
+   the "solid panel + vertical" worst case into the "mesh panel + vertical" near-neutral
+   case. Same irreversibility rule: measure, mark, cut off the machine, full swarf
+   protocol.
+3. **Pre-compensate with the power trim.** Running the daily profile at the **304 W knee**
+   costs 1.6 % of the score and returns ~1–2 °C, and **288 W** returns ~4 °C for 3.1 %
+   (`receipts/gpu-oc-receipts.json`). That is a real, already-proven lever — but it buys
+   less than the vertical penalty costs at < 20 mm, so it is a supplement, not a fix.
+4. **Skip the riser.** Horizontal keeps the card in the intake corridor and keeps the
+   81 °C gate reachable. The light bar plus lit rad fans already deliver the panel-off
+   show.
+
+## E.5 Header budget — now final
+
+| Header | Fan | Tach watched |
+|---|---|---|
+| `FAN1` | pump | yes (90B) |
+| `LCFAN` | rad fan | yes |
+| `TFAN`/`LCFAN2` | rad fan | yes |
+| `FFAN1` | **rear exhaust** | yes (cleared 90B) |
+| `FFAN2` | rad pull fan | — |
+| `FFAN3` | **VRM spot fan** (dead-RGB spare) | — |
+
+Fans to connect: 4 rad + 1 rear + 1 VRM = **6**. Headers available: 6 (incl. pump) = 5 for
+fans. **One Y-splitter is required**, and it goes on the **second rad pull fan** paired
+with `FFAN2` — a non-watched position. **Never split the pump.** If a second rear-top
+exhaust is added later, it splits with the VRM spot fan on `FFAN3`.
+
+## E.6 What is now gating the build
+
+1. **Measure the vertical clearance** (E.3) — decides the riser purchase, and it is the
+   only open question that can invalidate the thermal plan.
+2. Rad mounting proceeds regardless (§1–§5); fan direction flip-in-place (Appendix C.2);
+   bezel standoff promoted to expected (Appendix D.3).
+3. Gate unchanged: `etc/rad-cut-postdiag.block` tach receipt → Superposition 1080p Extreme
+   + `dmon`, **PASS = GPU ≤ 81 °C / CPU ≤ 70 °C at fan % at-or-below the old case** —
+   and if the riser is fitted, that gate is run **with the side panel closed**, because
+   closed is the stated design target.
+
+## E.7 Sources
+
+- Vertical GPU clearance/temperature relationship: 10–15 mm solid panel = +5–15 °C and
+  throttling risk; 20 mm+ with mesh = near-neutral; 25–30 mm+ recommended minimum;
+  3–8 % performance loss once throttling — vertical GPU mount guide, retrieved
+  2026-09-02.
+- Corsair: vertical mounting "will usually have a negative impact on GPU temps… typically
+  done purely for aesthetic reasons"; the deciding variable is fan-to-panel proximity —
+  retrieved 2026-09-02.
+- Field measurement 67 °C horizontal → 75 °C vertical (RTX 2080, same workload) —
+  Linus Tech Tips forum thread, retrieved 2026-09-02.
+- This rig: 3080 pinned 314 W at 80–81 °C, 83 °C stop rule, 304 W→79–80 °C and
+  288 W→77 °C tiers, 81 °C PASS gate — `MASTER.md` durableFacts.gpu / caseSwap,
+  `receipts/gpu-oc-receipts.json`.
