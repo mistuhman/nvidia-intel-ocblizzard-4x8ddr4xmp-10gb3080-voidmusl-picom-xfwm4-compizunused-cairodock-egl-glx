@@ -340,3 +340,128 @@ second intake path as the alternative lever. Do not pre-emptively flip it.
   caseSwap 2026-09-02b/c), rear exhaust on `FFAN1` and the 90B header map
   (`docs/case-swap-sff-triage.md` §5), GPU pinned 314 W / 80–81 °C vs 83 °C stop rule
   (`MASTER.md` durableFacts.gpu), thermal gate (`MASTER.md` caseSwap).
+
+---
+
+# Appendix B — "front positive, rear negative": the terms, and why the described stack is backwards (2026-09-02f)
+
+**Operator, verbatim:** "all four fans are intaking from inside the case, if it were
+placed in there. since the rad's intake fans are facing the rad, intaking from the rgb
+fans through the rad and from the inside of the case to the front of the case. im just
+confused on the right fan configuration for the radiatior because isnt it front positive
+rear negative for the best positive pressure? since you dont want heat dissipating to the
+front onto the desk but rather behind the pc where there is no person"
+
+## B.1 Verdict — two half-truths that cancel out
+
+1. **The stack you describe is internally consistent** (all four fans same direction ✓,
+   the Appendix A error is fixed) — **but it is a front EXHAUST**, not an intake.
+   Air path as you wrote it: case interior → RGB fans → rad → bezel → out the front.
+2. **"Front positive, rear negative" is the right goal — and that goal is the OPPOSITE
+   of what you described.** Positive pressure means **front blows IN**. You currently
+   have front blowing OUT.
+3. **Your heat-at-the-desk instinct is also right, and it argues for the same fix**:
+   heat should leave out the back. Front exhaust does the exact thing you said you didn't
+   want — it dumps the rad's hot air out the front, at the desk and at you.
+
+So all three of your stated goals (positive pressure, heat out the back, not at the
+person) point to **one** answer, and it's the one already locked in `MASTER.md`:
+**front stack = INTAKE, rear `FFAN1` = EXHAUST.** Your description is that config
+run in reverse.
+
+## B.2 The vocabulary, pinned down
+
+"Positive/negative pressure" is a property of the **whole case**, not of a wall:
+
+| Term | Definition | How you get it |
+|---|---|---|
+| **Positive pressure** | intake CFM **>** exhaust CFM; case interior slightly above room pressure; air leaks OUT of every seam | more/stronger fans blowing **in** than out |
+| **Negative pressure** | exhaust CFM **>** intake CFM; air is sucked IN through every unfiltered seam, grille, PSU gap | more/stronger fans blowing **out** than in |
+
+There is no such thing as "the front is positive". The front is either **intake** or
+**exhaust**. The standard, and the thing you actually asked for, is:
+
+```
+FRONT = intake (in)   →   [components]   →   REAR/TOP = exhaust (out)
+```
+
+Positive pressure = the intake side wins. With 4 front fans in and 1 rear fan out, you
+are comfortably positive — dust enters only where you let it, not through every crack.
+
+**What you described** is 4 front fans **out** + 1 rear fan **out** = **5 exhausts, 0
+intakes** = strongly **negative**. Every cubic metre the 3080 breathes would be dragged
+backwards through the rear honeycomb, the slot bracket gaps, the PSU shell, and the bezel
+clip gaps — unfiltered, and partly its own re-inhaled exhaust. That's the worst case for
+both dust and GPU temps, and this chassis has no other intake (bezel inner wall is
+**solid**, floor feeder withdrawn — `MASTER.md` 2026-09-02b/c).
+
+## B.3 The desk-heat question, answered properly
+
+Heat is conserved: **every watt the machine burns leaves the box, whatever you do.** The
+only choice is *where* it exits and *what it passes over on the way*.
+
+**Front INTAKE (correct config):**
+- Front face moves **room-temperature air inward** — the front of the case blows cool,
+  not hot. Nothing warm at the desk.
+- The rad's heat (CPU only, ~125 W PL1) enters the case as slightly warmed air, joins the
+  GPU's ~314 W, and **all of it exits the rear** — behind the machine, away from you.
+- Exactly the outcome you asked for.
+
+**Front EXHAUST (what you described):**
+- The front face becomes a heater aimed at the desk — CPU heat straight out the bezel at
+  your hands and monitor stand.
+- The rear fan still exhausts too, so GPU heat also goes back — but the case has to inhale
+  from somewhere, and the only "somewhere" is unfiltered seams and the PSU.
+- You get heat at the desk **and** negative pressure. Both of the things you wanted to
+  avoid, at once.
+
+## B.4 What "the rad's fans face the rad" actually means
+
+Both pairs face the rad — that's what a sandwich is. What decides intake vs exhaust is
+not which side of the rad a fan sits on, it is **which way every fan's outlet face
+points**. Restating the target unambiguously:
+
+```
+BEZEL (front of case, faces the desk)
+  ↑  ← this is where ROOM AIR ENTERS, moving INTO the page
+[PUSH pair — rad's own fans]      outlet faces point INTO the case
+[=== RADIATOR ===]
+[PULL pair — RGB fans]            outlet faces point INTO the case
+  ↓
+CASE INTERIOR → GPU / VRM / DIMMs
+  ↓
+REAR FFAN1                        outlet face points OUT the back
+```
+
+Four outlet faces pointing at the motherboard. One outlet face pointing at the wall
+behind the PC. Nothing pointing at you.
+
+**Concretely, versus what you have in hand right now:** the RGB rings face the case
+interior (correct, per Appendix A) and those RGB fans must **blow away from the rad,
+into the case**. The rad's own fans, on the bezel side, must **blow toward the rad**, i.e.
+also into the case. If your current mental picture has air travelling interior → rad →
+bezel, **flip all four fans 180°** (or equivalently, flip the whole assembled sandwich).
+
+## B.5 Verification is unchanged and mandatory
+
+Tissue test on the bench (Appendix A.3), tape-dot the outlet face of every fan, then
+mount with all four dots facing the motherboard. Then the gate, unchanged:
+`etc/rad-cut-postdiag.block` tach receipt → Superposition 1080p Extreme + `dmon`,
+**PASS = GPU ≤ 81 °C / CPU ≤ 70 °C at fan % at-or-below the old case.**
+
+Front-exhaust remains a *legal* fallback experiment **only** if that meter shows the CPU
+failing while the GPU passes wide — the reverse of the failure mode this chassis is set
+up for. It is not the build target.
+
+## B.6 Sources
+
+- Positive vs negative pressure defined as intake CFM vs exhaust CFM, front-in/rear-out
+  as the standard layout, and "all fans intake / no exhaust path" listed as a top
+  airflow mistake worth 15–20 °C on the GPU — PC airflow direction guides, retrieved
+  2026-09-02.
+- Front rad as intake vs exhaust, measured deltas both directions — overclockers.com AIO
+  position analysis; overclock.net multi-rad intake-vs-exhaust test, retrieved
+  2026-09-02.
+- This chassis: solid bezel inner wall, withdrawn bottom feeder, rear exhaust on `FFAN1`,
+  thermal PASS gate — `MASTER.md` durableFacts.caseSwap 2026-09-02b/c/e;
+  `docs/case-swap-sff-triage.md` §5; `etc/rad-cut-postdiag.block`.
