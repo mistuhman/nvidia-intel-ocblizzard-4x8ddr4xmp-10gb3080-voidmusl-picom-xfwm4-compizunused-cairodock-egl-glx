@@ -465,3 +465,127 @@ up for. It is not the build target.
 - This chassis: solid bezel inner wall, withdrawn bottom feeder, rear exhaust on `FFAN1`,
   thermal PASS gate — `MASTER.md` durableFacts.caseSwap 2026-09-02b/c/e;
   `docs/case-swap-sff-triage.md` §5; `etc/rad-cut-postdiag.block`.
+
+---
+
+# Appendix C — Confirmed direction, the fix that preserves RGB, and a correction (2026-09-02g)
+
+**Operator, verbatim:** "i know which way the fan spins and intakes ive had the pc run
+before and know what each fan is set to and what fan face dictates it. im not just
+guessing. and it goes interior > rgb intake from interior > rad > rad fans intake from
+rad > bezel." … "i still reaally want rgb fans because they animate though, but its not a
+necessity"
+
+## C.1 Receipt accepted — verification track CLOSED
+
+The operator has run this hardware and knows each fan's faces. **The tissue test is
+withdrawn as a requirement**; Appendix A.3 stands only as reference for anyone else. The
+direction is now an operator receipt, not a hypothesis:
+
+```
+CONFIRMED CURRENT: interior → RGB pair → RAD → rad's own pair → bezel → out the front
+```
+
+That is a **front exhaust**, all four fans coherent, no opposed pair. Appendix B's verdict
+is unchanged and now rests on a receipt: 4 front-out + 1 rear-out = **5 exhausts, 0
+intakes**, and this chassis has no other fresh-air path. It must be reversed.
+
+## C.2 CORRECTION to Appendix B.4 — do NOT flip the whole sandwich
+
+Appendix B.4 said "flip all four fans 180°, **or equivalently, flip the whole assembled
+sandwich**." **The second half of that is wrong and is retracted.**
+
+Rotating the assembly 180° would:
+
+- move the **hose/tank end to the opposite side**, breaking the locked upper-middle
+  tube-end position and the "hoses drop straight back to the CPU at the same height, no
+  GPU-zone pass-through" routing (`MASTER.md` ORIENTATION SUPERSESSION 2026-09-02); and
+- move the **RGB pair to the bezel side**, where they are invisible behind a solid bezel.
+
+**Correct fix: unscrew each fan and flip it 180° in its own position.** Nothing moves:
+rad stays put, tube-end stays upper-middle, RGB pair stays on the interior face, rad's own
+pair stays bezel-side. Only the four airflow directions reverse.
+
+Result:
+
+```
+TARGET: bezel → rad's own pair (push, now blowing INTO the rad)
+        → RAD → RGB pair (pull, now blowing INTO the case)
+        → interior → GPU/VRM → rear FFAN1 → out the back
+```
+
+## C.3 The RGB cost of that flip — the real question
+
+The RGB fans **do not move**. They stay on the interior face where they are seen. What
+changes is **which of their two faces points at the viewer**: today the lit face points
+into the case (you see it) and the fan inhales from the case; after the flip the fan
+exhales into the case and **whichever face carries the ring now points at the radiator**
+if the lighting is single-sided.
+
+So the outcome depends on one thing only, which the operator can check in seconds with
+the fans in hand:
+
+| Lighting construction | Effect of the in-place flip | Action |
+|---|---|---|
+| **Ring lit through the frame edge / translucent both faces** (very common on white-ring fans, and what the photo's thick white rings suggest) | RGB stays visible | **Flip and you lose nothing.** Done. |
+| **Diffuser only on one face** | The lit face turns toward the rad; you see a dark frame | Pick an option in C.4 |
+
+**Check:** power the ARGB and look at the *other* face, or hold the unpowered fan to a
+light — if the ring glows/diffuses on both sides, the flip is free.
+
+## C.4 Options if the lighting really is single-sided
+
+Ranked, with the airflow requirement (front = intake) held fixed and non-negotiable:
+
+1. **Do nothing — accept the dark face.** Cheapest, zero risk. Note the honest question
+   first: **does this case even have a side window?** It is an older SFF case with a
+   **solid** front bezel inner wall; if there is no window, interior RGB fans are only
+   ever seen with the panel off, and the animated lighting the operator wants is already
+   being carried by the **light bar** (installed and working, `MASTER.md` 2026-08-30
+   CLOSED). If there is no window, this whole trade-off is moot — flip and move on.
+2. **Reverse-blade ARGB fans.** This exact problem is a product category: reversed blades
+   move air the "wrong" way relative to a normal fan so the lit face stays toward the
+   viewer while the airflow goes the other way (Thermaltake CT120 / CT120 EX Reverse ARGB,
+   and several generic 3-packs). Two of them replace the RGB pull pair, lighting faces the
+   interior, air still goes bezel → interior. **This is the clean answer if the window
+   exists and the flip really does hide the light.**
+3. **ARGB frames/halos.** Thin lit rings (Phanteks Halos class) that mount on either face
+   of *any* fan — keeps the current fans and their known-good airflow, adds light on the
+   face you choose. Also the fallback if reverse-blade fans in the right size/colour are
+   not available.
+4. **Swap the pairs:** RGB pair to the bezel side, plain pair inside. **Rejected** —
+   the bezel inner wall is solid, so the RGB would be sealed inside a dark cavity: all
+   cost, no light.
+5. **Keep front-exhaust to preserve the current lit face. Rejected** — that is the
+   0-intake configuration; it fails both stated operator goals (positive pressure, heat
+   away from the desk) and starves a 314 W GPU. Aesthetics do not outrank the only
+   fresh-air path in the chassis.
+
+**Any new fan added under option 2 or 3 is its own change:** it lands on `FFAN2`/`FFAN3`
+(pump stays `FAN1`, rad fans `LCFAN` + `TFAN/LCFAN2`, `FFAN1` stays the rear exhaust that
+cleared `90B`), and RGB power for a non-HP fan goes to a standard 5 V ARGB source — never
+12 V, and not through the M82868-001 hub's `LOGO` output.
+
+## C.5 Net effect on the build plan
+
+- **Nothing about the mounting changes.** The sandwich, hole pattern, bolt length,
+  gasket and swarf gates in §1–§5 are unaffected by fan direction.
+- **One extra step before final assembly:** flip the four fans in place, keeping the rad
+  and hose end exactly where they are.
+- **Decision needed:** window or no window, and single- or double-sided ring. Those two
+  answers pick the RGB option by themselves.
+- Gate unchanged: `etc/rad-cut-postdiag.block` tach receipt → Superposition 1080p Extreme
+  + `dmon`, **PASS = GPU ≤ 81 °C / CPU ≤ 70 °C at fan % at-or-below the old case.**
+
+## C.6 Sources
+
+- Reverse-blade ARGB fans exist specifically so lighting stays visible while airflow runs
+  the other way — Thermaltake CT120 Reverse ARGB Sync / CT120 EX Reverse ARGB product
+  pages; multiple 120 mm reverse-blade ARGB 3-packs, retrieved 2026-09-02.
+- Lighting-visibility-vs-airflow is a known build conflict; standard remedies are
+  clear-blade/hub-lit fans, fans lit on both faces, or add-on ARGB frames
+  (Phanteks Halos) — Tom's Hardware "Change Fan Direction" thread, retrieved 2026-09-02.
+- Rig-specific: solid bezel inner wall and light bar working (`MASTER.md` caseSwap
+  2026-08-30 CLOSED / 2026-09-02c), hose/tube-end orientation lock (ORIENTATION
+  SUPERSESSION 2026-09-02), header map and 90B (`docs/case-swap-sff-triage.md` §5),
+  5 V-only ARGB rule (`MASTER.md` caseSwap RGB path).
