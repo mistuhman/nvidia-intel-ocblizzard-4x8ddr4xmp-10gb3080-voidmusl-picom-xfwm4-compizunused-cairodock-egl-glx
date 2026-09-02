@@ -224,3 +224,119 @@ it from $6 of angle.
 - Rig-specific rules (headers/90B, one change per power-on, swarf gate, orientation,
   bezel doctrine): `MASTER.md` durableFacts.caseSwap, `docs/case-swap-rad-cut.md`,
   `docs/case-swap-sff-triage.md`, `STATE.md`, `etc/rad-cut-postdiag.block`.
+
+---
+
+# Appendix A — Airflow direction check (operator question 2026-09-02e)
+
+**Operator, verbatim:** "since the rgb side faces inside the case and that same side is
+intake, and opposite that side is the aio fans intaking from the radiator out the front
+of the case. is that config right? considering rear is already exhaust"
+
+## A.1 Verdict
+
+**The *positions* are right. The *direction* as described is wrong — or at least
+ambiguous in the one way that matters.**
+
+In a push-pull sandwich **all four fans must blow the SAME way**. There is no
+"one side intakes, the other side intakes from the rad." Push and pull are named from
+the *radiator's* point of view, not from each fan's:
+
+- **push** = fan on the upstream face, blowing INTO the rad
+- **pull** = fan on the downstream face, sucking THROUGH the rad and blowing on out
+
+Both fans move air in the **same direction**. The correct chain for your locked layout:
+
+```
+outside air → bezel gaps → [PUSH: rad's own 2 fans] → RADIATOR → [PULL: 2 RGB fans]
+   → case interior → over GPU/VRM → rear FFAN1 exhaust → out
+```
+
+Every arrow points the same way: **front → back**.
+
+Your sentence reads as though the front pair is moving air **out the front** while the
+RGB pair moves air **into the case**. That is two fans fighting across one radiator:
+net flow ≈ 0, both fans stall in each other's pressure, noise goes up, CPU coolant
+climbs, and the rear exhaust then pulls its make-up air backwards through the rear
+honeycomb and the PSU. It is the single most common AIO mounting error and it is
+invisible until you measure — which is exactly what the post-cut gate exists for.
+
+## A.2 So is "RGB side faces inside = intake" correct?
+
+**Yes — and it is the right way round for both cooling and looks.**
+
+- The RGB pull pair sits on the inside face and blows **into the case**. Correct.
+- The rad's own push pair sits between the bezel and the panel and must **also** blow
+  **into the case** (i.e. through the rad, toward you-in-the-case, away from the bezel).
+- Rear `FFAN1` exhausts. Correct — and it is now the **only** exhaust, which is fine
+  because the front stack is the only intake. One-way flow, no dead zones.
+
+Aesthetically it also lands right: the RGB rings face the window/interior; the plain
+push fans hide in the bezel cavity.
+
+## A.3 How to verify direction (do this before a single screw)
+
+Do **not** trust the blade shape by eye and do not trust your skin at low RPM.
+
+1. **Frame arrow** — most fans have a small moulded arrow on the side of the frame
+   showing airflow (a second arrow shows rotation; ignore that one).
+2. **Sticker/hub rule** — air exits **toward the label/hub-strut side**; the open blade
+   side is the **intake** side. This holds on virtually all PC fans (Noctua documents it
+   explicitly). The strut-and-cable "ugly" side is the outlet.
+3. **Tissue test (authoritative)** — power the fan on the bench, hold a strip of tissue
+   at each face: pulled toward = intake face, blown away = outlet face. This is the only
+   method with no exceptions. Do it once per fan and mark the outlet face with a dot of
+   tape.
+
+Then mount so that **all four outlet faces point into the case**.
+
+## A.4 The intake-vs-exhaust question for THIS rig (why intake is still right)
+
+The general trade-off: a **front rad as intake** gives the best coolant/CPU temps
+(rad sees room air) and costs the GPU a few degrees (case ambient rises). A front rad as
+**exhaust** does the reverse. Published side-by-side testing shows the intake orientation
+moving coolant ~3–5 °C and CPU ~7–11 °C in its favour, while other builders measure
+GPU/VRM penalties of ~4–6 °C when all rads are flipped to intake. It is genuinely
+case-dependent.
+
+For this chassis the argument is not close, for a reason specific to your build:
+
+- The bezel inner wall is **solid** and the floor is **solid** (the bottom GPU feeder was
+  withdrawn for recirculation). The front-middle rad opening is therefore the **only**
+  fresh-air path in the case.
+- If you flip the rad to exhaust, the case has **two exhausts and zero intakes**. Every
+  cubic metre the GPU breathes gets sucked backwards through the rear honeycomb, the
+  slot bracket, and the PSU — the worst possible source, and it recirculates its own
+  exhaust.
+- The CPU is a 125 W-PL1 part behind a 240 rad; the 3080 is the pinned 314 W part. But
+  starving the GPU of intake air hurts it far more than pre-warming its intake by the
+  3–6 °C a CPU-only 240 rad adds.
+
+**So: front rad = intake, rear = exhaust, and that is the config to build.**
+
+Pressure balance is fine as-is: four fans pushing through a restrictive rad and a
+restrictive bezel roughly matches one unobstructed rear exhaust — slightly positive if
+anything, which keeps dust out.
+
+**This stays a hypothesis until it is metered.** The existing gate already tests exactly
+this: after `etc/rad-cut-postdiag.block`, the new-case baseline is Superposition 1080p
+Extreme + `dmon`, **PASS = GPU ≤ 81 °C and CPU ≤ 70 °C at fan % at-or-below the old
+case's**. If the GPU number fails and the CPU number passes by a mile, *then* the
+front-rad-to-exhaust flip becomes the next single knob — with a bezel standoff or a
+second intake path as the alternative lever. Do not pre-emptively flip it.
+
+## A.5 Sources
+
+- Push/pull = fans on both faces moving air the **same** direction; opposed fans give
+  ~zero net flow — overclockers.com push/pull thread, retrieved 2026-09-02.
+- Airflow direction identification (frame arrow, label/hub-side = outlet, tissue test);
+  a single reversed fan is worth several °C — PC airflow direction guides, retrieved
+  2026-09-02.
+- Front rad intake vs exhaust measured both ways (intake: coolant −3.5…−5.4 °C, CPU
+  −7…−11 °C; all-rads-intake elsewhere: GPU +4 °C, GDDR6 +5 °C, VRM +6 °C) —
+  overclockers.com AIO position analysis and overclock.net multi-rad test, retrieved
+  2026-09-02.
+- Rig-specific: solid bezel inner wall + withdrawn bottom feeder (`MASTER.md`
+  caseSwap 2026-09-02b/c), rear exhaust on `FFAN1` and the 90B header map
+  (`docs/case-swap-sff-triage.md` §5), GPU pinned 314 W / 80–81 °C vs 83 °C stop rule
+  (`MASTER.md` durableFacts.gpu), thermal gate (`MASTER.md` caseSwap).
