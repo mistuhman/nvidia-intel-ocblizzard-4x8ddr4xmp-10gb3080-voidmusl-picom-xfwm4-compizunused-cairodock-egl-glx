@@ -7,8 +7,9 @@ need to be mounted solidly and easily interchangeable when the pc is off."
 the case's own grey-painted **flat drive plates (sleds)** held in a stack of three, each carrying a
 row of 3.5" side-mount holes plus a bent-up locating lip, two of them with bare-steel **spring
 tabs** and a rectangular slot at the outboard end; a **2 TB 3.5" drive with a white spec-table
-label resting label-up on top** (that is the Toshiba **DT01ACA200** — a member of the `bulk`
-stripe, so it is *out of its bay* while `bulk` is expected to import: §4); the white-painted front
+label resting label-up on top** (white table label + 2.0 TB is consistent with the **DT01ACA200**
+half of `bulk`, and the geometry says a drive is out of its bay while `bulk` is expected to
+import — §4. The model is *inferred from the label style, not read*; confirm from the sticker) the white-painted front
 **drive column** with its rectangular bay-guide slot and a Phillips at the top corner behind the
 hand; SATA/power looms hanging in the lower front.
 
