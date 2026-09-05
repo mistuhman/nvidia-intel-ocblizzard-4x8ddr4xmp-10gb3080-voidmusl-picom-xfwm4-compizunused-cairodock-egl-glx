@@ -40,7 +40,12 @@ wins, because it carries the receipts.
 4. **The drive column occupies the same front region as the rad opening.** HDD mounting is solved
    in `docs/case-swap-hdd-mount.md` using existing bay holes, and it must not borrow the panel
    area the rad needs.
-5. **Beep-code context:** the case-swap qualification gate (11) is now joined by a hard POST
+5. **Drive mounting is settled as sleds, not caddies** (photo receipt 2026-09-05b): the case's own
+   flat drive plates, relocated rearward in the front column (route A/B/C in
+   `docs/case-swap-hdd-mount.md` §1b), SSDs riding a 2x2.5"-in-HDD-footprint tray as a peer sled.
+   Zero drilling, M3x5 only, and it is constrained by a cable-reach measurement, not by hardware
+   availability.
+6. **Beep-code context:** the case-swap qualification gate (11) is now joined by a hard POST
    block — HP **3.2** (3 long + 2 short) = *EC timed out waiting for BIOS to return from memory
    initialization* — see `docs/case-swap-3-2-beep.md`. A zip-tied rad pulling on the pump block is
    on that ladder, because LGA1700 mounting pressure is a memory-contact variable.

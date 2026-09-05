@@ -3,9 +3,26 @@
 **Operator, verbatim:** "still need to mount the hdd's like shown in the picture ... the hdd's
 need to be mounted solidly and easily interchangeable when the pc is off."
 
-**The picture did not arrive in this chat** (no image in the sandbox, and no attachment marker in
-the message). Everything below is built from the case's own published geometry; send the photo
-and this doc gets a confirmation pass against it before a single screw is ordered.
+**Photo received with the operator's follow-up (2026-09-05).** What it shows, read as a receipt:
+the case's own grey-painted **flat drive plates (sleds)** held in a stack of three, each carrying a
+row of 3.5" side-mount holes plus a bent-up locating lip, two of them with bare-steel **spring
+tabs** and a rectangular slot at the outboard end; a **2 TB 3.5" drive with a white spec-table
+label resting label-up on top** (that is the Toshiba **DT01ACA200** — a member of the `bulk`
+stripe, so it is *out of its bay* while `bulk` is expected to import: §4); the white-painted front
+**drive column** with its rectangular bay-guide slot and a Phillips at the top corner behind the
+hand; SATA/power looms hanging in the lower front.
+
+**Operator's request, verbatim:** "this is the photo of the hdd arrangement i want for better
+access. example photo, not where itll be but in that region further back in the case so when the
+door opens i have access directly to the hdd's with no dvd drives blocking it and also with a cover
+or this other ssd holder i have thats the same dimensions of an hdd but holds two ssd's with the
+same mounting screw points as an hdd"
+
+Translation of the intent, and it is a good one: **per-drive sleds on the existing column,
+relocated rearward so the drive faces clear the 5.25" cover plane, pulled straight out at the
+opened side panel — with the 2x2.5"-in-HDD-footprint SSD tray used as just another sled in the
+same geometry.** That is §1's rank 2 taken to its proper conclusion, and for *this* access goal
+it beats the bought 5.25" caddy, so **§1b is the recommendation.**
 
 ## 0. The chassis, from its own spec sheet (not guessed)
 
@@ -42,12 +59,69 @@ Consequences that matter here:
 | ✗ | **Zip ties, rubber bands, foam + tape, "sitting on the floor"** | free | Rejected as a final mount for spinning media: nylon creeps and saws, a 3.5" drive resonating against a thin steel floor is a noise and a bearing-life problem, and the failure that actually kills data is **strain on the SATA + power connectors** with nothing carrying the mass. Acceptable only as tonight's restraint, under §3. |
 | ✗ | **Drilling the case floor / front column** | — | Not on the table: no drill, and the operator's rule since the rad cut is existing holes only. |
 
+**Update after the photo (2026-09-05): for this operator's stated goal — direct access at the
+opened side panel, no DVD blanks in front — §1b's relocated-sled plan is the pick, and it is
+*cheaper* than rank 1 because it spends hardware already in the case.** Rank 1 stays the answer if
+they ever want the drives up front behind a removable bezel instead.
+
 **Buying list if rank 1 is chosen:** one 5.25"→2x3.5" caddy per two drives, **M3x5** pan-head
 (machine-screw) for the bay sides, one **40 mm silicone/rubber washer per drive** (anti-vibration
 between drive and tray), and a **right-angle SATA cable** per bay if the run is tight. Nothing
 long, nothing that needs a drill, nothing that needs the panel off a live machine.
 
-## 2. Fitting rules (rank 1 and 2, and why each one exists)
+## 1b. The operator's arrangement, specified so it is solid and not merely removable
+
+The sled idea is right; what separates "solid" from "the drive walks out on vibration" is six
+conditions. All of them are satisfiable with the parts in the photo plus M3x5 screws.
+
+1. **One plate per drive, never a drive on a drive.** In the photo the top drive is resting on the
+   stack — that is fine as a carried-in hand-stack, but as a mounted state a 2 TB spinning drive
+   sitting on another drive's cover couples their resonances and flexes both cases.
+2. **Capture the plate at two points minimum, the drive at four if the plate allows.** The
+   drive-side screws are the structural joint: 2 side + 2 bottom M3x5 if the plate has both
+   patterns, and **never longer than 5 mm** (a 6 mm+ screw can reach the board on the underside).
+   A plate held by its single front screw is a lever, not a mount.
+3. **Kill the forward-walk path deliberately.** The bent lip and the spring tab are locating
+   features; they must bear on a **solid edge**, not ride in a smooth open slot. Add one captive
+   thumb-screw (or a 6 mm washer + a quarter-turn of a hand driver) at the plate's front edge, so
+   "pull out" is something you choose, not something vibration decides.
+4. **PCB-side contact rule, corrected against the photo:** the drive lying **label-up = PCB down on
+   the plate** is acceptable — drive vendors rate any orientation and the cast cover is the heat
+   path. What is *not* acceptable is a proud bolt head, a burr, or a ground edge crossing the bare
+   board: a strip of kapton/polyimide or a 0.5 mm fibre washer under the PCB fixes it without
+   changing the mount.
+5. **The 2x2.5" SSD tray is a peer sled, not an add-on.** Because it carries the HDD hole pattern
+   it goes in the same slot with the same two screws, at the same depth, one per bay position. Do
+   not stack it on top of an HDD plate.
+6. **Keep the intake honest.** The relocated drives must not shade the front rad opening or block
+   the corridor to the rear `FFAN1` (this case's whole airflow plan is orifice-limited —
+   `docs/case-swap-rad-mount.md` Appendix D). Leave >=15 mm clear around the connector end so the
+   sled can be pulled with the cables still seated.
+
+**Relocating rearward, without a drill** — three ways, in order of preference:
+
+| | How | What it costs | Check first |
+|---|---|---|---|
+| **A** | Use the **rearward hole row of the column itself.** Cheap mid-tower drive columns carry two or three fore-aft hole rows precisely because 3.5" and 5.25" drives want different depths. If the column has them, the move is free: same screws, one row further back. | 10-second look with a flashlight | Do the **cable-reach test** (below) before committing |
+| **B** | Bolt the plates to the **rear-most M3 holes of the 5.25" bay rails** (the rails are drilled front-and-rear for optical drives). The drives then sit behind the cover plane — no DVD blank in front of them, which is the access the operator asked for — while every thread used is factory. | free; M3x5 + 4 washers | The drive face ends up level with the bay opening, so the "cover" they mentioned is a 5.25" blank on the *outside* if they want it closed |
+| **C** | **Slotted-angle sub-frame** (41 mm Unistrut, two short lengths) bolted to A or B holes, with the plates riding the slots. Spring/tube nuts in the strut channel. Slots give ~13 mm of free adjustment per row, so the depth becomes a choice instead of a constraint. | ~$10 of hardware, grinder to cut, no drilling of the case | Keep the frame out of the intake orifice |
+| ✗ | Floor-mounted side-by-side | — | **Physically impossible here:** case interior width is 184 mm, two 3.5" drives side by side are ~203 mm |
+| ✗ | Hanging drives off the top-mounted PSU's underside, or sharing the rear fan's holes | — | Refused: PSU screws carry a spinning drive = vibration into the PSU shell and a strain-gauge on the case; the rear holes belong to `FFAN1`, the header that cleared `90B` |
+
+**The measurement that decides it (before anything is moved):** with the plate + drive at the
+intended rearward depth, can a **SATA data cable and a SATA power lead reach both drives with a
+50 mm service loop and zero tension** while the sled still pulls straight out? The HP M83827-001
+harness and the board's SATA ports are laid out for the *factory* bay depth, so a rearward move of
+more than ~60 mm can silently convert "instant access" into "unplug six things every time". If the
+reach fails, the fix is **B** (in the plane of the rails, minimal offset) or a right-angle SATA
+connector on the drive side, not a longer cable daisy-chained.
+
+**And the standing gate:** nothing new gets bolted in while gate 12 (`docs/case-swap-3-2-beep.md`)
+is open. Step 0 first — the capacitor — then the boot, then this, one change per power-on.
+
+
+
+## 2. Fitting rules (rank 1, rank 2 and §1b, and why each one exists)
 
 1. **Drives screw into the tray/sled first, tray into the case second.** The mass is carried by
    M3 threads in the drive's own steel chassis — the only mount a 3.5" HDD is engineered for.

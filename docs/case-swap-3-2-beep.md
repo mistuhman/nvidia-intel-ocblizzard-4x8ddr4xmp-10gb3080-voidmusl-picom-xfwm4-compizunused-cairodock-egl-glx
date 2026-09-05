@@ -7,6 +7,14 @@ to mount to the front as there are no screw holes for it or screws long enough n
 tools necessary for drilling screw holes" + "an important note about the case is that its an
 apex pc389".
 
+**Operator, 2nd message (2026-09-05), verbatim:** "before i do anything, one step at a time, and
+key note. one of the capacitors was bent but not damaged, i bent it back straight."
+
+**Pacing directive, reaffirmed and now binding for this ladder: ONE step per wave, operator
+reports back before the next step ships.** (Same rule as the placement work, `MASTER.md`
+caseSwap 2026-09-02c.) The steps below are therefore to be read as a queue, not a checklist to
+run in one sitting — **Step 0 is the only step shipped now.**
+
 ---
 
 ## 1. The decode (HP's own numbering, corroborated on THIS board)
@@ -31,6 +39,12 @@ not a PSU-latch code (a hard short latches the PSU silent — that was the whole
 crisis shape). And per the operator's own words, cabling is not the variable being reopened:
 the reseat below is a *differential test*, not an accusation.
 
+**What 3.2 does NOT mean is "the memory sticks are bad."** It means BIOS never returned from
+training — which also covers anything that stops the **memory power rails** (VDDQ/VPP) from
+coming up, or a decoupling cap in that zone that is shorted, open, or leaning into a neighbour.
+That is why the bent-and-restored capacitor report is **Step 0**, ahead of every reseat, and not
+a footnote.
+
 **What it does NOT exclude: the zip-tie AIO.** On LGA1700 the memory controller's pins live in
 the same socket grid as the core pads, so **cooler mounting pressure is a memory fault class**:
 documented as "if the cooler mounting pressure is uneven or excessive, it can slightly flex the
@@ -45,6 +59,7 @@ A rad hung on zip ties pulls on the hoses, and the hoses pull on the block.
 
 | # | Class | Why it fits | Discriminator |
 |---|---|---|---|
+| **M0** | **The bent-and-restored capacitor** (operator: "one of the capacitors was bent but not damaged, i bent it back straight") | Ranking changed by this report: this is the one item in the whole event that is *new physical damage to the circuit*, it happened during the same work window, and a re-straightened electrolytic can (a) leave a lead sitting against a neighbour pad/trace = a rail shorted toward ground, (b) crack its sleeve at the seal or lift a pad, (c) break its solder fillet = an open decoupling cap. On a Z690 board the VDDQ/VPP memory-filtering caps sit in exactly the zone a hand reaches through when working the front of an 184 mm case, and a shorted memory rail produces *this* code: BIOS never returns from MRC, the EC times out at 3.2. "Not damaged" is an operator judgement made without a close look, and it is cheap to verify. | **zero power, by eye + bright light, no tools** — Step 0, before any power-on |
 | **M1** | **DIMM not fully seated** after the swap (184 mm-wide case, hand access around the rad/hoses) | the #1 documented cause of 3.2; needs 20-30 lbf of even pressure on a DDR4 latch to click both ends | reseat pass, one power-on |
 | **M2** | **The never-validated 4000 MT/s @ 1.45 V profile (r3) still keyed** | PROVEN live 2026-08-30 06:44 UTC — `dmidecode` read Configured Memory Speed **4000 @ 1.45 V** on all four DIMMs *after* a CMOS-reset screen, and per `MASTER.md` gate 11 the inverse (F10 → XMP Profile 1 3733) was **parked, never executed**. Z690 retrains by rebooting; a hard training failure is what makes the EC give up on BIOS | 1-DIMM boot → trains at JEDEC → reach F10 and read it |
 | **M3** | **Block seating / hose tension from the zip-tie rad mount** (M3 = C5 of `docs/case-swap-sff-triage.md`) | the mount is explicitly "not right" per the operator; tension on the pump block = uneven ILM pressure = memory-channel contact | loosen ties so the stack is unloaded, confirm the block is flat and all four fasteners snug diagonally, one power-on |
@@ -55,6 +70,33 @@ A rad hung on zip ties pulls on the hoses, and the hoses pull on the block.
 
 Zero-power between attempts: **cord out, hold the case button 20-30 s** (this PSU has no rocker,
 STATE.md/`docs/case-swap-sff-triage.md` §0 fact 4). Do not loop power-ons waiting for the EC.
+
+0. **Step 0 — capacitor audit. No power-on in this wave.** Cord out, button held 20-30 s, bright
+   light, phone macro photo, nothing metal in your hand.
+   - **Where is it?** The answer decides everything: in the **DIMM zone** (between/around the four
+     slots, or the row ahead of them toward the front) = memory rail decoupling = **this is your
+     fault class**, stop and report. Under the CPU/socket area or near the VRM = power path, report.
+     Anywhere else (audio, front-edge, USB, chipset side) = note it, and continue to Step 1.
+   - **Five looks at the cap itself:** (1) both leads soldered with a shiny fillet at the board,
+     not floating; (2) the body stands vertical, not leaning into a neighbour; (3) **nothing is
+     touching it** — a pad, a trace, a via, the DIMM slot's plastic backstop, a screw head, a
+     heatsink underside; (4) the sleeve is uncracked at both ends and there is no electrolyte
+     stain / crust at the seal or on the board under it; (5) the two pads around it have the same
+     look as their neighbours (a lifted pad shows as a pale ring or a bare copper island).
+   - **If a lead is against something:** do not "un-bend it a bit" and power on. Insert a dry,
+     **non-conductive** separator (a sliver of plastic from a zip-tie offcut, folded paper, a
+     fibreglass pen shaft) and leave it there only as a *diagnosis aid* — a proper repair is a
+     soldering iron. Report which way it moved the beeps before doing anything else.
+   - **If it is clean but in the memory zone:** that is still an answer — proceed to Step 1 and
+     tell me, because it changes what Step 2 is worth doing.
+   - **While the light is in there, one 10-second look-only sweep** (no changes, this wave observes
+     only): a dropped screw or a standoff bump under the board (class A1), a pinched cable behind
+     the tray, the CR2032 sitting in its clip, and anything else that moved *because your hands
+     moved that capacitor*. A bent cap is evidence of reach into the component side, and reach has
+     a habit of leaving more than one mark.
+   - **No DMM on this rig** (`ToDo.md` "no special tools (no DMM, no 3.3V SPI)"), so this step is
+     eyes and light, and the photo is the instrument.
+   - **Pass = report the location + the five looks; only then does Step 1 ship.**
 
 1. **Step 1 — reseat pass (free, no tools, no parts).** Cord out: release the zip-tie tension on
    the rad so the hoses carry zero load; check the pump block sits flat with all four fasteners
@@ -105,3 +147,9 @@ these steps, i.e. is F10 reachable?** Everything else (beep count, whether the b
 tensioned, which slot worked) is context. Paste `etc/case-swap-mem-3-2-post.block` (root,
 read-only) from Void as soon as it boots: it reads Configured Memory Speed/Voltage per DIMM,
 MCE/EDAC, and the fan tachs — the receipt that proves whether M2 was live all along.
+
+**Wave 0 has a different, cheaper receipt: no paste-back at all.** One macro photo of the
+capacitor with its neighbours and the closest DIMM slots in frame, the board lit obliquely so a
+leaning lead shows a shadow, plus one sentence naming the zone it lives in (between/around the
+DIMMs | under/around the socket or VRM | elsewhere). Power stays off for this step; the
+`etc/case-swap-mem-3-2-post.block` block ships with the wave that ends in a boot.
