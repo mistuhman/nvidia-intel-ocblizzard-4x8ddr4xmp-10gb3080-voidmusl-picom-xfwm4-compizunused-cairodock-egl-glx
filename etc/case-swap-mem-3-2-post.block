@@ -1,0 +1,21 @@
+id -u
+# case-swap-mem-3-2-post.block - ROOT shell on the target (sudo -i first, then paste). READ-ONLY.
+# Why: the board beeps 3 long + 2 short (HP major/minor 3.2 = the EC timed out waiting for BIOS to return from MEMORY initialization) and the machine will not POST. This block is the receipt that closes the two live questions the moment it boots: (1) is the never-validated 4000 MT/s @ 1.45 V custom profile STILL keyed - it survived a firmware CMOS reset on 2026-08-30, so "no POST, can not check" is not an answer, this is; (2) did the memory path take any damage during the reseats - EDAC/MCE counters and corrected-error lines are what a bad DIMM contact leaves behind even when it boots. It also re-reads RTC (hours of unplugging and draining can cost time), fan tachs (the zip-tie rad and the pump), pool health (ZFS root: silent corruption is the failure mode) and the GPU link width (a card shaken in a tight case lands at x8).
+# Gate: paste the FULL output back. Empty output is an answer. Do NOT run Superposition, Geekbench, memtest-style stress, or any OC knob until this receipt is read - and do NOT re-apply 4000 under any circumstances (inverse stays F10 XMP Profile 1, 3733 @ 1.35 V, ladder r0).
+date
+hwclock -r
+cat /sys/class/dmi/id/bios_version
+cat /sys/class/dmi/id/board_name
+dmidecode -t memory
+dmidecode -t 16
+free -g
+find /sys/devices/system/edac -name ce_count
+find /sys/devices/system/edac -name ue_count
+sensors
+find /sys/class/hwmon -maxdepth 2 -name fan\*_input
+zpool status
+nvidia-smi
+nvidia-smi --query-gpu=name,pcie.link.gen.current,pcie.link.width.current,pcie.link.width.max,temperature.gpu,power.limit --format=csv
+dmesg -T --level=err,warn
+last -x reboot
+efibootmgr -v

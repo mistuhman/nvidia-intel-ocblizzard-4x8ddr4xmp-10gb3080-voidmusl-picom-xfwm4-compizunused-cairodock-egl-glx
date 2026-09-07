@@ -38,7 +38,7 @@ So the ranked answer is:
 | 2 | **Drilled panel + rad screwed to panel, fans on both faces separately** | If the sandwich bolt length can't be sourced. |
 | 3 | **Angle-bracket frame** (aluminium/steel angle bolted to the drive cage + floor, rad bolted to the angle) | If the cut panel is too flimsy, warped by grinder heat, or the hole positions would fall on the formed/curved section. |
 | 4 | Commercial universal rad bracket (Bykski B-ST-2FN-V2 class, slotted steel, ~$24) | Only if you want a bought part; functionally = method 3. |
-| ✗ | Zip ties through the fins, "fan pins", double-sided tape alone | **Never.** Fin-piercing mounts saw through the core over time and the failure mode is coolant on a 3080. |
+| ✗ | Zip ties **through the fins**, "fan pins", double-sided tape alone | **Never.** Fin-piercing mounts saw through the core over time and the failure mode is coolant on a 3080. Ties used as a *clamp* around the panel, with the fans properly screwed to the rad, are a legitimate interim — **Appendix F (2026-09-05)**, which is the operator's actual live state. |
 | ✗ | Drilling the radiator | **Never.** The tanks/channels are pressurised. |
 
 ---
@@ -880,3 +880,87 @@ exhaust is added later, it splits with the VRM spot fan on `FFAN3`.
 - This rig: 3080 pinned 314 W at 80–81 °C, 83 °C stop rule, 304 W→79–80 °C and
   288 W→77 °C tiers, 81 °C PASS gate — `MASTER.md` durableFacts.gpu / caseSwap,
   `receipts/gpu-oc-receipts.json`.
+
+---
+
+# Appendix F — The zip-tie reality: the case is an APEX PC-389-C and there is no drill (2026-09-05)
+
+**Operator, verbatim:** "aio is not mounted right since its using zipties to mount to the front
+as there are no screw holes for it or screws long enough nor are there tools necessary for
+drilling screw holes" and "an important note about the case is that its an apex pc389. which was
+in the previous chat".
+
+The case identity was missing from this repo (the chat that established it was never committed)
+and is now recorded: **APEX PC-389-C** — ATX mid tower, thin steel, 444 x 184 x 406 mm,
+**top-mounted PSU**, 3 x external 5.25" + 2 x external 3.5" + 4-5 x internal hidden 3.5" bays,
+90 mm rear + 80 mm front fan positions, **explicitly not tool-less** (Newegg N82E16811154095 /
+apextechusa pID=119, retrieved 2026-09-05). It has no 120 mm front fan mount at all, which is
+why the front-middle opening had to be cut, and why §1's "make the holes" plan met a case with
+no rad holes and a toolbox with no drill.
+
+## F.1 Verdict: ties are an acceptable *clamp*, never a *cantilever*, and never the hose anchor
+
+Three separate failure modes have to be separated, because the phrase "not mounted right" is
+covering all three:
+
+| Mode | Mechanism | Status |
+|---|---|---|
+| **Load through the fins** | tie or pin bears on the corrugated fin pack; saws a channel; coolant into the case | **Never.** Unchanged from §0. |
+| **Cantilever on ties** | rad + 4 fans (~1.9 kg) hangs from nylon at one face only, so the stack pivots, the ties creep, and the raw ground edge of the grinder cut saws the ties | **Rejected as permanent.** Tolerable as interim under F.2. |
+| **Tension into the pump block** | the rad moves, the hoses pull, the block tilts on the IHS | **This one is not cosmetic.** Uneven/excessive LGA1700 mounting pressure flexes the PCB around the socket and disturbs **memory-controller pin contact** — documented as "not booting / memory channels not working" (Gamers Nexus LGA1700 ILM work; DRAM-light guides), and an HP desktop owner's 3-long-2-short was cleared by reseating the cooler (`docs/case-swap-3-2-beep.md` §1-2). This is the one live path by which a bad rad mount could be part of a POST failure. |
+
+Static strength is not the question: 8 ties x ~22 kg loop tensile (9 mm UV-black nylon) is an
+order of magnitude over 1.9 kg. **Nylon creep against a warm rad, and abrasion at a cut edge,
+are the questions.**
+
+## F.2 Zip-tie mount, done correctly (the version that is allowed to run while the POST block is open)
+
+The trick is that **the rad is not tied at all** — the fans are bolted to the rad with the rad's
+own short screws (the ones that came with the HP M82880-002; short screws are the part this
+build has), and then the *finished sandwich* is lashed to the panel. The ties then carry only
+stack-to-panel clamp force, and the load path is fan frame → rad frame, exactly as designed.
+
+1. **Bolt all four fans to the rad first**, diagonally, snug not forced. Push pair on the
+   bezel side, RGB pull pair inside (Appendix A/B/C direction, all four outlets facing into the
+   case). Weight is now held by threads, not by nylon.
+2. **Tie spec:** 9 mm (0.30 in) wide, UV-black, self-locking head, min 300 mm long, **8 ties** —
+   two per fan-corner cluster, laced so each corner of the panel is pinched between tie pairs
+   (a single tie per corner can roll; a crossed pair cannot).
+3. **Never a tie inside the blade circle.** Path = through the outermost corner holes of the fan
+   frames (the four-hole corners, not the centre), around the back of the panel.
+4. **Protect the cut edge:** every tie that crosses the grinder edge gets a wear sleeve — a fold
+   of EPDM/foam, a slit piece of old bezel plastic, or a rubber grommet. Deburr first; a raw edge
+   is a saw waiting for 200 hours of vibration.
+5. **Cut tails flush, heads tucked to the non-blade side, and tape the cut ends** so a stray tail
+   cannot wander into a fan.
+6. **Hose rule (the POST-relevant one):** with the ties fully slack, the stack must hang on its
+   hoses at zero tension — i.e. the block carries **no** rad load. Then set the ties snug, not
+   crushing. Leave a service loop so the block sees pure axial clamping. Re-check the block after:
+   flat, no rock, all four fasteners snug in a diagonal pattern.
+7. **Perimeter gasket stays part of the plan** (foam strip rad-to-panel): a floppy mount is also
+   an air-leak mount, and this chassis is orifice-limited (Appendix D.2).
+8. **Re-inspection schedule while it is the live mount:** 24 h (warm-settled creep), then weekly
+   for a month. Any gloss on the ties near an edge = that tie is cut and the mount is down.
+
+## F.3 The permanent, still zero-drill fix (two real options, neither needs a drill)
+
+| | Option | What it costs | Why it is safe to run closed-panel |
+|---|---|---|---|
+| **1** | **Buy the two missing parts, not the tool.** A universal 240 mm rad bracket that bolts to **existing** case holes (Bykski B-ST-2FN-V2 class, or a 5.25"-bay-mounted rad bracket), plus a **6-32 x 1 1/4 in (32 mm) radiator screw pack** (and M4 if the thread check says M4). | ~$24 + ~$8, mail order | This is §1's method-1 sandwich with the "no holes / no long screws" problem solved by a $8 pack of screws instead of a drill — the long bolt is a consumable, the drill is the thing we do not own. Bracket uses the drive-column holes that already exist in this case (§0 above; see also `docs/case-swap-hdd-mount.md` rank 1, which spends the same holes). |
+| **2** | **Slotted-angle frame** (41 mm Unistrut/eurostrut x 2 short lengths + strut/spring nuts + M5 bolts + washers): the angle's slots take both the case-side bolts and the rad's fan bolts, so **no hole is ever made in anything**; slots give 13 mm of alignment freedom. | ~$10 of hardware, grinder only | Same geometry as §2's aluminium-angle fallback, minus the drilling. Cut the angle with the grinder that already cut the panel, deburr, and keep the frame clear of the intake orifice. |
+| ✗ | Rivnuts in the panel, or drilling the panel per §1.5 | — | Both need a drill. Off the table while the tool inventory is what it is. |
+
+**Neither option is this week's job.** The POST block (`docs/case-swap-3-2-beep.md`) gates
+everything, and the standing rule is one physical change per power-on — the rad is currently
+mounted, whatever its flaws, and it stays exactly as it is until the machine boots and the tach
+receipt is read.
+
+## F.4 Gate (unchanged, restated so it cannot be skipped)
+
+1. Fix the **tension** path now (F.2 step 6) — it is free, and it is the only rad-mount item with
+   a plausible link to the beeps.
+2. Then, and only then, the ladder in `docs/case-swap-3-2-beep.md` §3.
+3. First power-on stays **side panel off**, listening for fan scrape (hand-spin all four first).
+4. Then `etc/rad-cut-postdiag.block` FULL paste-back before any bench; then the new-case thermal
+   baseline gate (Superposition 1080p Extreme + dmon, PASS = GPU <= 81 C / CPU <= 70 C at fan %
+   at-or-below the old case).

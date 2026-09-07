@@ -6,6 +6,9 @@ Regenerate the live half with `scripts/omen-omni.sh`, which writes the whole
 capture to `/root/omen-state-latest.txt` — one file, paste it back wholesale.
 
 Last verified: **2026-08-27 17:11 UTC** (SATA wipe + fast/bulk create)
+2026-09-05 bookkeeping only: `Chassis` / `Cooler` rows corrected from the case-swap docs and the
+APEX spec sheet. **No new target receipt** — the board currently will not POST (gate 12,
+`MASTER.md` → `docs/case-swap-3-2-beep.md`), so nothing below that was re-measured.
 
 ---
 
@@ -13,14 +16,15 @@ Last verified: **2026-08-27 17:11 UTC** (SATA wipe + fast/bulk create)
 
 | | |
 |---|---|
-| Machine | HP OMEN 45L GT22-0139 / 575Q1AA (ARTICUNO), serial 2MO22432DX |
+| Machine | board is the HP OMEN 45L GT22-0139 / 575Q1AA (ARTICUNO) donor, serial 2MO22432DX |
+| Chassis | **APEX PC-389-C** since the 2026-08-30 case swap — ATX mid tower, thin steel, 444 x 184 x 406 mm, **top-mounted PSU**, 3x5.25 + 2x3.5 external + 4-5x3.5 hidden bays, no 120 mm front fan mount, not tool-less |
 | Board | M81915-601 BlizzardOC Z690, SSID 8917 |
 | BIOS | **F.51** |
 | CPU | i7-12700KF — CPU 0-15 = P-cores 0-7 HT, CPU 16-19 = E-cores 8-11 |
 | GPU | RTX 3080 10 GB, driver **595.91.07**, open kernel module |
 | RAM | 4×8 GB DDR4, M85222-001, XMP 3733 @ 1.35 V. **Never 4000. ≤1.50 V.** |
 | PSU | M83827-001, 800 W ATX Gold (HP's own docs say ATX) |
-| Cooler | M82880-002 plain LCS 240, no Cryo/TEC |
+| Cooler | M82880-002 plain LCS 240, no Cryo/TEC — **rad zip-tied to the front panel since 2026-09-05** (no rad holes, no long screws, no drill); fans bolted to the rad, ties clamp the sandwich only; hose tension into the block is a live POST suspect, `docs/case-swap-rad-mount.md` Appendix F |
 | LED hub | M82868-001 — **deliberately unplugged**, no RGB |
 | Monitors | DELL G3223Q + DELL S2725QS (both 4K) + a tertiary |
 | Kernel | `6.18.35-tkg-bore` running; `/boot` also holds 6.18.36/38/40/41 stock and 6.18.39-tkg-bore |
