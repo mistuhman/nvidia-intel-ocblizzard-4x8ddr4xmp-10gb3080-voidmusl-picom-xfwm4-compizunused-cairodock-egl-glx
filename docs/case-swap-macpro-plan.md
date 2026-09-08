@@ -220,6 +220,12 @@ PASS = GPU ≤81 C / CPU ≤70 C with the panel ON. Pre-swap reference: 9079 in 
 Gate E unchanged: XMP 3733 r0 validated first, GPU daily profile (cp90-m400-pl95) re-armed,
 then the CPU/DDR4 ladders per existing docs. OC stays locked out until Phase 5 passes.
 
+## Teardown receipt — 2026-09-08 GPU PCI-bracket screw classification
+
+Operator photo receipt: the Mac Pro GPU remains installed. Both rear PCI-bracket screw heads turn but do not rise, which is consistent with captive screws. The upper screw turns with normal captive-screw behavior. The lower screw has substantially higher resistance and then stops; it is unresolved between bracket preload and partial seizure. No screw was forced, drilled, heated, gripped with pliers, or removed with a powered driver.
+
+**Current gate:** GPU retention is a classification gate, not a removal gate. The GPU stays installed. The next physical action must be issued separately after this receipt; no further turning is authorized until the lower screw/bracket interface is resolved with a close inspection. This receipt supersedes the earlier over-broad instruction that bundled GPU removal with other teardown actions.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
