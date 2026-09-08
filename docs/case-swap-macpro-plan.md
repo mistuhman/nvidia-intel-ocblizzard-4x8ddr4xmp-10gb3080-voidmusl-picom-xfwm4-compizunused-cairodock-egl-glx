@@ -239,6 +239,21 @@ powered driver stood down). Next authorized physical action: ONE straight-on mac
 of the two rear bracket screws, no tool contact, no turning — the close inspection that
 resolves the lower interface before the board+cards unit slide.
 
+## Teardown receipt — 2026-09-08c optical bay + PSU questions (Wave G)
+
+Operator report + photo: memory-cage hidden bottom screws OUT (operator report,
+accepted per truth order); DVD drive OUT (photo: optical-bay left cavity open, right
+bay cover still in); GPU 6-pin power UNPLUGGED (both connectors dangling free); GPU
+identified EVGA GeForce GTX 285 (alien upgraded card — rear bracket screws stay treated
+as alien fasteners); PCI-bracket macro from the 2026-09-08b wave still owed. STUCK:
+backplate screws at the rear of the opened optical bay — type/cause unverified (wrong
+driver vs threadlocker vs rivet class). PSU verdict shipped: Mac PSU stays a kept Apple
+part, never wired to the 8917 (proprietary pinout, ~980 W multi-rail, no off-shelf ATX
+adapter; custom harness = unproven class on a gate-12 board); single OMEN 800 W ATX
+powers the transplant, no dual PSU (load math + sequencing risk). Next authorized
+physical action: ONE macro photo of the stuck backplate screws, no tool contact —
+classification before force.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
