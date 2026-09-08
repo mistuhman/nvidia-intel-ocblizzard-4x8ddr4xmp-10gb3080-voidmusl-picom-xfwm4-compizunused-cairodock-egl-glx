@@ -325,6 +325,26 @@ bracket macro. Authorized single action: ONE photo of all on-hand standoffs/rise
 (plus any rails/plates/screws for mounting) grouped with the tape measure in frame,
 with count + thread if known.
 
+## Teardown receipt — 2026-09-08h operator reopens keep-as-Mac; transplant HALTED (Wave G)
+
+Operator redirect (verbatim core): the original plan was a usable companion Mac for
+video editing + dual-booting Mac OS X; early transplant friction means "not worth it
+to proceed"; the 8917 + rad are still in the APEX ("all it needs is some quick
+rethinking and refinement"); old generic cases are "the exact opposite of proprietary".
+TRANSPLANT HALTED pending the decision confirm — no further teardown, no turning, no
+removals. Nothing was cut, so reversal stays possible (parts-bagging UNVERIFIED —
+inventory before any reassembly wave). Agent verdict shipped: YES, keep-as-Mac is the
+better option. Honest 1,1 capability set with receipts: 32-bit EFI, Lion 10.7.5
+official cap, El Capitan 10.11 max via boot.efi workaround, GTX 285 Tesla = no Metal
+(Metal needs AMD HD 7xxx+ / Nvidia Kepler 6xx+; cheapest flashed boot-screen card is
+the GT 120 class) — so video editing = period software (FCP7/CS6-era) / proxy
+workflows / Linux-side heavy lifting, and the realistic best outcome is vintage macOS
++ modern Linux dual-boot on 8 Xeon threads with 4 sleds (dual-boot target unverified).
+APEX pivot accepted with the physics carried, not dropped: hose asymmetry measured in
+photo-3 stands; the operator's rethink + the still-owed bench POST proof are the next
+phase (gate 12 never closed — the board must POST before ANY path proceeds). Queue
+frozen: riser inventory / top-bar pair / bracket macro all superseded by the decision.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
