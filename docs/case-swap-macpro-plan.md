@@ -136,6 +136,11 @@ keeps a hidden home for 90B.
    (b) DIY nibbled rear-mesh window dressed with the board OWN factory I/O shield — free,
    tidy at arm length, minimal and disguised; (c) buried I/O + slot-bay plates — zero cut,
    function tax. Recommendation stands at (b), gated on the cavity math.
+   WITHDRAWN 2026-09-08 by operator ("DIYing nibbled grater metal is not better")
+   — NO mesh cutting for I/O. Recommendation moves to (c+) buried I/O + the
+   operator's extension variant: internal male ports extended to female panel-mount
+   at the Apple rear via slot covers/brackets, zero cut. GPU ports need no extension
+   (3080 bracket faces the slot covers directly once aligned).
 
 ## Phase 1 — Donor teardown + measurement inventory (zero power, no cuts yet)
 
@@ -299,6 +304,26 @@ per macrumors receipts; cooling = OMEN tach fans on EC-watched headers + standar
 a tray plate on standoffs at the mATX pattern, tray anchored to existing shelf + bottom
 case screws (Laser Hive receipt — drill the plate, never the shell), offset dictated by
 slot-cover alignment. Queue unchanged: top-bar pair (tool-gated) → bracket macro.
+
+## Teardown receipt — 2026-09-08g operator redirect: extensions, risers, fans (Wave G)
+
+Operator verdict on prior answers: "kind of terrible" (accepted, not defended).
+I/O: operator's extension plan ACCEPTED — internal male ports extended to female
+panel-mount at the Apple rear via slot covers/brackets, zero cut; nibbled-mesh option
+(b) WITHDRAWN by operator, ladder is now (a) kit vs (c+) buried + extensions; passive
+USB3 extensions stay short (~1 m max), no hubs on boot-critical ports, LAN routes via
+slot-cover gap. Tray: donor-plate fabrication DEFERRED — pivot to on-hand
+risers/standoffs fit-test; space-vs-anchor distinction recorded (risers set board
+height for slot alignment, anchoring decides after the dry fit). Fans: adapter path
+assessed honestly (connector repin = easy half; Apple voltage-control vs HP PWM+tach =
+hard half; only no-electronics path is fixed 12 V full-blast with no 90B credit) and
+abandon path RECOMMENDED (quad-stack rad + single rear exhaust + hidden dead-RGB spot
+= the existing header budget: FAN1/LCFAN/TFAN-LCFAN2/FFAN1/FFAN2/FFAN3 + one Y-splitter
+on a non-watched pair); operator's either/or recorded, choice owed. Queue reordered per
+latest-wins: riser inventory (current, zero-power) → top-bar pair (tool-gated) →
+bracket macro. Authorized single action: ONE photo of all on-hand standoffs/risers
+(plus any rails/plates/screws for mounting) grouped with the tape measure in frame,
+with count + thread if known.
 
 ## Risks / unknowns (honest list)
 
