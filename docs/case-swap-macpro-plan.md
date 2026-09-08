@@ -270,6 +270,21 @@ alone. Boards never touch the carpet (ESD rule 3); work stays on the shelf/bag. 
 shipped as information only — the authorized single physical action remains the
 backplate-screw macro from 2026-09-08c (still owed); bracket macro queued behind it.
 
+## Teardown receipt — 2026-09-08e backplate macro classified (Wave G)
+
+Operator close-up (NEW — prior frames were wide interior / optical-bay / tool-shelf
+shots; this macro was not sent before): optical-bay cavity with the drive out.
+CLASSIFIED MIXED: (a) the two screws at the ends of the top horizontal latch bar show
+Torx recesses = removable class, hand Torx only; (b) the lower shelf domed posts show
+NO drive recess at this resolution = rivet/press-fit class (provisional — a shallow
+Torx cannot be fully excluded at this angle, but they are not the retention path and
+get no test-turns). Black flex draped across lower-left left untouched. PCI-bracket
+macro remains queued behind this wave. Authorized single action: remove ONLY the two
+top-bar Torx screws (driver must seat fully with zero wobble, else stop), bag + label,
+then stop with no force on the plate and no touch on the lower posts; report whether
+the bar/plate frees. Expectation set: the plate itself may be shell-riveted
+(leave-class); the rad tunnel opens via the lower cage removals, not this plate.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
