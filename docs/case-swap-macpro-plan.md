@@ -254,6 +254,22 @@ powers the transplant, no dual PSU (load math + sequencing risk). Next authorize
 physical action: ONE macro photo of the stuck backplate screws, no tool contact —
 classification before force.
 
+## Teardown receipt — 2026-09-08d tool inventory (Wave G)
+
+Operator tool photo (3 identical frames): yellow DeWalt cordless drill/driver on the
+shelf — STAYS STOOD DOWN per the 2026-09-07h hand-tools-only ban, parked off the
+bench; pruning shears + red electric shears = unnecessary for teardown, off the bench
+(first cut only at the Phase-2 gate); tape measure KEEPS (Phase-1 dims ride on it);
+black I/O shield on the shelf stays unbent (dress piece for tidy-I/O option B if it is
+the 8917 factory shield, else bagged as an Apple part — unverified which); compressed
+air kept capped until cleaning waves; T-handle drive type unverified (Torx T10/T15 = keep,
+hex-only = park); magnetic Phillips / Torx hand drivers / rubber band + locking pliers /
+bags + labels + bright light are the staged kit (pliers/band staged, not authorized).
+Bench board + PSU at frame left (POST "8.8" rig) is not part of this teardown — left
+alone. Boards never touch the carpet (ESD rule 3); work stays on the shelf/bag. Kit trim
+shipped as information only — the authorized single physical action remains the
+backplate-screw macro from 2026-09-08c (still owed); bracket macro queued behind it.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
