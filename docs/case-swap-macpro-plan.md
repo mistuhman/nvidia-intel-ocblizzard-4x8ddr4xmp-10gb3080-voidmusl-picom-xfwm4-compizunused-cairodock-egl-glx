@@ -285,6 +285,21 @@ then stop with no force on the plate and no touch on the lower posts; report whe
 the bar/plate frees. Expectation set: the plate itself may be shell-riveted
 (leave-class); the rad tunnel opens via the lower cage removals, not this plate.
 
+## Teardown receipt — 2026-09-08f Torx tool-gap + I/O/fan/tray concerns (Wave G)
+
+Operator report: NO Torx driver in the kit ("ill look later") — the top-bar Torx pair
+from 2026-09-08e is TOOL-GATED until the operator sources one; the sourcing itself
+needs no wave, operator reports when a driver is in hand. Planning turn, no physical
+wave shipped: the three transplant concerns answered on paper — rear I/O is the 8917's
+own standard cluster + factory shield (nothing Apple in the signal path; tidy-I/O
+ladder (a)/(b)/(c) decides at the Phase-2 gate on measurement #3); Apple fans benched
+not adapted (proprietary 4-pin, voltage-controlled not PC-PWM, adapters not recommended
+per macrumors receipts; cooling = OMEN tach fans on EC-watched headers + standard
+140 mm PWM on free headers/splitters with one-at-a-time 90B proving); board screws to
+a tray plate on standoffs at the mATX pattern, tray anchored to existing shelf + bottom
+case screws (Laser Hive receipt — drill the plate, never the shell), offset dictated by
+slot-cover alignment. Queue unchanged: top-bar pair (tool-gated) → bracket macro.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
