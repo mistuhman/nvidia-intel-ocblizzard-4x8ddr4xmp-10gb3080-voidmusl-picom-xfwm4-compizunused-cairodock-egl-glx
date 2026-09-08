@@ -64,7 +64,109 @@ A rad hung on zip ties pulls on the hoses, and the hoses pull on the block.
 | **M2** | **The never-validated 4000 MT/s @ 1.45 V profile (r3) still keyed** | PROVEN live 2026-08-30 06:44 UTC — `dmidecode` read Configured Memory Speed **4000 @ 1.45 V** on all four DIMMs *after* a CMOS-reset screen, and per `MASTER.md` gate 11 the inverse (F10 → XMP Profile 1 3733) was **parked, never executed**. Z690 retrains by rebooting; a hard training failure is what makes the EC give up on BIOS | 1-DIMM boot → trains at JEDEC → reach F10 and read it |
 | **M3** | **Block seating / hose tension from the zip-tie rad mount** (M3 = C5 of `docs/case-swap-sff-triage.md`) | the mount is explicitly "not right" per the operator; tension on the pump block = uneven ILM pressure = memory-channel contact | loosen ties so the stack is unloaded, confirm the block is flat and all four fasteners snug diagonally, one power-on |
 | **M4** | Power-path seating on this board's two 4-pin CPU sockets (HP trap 1 in `docs/case-swap-sff-triage.md` §0) | a half-seated 4-pin browns the VRM mid-MRC; POST is not reached so it looks like memory | push until the latch clicks (do this in the M1 pass) |
-| **M5** | Socket pin damage / board flex from the move | last-resort class; one forum resolution to this exact code was a single bent pin | **do not pull the CPU** — standing rule (LGA1700 pins bend easily, `docs/bios-flash-decision.md`); bright-light look only |
+| **M5** | Socket pin damage / board flex from the move | last-resort class; one forum resolution to this exact code was a single bent pin | ~~do not pull the CPU~~ — **amended 2026-09-07, see
+  M6/2b**: in-place re-clamp first (least-harm 2026-09-07c); sanctioned bench lift only on continued 3.2 |
+
+## 2b. 2026-09-07 amendment — the ILM admission (new class M6, co-leading)
+
+**Operator report, verbatim (2026-09-07):** "halfway through building while the mobo was out, i
+unseated the cpu lever about 10% of the way, and without applying a little bit of pressure on the
+cpu i pushed it back into place from there. and then later mounting the aio pump 90 degrees to
+the right on top of it. could it be because of that?"
+
+**M6 — socket-seat integrity, in two sub-mechanisms:**
+
+- **M6a — clamped off-seat.** Opening the ILM lever ~10% relieves the load plate. The 12700KF
+  was then free to settle/shift a fraction of a millimetre during the build (board out, board
+  being moved). Re-closing from that position *without* pressing the CPU flat first can clamp it
+  floated or tilted. On LGA1700 the memory-channel lands live in the socket field, so marginally
+  landed pins = marginally trainable memory = **exactly 3.2's shape**, and exactly this machine's
+  history: cold cycles "~3 times, randomly", warm reboots clean (contact resistance migrates
+  with temperature; MRC retries find it eventually), a runtime crash, a 9079 bench run that
+  **worked** on 2026-08-30 (contact was good-enough then), then degradation to hard 3.2 after
+  the panel cutting / hole drilling / zip-tie mounting / HDD handling phase — i.e. it tracks
+  mechanical disturbance, which no settings class does.
+- **M6b — the rotated pump.** A 90°-rotated AIO block is a memory fault class in its own right
+  (§1's citations: uneven ILM pressure ⇒ "memory channels not working"): if the bracket is not
+  square-symmetric, engaging it rotated can leave fastener heights uneven; and even a symmetric
+  bracket re-routes the hoses into a new preload. Uneven IHS load rocks a marginally-seated CPU.
+
+**Bench photo 2 receipt (2026-09-07):** plate fully open, lever up; CPU visibly seated in-frame from above, no gross rock; full-face IHS imprint reads broadly centered with NO stark one-edge squeeze = no gross-tilt evidence (marginal contact is sub-visible and the functional test still decides); DIMMs still installed (1-DIMM A2 config belongs to the bench wave); lever arm + latch visibly normal = over-closed-latch not supported. Operator hypothesis (horizontal pump load forced the latch too far) received and corrected in section 2c.
+
+**What M6 predicts — the receipts to look for:**
+1. **Paste imprint** on the IHS and block: skewed/thinned pattern, paste squeezed to one edge,
+   or a bare corner = tilt under load. Photograph BOTH surfaces **before unbolting the pump is
+   finished and before anything is wiped**; note which fasteners were tight vs finger-loose.
+2. **Pin-field pattern break** in the socket (bright raking light, four angles) — a bent pin
+   sparkle line vs a perfectly uniform field.
+3. **Differential result:** pins clean + a careful full-travel re-seat + symmetric pump mount =
+   POST returns on the first bench attempt ⇒ M6a closed by assembly. Pins disturbed ⇒ repair
+   branch (few pins: mechanical straighten under magnification; many: board class re-verdict).
+
+**Least-harm re-sequencing, operator directive 2026-09-07c ("i dont wanna take it out
+really") — binding:** the wave-1 lift is WITHDRAWN; do-not-pull stands again, and the lift is
+demoted to contingency-only (it re-arms ONLY if the in-place correction still fails to POST).
+The functional M6a test becomes the **in-place re-clamp**, the waves single physical change:
+
+1. Zero power; board flat and kept HORIZONTAL the whole time — tilting the board while the
+   plate is open is the actual pin-bending event, vertical pressure is not.
+2. Release the lever to FULL open; let the plate rise on its own hinge.
+3. Eyes-level check: the CPU should sit flush in the frame. If it is visibly rocked, photo
+   it as-is FIRST (the tilt is the evidence), then press it home gently at the IHS center.
+4. Even planar pressure straight down through the plate window (clean fingertip or silicone
+   pad, a few lbf at center; NEVER one corner — re-tilting it is this steps only mistake).
+5. Plate down by its hinge; lever swept to full latch. The end-of-travel force is spec —
+   that stiffness IS the clamping force, not a symptom.
+6. Power stays off; the receipt (what the CPU looked like when the plate opened, plus the
+   two photo sets below) comes back before the bench power wave ships.
+
+What it gives up: the pin-field photo (visual bent-pin proof). What it keeps: the branch
+decision — success after a correct re-clamp is functionally equivalent M6a evidence, closed
+by function (same acceptance class as the LED hub). On success the pins are never seen, which
+is the whole point of least harm. Still owed this wave (zero-power, observation only): the
+block-face paste imprint photo and the M0 DIMM-zone cap macro.
+
+Next wave AFTER receipt, one power-on: bench minimal POST — 1 DIMM in A2, GPU in, 24-pin +
+both 4-pins, pump in its DESIGNED orientation (bracket square-symmetry check first), diagonal
+snug, zero hose preload, existing paste fine for a 60 s F10 trip (re-paste at final assembly).
+Splash -> F10 -> XMP 3733 (the M2 inverse) -> 3 cold boots. Still 3.2 -> the straight-up lift
+ships NEXT with necessity on record (board flat, carrier ears, covered socket, photos).
+
+**Standing-rule amendment (M5 "do not pull the CPU").** The rule protected an *undisturbed*
+socket from needless risk. The operator's admission means the socket was already disturbed in
+the build window; a photo-only diagnosis is now impossible without lifting, since the pin field
+is hidden under the CPU. The rule is therefore **suspended exactly once**: on the bench, board
+flat, CPU lifted **straight up by the carrier ears** (no sliding, no tilt, nothing metal near
+the socket), photos taken, socket covered with its protective lid (or clean rigid equivalent),
+CPU **not reinserted** until the photos have been read. The re-seat itself ships as its own
+wave after the receipts — one change per wave still holds. **WITHDRAWN 2026-09-07c** — superseded by the least-harm re-sequencing directly above; this lift procedure survives only as the contingency branch.
+
+## 2c. The latch hypothesis, corrected (2026-09-07)
+
+Operator, verbatim: -i think i know the problem, horizontal load from the aio pump forced
+the latch down too far. how do i fix this for free?-
+
+Half right, one correction. The ILM lever is a cam that parks under a FIXED catch: it cannot
+be forced down too far - its closed position is the same every time, and both bench photos
+show the arm + latch as normal. What horizontal hose load from a zip-tied rad against a
+90-deg-rotated block CAN do (and is the live mechanism, = M3 meets M6b) is rock the block
+and rock the CPU UNDER a correctly-closed plate - pin contact goes uneven and memory
+training starts failing. No latch involvement is needed, and no latch damage is in evidence.
+
+The fix is free either way, because it is the same three moves: F1 close the socket
+correctly (the wave re-clamp: flush check, planar center press, full latch); F2 de-load the
+hoses (slack the ties so rad weight sits on the ties, hoses in relaxed loops carrying no
+load); F3 at reassembly, mount the block in its DESIGNED orientation with diagonal snug -
+if the hoses only reach rotated, that is exactly the failure the Mac Pro bracket deletes
+permanently (Phase 2-3, zero-cost DIY route).
+
+Postscript 2026-09-07d (operator: -upside down-, upright leaves no hose slack): **180-deg block rotation is APPROVED.** Block rotation in 90-deg steps is legal on the square LGA1700 mounting pattern BECAUSE the governing rules are hose load and planar pressure, not cosmetics. Conditions: (a) all four fasteners finger-start and engage with equal thread showing on every post ANY fastener needing force = stop, bracket is not square-symmetric in this rotation; (b) block flat - eyes-level, no rocking when pressed corner-to-corner; (c) hoses exit in relaxed bends with zero preload - tie the RAD so its own weight is on the ties, then the jiggle test: move the hose ends by hand, the block must not move; (d) pump-never-highest unchanged (rad tube-end upper-middle stays above the block on the CPU). The earlier 90-deg mount failed (c) - taut hoses rocked the block; a slack 180-deg mount satisfies all four.
+
+**What M6 does NOT replace.** M0 (bent cap) stays Step 0 and runs FIRST at the bench strip —
+a shorted memory rail is independent of socket seating and is the only class that can do
+*damage at the next power-on*. M2 stays live until the F10 XMP-3733 inverse executes at the
+first successful bench POST (the 1-DIMM JEDEC boot is the ladder's M2 test; the profile was
+never un-keyed).
 
 ## 3. The ladder — one power-on per change, in this order
 
