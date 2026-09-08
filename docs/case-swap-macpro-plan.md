@@ -226,6 +226,19 @@ Operator photo receipt: the Mac Pro GPU remains installed. Both rear PCI-bracket
 
 **Current gate:** GPU retention is a classification gate, not a removal gate. The GPU stays installed. The next physical action must be issued separately after this receipt; no further turning is authorized until the lower screw/bracket interface is resolved with a close inspection. This receipt supersedes the earlier over-broad instruction that bundled GPU removal with other teardown actions.
 
+## Teardown receipt — 2026-09-08b full-interior photo (Wave G)
+
+Operator photo receipt (case upright, side panel off, open left side): memory-cage
+windows show EMPTY channels (riser cards OUT, visually confirmed); the cage itself is
+still seated; GPU still installed, ribbed shroud, BOTH 6-pin power connectors populated
+with cables routed left; the rear PCI-bracket pair (upper + lower dark screws) visible
+at the rear mesh — the lower screw stays UNRESOLVED between bracket preload and partial
+seizure, so the classification gate above still holds: no turning, no GPU removal;
+optical bays still in; hand tools only on the bench (adjustable wrench, hex key, bits —
+powered driver stood down). Next authorized physical action: ONE straight-on macro photo
+of the two rear bracket screws, no tool contact, no turning — the close inspection that
+resolves the lower interface before the board+cards unit slide.
+
 ## Risks / unknowns (honest list)
 
 - Power-button harness pinout: continuity-probe homework, not a blocker (worst case = a
