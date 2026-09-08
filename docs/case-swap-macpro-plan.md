@@ -1,11 +1,11 @@
 # Case-swap plan — 2009 Mac Pro (A1289) transplant, phased and gated
 
 Date: 2026-09-07b (session 01a07de8)
-Status: **ACTIVE PROJECT PATH.** Operator amended the constraint: "im clearly willing to
-make compromises… the answer is never about how its impossible, but rather possible… just
-need to take it one step at a time." This plan supersedes the decline verdict in
-`docs/case-swap-macpro-verdict.md` (which remains the record of the no-mod claim and the
-source of every constraint this plan has to engineer around).
+Status: **PIVOTED 2026-09-08 — KEEP-AS-MAC (transplant CLOSED).** The operator confirmed the
+reopen: the Mac Pro 1,1 reassembles as a daily-driver macOS+Windows dualboot; the 8917
+re-hosts in the APEX with a different rad/cooler layout. See "PIVOT 2026-09-08i" at the end
+of this file — it supersedes every transplant-phase instruction; the governing rules below
+carry over unchanged.
 Companion facts: `docs/case-swap-3-2-beep.md` (gate 12 ladder), `docs/case-swap-rad-mount.md`
 (rad/airflow doctrine), `docs/case-swap-hdd-mount.md` (ZFS rules that outrank mounting).
 
@@ -357,3 +357,128 @@ frozen: riser inventory / top-bar pair / bracket macro all superseded by the dec
   sleds retained individually bolted elsewhere or 2-sled half-cage. Phase-1 numbers decide.
 - If the board never POSTs on the bench (Phase 0), the Mac Pro path pauses automatically —
   no Apple part modified, zero sunk cost.
+
+## PIVOT 2026-09-08i — KEEP-AS-MAC CONFIRMED (transplant CLOSED)
+
+Operator directive (verbatim core, session 01a082d3): "get this case working back together so
+it can be used as a daily driver dualboot for mac os x alongside my apex pc with a different
+rad layout so we can use the mac for the airport utils and video editing aswell as
+windows/mac/source port apps." This confirms the 2026-09-08h reopen. The Mac Pro 1,1 (A1186,
+2006 model year per the 2026-09-07h receipt) STAYS a Mac; the 8917 transplant into it is
+CLOSED. Nothing was cut, so the reversal is pure reassembly. This section supersedes every
+transplant-phase instruction above; the governing rules (one action per message, zero-power
+protocol, log the interface, no forcing alien fasteners) carry over unchanged.
+
+### Track A — Mac Pro reassembly to daily driver (reverse Wave-G, one action per message)
+
+Current state from receipts (2026-09-07i → 2026-09-08h):
+
+- OUT: both memory riser cards (whether DIMMs are still mounted on them is UNVERIFIED — the
+  inventory decides), all 4 HDD sleds + drives, DVD drive, the memory cage's 2 bottom screws
+  (the cage itself is still seated; its 4 corner screws are captive and loosened), both GPU
+  6-pin power leads (unplugged).
+- IN: logic board, EVGA GTX 285 (PCI-bracket screws are captive-style; the lower interface
+  stays UNRESOLVED between preload and partial seizure — reassembly only ever re-snugs,
+  never forces), Apple ~980 W PSU (it powers the Mac again — the "never wired to the 8917"
+  verdict was transplant-scoped), top-bar Torx pair (never removed; the Torx tool-gate is
+  MOOT for keep-as-Mac since nothing more needs to come out), right optical bay cover.
+- UNKNOWN until inventory: the rear cage fan (no removal receipt — assumed still latched in
+  with its cable attached), and where every removed screw/bag lives ("parts-bagging
+  UNVERIFIED" per 2026-09-08h).
+
+Queue (each step ships ONE action, receipt before the next):
+
+- **R0 (NEXT) — zero-power parts inventory, TEXT receipt.** Mac unplugged, report in words:
+  (1) both risers — DIMMs still mounted? any A/B or slot markings? (2) the 4 sleds — labels
+  (Scratch Disk / Backup / …), which bay each came from if known; (3) the DVD drive + any
+  fasteners that came out with it; (4) the two cage bottom screws + any bag of loose
+  screws; (5) is the rear cage fan still seated with its cable attached? (6) both GPU 6-pin
+  leads visible and undamaged. This is the pre-reassembly inventory mandated by 2026-09-08h
+  and it is zero-risk. Photos are optional this session: the 01a082d3 agent has NO image
+  input, so every photo receipt is a TEXT DESCRIPTION from the operator.
+- **R1 — memory cage:** confirm fully seated, reinstall the 2 bottom screws, snug the 4
+  captive corners hand-tight (they stay captive — never pull them out). If the fan was
+  disturbed at any point, its cable and 3-latch slide go home BEFORE the cage screws.
+- **R2 — risers back in:** original bays (keyed), ejector levers open, press evenly, close
+  levers. If DIMMs were separated from the risers: STOP and report — the 1,1 pairs DIMMs
+  ACROSS risers (slot 1 of riser A + slot 1 of riser B) and the original pairing must be
+  restored exactly; the pairing is unknowable from photos alone if the cards were mixed.
+- **R3 — sleds back into the front bays:** slide until the latch catches (the extraction
+  interlock trick is not needed going in). No data action required — the copy-off rule was
+  transplant-scoped; drives were only pulled, never opened.
+- **R4 — DVD drive back into the optical bay**, fasteners per the R0 inventory.
+- **R5 — GPU power and bracket:** replug BOTH 6-pin leads until latched; re-snug the PCI
+  bracket screws — the upper normally, the lower gently with a STOP at resistance (seating
+  direction is the opposite of the seized extraction direction; the interface remains
+  classified-unresolved and gets no force).
+- **R6 — first power-on smoke test:** side panel on, cord in, power button; hold Option at
+  the chime → Startup Manager → report every volume icon shown. A fan ramp that settles in
+  the first seconds is normal 1,1 behaviour. This receipt inventories the OS situation
+  (which macOS is installed, if any; whether a BOOTCAMP/Windows volume already exists).
+- **R7 — OS/dualboot wave, decided by R6:** target macOS = El Capitan 10.11 via the
+  boot.efi workaround if not already present; then Boot Camp Windows per the software set
+  below.
+
+### Track A software capability set (search receipts, 2026-09-08)
+
+- macOS ceiling: Lion 10.7.5 official; El Capitan 10.11 max via the Piker-Alpha-class
+  boot.efi workaround (receipts: apple.stackexchange.com/questions/273724,
+  lowendmac.com/2006/mac-pro-mid-2006/, forums.macrumors.com/threads/1890435). NEVER
+  install Security Update 2018-001 or later over the mod (it breaks boot.efi on 1,1/2,1 —
+  lowendmac warning). El Capitan is the target because the use cases need it:
+- AirPort Utility: AU 6.3.x requires OS X 10.7.5+ (macupdate.com receipt) → runs on El
+  Capitan. Legacy (802.11n/Ethernet-era) base stations need AU 5.6.1 + the 10.8-10.11
+  launcher (bristleconeit.com receipt). WHICH base station the operator runs is an R7-time
+  question.
+- Video editing: FCPX 10.3.x requires El Capitan 10.11+ (Apple Community receipt) and uses
+  OpenCL, not Metal — the GTX 285 is OpenCL-capable and field-benchmarked workable for FCPX
+  (tonymacx86 receipt); iMovie 10.1.x is the lighter fallback. Honest ceiling: 8 Xeon
+  threads + 1 GB VRAM + no hardware H.264/HEVC engines = 1080p/proxy workflows, not 4K;
+  the APEX/3080 stays the heavy encoder.
+- Windows dualboot: Boot Camp on the 1,1 officially tops out at Windows 7 (proven, Boot
+  Camp 4-era drivers; reddit.com/r/applehelp/3enpt9 receipt). Windows 10 x64 is
+  community-proven via patched install media or a 7→10 in-place upgrade, with no Apple
+  Win10 driver package and option-boot to switch OSes (reddit + quora receipts). Windows 7
+  is EOL — for a networked daily driver, Windows 10 via the patched-media route is the sane
+  target; final call at R7.
+- Source ports: 64-bit 10.6-10.11-era builds exist for the major engines (GZDoom, the
+  Quake family, ECWolf class); exact per-title compatibility gets verified when the
+  operator names the ports (unverified today).
+
+### Track B — APEX re-host with a different rad layout (gate 12 first, unchanged)
+
+1. **B1 = the owed bench POST wave** (Phase 0 Step 0b above, verbatim): board out of the
+   APEX onto the bench, floated rad on a shoebox (top above the block, both hoses relaxed
+   on the table plane = the real hose-budget receipt), five-looks M0 eyeball (zone = MUSB =
+   conditional PASS), ONE known-good DIMM in A2, GPU + GPU power, 24-pin + both 4-pins,
+   pump on FAN1 (a 90B prompt is EXPECTED — Enter past it), momentary screwdriver short of
+   the 2-pin PB header, splash → F10 → XMP Profile 1 3733 @ 1.35 V (the owed M2 inverse) +
+   read After Power Loss = Off → 3 clean cold boots. A 3.2 = STOP, branch per
+   docs/case-swap-3-2-beep.md (CMOS-cap M2 force → contingency socket lift, which re-arms
+   only on continued 3.2 after the in-place fix).
+2. **B2 = rad-layout decision** (the operator's "quick rethinking and refinement"). The
+   2026-09-07e physics receipt closes ANY in-APEX position for THIS loop (fixed asymmetric
+   hoses vs a 184×406 mm box — rotation re-aims, it never lengthens). Two purchase-class
+   candidates, both legal with the already-cut front opening:
+   - **B2a (recommended): a tower air cooler.** Height-measured first (184 mm-wide case →
+     expect ~150-160 mm usable; measure board-top to side panel), LGA1700 kit included,
+     its fan on the EC-watched FAN1 header for 90B credit. Kills the entire M3/M6b hose
+     class; cheapest and most reliable; the OMEN AIO retires to the parts shelf.
+   - **B2b: a different 240/280 AIO with symmetric ≥350-400 mm hoses**, front-mounted via
+     the no-drill parts route (Appendix F: bracket-to-existing-holes + 6-32×32 screw pack,
+     or 41 mm slotted angle). Keeps the AIO class the EC tach set was proven on.
+   - Top-mounting the EXISTING loop inside the APEX is CLOSED by the same physics receipt.
+3. **B3 — re-host + standing gates:** etc/rad-cut-postdiag.block tach receipt →
+   Superposition 1080p Extreme + dmon PASS (GPU ≤81 °C / CPU ≤70 °C at fan % ≤ old case,
+   side panel CLOSED) → OC resumes at XMP 3733 r0 only.
+
+### Risks / unknowns added by the pivot
+
+- Riser reinstallation assumes the risers came out as units; separated DIMMs pause the
+  queue at R2 until the pairing is restored.
+- The lower GPU bracket screw stays unresolved-between-classes; reassembly only re-snugs.
+- Which macOS is currently on the sleds is UNKNOWN until R6; if El Capitan is already
+  installed, check the Security Update level before any OS updates (2018-001 rule).
+- AirPort base station model unknown → AU 6.3.x vs 5.6.1+launcher decided at R7.
+- The 8917's four DIMMs are OUT on the bench (2026-09-07f receipt) — the bench POST wave
+  seats exactly one in A2; the other three return only after the PASS.
