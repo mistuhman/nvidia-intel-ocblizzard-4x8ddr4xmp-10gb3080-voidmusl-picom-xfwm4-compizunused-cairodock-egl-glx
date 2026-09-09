@@ -388,7 +388,7 @@ Current state from receipts (2026-09-07i → 2026-09-08h):
 
 Queue (each step ships ONE action, receipt before the next):
 
-- **R0 (NEXT) — zero-power parts inventory, TEXT receipt.** Mac unplugged, report in words:
+- **R0 (NEXT, still owed 2026-09-09) — zero-power parts inventory.** 1030 HDMI path DECLINED this session; 285 stays. Mac unplugged, report in words (photos OK — this chat has vision):
   (1) both risers — DIMMs still mounted? any A/B or slot markings? (2) the 4 sleds — labels
   (Scratch Disk / Backup / …), which bay each came from if known; (3) the DVD drive + any
   fasteners that came out with it; (4) the two cage bottom screws + any bag of loose
