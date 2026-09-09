@@ -358,6 +358,22 @@ frozen: riser inventory / top-bar pair / bracket macro all superseded by the dec
 - If the board never POSTs on the bench (Phase 0), the Mac Pro path pauses automatically —
   no Apple part modified, zero sunk cost.
 
+## UPDATE 2026-09-09 (session 01a085aa) — Mac is ASSEMBLED & ONLINE; browser bootstrapped
+
+Supersedes the "mid-reassembly / R0 owed" state below. Operator confirmed + photo-verified:
+the Mac Pro 1,1 is **fully assembled, booted, online**, running **Mac OS X 10.6.8**, with
+AirPort Utility already seeing the Time Capsule. The reverse-Wave-G reassembly queue (R0–R7)
+is therefore effectively DONE up through a working desktop. Daily-driver work is now software.
+
+This session bootstrapped a modern-engine browser onto the box (dead Safari → macintoshrepository
+HTTP → TenSixFox → clock fix → GitHub → **Arctic Fox 47.3 mac32 + libc++.from-MP.10.6.mac32**,
+launched). Full operator-verified recipe + traps (TLS1.0 curl dead end, 2001-clock/HSTS wall,
+PPC-vs-Intel, broken 64-bit libc++ `___emutls_get_address`, the `from-MP` vs `from.MP` filename
+trap) live in **`docs/case-swap-macpro-daily-driver.md`**. Libreboot is NOT possible on the
+tower (coreboot supports only the MacBook 1,1/2,1, not the 5000X-chipset Mac Pro); anonymity
+goals move to the OS/network layer. Destructive drive backup→swap→wipe→clean-install→new-admin
+track is defined there and NOT started.
+
 ## PIVOT 2026-09-08i — KEEP-AS-MAC CONFIRMED (transplant CLOSED)
 
 Operator directive (verbatim core, session 01a082d3): "get this case working back together so
