@@ -1,3 +1,7 @@
+WITHDRAWN 2026-09-10: date-to-2016 did not work (operator). Bay 4 picker
+showed EFI Boot, not Mac OS X Install ESD. Use README_LION_MIRROR.txt and
+lion-asr-installer-mirror.command instead. Click Lion SSD Base at the picker.
+
 Mac Pro 1,1 — Lion boot off fast SSD (Crucial MX500 Bay 3) — Fix Pack 2026-09-10
 
 This pack supersedes the old headless injector (arena-lion.sh + org.arena.lion-autoinstall.plist).

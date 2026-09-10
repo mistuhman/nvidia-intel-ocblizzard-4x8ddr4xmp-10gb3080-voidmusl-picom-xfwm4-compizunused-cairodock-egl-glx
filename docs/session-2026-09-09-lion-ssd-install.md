@@ -113,6 +113,20 @@ Boot the Mac from the SATA SSD with Lion, then create a clean installation admin
 2. Unzip to Desktop, double-click lion-ssd-lion-boot-fix.command, enter admin password, return ~/Desktop/lion-ssd-lion-boot-fix.txt
 3. Gate: do NOT erase Bay3 until report is read. Then follow Option-boot InstallESD > install Lion to Bay3 > first boot Lion SSD > create clean admin account.
 
+## 2026-09-10 — Option picker + date-hack FAIL (session 01a08b54)
+
+Photo receipt (Startup Manager): three Internal.icns, no DVD icon.
+- Lion SSD Base (selected, up-arrow) = Bay 1 Snow Leopard — the only safe click
+- EFI Boot = previous Bay 4 restore, unlabeled / not a Mac OS installer
+- Mac OS X = unlabeled system volume (likely start disk clone)
+
+Operator: "the installer date thing didnt work. just rewrite it and make a new mirror."
+Date-to-2016 WITHDRAWN. New path = asr restore of the INNER InstallESD.dmg FILE
+onto Bay 4, then bless --label "Mac OS X Install ESD".
+Do not Disk-Utility-drag two volumes of the same name (dmg + Bay 4).
+Do not erase Lion SSD Base or start disk clone.
+Drive replacement still gated on Lion actually booting from the SSD.
+
 References:
 [1] https://forums.macrumors.com/threads/2006-2007-mac-pro-1-1-2-1-and-os-x-el-capitan.1890435/
 [2] https://discussions.apple.com/thread/256072543 (Mountain Lion cert expired 2019, date fix)

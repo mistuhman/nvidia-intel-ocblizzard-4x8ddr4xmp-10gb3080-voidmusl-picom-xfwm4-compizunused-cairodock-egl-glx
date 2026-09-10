@@ -1,57 +1,28 @@
 #!/bin/sh
-# Lion installer date/cert fix for Snow Leopard 10.6.8
-# Fixes "This copy of the Install OS X Lion application can't be verified"
-# Double-click from Desktop after extracting ZIP.
+# WITHDRAWN 2026-09-10 (operator receipt: "the installer date thing didnt work").
+# Do not set the clock. Do not use 2016-01-01 or 2015-08-08.
+# Replacement: lion-asr-installer-mirror.command (asr restore inner InstallESD.dmg
+# onto Bay 4, then bless --label so Startup Manager shows Mac OS X Install ESD
+# instead of EFI Boot).
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 umask 022
 SELF="$0"
-[ -f "$SELF" ] && chmod 755 "$SELF" 2>/dev/null || true
-
-REPORT_DIR="$HOME/Desktop"
-[ -d "$REPORT_DIR" ] || REPORT_DIR="$HOME"
-REPORT="$REPORT_DIR/lion-installer-date-fix.txt"
-
-(
-echo "Lion installer date fix"
-echo "Generated: $(date)"
-echo "Host: $(sw_vers 2>&1; uname -a)"
-echo ""
-if ! sudo -v; then
-  echo "FAIL: admin auth required"
-  exit 1
+if [ -f "$SELF" ]; then
+  chmod 755 "$SELF" 2>/dev/null || true
 fi
 
-echo ""
-echo "===== BEFORE ====="
-date
-ls -ld "/Applications/Install OS X Lion.app" "/Applications/Install Mac OS X Lion.app" 2>&1
-xattr -l "/Applications/Install OS X Lion.app" 2>&1 | head -n 20
+osascript -e 'tell application "Finder" to display dialog "Date fix WITHDRAWN.
 
-echo ""
-echo "Clearing quarantine..."
-sudo xattr -cr "/Applications/Install OS X Lion.app" 2>&1 || true
-sudo xattr -cr "/Applications/Install Mac OS X Lion.app" 2>&1 || true
+Setting the clock to 2016 did not work on this Mac.
 
-echo ""
-echo "Setting date to 2016-01-01 00:00 to bypass expired cert (2016-02-14 and 2019-10-24)"
-echo "Current date before change: $(date)"
-sudo date 0101000016 2>&1
-echo "New date: $(date)"
-echo ""
-echo "Now try launching installer:"
-echo "  open \"/Applications/Install OS X Lion.app\""
-echo ""
-echo "If it launches, proceed to install to Bay3 SSD."
-echo "After install starts, restore date with:"
-echo "  sudo sntp -sS time.apple.com"
-echo "or"
-echo "  sudo date $(date -u +%m%d%H%M%y 2>/dev/null || echo 'MMDDhhmmYY')"
-echo ""
-echo "If it still fails, try alternate date: sudo date 0808111115 (Aug 8 2015)"
-echo ""
-echo "Report saved"
-) > "$REPORT" 2>&1
-cat "$REPORT"
-open -a TextEdit "$REPORT" 2>/dev/null || true
+1. At the Option-key picker, click Lion SSD Base (already selected).
+2. Do not click EFI Boot. Do not click Mac OS X.
+3. On the desktop, run lion-asr-installer-mirror.command to write a new InstallESD mirror onto Bay 4.
+
+Lion SSD Base and start disk clone are not erased." buttons {"OK"} default button 1 with icon caution' 2>/dev/null || true
+
+printf '%s\n' "WITHDRAWN: lion-installer-date-fix.command"
+printf '%s\n' "Use lion-asr-installer-mirror.command after booting Lion SSD Base."
+exit 1
