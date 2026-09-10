@@ -37,3 +37,26 @@
 ## Operator goal
 
 Boot the Mac from the SATA SSD with Lion, then create a clean installation administrator account and handle the remaining HDD bays from the working SSD system. Drive changes remain deferred until the OS boot path is proven.
+
+## 2026-09-09b continuation (session 01a0889a, vision live)
+
+Photo receipt (operator photo, read by vision): Install Mac OS X Lion window with target
+`Lion SSD Base`, `About 3 minutes remaining`, Cancel button; modal dialog
+`The software could not be verified. It may have been corrupted or tampered with during downloading.`;
+Date & Time pref open, auto-set unchecked, manual 9/9/2026 6:02:51 PM; Finder `Searching "This Mac"` behind.
+
+New path chosen (per Current gate: do not repeat outer/inner app attempts):
+bootable InstallESD.dmg USB. Precedent: 2011 Apple thread 3193133 - user with MD5-VERIFIED
+InstallESD (`b5d3753c62bfb69866e94dca9336a44a` cited as the good 2011 checksum) still hit the
+same verification wall in-app on 10.6.8; the validated exit was a bootable Lion USB key.
+InstallESD restore-to-USB procedure confirmed for the app-bundle path and MP 1,1-era hardware
+(macrumors 2355618; gist Diegus83 asr variant).
+
+Wave L1 (shipped in chat 2026-09-09b): dismiss dialog (OK, then Cancel the installer, no reboot
+into it), read-only integrity lines (ls + md5 of InstallESD.dmg, recorded against the 2011
+reference as informational), then Disk Utility restore of InstallESD.dmg to a sacrificial
+>=8GB USB (GUID + Mac OS Extended Journaled, Erase Destination). Rollback if the clone is left
+half-written: Option-boot the original SL source volume (untouched per gate).
+Wave L2 (after L1 receipt): Option-boot the USB; if the media installer also reports
+verification failure, in-installer Utilities-Terminal era date (2011/2012, NOT 2016) is the
+inner knob - a new verifier context, not a relabel of the closed 2016 test.
