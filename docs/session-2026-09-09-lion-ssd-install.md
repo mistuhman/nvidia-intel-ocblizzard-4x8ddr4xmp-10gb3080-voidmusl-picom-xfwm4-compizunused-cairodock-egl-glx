@@ -156,3 +156,12 @@ scripts/arena-lion-autoinstall.command (double-clickable on 10.6; also published
 gist for a short clickable URL): detaches the RO dmg, mountAll, injects arena-lion.sh +
 RunAtLoad plist into the scratch ESD volume, echoes next steps. Then Option-boot "Mac OS X"
 blind, auto-reboot, cat /lion-cli.log from 10.6.
+
+## 2026-09-09k short-URL payload delivery (session 01a0889a)
+
+Photo receipt of Arctic Fox showing 404 on typed raw GitHub URL: operator manually typed the 140-character URL from mobile and omitted the repo slug prefix (`m-xfwm4-...` instead of `mistuhman/nvidia-intel-ocblizzard-...`).
+Fix delivered:
+1. Root-level `lion.command` added with explicit `chmod 644` on injected launchd plist.
+2. Short URL `da.gd/ytW5F` (11 characters) created pointing directly to `lion.command`.
+3. Fallback click route: `github.com/mistuhman` -> repository -> `lion.command` -> Raw.
+4. Execution flow unchanged: save to Desktop, double-click (or `bash ~/Desktop/lion.command`), reboot to "Mac OS X" blind via Option key, auto-reboot to 10.6, verify `/Volumes/Lion SSD Base/lion-cli.log`.
