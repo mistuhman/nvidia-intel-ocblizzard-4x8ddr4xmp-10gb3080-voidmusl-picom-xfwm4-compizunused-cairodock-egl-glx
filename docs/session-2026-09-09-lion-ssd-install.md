@@ -175,3 +175,9 @@ Photo receipt of Terminal running `lion.command`:
    - Iterative partition mount: `for d in /dev/disk[0-9]*; do diskutil mount "$d"; done`.
    - Dynamic ESD finder: scans `/Volumes/*` for `OSInstall.mpkg` rather than assuming `/Volumes/Mac*`.
    - Same resilient loop inside the injected headless `arena-lion.sh` payload.
+
+## 2026-09-09m headless installer boot & shutdown flash observation (session 01a0889a)
+
+Operator booted the restored ESD volume blind; screen showed unsupported timing for ~3 min; observed split-second red text when shutting off / rebooting.
+Analysis: During shutdown/reset, the GPU video mode briefly drops back to standard VESA/VGA timing before power down, allowing the Dell monitor to momentarily sync and display the console buffer text.
+Next verification: Boot back to 10.6 and inspect `/lion-cli.log` to determine whether the installer was actively extracting packages or if an error occurred.
