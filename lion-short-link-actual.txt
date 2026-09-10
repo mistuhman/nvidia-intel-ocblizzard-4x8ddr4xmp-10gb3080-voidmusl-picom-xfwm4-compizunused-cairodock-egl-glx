@@ -1,20 +1,10 @@
-ONE LINK FOR ALL — Arctic Fox + phone, no tinyurl, no e2b sandbox (Sandbox Not Found)
+ONE LINK — type this in Arctic Fox on Snow Leopard
 
-https://da.gd/lionfix
+da.gd/lmz
 
-This is ONE link for everything (19K full pack):
-- lion-ssd-lion-boot-fix.command (main fix to boot Lion off fast SSD)
-- lion-log-upload.command (easy log return via termbin)
-- lion-phone.html, download scripts, README
+Goes to lion-mirror.zip (one script: lion-mirror.command).
+Destination host: cdn.jsdelivr.net
+Fresh da.gd pages show a click-through once — continue, then Save.
 
-Tap in Arctic Fox 47.3 mac32:
-Type https://da.gd/lionfix in address bar → Enter → Save to ~/Downloads → unzip to Desktop → double-click fix.
-
-One-liner Terminal (type from phone into Mac Terminal, no browser):
-curl -L -o ~/Downloads/fix.zip https://da.gd/lionfix && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
-
-Other permanent da.gd links:
-https://da.gd/mOycI → raw GitHub fix ZIP (11K)
-https://da.gd/XeHlN → jsDelivr fix ZIP (11K)
-https://da.gd/lionsd → small fix ZIP
-https://da.gd/gOvc2 → full phone debug pack (same as lionfix)
+Do not use da.gd/lionfix (old multi-file pack).
+Do not curl (Snow Leopard curl is TLS 1.0; GitHub/jsDelivr need TLS 1.2).
