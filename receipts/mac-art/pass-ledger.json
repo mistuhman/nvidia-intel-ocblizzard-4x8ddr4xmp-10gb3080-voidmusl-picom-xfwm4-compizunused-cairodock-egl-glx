@@ -1,0 +1,358 @@
+{
+  "schema": "mac-art-ledger.v1",
+  "plates": {
+    "physical": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-art/prompts/physical-p1.txt",
+          "promptHash": "35dfbdaaf537aebb2373ce673c3588117358a4e1e0af4b05e352b8041fbdc1a1",
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-physical-p1.png",
+              "sha256": "73b696964dec41e2e58342047a3551bf70898b47eec078b80fd04c4d0568b5bb",
+              "bytes": 1973398,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-COUNT",
+              "severity": "ERROR",
+              "node": "legend",
+              "note": "legend field rendered 7 drive icons including 3 SSD hexes; only one boot SSD exists - violates no-extra-drives"
+            },
+            {
+              "code": "ART-VIS-POS",
+              "severity": "ERROR",
+              "node": "bay1",
+              "note": "boot SSD drawn perched on top of the sled cage instead of loaded inside bay 1 sled"
+            },
+            {
+              "code": "ART-VIS-ICON",
+              "severity": "ERROR",
+              "node": "card",
+              "note": "RAID card shown as bare PCB inside the drive cage: no PCIe slot numbering, no rear bracket, no gold fingers in a slot"
+            },
+            {
+              "code": "ART-VIS-DUP",
+              "severity": "WARN",
+              "node": "footer",
+              "note": "A1186 2006 footer printed twice; BAY MAP became a floating title outside its panel"
+            },
+            {
+              "code": "ART-VIS-TEXT-EXTRA",
+              "severity": "WARN",
+              "node": "chassis",
+              "note": "amber plate BTC COLD-STORAGE RAID 5 BUILD is not in the allowed short-label set"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 76.71,
+            "stddev": 72.17,
+            "pctDark": 0.5447,
+            "pctBright": 0.0739,
+            "edgeRatio": 0.1203,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-physical-p2.png",
+              "sha256": "ee01ecb56b9211f15020ccd7829d48c4846763c644f5a2e527fd332090450473",
+              "bytes": 1885192,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-COUNT",
+              "severity": "ERROR",
+              "node": "legend",
+              "note": "three extra loose HDD icons remain in the central honeycomb field; drive icons should exist only in the machine and the legend column"
+            },
+            {
+              "code": "ART-VIS-SEMANTIC",
+              "severity": "ERROR",
+              "node": "bay1",
+              "note": "boot SSD leader line runs into the RAID pool field, implying the SSD is a RAID member - it must not connect to the RAID path"
+            },
+            {
+              "code": "ART-VIS-TEXT",
+              "severity": "WARN",
+              "node": "slots",
+              "note": "slot bank numerals read 1,2,4 with the third digit dropped"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "promptFile": "receipts/mac-art/prompts/physical-p2.txt",
+          "promptHash": "99e302107ef351a0345fcd7ef2df520ebd339d72e4868d86026a9bf99c07cbc9",
+          "audit": {
+            "mean": 64.46,
+            "stddev": 63.39,
+            "pctDark": 0.4823,
+            "pctBright": 0.0446,
+            "edgeRatio": 0.1118,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 3,
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-physical-p3.png",
+              "sha256": "1e8624217ad8c6e575862ae8a41511e032fcfdf51223029bf04aa552fb5625d4",
+              "bytes": 1836560,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-LABEL-MISSING",
+              "severity": "WARN",
+              "node": "card",
+              "note": "SFF-8087 label dropped from the render; all other short labels spelled exactly"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "promptFile": "receipts/mac-art/prompts/physical-p3.txt",
+          "promptHash": "acdebcbddf2fa411917d891342ec0d1d45b698c78e74613de4e79724a845eb9d",
+          "audit": {
+            "mean": 65.66,
+            "stddev": 65.1,
+            "pctDark": 0.5067,
+            "pctBright": 0.0506,
+            "edgeRatio": 0.0777,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PATCHED"
+        }
+      ],
+      "nextPass": 4
+    },
+    "logical": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-art/prompts/logical-p1.txt",
+          "promptHash": "d1551ff077332cefcf1b848eadae964452e0ccb2f9be0aa37a37dbfef369d87b",
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-logical-p1.png",
+              "sha256": "db232174f2faadd47b42992bb2967b6b6fd13f8a67d8f933f43bdf5d226b32bc",
+              "bytes": 1741448,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-FIT",
+              "severity": "ERROR",
+              "node": "footer2",
+              "note": "footer hexagon is clipped by the bottom canvas edge"
+            },
+            {
+              "code": "ART-VIS-ICON",
+              "severity": "ERROR",
+              "node": "ssd",
+              "note": "host shown as a small logo plate reading as a laptop/tablet; must be the Mac Pro tower silhouette, violates no-macbook"
+            },
+            {
+              "code": "ART-VIS-MISSING",
+              "severity": "ERROR",
+              "node": "volume",
+              "note": "PCIe controller is not named anywhere on the logical path though the directive is RAID 5 via PCIe"
+            },
+            {
+              "code": "ART-VIS-TEXT-EXTRA",
+              "severity": "WARN",
+              "node": "title",
+              "note": "subtitle 2006 Mac Pro 1,1 Mac OS X 10.6.8/10.7 rendered outside the label set"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 62.11,
+            "stddev": 62.1,
+            "pctDark": 0.5378,
+            "pctBright": 0.0803,
+            "edgeRatio": 0.0853,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-logical-p2.png",
+              "sha256": "d20aaf7a9a42955c60426f69d3b659bb4dffb3d8e37afe531a0f3faabd2e4cc3",
+              "bytes": 1747899,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-TEXT-EXTRA",
+              "severity": "ERROR",
+              "node": "hdd2",
+              "note": "invented caption BRUSHED-ALUMINIUM MAC OS X INTERNAL rendered under member 2 - prose descriptor leaked into image text"
+            },
+            {
+              "code": "ART-VIS-TEXT-EXTRA",
+              "severity": "ERROR",
+              "node": "volume",
+              "note": "invented caption MAC PRO 1,1 TOWER ALUMINIUM rendered under the host silhouette"
+            },
+            {
+              "code": "ART-VIS-ICON",
+              "severity": "WARN",
+              "node": "hdd0",
+              "note": "the three member panels rendered as chamfered octagons while the rest of the plate is hexagonal"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "promptFile": "receipts/mac-art/prompts/logical-p2.txt",
+          "promptHash": "b43296496ff5164f7c585d7a016cfa6b9d9fe302d84bb79f41d69fe6d27557c5",
+          "audit": {
+            "mean": 54.83,
+            "stddev": 58.93,
+            "pctDark": 0.6785,
+            "pctBright": 0.0561,
+            "edgeRatio": 0.0801,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 3,
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-logical-p3.png",
+              "sha256": "92b369a17e886015d1caf86f72ca115ea077e293f394b222d8116e6c25aad206",
+              "bytes": 1589846,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-DUP",
+              "severity": "WARN",
+              "node": "pciepath",
+              "note": "PCIe SLOT 4 label printed twice around the card panel; Mac Pro 1,1 TOWER caption is outside the label set"
+            },
+            {
+              "code": "ART-VIS-POS",
+              "severity": "WARN",
+              "node": "capacity",
+              "note": "2 TB USABLE drifted next to the vault instead of its own meter panel; meter hexagon rendered unlabelled"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "promptFile": "receipts/mac-art/prompts/logical-p3.txt",
+          "promptHash": "af5a9fe88e16333c083d70928c9630fc5b1a127d58a62090c653f7047242a5f8",
+          "audit": {
+            "mean": 42.11,
+            "stddev": 67.14,
+            "pctDark": 0.7741,
+            "pctBright": 0.0715,
+            "edgeRatio": 0.1049,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PATCHED"
+        }
+      ],
+      "nextPass": 4
+    },
+    "pcie": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-art/prompts/pcie-p1.txt",
+          "promptHash": "95105d766daa324daf3f331742d8245c9bc94a5c4d90f0ac2aeb369940cd4858",
+          "artifacts": [
+            {
+              "file": "docs/macpro-btc-raid-pcie-p1.png",
+              "sha256": "12b829979c25ea7d63e735c2538c428d663376830c0daf84212c5d1665003e2b",
+              "bytes": 1585660,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "ART-VIS-STYLE",
+              "severity": "ERROR",
+              "note": "slot panels rendered as elongated chamfered pills, not the flat-top hexagons the style contract requires"
+            },
+            {
+              "code": "ART-VIS-TEXT-EXTRA",
+              "severity": "WARN",
+              "node": "pfooter",
+              "note": "amber CAUTION chip is text outside the short-label list"
+            },
+            {
+              "code": "ART-VIS-MISSING",
+              "severity": "WARN",
+              "node": "slot1n",
+              "note": "no graphics card drawn in the double-wide Slot 1 as specified"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 47.58,
+            "stddev": 70.38,
+            "pctDark": 0.7031,
+            "pctBright": 0.0835,
+            "edgeRatio": 0.0848,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "artifacts": [],
+          "findings": [],
+          "patches": [
+            "classify the defect, then patch the IR or the style contract"
+          ],
+          "verdict": "PATCHED"
+        }
+      ],
+      "nextPass": 2
+    }
+  },
+  "updated": "2026-09-10"
+}

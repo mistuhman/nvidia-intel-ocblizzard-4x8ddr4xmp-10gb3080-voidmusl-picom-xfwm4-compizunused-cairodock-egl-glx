@@ -1,0 +1,631 @@
+{
+  "schema": "mac-art-scene.v1",
+  "updated": "2026-09-10",
+  "session": "01a08beb",
+  "styleContract": "docs/macpro-storage-style.md",
+  "factsLedger": "docs/macpro-storage-facts.json",
+  "textBudget": {
+    "maxWords": 4,
+    "maxChars": 24,
+    "reasonFact": "F-25"
+  },
+  "machine": {
+    "id": "macpro11",
+    "model": "Mac Pro 1,1 / A1186 (2006)",
+    "facts": [
+      "F-01",
+      "F-23"
+    ],
+    "bays": [
+      {
+        "id": "bay1",
+        "index": 1,
+        "occupant": "ssd-boot",
+        "facts": [
+          "F-02",
+          "F-03",
+          "F-21"
+        ]
+      },
+      {
+        "id": "bay2",
+        "index": 2,
+        "occupant": "hdd-member0",
+        "facts": [
+          "F-02",
+          "F-03"
+        ]
+      },
+      {
+        "id": "bay3",
+        "index": 3,
+        "occupant": "hdd-member1",
+        "facts": [
+          "F-02",
+          "F-03",
+          "F-21"
+        ]
+      },
+      {
+        "id": "bay4",
+        "index": 4,
+        "occupant": "hdd-member2",
+        "facts": [
+          "F-02",
+          "F-03",
+          "F-21"
+        ]
+      }
+    ],
+    "slots": [
+      {
+        "id": "slot1",
+        "name": "Slot 1",
+        "lanes": "x16",
+        "occupant": "gpu",
+        "facts": [
+          "F-07",
+          "F-08"
+        ]
+      },
+      {
+        "id": "slot2",
+        "name": "Slot 2",
+        "lanes": "x1",
+        "occupant": "empty",
+        "facts": [
+          "F-08"
+        ]
+      },
+      {
+        "id": "slot3",
+        "name": "Slot 3",
+        "lanes": "x4",
+        "occupant": "empty",
+        "facts": [
+          "F-08"
+        ]
+      },
+      {
+        "id": "slot4",
+        "name": "Slot 4",
+        "lanes": "x4",
+        "occupant": "raid-card",
+        "facts": [
+          "F-08",
+          "F-09",
+          "F-13"
+        ]
+      }
+    ],
+    "optical": {
+      "count": 2,
+      "bus": "PATA/ATA-100",
+      "facts": [
+        "F-05"
+      ]
+    }
+  },
+  "raid": {
+    "level": 5,
+    "members": 3,
+    "memberCapacityTB": 1,
+    "rawTB": 3,
+    "usableTB": 2,
+    "tolerance": 1,
+    "filesystem": "Mac OS Extended (Journaled), GUID",
+    "facts": [
+      "F-10",
+      "F-12",
+      "F-20"
+    ]
+  },
+  "plates": [
+    {
+      "id": "physical",
+      "title": "Mac Pro 1,1 — physical bay map",
+      "purpose": "Where the boot SSD and the three 1 TB HDDs physically sit, and how they reach the PCIe RAID card.",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
+      "view": "three-quarter cutaway of the tower with the side panel removed",
+      "nodes": [
+        {
+          "id": "chassis",
+          "kind": "chassis",
+          "x": 4,
+          "y": 6,
+          "w": 44,
+          "h": 88,
+          "text": "Mac Pro 1,1",
+          "detail": "2006 Mac Pro tower, A1186, aluminium cheese-grater front, handles top and bottom, side panel released by the rear lever.",
+          "facts": [
+            "F-01",
+            "F-23"
+          ]
+        },
+        {
+          "id": "optical1",
+          "kind": "bay",
+          "x": 7,
+          "y": 9,
+          "w": 38,
+          "h": 6,
+          "text": "OPTICAL 1",
+          "detail": "5.25in optical bay 1 — slot-load SuperDrive on PATA / ATA-100, not SATA.",
+          "facts": [
+            "F-05"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "optical2",
+          "kind": "bay",
+          "x": 7,
+          "y": 16,
+          "w": 38,
+          "h": 6,
+          "text": "OPTICAL 2",
+          "detail": "5.25in optical bay 2 — empty; ATA-100 cabling with 4-pin Molex power.",
+          "facts": [
+            "F-05"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "bay1",
+          "kind": "ssd",
+          "x": 7,
+          "y": 24,
+          "w": 38,
+          "h": 10,
+          "text": "BAY 1 · BOOT SSD",
+          "detail": "Bay 1 - Lion SSD Base - 1 TB 2.5in SATA SSD loaded INSIDE the top sled of the four-bay cage, sled latch and captive thumbscrews visible, flush within the bay opening and not resting on top of the cage - boot 10.6.8, Lion 10.7 destination - NEVER ERASE.",
+          "facts": [
+            "F-02",
+            "F-03",
+            "F-21"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "bay2",
+          "kind": "hdd",
+          "x": 7,
+          "y": 36,
+          "w": 38,
+          "h": 10,
+          "text": "BAY 2 · 1 TB",
+          "detail": "Bay 2 — 1 TB 3.5in HDD — RAID 5 member 0 — cabled to the PCIe RAID controller.",
+          "facts": [
+            "F-02",
+            "F-03"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "bay3",
+          "kind": "hdd",
+          "x": 7,
+          "y": 48,
+          "w": 38,
+          "h": 10,
+          "text": "BAY 3 · 1 TB",
+          "detail": "Bay 3 — 1 TB 3.5in HDD — RAID 5 member 1 — replaces the Crucial MX500 'start disk clone' (Lion install target; do not wipe until Lion boots from the SSD).",
+          "facts": [
+            "F-02",
+            "F-03",
+            "F-21"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "bay4",
+          "kind": "hdd",
+          "x": 7,
+          "y": 60,
+          "w": 38,
+          "h": 10,
+          "text": "BAY 4 · 1 TB",
+          "detail": "Bay 4 — 1 TB 3.5in HDD — RAID 5 member 2 — replaces 'Mac OS X Install ESD'.",
+          "facts": [
+            "F-02",
+            "F-03",
+            "F-21"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "slots",
+          "kind": "pcie",
+          "x": 7,
+          "y": 72,
+          "w": 38,
+          "h": 14,
+          "text": "SLOTS 1-4",
+          "detail": "Slot 1 double-wide x16 = GPU. Slots 2/3/4 are full-length and reconfigurable; stock allocation 16/4/4/1. The RAID card goes in an x4 slot.",
+          "facts": [
+            "F-07",
+            "F-08"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "card",
+          "kind": "controller",
+          "x": 9,
+          "y": 74,
+          "w": 19,
+          "h": 12,
+          "text": "RAID 5 CARD",
+          "detail": "Four-port SATA/SAS RAID controller seated in PCIe slot 4: metal rear bracket on the chassis edge, gold fingers inside the slot, one SFF-8087 port. Slot bank numbered 1 to 4, card in slot 4.",
+          "facts": [
+            "F-09",
+            "F-13",
+            "F-14",
+            "F-24"
+          ],
+          "parent": "slots"
+        },
+        {
+          "id": "cable",
+          "kind": "cable",
+          "x": 28,
+          "y": 62,
+          "w": 16,
+          "h": 22,
+          "text": "BREAKOUT",
+          "detail": "SFF-8087 to 4x SATA breakout (MaxConnect-style SAS/SATA link) routes the bay drives to the card. The four logic-board bay SATA ports stay unused; direct-attach is bypassed.",
+          "facts": [
+            "F-02",
+            "F-04",
+            "F-16"
+          ],
+          "parent": "chassis"
+        },
+        {
+          "id": "legend",
+          "kind": "panel",
+          "x": 56,
+          "y": 6,
+          "w": 40,
+          "h": 84,
+          "text": "BAY MAP",
+          "detail": "Legend field: exactly four rows in bay order - one SSD icon for bay 1 and three HDD icons for bays 2, 3 and 4. No other drive icons anywhere in the plate.",
+          "facts": [
+            "F-02",
+            "F-03"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 4,
+          "y": 92,
+          "w": 92,
+          "h": 5,
+          "text": "A1186 · 2006",
+          "detail": "Mac Pro 1,1 · A1186 · 2006 · 51.1 x 20.6 x 47.5 cm · 19.2 kg · four cable-free direct-attach 3.5in bays at 3 Gb/s · six SATA ports (4 bays + 2 spare) · PATA optical bays.",
+          "facts": [
+            "F-02",
+            "F-04",
+            "F-05",
+            "F-23"
+          ]
+        }
+      ],
+      "renderNotes": [
+        "ABSOLUTE TEXT RULE: any string not present in the SHORT LABEL list is a defect. Words that appear only as drawing descriptions (brushed aluminium, Mac OS X internal, tower, cold vault, parity) must NEVER be rendered as captions.",
+        "Every drive icon lives either inside the Mac Pro bays or in the single legend column. No loose floating drive icons in the honeycomb field.",
+        "The bay 1 boot SSD has NO cable at all: it is joined to the legend only. Only bays 2, 3 and 4 get leads, and every one of those leads terminates at the RAID card.",
+        "Draw the slot bank numerals as 1, 2, 3, 4 - four separate digits, evenly spaced, no gaps."
+      ]
+    },
+    {
+      "id": "logical",
+      "title": "AppleRAID-free path — hardware RAID 5 map for BTC cold storage",
+      "purpose": "How three 1 TB members become one 2 TB vault, and what the vault is and is not.",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
+      "view": "flat schematic on hexagonal panels",
+      "nodes": [
+        {
+          "id": "title",
+          "kind": "title",
+          "x": 4,
+          "y": 4,
+          "w": 92,
+          "h": 8,
+          "text": "BTC COLD VAULT",
+          "detail": "Mac Pro 1,1 · boot SSD on the logic board + three 1 TB HDDs as a hardware RAID 5 set on a PCIe controller.",
+          "facts": [
+            "F-22"
+          ]
+        },
+        {
+          "id": "ssd",
+          "kind": "icon-ssd",
+          "x": 6,
+          "y": 20,
+          "w": 20,
+          "h": 22,
+          "text": "BOOT SSD",
+          "detail": "Lion SSD Base — 1 TB 2.5in SATA SSD — boot volume 10.6.8 to 10.7 — Mac OS Extended (Journaled), GUID — DELIBERATELY NOT a member of the RAID set.",
+          "facts": [
+            "F-20",
+            "F-21"
+          ]
+        },
+        {
+          "id": "hdd0",
+          "kind": "icon-hdd",
+          "x": 34,
+          "y": 16,
+          "w": 16,
+          "h": 15,
+          "text": "1 TB HDD",
+          "detail": "Member 0 — Bay 2 — 1 TB 3.5in HDD — 3 Gb/s — channel 1 of the RAID controller.",
+          "facts": [
+            "F-02"
+          ]
+        },
+        {
+          "id": "hdd1",
+          "kind": "icon-hdd",
+          "x": 34,
+          "y": 34,
+          "w": 16,
+          "h": 15,
+          "text": "1 TB HDD",
+          "detail": "Member 1 — Bay 3 — 1 TB 3.5in HDD — 3 Gb/s — channel 2 of the RAID controller.",
+          "facts": [
+            "F-02"
+          ]
+        },
+        {
+          "id": "hdd2",
+          "kind": "icon-hdd",
+          "x": 34,
+          "y": 52,
+          "w": 16,
+          "h": 15,
+          "text": "1 TB HDD",
+          "detail": "Member 2 — Bay 4 — 1 TB 3.5in HDD — 3 Gb/s — channel 3 of the RAID controller.",
+          "facts": [
+            "F-02"
+          ]
+        },
+        {
+          "id": "engine",
+          "kind": "raid5",
+          "x": 57,
+          "y": 26,
+          "w": 15,
+          "h": 30,
+          "text": "RAID 5",
+          "detail": "Distributed parity striping across three members: 3 TB raw becomes 2 TB usable ((n-1) x member), survives the loss of any one member, rebuilds onto a replacement drive. Not expressible in Disk Utility — AppleRAID is stripe/mirror/concat only.",
+          "facts": [
+            "F-10",
+            "F-12"
+          ]
+        },
+        {
+          "id": "volume",
+          "kind": "volume",
+          "x": 78,
+          "y": 26,
+          "w": 16,
+          "h": 30,
+          "text": "BTC COLD VAULT",
+          "detail": "2 TB usable — Mac OS Extended (Journaled), GUID partition map — mount point /Volumes/BTCColdVault — exported and unmounted when not in use, no auto-mount at login.",
+          "facts": [
+            "F-12",
+            "F-18",
+            "F-20"
+          ]
+        },
+        {
+          "id": "capacity",
+          "kind": "capacity",
+          "x": 34,
+          "y": 74,
+          "w": 60,
+          "h": 10,
+          "text": "2 TB USABLE",
+          "detail": "Capacity plan: ~700 GB Bitcoin full chain (2026, still growing) + chainstate + wallet + headroom inside 2 TB usable. A pruned node needs only a few GB.",
+          "facts": [
+            "F-12",
+            "F-17"
+          ]
+        },
+        {
+          "id": "warning",
+          "kind": "warning",
+          "x": 6,
+          "y": 57,
+          "w": 24,
+          "h": 26,
+          "text": "NOT A BACKUP",
+          "detail": "RAID 5 is redundancy, not backup. A rebuild reads 2 TB: about a 15% chance of an unrecoverable read error on 1e14-rated consumer drives, about 1.5% on 1e15 enterprise drives. Seeds and keys stay offline on paper or steel, never on this array.",
+          "facts": [
+            "F-18",
+            "F-19"
+          ]
+        },
+        {
+          "id": "footer2",
+          "kind": "footer",
+          "x": 4,
+          "y": 85,
+          "w": 92,
+          "h": 5,
+          "text": "HFS+J · GUID · 3 Gb/s",
+          "detail": "Volume format Mac OS Extended (Journaled) on GUID — APFS is not mountable by 10.7. Every drive is SATA 3 Gb/s; the PCIe 1.0 x4 uplink is about 1 GB/s and is not the bottleneck for three HDDs.",
+          "facts": [
+            "F-20",
+            "F-09"
+          ]
+        },
+        {
+          "id": "pciepath",
+          "kind": "controller",
+          "x": 57,
+          "y": 58,
+          "w": 15,
+          "h": 9,
+          "text": "PCIe · SLOT 4",
+          "detail": "Three HDD channels pass through the PCIe 1.0 x4 RAID controller in slot 4, about 1 GB/s uplink."
+        }
+      ],
+      "renderNotes": [
+        "ABSOLUTE TEXT RULE: any string not present in the SHORT LABEL list is a defect. Do not caption the host silhouette, the members or the volume with descriptive words.",
+        "All member, engine, volume, SSD and warning panels are the SAME flat-top hexagon - no octagons, no chamfered squares.",
+        "The footer strip HFS+J - GUID - 3 Gb/s sits inside its own wide hexagon panel, not as floating text."
+      ]
+    },
+    {
+      "id": "pcie",
+      "title": "PCIe slot allocation and cable routing",
+      "purpose": "Which slot the RAID card takes, what it costs in lanes, and how the bay drives get cabled to it.",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
+      "view": "rear slot area of the logic board with the drive stack beside it",
+      "nodes": [
+        {
+          "id": "ptitle",
+          "kind": "title",
+          "x": 4,
+          "y": 4,
+          "w": 92,
+          "h": 8,
+          "text": "PCIe RAID PATH",
+          "detail": "Four PCIe 1.0 slots on the Mac Pro 1,1 logic board; stock lane allocation 16/4/4/1, reconfigurable with the Expansion Slot Utility.",
+          "facts": [
+            "F-07",
+            "F-08"
+          ]
+        },
+        {
+          "id": "slot1n",
+          "kind": "slot",
+          "x": 8,
+          "y": 18,
+          "w": 26,
+          "h": 12,
+          "text": "SLOT 1 · x16",
+          "detail": "Slot 1 — double-wide 16-lane — graphics card stays here.",
+          "facts": [
+            "F-07"
+          ]
+        },
+        {
+          "id": "slot2n",
+          "kind": "slot",
+          "x": 8,
+          "y": 33,
+          "w": 26,
+          "h": 12,
+          "text": "SLOT 2 · x1",
+          "detail": "Slot 2 — one lane in the stock allocation — too narrow for a RAID card.",
+          "facts": [
+            "F-08"
+          ]
+        },
+        {
+          "id": "slot3n",
+          "kind": "slot",
+          "x": 8,
+          "y": 48,
+          "w": 26,
+          "h": 12,
+          "text": "SLOT 3 · x4",
+          "detail": "Slot 3 — four lanes — usable alternative for the RAID card.",
+          "facts": [
+            "F-08"
+          ]
+        },
+        {
+          "id": "slot4n",
+          "kind": "slot-card",
+          "x": 8,
+          "y": 63,
+          "w": 26,
+          "h": 14,
+          "text": "SLOT 4 · x4",
+          "detail": "Slot 4 — four lanes at 2.5 GT/s (PCIe 1.0) — RAID card lives here; about 1 GB/s uplink, far above what three HDDs can push.",
+          "facts": [
+            "F-08",
+            "F-09",
+            "F-13"
+          ]
+        },
+        {
+          "id": "card2",
+          "kind": "controller",
+          "x": 40,
+          "y": 30,
+          "w": 20,
+          "h": 18,
+          "text": "RAID CARD",
+          "detail": "4-port SATA/SAS controller with one SFF-8087 connector, RAID 0/1/3/5/6/10, 256 MB cache, Intel IOP-class RAID processor.",
+          "facts": [
+            "F-13",
+            "F-14"
+          ]
+        },
+        {
+          "id": "cable2",
+          "kind": "cable",
+          "x": 64,
+          "y": 32,
+          "w": 12,
+          "h": 16,
+          "text": "SFF-8087",
+          "detail": "One SFF-8087 to four SATA breakout — three leads run to bays 2, 3 and 4, one spare lead is left capped.",
+          "facts": [
+            "F-13",
+            "F-16"
+          ]
+        },
+        {
+          "id": "drives",
+          "kind": "stack",
+          "x": 80,
+          "y": 22,
+          "w": 16,
+          "h": 34,
+          "text": "3 x 1 TB",
+          "detail": "Bays 2, 3 and 4 — three 1 TB 3.5in HDDs on their sleds. The logic-board bay SATA ports are left unpopulated while the breakout is in use.",
+          "facts": [
+            "F-02",
+            "F-04",
+            "F-16"
+          ]
+        },
+        {
+          "id": "pfooter",
+          "kind": "footer",
+          "x": 4,
+          "y": 92,
+          "w": 92,
+          "h": 5,
+          "text": "EFI32 · NO BOOT",
+          "detail": "MacPro1,1 has 32-bit EFI, so an Option ROM that is 64-bit only will not boot from the card. That is fine here: the array is a data vault, the system boots from the Bay 1 SSD.",
+          "facts": [
+            "F-24"
+          ]
+        }
+      ],
+      "renderNotes": [
+        "Every panel, including the four slot panels and the footer plate, is a regular flat-top hexagon of the same proportions; no pill shapes, no long chamfered bars.",
+        "Do not render the word CAUTION or any chip label; the amber footer hexagon carries only EFI32 - NO BOOT.",
+        "Draw a double-wide graphics card seated in SLOT 1, occupying that hexagon, so slot 1 is visibly taken."
+      ]
+    }
+  ]
+}

@@ -15,6 +15,21 @@
         },
         "never": ["https://da.gd/lionfix", "https://da.gd/lup", "tinyurl", "e2b.app sandbox"]
     },
+    "macArt": {
+        "tool": "node tools/mac-storage-art.ts",
+        "selftest": "node tools/mac-storage-art.ts selftest",
+        "gate": "node tools/mac-storage-art.ts lint",
+        "facts": "docs/macpro-storage-facts.json",
+        "scene": "docs/macpro-storage-scene.json",
+        "style": "docs/macpro-storage-style.md",
+        "prompts": "docs/macpro-storage-prompts.jsonl",
+        "ledger": "receipts/mac-art/pass-ledger.json",
+        "passes": "P0 harvest - P1 lex - P2 resolve - P3 typecheck - P4 layout - P5 stylecheck - P6 emit - P7 render - P8 pixel-audit - P9 critique - P10 deduct",
+        "rule": "Imaging is a compile loop, not a wish: every render prompt is emitted from the scene IR, every critique finding is recorded against a pass, and a deduction is applied by patching the IR (node tools/mac-storage-art.ts patch / node-add / note) so the NEXT prompt changes and the hash moves. Fixpoint is declared only when the latest rendered pass carries zero ERROR-severity findings. Facts without a source, or in-image text outside the short-label budget (4 words / 24 chars), fail the gate before any image is generated.",
+        "artifacts": "docs/macpro-btc-raid-{physical,logical}-p{1,2,3}.png plus deterministic *-overlay.svg layers that carry the long text",
+        "session": "01a08beb 2026-09-10: Mac Pro 1,1 boot SSD + 3x 1 TB HDD RAID 5 on a PCIe card, Quake-Live hex panel style",
+        "queue": "operator appends further prompts with node tools/mac-storage-art.ts queue --add=... then node tools/mac-storage-art.ts next"
+    },
     "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, chat workflow, brute-problem-solving doctrine, OC objective, and constraints. It is JSON context, not prose policy.",
     "debloated": "2026-08-27 (session 01a042f7, operator directive): removed the halt machinery and all crisis-era junk - tools/stall-check.ts deleted, interactionModel.crisisDiscipline, requiredHaltLine/haltWhen/onHalt/haltRepoFreeze, crisis.closedTestClasses, crisis.openSearchClasses, sessionMisbehavior, and the 47KB currentState append-log all removed. Brute problem solving is kept and elevated as doctrine below. Recovery history stays readable in docs/ and ToDo.md receipts; it is not policy.",
     "repo": {
@@ -308,6 +323,8 @@
         ]
     },
     "lessons": [
+        "an imaging pipeline that only re-prompts is not a reproduction cycle: record the critique as findings against a numbered pass, apply the fix by patching the source IR so the emitted prompt hash moves, and measure the residual at the LATEST pass only - summing history makes a fixpoint unreachable (this exact bug shipped in tools/mac-storage-art.ts P10 and was caught by reading its own output).",
+        "sed -i with trailing shell words is a data-loss vector: \"sed -i s/x/y/ f grep -n pat f\" silently truncated tools/mac-storage-art.ts to 0 bytes because sed consumed the grep arguments as filenames. Rewrite the file from source or quote every argument; never run sed -i on a generated file without a following byte-count check.",
         "LOG THE INTERFACE, NOT JUST THE VALUE: record HOW a setting was applied (F10 vs sysfs vs efibootmgr vs package vs GUI). The 1.55V incident cost five diagnostic turns because values were logged without the mechanism, and recovery differs completely between a setup-variable write and a DIMM SPD write.",
         "booted OK is not stable: an unvalidated memory profile is a coin flip near the IMC edge and a silent-corruption risk on ZFS root; never log an unvalidated boot as a known-good baseline.",
         "more VDIMM is not more stability at 2DPC: the binding limit is the CPU memory controller (12700KF rated DDR4-3200, lower at 4-DIMM); fix marginality with speed/timings or fewer DIMMs, not volts.",

@@ -1,0 +1,208 @@
+{
+  "schema": "mac-art-facts.v1",
+  "updated": "2026-09-10",
+  "session": "01a08beb",
+  "subject": "Mac Pro 1,1 / A1186 storage: boot SSD + 3x 1TB HDD RAID 5 via PCIe for BTC cold storage",
+  "facts": [
+    {
+      "id": "F-01",
+      "topic": "machine",
+      "claim": "Target Mac is a Mac Pro 1,1 / A1186 (2006), Snow Leopard 10.6.8, hostname RevolYOUtionarys-Mac-Pro, user admin. Lion 10.7 install in progress.",
+      "value": "MacPro1,1 / A1186 / 10.6.8",
+      "source": { "ref": "docs/lion-workflow.json", "url": "", "quote": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-02",
+      "topic": "bays",
+      "claim": "Four independent 3 Gb/s Serial ATA cable-free, direct-attach hard drive bays; four internal hard drive carriers (sleds) included.",
+      "value": "4 bays, 3.5in, 3 Gb/s SATA, direct attach",
+      "source": { "ref": "Apple Mac Pro (Mid 2006) tech specs, support.apple.com/kb/SP30", "url": "https://support.apple.com/kb/SP30", "quote": "Four independent 3Gb/s Serial ATA cable-free, direct-attach hard drive bays; four internal hard drive carriers included" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-03",
+      "topic": "bays",
+      "claim": "Bays are numbered 1 through 4 and are stacked top to bottom, bay 1 at the top.",
+      "value": "bay 1 top, bay 4 bottom",
+      "source": { "ref": "Apple SP30 bay listing + Apple service convention", "url": "https://support.apple.com/kb/SP30", "quote": "Hard drive bay 1 / Hard drive bay 2 / Hard drive bay 3 / Hard drive bay 4" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-04",
+      "topic": "sata",
+      "claim": "Six SATA ports total: four wired to the drive bays, two unconnected spares (usable with aftermarket extender cables; unsupported under Boot Camp).",
+      "value": "6 SATA ports (4 bays + 2 spare)",
+      "source": { "ref": "Apple Fandom Mac Pro 1st generation; Apple Discussions thread 7404111", "url": "https://apple.fandom.com/wiki/Mac_Pro_(1st_generation)", "quote": "It has a total of six SATA ports – four are connected to the system's drive bays, and two are not connected." },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-05",
+      "topic": "optical",
+      "claim": "Two 5.25in optical bays. On Mac Pro 1,1 through 3,1 the optical-bay cabling is PATA/ATA-100 (4-pin Molex power), not SATA.",
+      "value": "2x 5.25in bays, PATA/ATA-100",
+      "source": { "ref": "Apple Discussions 7404111", "url": "https://discussions.apple.com/thread/7404111", "quote": "The cabling in the Optical bays in Mac Pro 1,1 through 3,1 2008 model have ATA/IDE cabling in the Optical bays, with 4-pin molex power connectors" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-06",
+      "topic": "sleds",
+      "claim": "Drives mount on individual trays (sleds) held by captive thumbscrews; no data cable is needed when a drive uses the logic-board bay port.",
+      "value": "4 sleds, captive thumbscrews, tool-free bay insert",
+      "source": { "ref": "Apple Fandom Mac Pro 1st generation; Apple SP30", "url": "https://apple.fandom.com/wiki/Mac_Pro_(1st_generation)", "quote": "The hard drives are mounted on individual trays (also known as 'sleds') within the bays by captive thumbscrews" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-07",
+      "topic": "pcie",
+      "claim": "PCI Express expansion: three open full-length slots plus the double-wide 16-lane graphics slot; configurable bandwidth, mechanical support for 16-lane cards, 300 W combined maximum.",
+      "value": "4 slots (1 double-wide + 3 full-length), 300 W total",
+      "source": { "ref": "Apple SP30", "url": "https://support.apple.com/kb/SP30", "quote": "Three open full-length PCI Express expansion slots ... Configurable bandwidth and mechanical support for 16-lane cards ... 300W combined maximum for all PCI Express slots" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-08",
+      "topic": "pcie",
+      "claim": "Stock lane allocation is 16/4/4/1 and is reconfigurable with the Expansion Slot Utility (options 16/8/1/1, 8/8/8/1, 8/8/4/4).",
+      "value": "16/4/4/1 default, reconfigurable",
+      "source": { "ref": "Mac Pro Developer Note quoted on Ars Technica", "url": "https://arstechnica.com/civis/threads/mac-pro-how-many-pci-express-lanes.282165/", "quote": "The Mac Pro's standard configuration is one 16-lane, double-wide graphics slot, two 4-lane expansion slots, and one 1-lane expansion slot" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-09",
+      "topic": "pcie",
+      "claim": "Slots run at PCIe Gen1 speed (2.5 GT/s). A RAID card installed in a Mac Pro 1,1 negotiates x4 at 2.5 GT/s.",
+      "value": "PCIe 1.0, 2.5 GT/s",
+      "source": { "ref": "MacRumors: Areca 1880ix-12 on Mac Pro 1,1 (System Profiler dump)", "url": "https://forums.macrumors.com/threads/areca-1880ix-12-issues-on-mac-pro-1-1.1218041/", "quote": "Slot: Slot-4 ... Type: RAID Controller, Driver Installed: Yes, Link Width: x4, Link Speed: 2.5 GT/s" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-10",
+      "topic": "raid",
+      "claim": "Apple software RAID (Disk Utility / diskutil appleRAID) supports only stripe (RAID 0), mirror (RAID 1) and concat (span). RAID 5 is NOT available in Apple software RAID.",
+      "value": "AppleRAID = stripe | mirror | concat; no RAID 5",
+      "source": { "ref": "diskutil man page quoted on Ask Different; AKiTiO RAID guide", "url": "https://apple.stackexchange.com/questions/116349/setting-up-raid-imac", "quote": "AppleRAID supports three basic types of RAID sets: stripe (RAID 0), mirror (RAID 1), concat (Spanning)" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-11",
+      "topic": "raid",
+      "claim": "Of the three AppleRAID types only 'mirror' increases fault tolerance; mirrors can have more than two disks and a spare can be added with diskutil appleRAID add.",
+      "value": "mirror only fault-tolerant type; spares supported",
+      "source": { "ref": "diskutil man page quoted on Ask Different", "url": "https://apple.stackexchange.com/questions/116349/setting-up-raid-imac", "quote": "Of these three basic types, only the 'mirror' type increases fault-tolerance." },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-12",
+      "topic": "raid",
+      "claim": "3 x 1 TB in RAID 5 yields 2 TB usable ((n-1) x member size) and tolerates the loss of exactly one member.",
+      "value": "2 TB usable, 1-disk tolerance",
+      "source": { "ref": "derived: RAID 5 capacity = (n-1) x min member capacity", "url": "", "quote": "" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-13",
+      "topic": "card",
+      "claim": "Areca ARC-1212: PCIe x8 host interface, 4 SAS/SATA ports via one SFF-8087, RAID 0/1/10/3/5/6/JBOD, Intel IOP348 800 MHz, 256 MB DDR2-533 cache.",
+      "value": "ARC-1212: 4 ports, RAID 5 capable",
+      "source": { "ref": "Areca datasheet page / Newegg spec", "url": "https://www.areca.com.tw/chinaweb/products/pcietosas01.htm", "quote": "Host Bus Type PCIe x8 ... RAID Level 0, 1, 10, 3, 5, 6, Single Disk or JBOD" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-14",
+      "topic": "card",
+      "claim": "Third-party RAID cards do work in a Mac Pro 1,1 under 10.6.8: an Areca ARC-1880ix-12 reported 'Driver Installed: Yes' in Slot-4 at x4 / 2.5 GT/s.",
+      "value": "Areca + MacPro1,1 + 10.6.8 driver = works",
+      "source": { "ref": "MacRumors thread 1218041 (System Profiler dump)", "url": "https://forums.macrumors.com/threads/areca-1880ix-12-issues-on-mac-pro-1-1.1218041/", "quote": "Mac OS Version: 10.6.8 ... RAID Controller, Driver Installed: Yes" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-15",
+      "topic": "card",
+      "claim": "Apple's optional Mac Pro RAID Card (256 MB cache, 72-hour cache battery) uses RAID Utility rather than Disk Utility and exposes more set types.",
+      "value": "Apple RAID Card -> RAID Utility",
+      "source": { "ref": "Apple SP30; Apple Disk Utility documentation quoted by OWC", "url": "https://support.apple.com/kb/SP30", "quote": "If you have a Mac Pro with a Mac Pro RAID card, use RAID Utility." },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-16",
+      "topic": "cabling",
+      "claim": "Attaching the four internal bay drives to a PCIe SAS/SATA RAID controller requires a breakout/link cable (MaxConnect SAS/SATA Link for 2006/2007 Mac Pro), which is what makes RAID 5/6 in the factory bays possible.",
+      "value": "bay-to-card breakout cable required",
+      "source": { "ref": "MaxUpgrades MaxConnect product page", "url": "https://www.maxupgrades.com/istore/index.cfm/product/158/", "quote": "enable user to connect PCI Express SAS/SATA Controllers to the four internal drive bays of the Mac Pro System ... redundancy of RAID 5 or RAID 6" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-17",
+      "topic": "btc",
+      "claim": "The Bitcoin full chain is past 700 GB as of mid-2026 and keeps growing; pruned nodes validate fully while storing only a few GB.",
+      "value": "~700 GB archival chain (2026)",
+      "source": { "ref": "ma.ttias.be full-node post, updated June 2026", "url": "https://ma.ttias.be/initial-impressions-on-running-a-bitcoin-core-full-node/", "quote": "the full chain is now past 700GB and keeps growing" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-18",
+      "topic": "btc",
+      "claim": "Cold storage means the spending keys / seed are held offline. A spinning RAID set inside a daily-driver Mac is redundancy, not cold storage, and not a backup.",
+      "value": "RAID != backup; keys offline",
+      "source": { "ref": "definition; AppleRAID man page agrees", "url": "https://apple.stackexchange.com/questions/116349/setting-up-raid-imac", "quote": "AppleRAID is not a replacement for backing up your data." },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-19",
+      "topic": "risk",
+      "claim": "RAID 5 rebuild must read the whole surviving capacity. On 1 TB consumer drives rated 1e14 bits per unrecoverable read error, a 2 TB rebuild read is roughly a 15% chance of hitting one; enterprise 1e15-rated drives drop that to about 1.5%.",
+      "value": "rebuild URE risk ~15% consumer / ~1.5% enterprise",
+      "source": { "ref": "derived: P = 1 - exp(-bits_read / URE_rate); manufacturer URE ratings are assumptions, not measurements", "url": "", "quote": "" },
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "F-20",
+      "topic": "filesystem",
+      "claim": "Mac OS X 10.7 volumes are Mac OS Extended (Journaled) on a GUID partition map. APFS arrived in 10.13 and 10.7 cannot mount it.",
+      "value": "HFS+J / GUID",
+      "source": { "ref": "repo receipt docs/session-2026-09-09-lion-ssd-install.md", "url": "", "quote": "formatted as Lion, Mac OS Extended (Journaled), GUID partition table" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-21",
+      "topic": "live-state",
+      "claim": "Live bay map: Bay 1 = 'Lion SSD Base' (boot, 10.6.8, 999.9 GB, NEVER erase); Bay 3 = Crucial MX500 CT1000 'start disk clone' (Lion install destination); Bay 4 = 'Mac OS X Install ESD' (asr mirror).",
+      "value": "B1 boot SSD, B3 MX500, B4 ESD",
+      "source": { "ref": "docs/lion-workflow.json volumes[]", "url": "", "quote": "Lion SSD Base | /dev/disk0s2 | Bay 1 | erase=NEVER" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-22",
+      "topic": "directive",
+      "claim": "Operator directive for this diagram: Quake Live style UI on everything (hexagonal semi-transparent AMOLED-black back panels, silver-white glossy lining, skeuomorphic OS X sub-iconography), drives shown in the correct place, each labelled with its purpose, reusable between user and model, 3 HDD RAID 5 via PCIe plus boot SSD.",
+      "value": "Quake-Live hex/AMOLED style + RAID 5 PCIe + boot SSD",
+      "source": { "ref": "operator chat 2026-09-10 (verbatim in docs/macpro-storage-prompts.jsonl seq 2)", "url": "", "quote": "quake live style ui on everything ... 3 hdd raid 5 pcie and boot ssd" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-23",
+      "topic": "chassis",
+      "claim": "Chassis is 20.1 x 8.1 x 18.7 inches (51.1 x 20.6 x 47.5 cm), 42.4 lb (19.2 kg) standard configuration.",
+      "value": "51.1 x 20.6 x 47.5 cm, 19.2 kg",
+      "source": { "ref": "Apple SP30", "url": "https://support.apple.com/kb/SP30", "quote": "Height: 20.1 inches (51.1 cm) / Width: 8.1 inches (20.6 cm) / Depth: 18.7 inches (47.5 cm) / Weight: 42.4 pounds (19.2 kg)" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "F-24",
+      "topic": "firmware",
+      "claim": "MacPro1,1 carries 32-bit EFI, so PCIe cards without a compatible Option ROM are not bootable from (data use is unaffected).",
+      "value": "EFI32, card boot not guaranteed",
+      "source": { "ref": "widely documented; no primary citation fetched this session", "url": "", "quote": "" },
+      "confidence": "LOW"
+    },
+    {
+      "id": "F-25",
+      "topic": "imaging",
+      "claim": "Long text rendered inside an AI-generated image is the dominant defect class (garbled, truncated, or invented words). In-image labels are capped at 4 words / 24 characters; all long text is emitted by the deterministic overlay layer instead.",
+      "value": "in-image text budget: <=4 words, <=24 chars",
+      "source": { "ref": "session 01a08beb pass-2 deduction (this tool's own lint policy)", "url": "", "quote": "" },
+      "confidence": "MEDIUM"
+    }
+  ]
+}

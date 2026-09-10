@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024" font-family="Helvetica, Arial, sans-serif">
+<rect width="1536" height="1024" fill="#05070A"/>
+<text x="24" y="42" fill="#E8EDF4" font-size="28" font-weight="700" letter-spacing="2">MAC PRO 1,1 — PHYSICAL BAY MAP</text>
+<path d="M 692.0,286.7 L 692.0,737.3 L 399.4,962.6 L 106.7,737.3 L 106.7,286.7 L 399.4,61.4 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="75.4" y="91.4" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">MAC PRO 1,1</text>
+<text x="75.4" y="119.4" fill="#A9B6C6" font-size="11">2006 Mac Pro tower, A1186, aluminium cheese-grater front, handles top and bottom, side panel released by</text>
+<text x="75.4" y="133.7" fill="#A9B6C6" font-size="11">the rear lever.</text>
+<path d="M 652.1,107.5 L 652.1,138.2 L 399.4,153.6 L 146.6,138.2 L 146.6,107.5 L 399.4,92.2 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="122.2" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">OPTICAL 1</text>
+<text x="121.5" y="150.2" fill="#A9B6C6" font-size="11">5.25in optical bay 1 — slot-load SuperDrive on PATA / ATA-100, not SATA.</text>
+<path d="M 652.1,179.2 L 652.1,209.9 L 399.4,225.3 L 146.6,209.9 L 146.6,179.2 L 399.4,163.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="193.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">OPTICAL 2</text>
+<text x="121.5" y="221.8" fill="#A9B6C6" font-size="11">5.25in optical bay 2 — empty; ATA-100 cabling with 4-pin Molex power.</text>
+<path d="M 652.1,271.4 L 652.1,322.6 L 399.4,348.2 L 146.6,322.6 L 146.6,271.4 L 399.4,245.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="275.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BAY 1 · BOOT SSD</text>
+<text x="121.5" y="303.8" fill="#A9B6C6" font-size="11">Bay 1 - Lion SSD Base - 1 TB 2.5in SATA SSD loaded INSIDE the top sled of the four-bay</text>
+<text x="121.5" y="318.1" fill="#A9B6C6" font-size="11">cage, sled latch and captive thumbscrews visible, flush within the bay opening and not</text>
+<text x="121.5" y="332.4" fill="#A9B6C6" font-size="11">resting on top of the cage - boot 10.6.8, Lion 10.7 destination - NEVER ERASE.</text>
+<path d="M 652.1,394.2 L 652.1,445.4 L 399.4,471.0 L 146.6,445.4 L 146.6,394.2 L 399.4,368.6 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="398.6" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BAY 2 · 1 TB</text>
+<text x="121.5" y="426.6" fill="#A9B6C6" font-size="11">Bay 2 — 1 TB 3.5in HDD — RAID 5 member 0 — cabled to the PCIe RAID controller.</text>
+<path d="M 652.1,517.1 L 652.1,568.3 L 399.4,593.9 L 146.6,568.3 L 146.6,517.1 L 399.4,491.5 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="521.5" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BAY 3 · 1 TB</text>
+<text x="121.5" y="549.5" fill="#A9B6C6" font-size="11">Bay 3 — 1 TB 3.5in HDD — RAID 5 member 1 — replaces the Crucial MX500 'start disk clone'</text>
+<text x="121.5" y="563.8" fill="#A9B6C6" font-size="11">(Lion install target; do not wipe until Lion boots from the SSD).</text>
+<path d="M 652.1,640.0 L 652.1,691.2 L 399.4,716.8 L 146.6,691.2 L 146.6,640.0 L 399.4,614.4 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="644.4" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BAY 4 · 1 TB</text>
+<text x="121.5" y="672.4" fill="#A9B6C6" font-size="11">Bay 4 — 1 TB 3.5in HDD — RAID 5 member 2 — replaces 'Mac OS X Install ESD'.</text>
+<path d="M 652.1,773.1 L 652.1,844.8 L 399.4,880.6 L 146.6,844.8 L 146.6,773.1 L 399.4,737.3 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="121.5" y="767.3" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">SLOTS 1-4</text>
+<text x="121.5" y="795.3" fill="#A9B6C6" font-size="11">Slot 1 double-wide x16 = GPU. Slots 2/3/4 are full-length and reconfigurable; stock</text>
+<text x="121.5" y="809.6" fill="#A9B6C6" font-size="11">allocation 16/4/4/1. The RAID card goes in an x4 slot.</text>
+<path d="M 410.5,788.5 L 410.5,849.9 L 284.2,880.6 L 157.8,849.9 L 157.8,788.5 L 284.2,757.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="152.2" y="787.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">RAID 5 CARD</text>
+<text x="152.2" y="815.8" fill="#A9B6C6" font-size="11">Four-port SATA/SAS RAID controller seated</text>
+<text x="152.2" y="830.1" fill="#A9B6C6" font-size="11">in PCIe slot 4: metal rear bracket on the</text>
+<text x="152.2" y="844.4" fill="#A9B6C6" font-size="11">chassis edge, gold fingers inside the slot,</text>
+<text x="152.2" y="858.7" fill="#A9B6C6" font-size="11">one SFF-8087 port. Slot bank numbered 1 to</text>
+<text x="152.2" y="873.0" fill="#A9B6C6" font-size="11">4, card in slot 4.</text>
+<path d="M 659.4,691.2 L 659.4,803.8 L 553.0,860.2 L 446.5,803.8 L 446.5,691.2 L 553.0,634.9 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="444.1" y="664.9" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BREAKOUT</text>
+<text x="444.1" y="692.9" fill="#A9B6C6" font-size="11">SFF-8087 to 4x SATA breakout</text>
+<text x="444.1" y="707.2" fill="#A9B6C6" font-size="11">(MaxConnect-style SAS/SATA link)</text>
+<text x="444.1" y="721.5" fill="#A9B6C6" font-size="11">routes the bay drives to the card.</text>
+<text x="444.1" y="735.8" fill="#A9B6C6" font-size="11">The four logic-board bay SATA ports</text>
+<text x="444.1" y="750.1" fill="#A9B6C6" font-size="11">stay unused; direct-attach is</text>
+<text x="444.1" y="764.4" fill="#A9B6C6" font-size="11">bypassed.</text>
+<path d="M 1433.4,276.5 L 1433.4,706.6 L 1167.4,921.6 L 901.3,706.6 L 901.3,276.5 L 1167.4,61.4 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="874.2" y="91.4" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BAY MAP</text>
+<text x="874.2" y="119.4" fill="#A9B6C6" font-size="11">Legend field: exactly four rows in bay order - one SSD icon for bay 1 and three HDD icons for</text>
+<text x="874.2" y="133.7" fill="#A9B6C6" font-size="11">bays 2, 3 and 4. No other drive icons anywhere in the plate.</text>
+<path d="M 1379.9,954.9 L 1379.9,980.5 L 768.0,993.3 L 156.1,980.5 L 156.1,954.9 L 768.0,942.1 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="75.4" y="972.1" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">A1186 · 2006</text>
+<text x="75.4" y="1000.1" fill="#A9B6C6" font-size="11">Mac Pro 1,1 · A1186 · 2006 · 51.1 x 20.6 x 47.5 cm · 19.2 kg · four cable-free direct-attach 3.5in bays at 3 Gb/s · six SATA ports (4 bays + 2 spare) · PATA optical bays.</text>
+</svg>
