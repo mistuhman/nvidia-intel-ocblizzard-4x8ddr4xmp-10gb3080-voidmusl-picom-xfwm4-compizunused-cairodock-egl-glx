@@ -253,3 +253,9 @@ Diagnostics wave shipped:
 1. Verify if `arena-lion.sh` exists on `/Volumes/Mac OS X Install ESD`.
 2. Check for log file on all mounted volumes (`/Volumes/*/lion-cli.log`).
 3. Read the early-boot script `/Volumes/Mac OS X Install ESD/etc/rc.cdrom` to verify boot hooks.
+
+## 2026-09-09x installer boot daemon discovery & OSInstaller hook (session 01a0889a)
+
+Photo receipt confirms `arena-lion.sh` exists on `/Volumes/Mac OS X Install ESD/usr/local/libexec/` (973 bytes).
+Cause attribution: The macOS installer boot environment runs in a stripped-down single-user / installer target. `launchd` in this mode exclusively executes `com.apple.OSInstaller.plist` (or `rc.cdrom`), ignoring arbitrary user plists in `/System/Library/LaunchDaemons/`.
+Fix: Hijack `com.apple.OSInstaller.plist` and/or the CDIS wrapper binary directly so that `launchd` executes `arena-lion.sh` in place of the GUI installer.
