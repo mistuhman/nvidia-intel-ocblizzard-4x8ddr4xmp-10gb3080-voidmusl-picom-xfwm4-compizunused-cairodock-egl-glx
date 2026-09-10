@@ -65,3 +65,58 @@ Snow Leopard boot volume and the MX500 target remain preserved.
 ## Operator goal
 
 Boot the Mac from the SATA SSD with Lion, then create a clean installation administrator account and handle the remaining HDD bays from the working SSD system. Drive changes remain deferred until the OS boot path is proven.
+
+## 2026-09-10 — sight verification + new fix pack (session 01a08a55)
+
+**Prompt screening (this turn):**
+1. read README.md — DONE (62 lines, capability gate, start protocol, project, machines, layout)
+2. read MASTER.md — DONE (323 lines, JSON context, promptScreening rule, capabilityGate requiredFeatures, brute doctrine, objective, liveGates, durableFacts)
+3. verify model sight capability — DONE
+4. make new link to download fixes from on snow leopard mac — DONE
+5. need to get OS X Lion booted off fast SSD — fix pack addresses
+
+**Sight capability verification:**
+- Prior session 01a082d3 note in MASTER.md: "SESSION LIMIT: the 01a082d3 chat model has NO image input - every photo receipt is a TEXT DESCRIPTION"
+- Current session 01a08a55: tested image generation + read_file image return.
+- Generated docs/macpro-lion-ssd-diagram.png (2006 Mac Pro bay map + Option boot picker) via generate_image tool.
+- read_file returned image as visible content — receipt proves model HAS image input in this session.
+- Verdict: SIGHT CAPABILITY VERIFIED — PASS. Prior limit withdrawn for this session.
+
+**Capability gate (README.md step 0):**
+- Required: bash, file read/write/edit, node for tools/*, git+gh authenticated, web search+page fetch, background process tools
+- Verified: bash ok (ls, zip), file ops ok, node tools/orient.ts orient ok, git branch arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr clean, gh remote origin set, web_search 3 queries ok, generate_image+read_file ok
+- Verdict: FULL AGENT MODE — PASS, no STOP line.
+
+**Root cause analysis (source-backed):**
+- Mac Pro 1,1 officially supports Lion 10.7.5 (last official), no boot.efi hack needed. Mountain Lion 10.8 drops 1,1.
+- InstallMacOSX.dmg verification failure "can't be verified / corrupted" is known expired-cert bug: Apple cert expired 2016-02-14, root 2019-10-24, rebuilt ~2020 but still fails in 2025-2026 if date is 2026 and cert is 2020-2025 window [1][2][3]. Fix = set date to 2016-01-01 (or 2015-08-08) and clear xattr quarantine [2][3].
+- Old headless injector failed because it assumed com.apple.OSInstaller.plist and rc.cdrom paths that do not exist on this InstallESD (audit proved absent). Correct Apple path = Option-key boot of InstallESD volume, not LaunchDaemon injection [4][5].
+- Fast SSD target is Crucial MX500 Bay 3, already HFS+ Journaled GUID, contains Snow Leopard clone "start disk clone". Goal = clean Lion install there + new admin account.
+
+**New fix pack:**
+- lion-ssd-lion-boot-fix.command (11k, main): read-only inventory, date/CR2032 check, xattr -cr fix, bless ESD, next steps to boot Lion off fast SSD. WITHDRAWS old injector.
+- lion-installer-date-fix.command (1.7k, quick): sets date to 0101000016 and clears quarantine.
+- lion-installer-boot-audit.command + lion-installer-discovery.command (existing, preserved)
+- README_LION_SSD_FIX.txt (4.9k, full instructions for Snow Leopard Mac)
+- lion-ssd-lion-boot-fix.zip (11k, executable-bit-preserving ZIP with all above)
+- docs/macpro-lion-ssd-diagram.png (sight verification receipt + bay map)
+
+**New download link for Snow Leopard Mac (Arctic Fox 47.3 mac32):**
+- Raw GitHub URL (new filename per STATE.md #9 cache-bypass rule):
+  https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+- Alternate if raw fails (Arctic Fox supports TLS 1.2, should work per docs/case-swap-macpro-daily-driver.md curl dead-end note: curl TLS1.0 fails but browser works):
+  Use Arctic Fox > open link > Save Link As to ~/Downloads, unzip via Finder (preserves exec bit via ZIP), chmod +x ~/Desktop/*.command if needed.
+- If GitHub still blocked, download on another machine and sneakernet via USB (FAT32).
+
+**Next action (operator-gated, one wave):**
+1. On Snow Leopard Mac (Bay1), download lion-ssd-lion-boot-fix.zip via Arctic Fox from link above.
+2. Unzip to Desktop, double-click lion-ssd-lion-boot-fix.command, enter admin password, return ~/Desktop/lion-ssd-lion-boot-fix.txt
+3. Gate: do NOT erase Bay3 until report is read. Then follow Option-boot InstallESD > install Lion to Bay3 > first boot Lion SSD > create clean admin account.
+
+References:
+[1] https://forums.macrumors.com/threads/2006-2007-mac-pro-1-1-2-1-and-os-x-el-capitan.1890435/
+[2] https://discussions.apple.com/thread/256072543 (Mountain Lion cert expired 2019, date fix)
+[3] https://apple.stackexchange.com/questions/216730/this-copy-of-the-install-os-x-el-capitan-application-cant-be-verified-it-may-h (cert expired, set date to 2016)
+[4] https://osxdaily.com/2011/07/08/make-a-bootable-mac-os-x-10-7-lion-installer-from-a-usb-flash-drive/ (InstallESD restore method)
+[5] https://support.apple.com/en-gb/HT201372 (Apple asr restore official method)
+
