@@ -38,6 +38,8 @@ run('node', ['tools/cpu-oc-tally.ts', 'selftest']);
 run('node', ['tools/ram-oc-plan.ts', 'selftest']);
 run('node', ['tools/ram-validate-parse.ts', 'selftest']);
 run('bash', ['-n', 'scripts/ram-validate']);
+run('bash', ['-n', 'lion-mirror.command']);
+run('node', ['tools/lion-mirror-sl-test.ts']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);
 execFileSync('node tools/paste-proof.ts --target-console --root', { input: 'id -u\ndf -h /\nls -l MASTER.md\n', stdio: ['pipe', 'inherit', 'inherit'], shell: true });
 console.log('TEST_ALL=PASS');
