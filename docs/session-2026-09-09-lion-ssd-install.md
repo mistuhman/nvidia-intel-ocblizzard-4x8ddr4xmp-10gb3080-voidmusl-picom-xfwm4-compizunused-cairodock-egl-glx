@@ -38,7 +38,21 @@
 
 Boot the Mac from the SATA SSD with Lion, then create a clean installation administrator account and handle the remaining HDD bays from the working SSD system. Drive changes remain deferred until the OS boot path is proven.
 
-## 2026-09-09b continuation (session 01a0889a, vision live)
+## 2026-09-09c correction (session 01a0889a)
+
+Operator correction: the previous chat did NOT record context completely and the L1 wave
+re-ran already-exhausted troubleshooting (outer/inner/media attempts all done, "goes nowhere").
+Photo ground truth supersedes the rename receipt above: Disk Utility shows the Crucial
+CT1000MX500SSD volume still named **start disk clone**, and the name **Lion SSD Base** on a
+**1 TB SAMSUNG HD103U** volume; third volume Untitled on a second HD103U; OPTIARC DVD RW
+present; no USB device in the tree. Lion target = the MX500 volume (start disk clone).
+
+Cause re-attribution: the blocking cert expired 2016-02-14 (Apple thread 250593361), so the
+earlier 2016 date test sat on the wrong side of expiry and excluded nothing; an in-era date
+(2013, accepted receipt 255062266 "Lion - August 2013 - Works") was NEVER tested. Wave L2 =
+sudo date 0801120013 + outer installer onto the MX500 volume, CLI OSInstall.mpkg bypass as the
+same-wave fallback, date re-set in installer Terminal after the mid-install reboot (dead
+CR2032 resets the clock to 2001 at every power cycle).
 
 Photo receipt (operator photo, read by vision): Install Mac OS X Lion window with target
 `Lion SSD Base`, `About 3 minutes remaining`, Cancel button; modal dialog
