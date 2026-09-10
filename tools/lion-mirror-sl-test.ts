@@ -105,6 +105,7 @@ function makeMock(root: string, opts: {
     mkdirSync(join(esd, 'Library/Preferences/SystemConfiguration'), { recursive: true });
     if (opts.haveBootEfi !== false) {
       writeFileSync(join(esd, 'System/Library/CoreServices/boot.efi'), 'efi');
+      writeFileSync(join(esd, 'boot.efi'), 'efi-root');
     }
     if (opts.haveBootPlist !== false) {
       writeFileSync(join(esd, 'Library/Preferences/SystemConfiguration/com.apple.Boot.plist'), 'plist');

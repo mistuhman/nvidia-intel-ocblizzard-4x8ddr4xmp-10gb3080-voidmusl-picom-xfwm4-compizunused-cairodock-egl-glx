@@ -168,6 +168,9 @@ fi
 if [ ! -f "$ESD/System/Library/CoreServices/boot.efi" ]; then
   fail "boot.efi missing on ESD — not bootable"
 fi
+if [ ! -f "$ESD/boot.efi" ]; then
+  fail "volume-root boot.efi missing on ESD"
+fi
 say "boot.efi present"
 
 say ""
@@ -212,11 +215,11 @@ nvram "Graphics Mode" 2>/dev/null || say "nvram Graphics Mode absent"
 say ""
 say "===== 6. BLESS ESD ====="
 CS="$ESD/System/Library/CoreServices"
-ls -la "$ESD/boot.efi" 2>/dev/null || say "no volume-root boot.efi"
+ROOT_EFI="$ESD/boot.efi"
+ls -la "$ROOT_EFI" 2>/dev/null || fail "volume-root boot.efi missing"
 ls -la "$CS/boot.efi" 2>/dev/null || true
-# Same bless that reached the installer GUI (no --file). --file CoreServices/boot.efi
-# made Option-ESD fall through to Lion SSD Base on this 32-bit EFI Mac Pro 1,1.
-sudo bless --folder "$CS" --label "Mac OS X Install ESD" 2>&1 || fail "bless failed"
+# Working GUI boot blessed volume-root boot.efi (Oct 3 2012), not CoreServices.
+sudo bless --folder "$CS" --file "$ROOT_EFI" --label "Mac OS X Install ESD" 2>&1 || fail "bless failed"
 say "bless OK"
 sudo bless --info "$ESD" 2>&1 || true
 
