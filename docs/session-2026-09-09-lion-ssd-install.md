@@ -237,3 +237,11 @@ Clarification: The Apple Startup Manager renders the `.disk_label` embedded in t
 
 Operator report: 12 minutes elapsed since booting `Mac OS X`; system reached completion/sleep state.
 Action shipped: Power on / Option-boot into `Lion SSD Base` (10.6 Snow Leopard) and read `/lion-cli.log` to inspect package extraction status and exit code.
+
+## 2026-09-09v startup disk NVRAM vs installer bless behavior (session 01a0889a)
+
+Operator query: Startup disk setting in System Preferences vs SSD boot behavior.
+Technical answer:
+1. Normal Option-boot does not alter NVRAM `efi-boot-device`.
+2. However, when the OS X `installer` tool finishes installing to a target volume (`start disk clone`), it automatically executes `bless` on the target volume to set it as the primary boot disk.
+3. If the installation succeeded, the Mac Pro may boot directly into Mac OS X 10.7 Lion Setup Assistant on the Crucial MX500 SSD. If it booted into 10.6 Snow Leopard, `/lion-cli.log` holds the receipt.
