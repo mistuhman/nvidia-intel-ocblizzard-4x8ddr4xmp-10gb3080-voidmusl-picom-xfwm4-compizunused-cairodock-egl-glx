@@ -207,3 +207,14 @@ Outcomes to branch on:
 
 Single press of power button resumed/booted back into the installer volume (Dell OSD timing error).
 Remedy: Hard power-down (hold power button 5s) followed by cold power-on while holding Option key, then select `Lion SSD Base` in Startup Manager to boot 10.6 Snow Leopard and read `/lion-cli.log`.
+
+## 2026-09-09r missing log root cause & triple-hook upgrade (session 01a0889a)
+
+Photo receipt: `cat: /lion-cli.log: No such file or directory`.
+Root cause attribution:
+1. Two turns prior, the initial run of `lion.command` terminated with `FAIL: no /Volumes/Mac* volume mounted` before any script or plist was written.
+2. The subsequent Option-boot was into the stock, un-injected Lion ESD image, which sat idle at the GUI welcome screen.
+3. Payload upgraded:
+   - Partition-scanning mount loop for 10.6.
+   - Triple execution hooks on target ESD: LaunchDaemon (`org.arena.lion-autoinstall.plist`), `/etc/rc.local`, and `/etc/rc.cdrom` append.
+   - Dual log fallback: writes to `/Volumes/Lion SSD Base/lion-cli.log` and copies to `/Volumes/start disk clone/lion-cli.log`.
