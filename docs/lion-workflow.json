@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Wave = Burn + logs only, per operator request. 1) Arctic Fox -> da.gd/lpg -> Burn (falls back to typing da.gd/lzr; both serve the identical zip, verified 2026-09-10). 2) Double-click lion-mirror.command on 10.6.8 on Lion SSD Base -> password -> Repair. 3) Attach ~/Desktop/lion-mirror.txt on the same page -> Sent -> paste the file contents back into CHAT (the agent cannot read the webhook inbox: webhook.site/<uuid>.json 404s and the inbox page is JS-only; da.gd itself is TLS-filtered from the sandbox, so link liveness is verified from the Mac only). Then, and only then: Option-boot Mac OS X Install ESD -> install onto start disk clone. Do not restart or re-Option-boot until the Repair log is read.",
+  "nextAction": "Single ask, already sent to the operator: grep -E bless.OK|LOCKED.ESD|nvram.Graphics.Mode|Boot.plist|blessed|boot.efi|ESD.boot.repaired|FAIL ~/Desktop/lion-mirror.txt pasted back, or a photo of the TextEdit report. Read the verdict line, attribute cause, then ship exactly one next action (Option-boot ESD onto start disk clone, no erase).",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -142,5 +142,12 @@
     "Keep-as-Mac 2026-09-08i: transplant CLOSED"
   ],
   "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
-  "logChannel": "chat paste-back of ~/Desktop/lion-mirror.txt (attach POST marks delivery; webhook inbox is not machine-readable from the sandbox)"
+  "logChannel": "chat paste/photo only; webhook.site is unreachable from the agent sandbox (HTTP 000 on all endpoints), so an attach is delivery to the inbox only and does not make the log read",
+  "glossary": {
+    "burned": "report .txt attached on da.gd/lpg and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
+    "burnButton": "the Burn link on da.gd/lpg, fetches lion-mirror.zip from da.gd/lmz",
+    "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
+    "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
+  },
+  "status": "2026-09-10: operator reported burned = log attached to lpg. Repair outcome UNVERIFIED from the agent side; do not Option-boot or restart until the log text/photo is read in chat."
 }

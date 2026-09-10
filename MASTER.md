@@ -21,7 +21,9 @@
         ],
         "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
         "nextAction": "see docs/lion-workflow.json nextAction (Burn + logs wave)",
-        "linkCheck": "2026-09-10: lzr and lmz serve byte-identical zip (blob 660617a1, 2600 bytes) so either works; da.gd is TLS-filtered from the sandbox and the webhook inbox is not machine-readable from here, so logs return by chat paste-back."
+        "linkCheck": "2026-09-10: lzr and lmz serve byte-identical zip (blob 660617a1, 2600 bytes) so either works; da.gd is TLS-filtered from the sandbox and the webhook inbox is not machine-readable from here, so logs return by chat paste-back.",
+        "logChannel": "2026-09-10: the ONLY channel that reaches the agent is chat (paste or photo). webhook.site is filtered out of the sandbox entirely - HTTP 000 / SSL_ERROR_SYSCALL on /<uuid>, /<uuid>.json and /token/<uuid>/requests - so an attach proves delivery to the inbox, nothing more. Attach is still worth doing: it keeps the receipt with the operator-side record.",
+        "statusNote": "2026-09-10 later: operator reported the log BURNED (attached to lpg). Agent could not read it - the sandbox cannot reach webhook.site. State of the Repair run (bless OK vs a refusal) is therefore UNVERIFIED, and the Option-boot gate stays closed until the log text or a photo arrives in chat."
     },
     "macArt": {
         "tool": "node tools/mac-storage-art.ts",
@@ -137,7 +139,13 @@
             "unverified limits",
             "gate",
             "next action"
-        ]
+        ],
+        "macVocabulary": {
+            "burned": "OPERATOR TERM, defined 2026-09-10 after a misread cost one exchange. \"burned\" / \"its burned\" means: the report file (~/Desktop/lion-mirror.txt) has been ATTACHED to the mirror/Burn page (da.gd/lpg) and POSTed to the webhook inbox. It does NOT mean the zip was downloaded, and it does NOT mean lion-mirror.command was double-clicked. Never infer from the word that Repair ran or that bless succeeded - read the log lines.",
+            "burn-button": "The Burn button on the da.gd/lpg page itself. It only fetches lion-mirror.zip from da.gd/lmz. Clicking Burn is a download, not a burn in the operator sense.",
+            "repair": "Pressing Repair in the lion-mirror.command dialog. This is the action that edits nvram and blesses; the report is written whether it succeeds or refuses.",
+            "relay": "The only log path that reaches the agent. Attaching to lpg delivers bytes to the webhook inbox, which is NOT readable from the sandbox, so an attached log is still UNREAD by the agent until the operator pastes the text or photos it into chat."
+        }
     },
     "bruteProblemSolving": {
         "doctrine": "Keep the method that solved the no-POST crisis: exhaustive context gathering, class enumeration, bounded agent fan-out, receipt-only merges - now pointed at overclocking and run through the direct chat loop (pasteable commands, no ceremony).",
