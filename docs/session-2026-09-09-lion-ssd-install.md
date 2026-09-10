@@ -202,3 +202,8 @@ Outcomes to branch on:
 1. Succeeded (`status: 0` / `The install was successful`): Proceed directly to Option-boot "start disk clone".
 2. Error logged: Read exact failure line from `installer` output and apply targeted fix.
 3. No log file: Attributed to launchd not firing or mount failure; pivot to card swap or direct image deployment.
+
+## 2026-09-09q Option-boot return to 10.6 (session 01a0889a)
+
+Single press of power button resumed/booted back into the installer volume (Dell OSD timing error).
+Remedy: Hard power-down (hold power button 5s) followed by cold power-on while holding Option key, then select `Lion SSD Base` in Startup Manager to boot 10.6 Snow Leopard and read `/lion-cli.log`.
