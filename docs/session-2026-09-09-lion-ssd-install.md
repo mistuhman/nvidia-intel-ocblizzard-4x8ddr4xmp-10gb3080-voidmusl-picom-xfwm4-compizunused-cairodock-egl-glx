@@ -193,3 +193,12 @@ Photo receipt of Mac Pro 1,1 chassis at 14 minutes into the headless install (~6
 - Dell OSD timed out and panel entered standby (normal behavior for Dell monitors when receiving unsupported video sync signals).
 - Power LED fluctuating with background system/disk activity.
 - Operator standing by for `/sbin/reboot` auto-reboot back into 10.6 Snow Leopard.
+
+## 2026-09-09p 20-minute checkpoint & log-read wave (session 01a0889a)
+
+20-minute mark reached without automatic reboot.
+Next action: Operator reboots to 10.6 Snow Leopard and reads `/lion-cli.log` (or `cat /lion-cli.log`).
+Outcomes to branch on:
+1. Succeeded (`status: 0` / `The install was successful`): Proceed directly to Option-boot "start disk clone".
+2. Error logged: Read exact failure line from `installer` output and apply targeted fix.
+3. No log file: Attributed to launchd not firing or mount failure; pivot to card swap or direct image deployment.
