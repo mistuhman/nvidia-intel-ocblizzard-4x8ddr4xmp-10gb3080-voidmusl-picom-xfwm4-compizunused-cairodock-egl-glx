@@ -1,34 +1,20 @@
-Lion SSD Fix — Shortened links for Arctic Fox 47.3 mac32 (NO tinyurl, fails on Arctic)
+ONE LINK FOR ALL — Arctic Fox + phone, no tinyurl, no e2b sandbox (Sandbox Not Found)
 
-PRIMARY — da.gd (open-source, minimal HTML, works on Firefox 45 / Arctic Fox):
-https://da.gd/mOycI  -> raw GitHub lion-ssd-lion-boot-fix.zip (11K)
-https://da.gd/XeHlN  -> jsDelivr CDN fix (11K, faster)
-https://da.gd/gOvc2 -> jsDelivr lion-phone-debug-pack.zip (19K, full phone tools)
+https://da.gd/lionfix
 
-BACKUP — clck.ru (also simple, works on old browsers):
-https://clck.ru/3Vjn94 -> raw GitHub
-https://clck.ru/3VjnBe -> jsDelivr
+This is ONE link for everything (19K full pack):
+- lion-ssd-lion-boot-fix.command (main fix to boot Lion off fast SSD)
+- lion-log-upload.command (easy log return via termbin)
+- lion-phone.html, download scripts, README
 
-LONG PERMANENT (if shortener fails):
-https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
-https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
-
-TYPE FROM PHONE INTO MAC (Arctic Fox address bar):
-https://da.gd/mOycI
+Tap in Arctic Fox 47.3 mac32:
+Type https://da.gd/lionfix in address bar → Enter → Save to ~/Downloads → unzip to Desktop → double-click fix.
 
 One-liner Terminal (type from phone into Mac Terminal, no browser):
-curl -L -o ~/Downloads/fix.zip https://da.gd/mOycI && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
+curl -L -o ~/Downloads/fix.zip https://da.gd/lionfix && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
 
-Phone debug log return (easy from phone):
-- After running lion-ssd-lion-boot-fix.command, run lion-log-upload.command
-- It prints https://termbin.com/xxxx — open that URL on phone, copy, paste in Arena chat
-- Or open live mirror if still running: POST log to /upload
-
-All scripts executable on any machine with browser+internet:
-- lion-phone.html — open in any browser, tap download (uses da.gd)
-- lion-phone-download.sh — sh lion-phone-download.sh on any Unix
-- lion-phone-download.command — double-click on Snow Leopard
-- lion-log-upload.command — double-click to upload logs
-
-Generated: 2026-09-10T08:54:02.876Z
-Note: e2b.app sandbox links expire (Sandbox Not Found) — use da.gd permanent links above.
+Other permanent da.gd links:
+https://da.gd/mOycI → raw GitHub fix ZIP (11K)
+https://da.gd/XeHlN → jsDelivr fix ZIP (11K)
+https://da.gd/lionsd → small fix ZIP
+https://da.gd/gOvc2 → full phone debug pack (same as lionfix)
