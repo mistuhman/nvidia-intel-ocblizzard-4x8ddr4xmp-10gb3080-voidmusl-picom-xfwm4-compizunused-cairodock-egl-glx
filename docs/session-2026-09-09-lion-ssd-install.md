@@ -77,7 +77,18 @@ Wave L2 (after L1 receipt): Option-boot the USB; if the media installer also rep
 verification failure, in-installer Utilities-Terminal era date (2011/2012, NOT 2016) is the
 inner knob - a new verifier context, not a relabel of the closed 2016 test.
 
-## 2026-09-09d L2 executed (session 01a0889a)
+## 2026-09-09e phase-2 failure + CLI wave (session 01a0889a)
+
+Operator report: "same error halfway through installation" - the in-era 2013 date passed the
+phase-1 outer-app verifier but the rebooted installer environment re-verified packages and
+failed mid-phase-2. Date-alone class CLOSED. Operator clarification 2026-09-09e: the phase-2
+popup is not a distinct error - it is the same installer notification that the file is
+corrupted (the verifier notice); L3 unchanged. Wave L3 = CLI bypass (no GUI verifier):
+mount InstallESD, sudo installer -pkg .../OSInstall.mpkg -target /Volumes/start* -verboseR
+from the running 10.6.8, targeting the MX500 volume directly. Branch B if the CLI refuses
+outside the installer environment: DU-restore InstallESD.dmg onto the Untitled volume
+(only Untitled erased), Option-boot it, env Terminal: date 0801120013 + plain
+installer -pkg OSInstall.mpkg -target /Volumes/start* -verboseR (SE 216730 receipt pattern).
 
 Photo receipt: Terminal shows `sudo date 0801120013` + date output ending `DT 2013` +
 `open /Applications/Install*Lion.app`; installer shows Mac OS X Lion "Preparing to install.
