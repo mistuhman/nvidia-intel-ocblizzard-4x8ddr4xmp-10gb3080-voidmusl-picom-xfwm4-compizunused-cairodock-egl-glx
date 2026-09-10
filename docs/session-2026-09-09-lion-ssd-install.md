@@ -76,3 +76,16 @@ half-written: Option-boot the original SL source volume (untouched per gate).
 Wave L2 (after L1 receipt): Option-boot the USB; if the media installer also reports
 verification failure, in-installer Utilities-Terminal era date (2011/2012, NOT 2016) is the
 inner knob - a new verifier context, not a relabel of the closed 2016 test.
+
+## 2026-09-09d L2 executed (session 01a0889a)
+
+Photo receipt: Terminal shows `sudo date 0801120013` + date output ending `DT 2013` +
+`open /Applications/Install*Lion.app`; installer shows Mac OS X Lion "Preparing to install.
+Your computer will restart automatically." with progress bar and NO verification dialog -
+the in-era 2013 date PASSES the verifier that 2026 and 2016 failed. Installer destination
+icon = Lion SSD Base (per DU photo: on a SAMSUNG HD103U; the MX500 volume is still named
+start disk clone). Run allowed to complete on either disk. Post-boot plan: set date forward
+(sudo date 0909160026), diskutil list + diskutil info / to attribute the booted Lion volume
+to a physical disk; if it is not the CT1000MX500SSD, Disk Utility Restore the installed Lion
+volume onto the MX500 volume (block copy - no Apple signature verification applies to a
+restore of an installed system), then Startup Disk select + reboot.
