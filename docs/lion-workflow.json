@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Single ask, already sent to the operator: grep -E bless.OK|LOCKED.ESD|nvram.Graphics.Mode|Boot.plist|blessed|boot.efi|ESD.boot.repaired|FAIL ~/Desktop/lion-mirror.txt pasted back, or a photo of the TextEdit report. Read the verdict line, attribute cause, then ship exactly one next action (Option-boot ESD onto start disk clone, no erase).",
+  "nextAction": "Single ask, already sent to the operator: run grep -E \"bless OK|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot.efi|ESD boot repaired|FAIL\" ~/Desktop/lion-mirror.txt and paste the output, or photo the TextEdit report. Read the verdict line, attribute cause, then ship exactly one next action (Option-boot ESD onto start disk clone, no erase). NOTE: the pattern must stay quoted - unquoted the shell treats the pipes as command separators.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
