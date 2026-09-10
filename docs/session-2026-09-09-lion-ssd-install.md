@@ -186,3 +186,10 @@ Next verification: Boot back to 10.6 and inspect `/lion-cli.log` to determine wh
 
 Operator clarification: the installer is actively running uninterrupted in headless mode (8 minutes elapsed). The red text observation was from the prior reboot mode drop.
 Plan: Await automatic reboot (~15-20 minutes total duration). Upon automatic reboot into 10.6, inspect `/lion-cli.log`. If installer returned exit status 0 ("The install was successful"), proceed to Option-boot the Crucial MX500 target SSD ("start disk clone").
+
+## 2026-09-09o 14-minute progress receipt (session 01a0889a)
+
+Photo receipt of Mac Pro 1,1 chassis at 14 minutes into the headless install (~6 minutes remaining):
+- Dell OSD timed out and panel entered standby (normal behavior for Dell monitors when receiving unsupported video sync signals).
+- Power LED fluctuating with background system/disk activity.
+- Operator standing by for `/sbin/reboot` auto-reboot back into 10.6 Snow Leopard.
