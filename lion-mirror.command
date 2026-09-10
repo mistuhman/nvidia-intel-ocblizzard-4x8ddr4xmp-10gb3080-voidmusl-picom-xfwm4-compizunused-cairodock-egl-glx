@@ -1,15 +1,14 @@
 #!/bin/sh
-# Mac Pro 1,1 / Snow Leopard 10.6.8 — ONE script, the whole Lion installer mirror.
-# Double-click on Lion SSD Base. Enter admin password. Confirm Erase Bay 4.
+# Mac Pro 1,1 / Snow Leopard 10.6.8 — Lion SSD install helper (one script).
+# Double-click on Lion SSD Base. Enter admin password. Confirm Apply.
 #
-# Does: inventory, find inner InstallESD.dmg FILE, lock physical Bay 4,
-#       asr restore -erase, verify OSInstall.mpkg + boot.efi, bless --label.
-# Does NOT: set the clock, fetch over HTTP, touch Lion SSD Base, touch start disk clone / MX500.
-# WITHDRAWN: 2016 clock workaround, headless injector, bless-without-asr (picker = EFI Boot).
+# Does: copy this Mac's working display prefs onto Mac OS X Install ESD
+#       and lock Graphics Mode to 1024x768x32@60 (VGA-HDMI safe).
+# Does NOT: restore/erase any disk, set the clock, fetch over HTTP.
+# Does NOT: touch Lion SSD Base or start disk clone / MX500 as a target.
+# WITHDRAWN: 2016 clock, Bay 4 remirror, headless injector.
 #
-# Apple 10.7 path (10.9 USB helper does not exist on Lion): asr the inner dmg, then bless.
 # After success: Restart, hold Option, click Mac OS X Install ESD.
-# Installer destination = start disk clone (1 TB). Do not erase it (upgrade installer).
 
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 if [ -n "$LION_PATH" ]; then
@@ -18,9 +17,8 @@ fi
 export PATH
 umask 022
 
-# Test seams only. Unset on a real Mac = production paths.
-LION_APPS="${LION_APPS:-/Applications}"
 LION_VOLS="${LION_VOLS:-/Volumes}"
+LION_PREFS="${LION_PREFS:-/Library/Preferences}"
 LION_SLEEP="${LION_SLEEP:-2}"
 
 SELF="$0"
@@ -66,15 +64,15 @@ is_mx500() {
 }
 
 (
-say "lion-mirror.command — Mac Pro 1,1 Snow Leopard 10.6.8"
+say "lion-mirror.command — Lion SSD install helper"
 say "Generated: $(date)"
 say "Host:"
 sw_vers 2>/dev/null || true
 uname -a
 say ""
-say "WITHDRAWN: 2016 clock workaround (operator: did not work)."
-say "WITHDRAWN: Option-boot of the old Bay 4 copy (picker showed EFI Boot)."
-say "This run: asr restore inner InstallESD.dmg FILE onto physical Bay 4, then bless."
+say "WITHDRAWN: 2016 clock workaround."
+say "WITHDRAWN: remirror / Bay 4 erase."
+say "This run: copy display prefs + lock 1024x768x32@60 on Install ESD (VGA-HDMI)."
 say ""
 
 if ! sudo -v; then
@@ -105,45 +103,12 @@ say "===== $LION_VOLS ====="
 ls -la "$LION_VOLS" 2>/dev/null || true
 
 say ""
-say "===== 3. SOURCE FILE (inner InstallESD.dmg, not a mounted volume) ====="
-SOURCE=""
-for APP in \
-  "$LION_APPS/Install OS X Lion.app" \
-  "$LION_APPS/Install Mac OS X Lion.app" \
-  "$LION_APPS/Install Mac OS X.app"
-do
-  CAND="$APP/Contents/SharedSupport/InstallESD.dmg"
-  say "check $CAND"
-  if [ -f "$CAND" ]; then
-    SOURCE="$CAND"
-    break
-  fi
-done
-if [ -z "$SOURCE" ]; then
-  for CAND in \
-    "$HOME/Downloads/InstallESD.dmg" \
-    "$HOME/Desktop/InstallESD.dmg"
-  do
-    if [ -f "$CAND" ]; then
-      SOURCE="$CAND"
-      say "SOURCE fallback $SOURCE"
-      break
-    fi
-  done
-fi
-if [ -z "$SOURCE" ] || [ ! -f "$SOURCE" ]; then
-  fail "InstallESD.dmg not found. Install InstallMacOSX.pkg on this Snow Leopard first. Do not erase Bay 4."
-fi
-say "SOURCE=$SOURCE"
-ls -lh "$SOURCE" 2>/dev/null || true
-
-say ""
-say "===== 4. DESTINATION (physical Bay 4 only) ====="
-DEST_VOL=""
-DEST_DEV=""
-DEST_NAME=""
-DEST_PROTO=""
-DEST_MEDIA=""
+say "===== 3. INSTALL ESD (already mirrored, do not erase) ====="
+ESD=""
+ESD_DEV=""
+ESD_NAME=""
+ESD_PROTO=""
+ESD_MEDIA=""
 for V in "$LION_VOLS"/*; do
   [ -d "$V" ] || continue
   VNAME=`field "$V" "Volume Name"`
@@ -178,117 +143,93 @@ for V in "$LION_VOLS"/*; do
       continue
     fi
   fi
-  DEST_VOL="$V"
-  DEST_DEV="$VDEV"
-  DEST_NAME="$VNAME"
-  DEST_PROTO="$VPROTO"
-  DEST_MEDIA="$VMEDIA"
-  say "  CANDIDATE dest"
+  ESD="$V"
+  ESD_DEV="$VDEV"
+  ESD_NAME="$VNAME"
+  ESD_PROTO="$VPROTO"
+  ESD_MEDIA="$VMEDIA"
+  say "  CANDIDATE esd"
 done
 
-if [ -z "$DEST_DEV" ]; then
-  fail "no physical volume named Mac OS X Install ESD. Mount Bay 4 and re-run. Will not guess a disk."
+if [ -z "$ESD" ]; then
+  fail "Mac OS X Install ESD is not mounted. Will not guess a disk."
+fi
+if [ "$ESD_DEV" = "$BOOT_DEV" ]; then
+  fail "ESD is the boot disk — refusing"
+fi
+if is_mx500 "$ESD_MEDIA $ESD_NAME $ESD"; then
+  fail "ESD path is the MX500 / start disk clone — refusing"
+fi
+echo "$ESD_NAME" | grep -qi "Lion SSD Base"
+if [ $? -eq 0 ]; then
+  fail "ESD path is Lion SSD Base — refusing"
 fi
 
 say ""
-say "LOCKED SOURCE=$SOURCE"
-say "LOCKED DEST_VOL=$DEST_VOL"
-say "LOCKED DEST_DEV=$DEST_DEV"
-say "LOCKED DEST_NAME=$DEST_NAME"
-say "LOCKED DEST_PROTO=$DEST_PROTO"
-say "LOCKED DEST_MEDIA=$DEST_MEDIA"
-diskutil info "$DEST_DEV" 2>/dev/null | sed -n '1,50p' || true
+say "LOCKED ESD=$ESD"
+say "LOCKED ESD_DEV=$ESD_DEV"
+say "LOCKED ESD_NAME=$ESD_NAME"
+say "LOCKED ESD_PROTO=$ESD_PROTO"
+say "LOCKED ESD_MEDIA=$ESD_MEDIA"
 
-echo "$DEST_DEV" | grep -q '^/dev/disk[0-9]' || fail "dest device node looks wrong: $DEST_DEV"
-if is_disk_image "$DEST_PROTO"; then
-  fail "dest is a disk image — refusing"
-fi
-if [ "$DEST_DEV" = "$BOOT_DEV" ]; then
-  fail "dest is the boot disk — refusing"
-fi
-if is_mx500 "$DEST_MEDIA $DEST_NAME $DEST_VOL"; then
-  fail "dest is the MX500 / start disk clone — refusing"
+if [ ! -d "$LION_PREFS/ByHost" ]; then
+  fail "no ByHost display prefs on Lion SSD Base"
 fi
 
 say ""
-say "===== 5. CONFIRM ERASE BAY 4 ====="
+say "===== 4. CONFIRM DISPLAY LOCK ====="
 CONFIRM=`osascript -e "tell application \"Finder\"
-display dialog \"ASR will ERASE this PHYSICAL disk and write a new Lion InstallESD mirror.
+display dialog \"Copy this Mac's working display settings onto Mac OS X Install ESD and lock 1024x768x32@60 so VGA-HDMI can show the installer.
 
-DEST: $DEST_NAME
-DEV: $DEST_DEV
-PROTO: $DEST_PROTO
-MEDIA: $DEST_MEDIA
+ESD: $ESD_NAME
+DEV: $ESD_DEV
 
-SOURCE (file):
-$SOURCE
-
-Will NOT touch:
-- Lion SSD Base (Bay 1 boot)
-- start disk clone / Crucial MX500 (Bay 3)
-
-Date will NOT be changed.\" buttons {\"Cancel\",\"Erase Bay 4\"} default button 1 with icon caution
+Will NOT erase any disk.
+Will NOT restore a disk.
+Will NOT change the clock.
+Will NOT touch Lion SSD Base or start disk clone.\" buttons {\"Cancel\",\"Apply\"} default button 2 with icon note
 set pressed to button returned of result
 return pressed
 end tell" 2>/dev/null` || true
 say "dialog=$CONFIRM"
-if [ "$CONFIRM" != "Erase Bay 4" ]; then
-  fail "operator cancelled — no erase"
+if [ "$CONFIRM" != "Apply" ]; then
+  fail "operator cancelled — no disk was erased"
 fi
-say "operator confirmed Erase Bay 4"
+say "operator confirmed Apply"
 
 say ""
-say "===== 6. ASR RESTORE ====="
-sudo diskutil unmount "$DEST_DEV" 2>&1 || sudo diskutil unmount force "$DEST_DEV" 2>&1 || true
-say "asr restore -source FILE -target $DEST_DEV -erase -noprompt -noverify"
-if ! sudo asr restore -source "$SOURCE" -target "$DEST_DEV" -erase -noprompt -noverify; then
-  say "asr long-flag retry"
-  if ! sudo asr restore --source "$SOURCE" --target "$DEST_DEV" --erase --noprompt --noverify; then
-    fail "asr restore failed"
-  fi
+say "===== 5. COPY DISPLAY PREFS ====="
+PREF_DIR="$ESD/Library/Preferences"
+if [ ! -d "$PREF_DIR" ]; then
+  sudo mkdir -p "$PREF_DIR" || fail "mkdir Preferences failed"
 fi
+sudo ditto /Library/Preferences/ByHost "$PREF_DIR/ByHost" || fail "ditto ByHost failed"
+say "ditto ByHost OK"
+if [ -f /Library/Preferences/com.apple.windowserver.plist ]; then
+  sudo ditto /Library/Preferences/com.apple.windowserver.plist "$PREF_DIR/com.apple.windowserver.plist" || true
+  say "ditto windowserver.plist OK"
+fi
+ls -la "$PREF_DIR/ByHost" 2>/dev/null || true
 
 say ""
-say "===== 7. VERIFY MIRROR ====="
-sudo diskutil mount "$DEST_DEV" 2>&1 || true
-if [ "$LION_SLEEP" != "0" ]; then
-  sleep "$LION_SLEEP"
+say "===== 6. GRAPHICS MODE 1024x768x32@60 ====="
+SC="$PREF_DIR/SystemConfiguration"
+if [ ! -d "$SC" ]; then
+  sudo mkdir -p "$SC" || fail "mkdir SystemConfiguration failed"
 fi
-MIRROR=""
-for CAND in "$LION_VOLS/Mac OS X Install ESD" "$LION_VOLS/Mac OS X Install ESD 1"; do
-  if [ -f "$CAND/Packages/OSInstall.mpkg" ]; then
-    PROTO=`field "$CAND" "Protocol"`
-    if is_disk_image "$PROTO"; then
-      continue
-    fi
-    MIRROR="$CAND"
-    break
-  fi
-done
-if [ -z "$MIRROR" ]; then
-  fail "asr finished but Packages/OSInstall.mpkg not on a physical volume"
-fi
-say "MIRROR=$MIRROR"
-ls -ld "$MIRROR/Packages/OSInstall.mpkg"
-if [ -f "$MIRROR/System/Library/CoreServices/boot.efi" ]; then
-  say "boot.efi present"
-  ls -ld "$MIRROR/System/Library/CoreServices/boot.efi"
-else
-  fail "boot.efi ABSENT after asr — mirror is not bootable"
-fi
+sudo defaults write "$SC/com.apple.Boot" "Graphics Mode" -string "1024x768x32@60" || fail "defaults write Graphics Mode failed"
+say "Boot.plist Graphics Mode=1024x768x32@60"
+sudo nvram "Graphics Mode"="1024x768x32@60" || fail "nvram Graphics Mode failed"
+say "nvram Graphics Mode=1024x768x32@60"
+nvram "Graphics Mode" 2>/dev/null || true
 
 say ""
-say "===== 8. BLESS LABEL ====="
-sudo bless --folder "$MIRROR/System/Library/CoreServices" --label "Mac OS X Install ESD" 2>&1 || true
-sudo bless --info "$MIRROR" 2>&1 || true
-
-say ""
-say "===== 9. NEXT ====="
-say "Bay 4 is a new asr mirror. Date was not changed."
+say "===== 7. NEXT ====="
+say "Display lock applied. No disk was erased."
 say "Apple menu > Restart, hold Option, click Mac OS X Install ESD."
-say "If the picker still says EFI Boot: photograph it and stop."
-say "Installer destination = start disk clone (1 TB). Do not erase it."
-say "Do not touch Lion SSD Base. Do not replace other drives until Lion boots from the SSD."
+say "If the HDMI box still says timing error: photograph it and stop."
+say "Installer destination = start disk clone. Do not erase it."
+say "Do not touch Lion SSD Base."
 ) > "$REPORT" 2>&1
 STATUS=$?
 cat "$REPORT"

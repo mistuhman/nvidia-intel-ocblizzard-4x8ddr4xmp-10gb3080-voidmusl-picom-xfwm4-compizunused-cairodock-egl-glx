@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Snow Leopard 10.6.8 agent tests for lion-mirror.command
-// Agent A: syntax / forbidden tokens (bash 4, date-hack, curl)
-// Agent B: mocked 10.6 diskutil/asr/bless/osascript scenarios
+// Snow Leopard 10.6.8 agent tests for lion-mirror.command (display lock helper)
+// Agent A: syntax / forbidden tokens (asr, date-hack, curl, bash 4)
+// Agent B: mocked 10.6 diskutil/ditto/nvram/osascript scenarios
 import { execFileSync, spawnSync } from 'node:child_process';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -21,7 +21,7 @@ function fail(id: string, msg: string): void {
 
 function agentA_syntax(): void {
   const text = readFileSync(SCRIPT, 'utf8');
-  if (!text.startsWith('#!/bin/sh')) fail('A-shebang', 'need #!/bin/sh') ;
+  if (!text.startsWith('#!/bin/sh')) fail('A-shebang', 'need #!/bin/sh');
   else pass('A-shebang', '#!/bin/sh');
 
   const forbidden: Array<[string, RegExp]> = [
@@ -36,19 +36,23 @@ function agentA_syntax(): void {
     ['assoc-array', /declare\s+-A/],
     ['pipefail', /pipefail/],
     ['createinstallmedia', /createinstallmedia/],
+    ['asr', /\basr\b/],
+    ['erase-bay-4', /Erase Bay 4/],
   ];
   for (const [id, re] of forbidden) {
     if (re.test(text)) fail(`A-${id}`, 'forbidden token present');
     else pass(`A-${id}`, 'absent');
   }
-  if (!/asr restore -source/.test(text)) fail('A-asr', 'missing 10.6 asr -source form');
-  else pass('A-asr', '10.6 asr -source present');
-  if (!/bless --folder/.test(text)) fail('A-bless', 'missing bless --folder');
-  else pass('A-bless', 'bless --folder present');
-  if (!/Erase Bay 4/.test(text)) fail('A-confirm', 'missing confirm');
-  else pass('A-confirm', 'Erase Bay 4 confirm');
+  if (!/ditto /.test(text)) fail('A-ditto', 'missing ditto');
+  else pass('A-ditto', 'ditto present');
+  if (!/Graphics Mode/.test(text)) fail('A-gfx', 'missing Graphics Mode');
+  else pass('A-gfx', 'Graphics Mode present');
+  if (!/1024x768x32@60/.test(text)) fail('A-mode', 'missing 1024x768x32@60');
+  else pass('A-mode', '1024x768x32@60');
   if (!/start disk clone/.test(text) || !/Lion SSD Base/.test(text)) fail('A-keep', 'missing keep-list');
   else pass('A-keep', 'Bay 1 and Bay 3 named');
+  if (!/No disk was erased/.test(text)) fail('A-noerase', 'missing no-erase line');
+  else pass('A-noerase', 'no erase');
 
   const shn = spawnSync('bash', ['-n', SCRIPT], { encoding: 'utf8' });
   if (shn.status !== 0) fail('A-bash-n', shn.stderr);
@@ -84,29 +88,35 @@ function makeMock(root: string, opts: {
   destProto?: string;
   destMedia?: string;
   destName?: string;
-  haveSource?: boolean;
+  haveEsd?: boolean;
+  haveByHost?: boolean;
 }): void {
   const bin = join(root, 'bin');
   const vols = join(root, 'Volumes');
-  const apps = join(root, 'Applications');
   const home = join(root, 'home');
+  const prefs = join(root, 'Library/Preferences');
   mkdirSync(join(home, 'Desktop'), { recursive: true });
   mkdirSync(join(vols, 'Lion SSD Base'), { recursive: true });
   mkdirSync(join(vols, 'start disk clone'), { recursive: true });
-  mkdirSync(join(vols, 'Mac OS X Install ESD'), { recursive: true });
-  if (opts.haveSource !== false) {
-    const dmg = join(apps, 'Install OS X Lion.app/Contents/SharedSupport/InstallESD.dmg');
-    mkdirSync(join(dmg, '..'), { recursive: true });
-    writeFileSync(dmg, 'fake-installesd');
+  if (opts.haveEsd !== false) {
+    mkdirSync(join(vols, 'Mac OS X Install ESD/System/Library/CoreServices'), { recursive: true });
+    mkdirSync(join(vols, 'Mac OS X Install ESD/Library/Preferences'), { recursive: true });
+    writeFileSync(join(vols, 'Mac OS X Install ESD/System/Library/CoreServices/boot.efi'), 'efi');
+  }
+  if (opts.haveByHost !== false) {
+    mkdirSync(join(prefs, 'ByHost'), { recursive: true });
+    writeFileSync(join(prefs, 'ByHost/com.apple.windowserver.test.plist'), 'ws');
+    writeFileSync(join(prefs, 'com.apple.windowserver.plist'), 'wsroot');
   }
 
   const bootName = opts.bootName ?? 'Lion SSD Base';
   const destName = opts.destName ?? 'Mac OS X Install ESD';
   const destProto = opts.destProto ?? 'SATA';
   const destMedia = opts.destMedia ?? 'ST2000NM0033-9ZM175';
-  write(join(root, 'info-boot.txt'), infoBlob(bootName, '/dev/disk2s2', 'SATA', 'TOSHIBA DT01ACA200'));
-  write(join(root, 'info-clone.txt'), infoBlob('start disk clone', '/dev/disk0s2', 'SATA', 'CT1000MX500SSD1'));
-  write(join(root, 'info-dest.txt'), infoBlob(destName, '/dev/disk1s2', destProto, destMedia));
+  write(join(root, 'info-boot.txt'), infoBlob(bootName, '/dev/disk0s2', 'SATA', 'starrt disk clone'));
+  write(join(root, 'info-clone.txt'), infoBlob('start disk clone', '/dev/disk1s2', 'SATA', 'CT1000MX500SSD1'));
+  write(join(root, 'info-dest.txt'), infoBlob(destName, '/dev/disk2s2', destProto, destMedia));
+
   write(join(bin, 'diskutil'), `#!/bin/sh
 ROOT="${root}"
 cmd="$1"
@@ -116,11 +126,11 @@ base=\`basename "\$target"\`
 case "$cmd" in
   list) echo "mock diskutil list"; exit 0 ;;
   info)
-    if [ "\$target" = "/" ] || [ "\$target" = "/dev/disk2s2" ] || [ "\$base" = "Lion SSD Base" ]; then
+    if [ "\$target" = "/" ] || [ "\$target" = "/dev/disk0s2" ] || [ "\$base" = "Lion SSD Base" ]; then
       cat "\$ROOT/info-boot.txt"
-    elif [ "\$target" = "/dev/disk0s2" ] || [ "\$base" = "start disk clone" ]; then
+    elif [ "\$target" = "/dev/disk1s2" ] || [ "\$base" = "start disk clone" ]; then
       cat "\$ROOT/info-clone.txt"
-    elif [ "\$target" = "/dev/disk1s2" ] || [ "\$base" = "Mac OS X Install ESD" ]; then
+    elif [ "\$target" = "/dev/disk2s2" ] || [ "\$base" = "Mac OS X Install ESD" ]; then
       cat "\$ROOT/info-dest.txt"
     else
       printf '%s\\n' "   Volume Name:              Unknown"
@@ -128,23 +138,36 @@ case "$cmd" in
       printf '%s\\n' "   Protocol:                 SATA"
     fi
     exit 0 ;;
-  unmount|mount) echo "mock \$cmd \$*"; exit 0 ;;
-  *) echo "mock diskutil \$cmd \$*"; exit 0 ;;
+  *) echo "mock \$cmd \$*"; exit 0 ;;
 esac
 `, 0o755);
 
-  write(join(bin, 'asr'), `#!/bin/sh
-echo "mock asr $*" >> "${root}/asr.log"
-VOL="${vols}/Mac OS X Install ESD"
-mkdir -p "$VOL/Packages" "$VOL/System/Library/CoreServices"
-echo mpkg > "$VOL/Packages/OSInstall.mpkg"
-echo efi > "$VOL/System/Library/CoreServices/boot.efi"
+  write(join(bin, 'ditto'), `#!/bin/sh
+echo "mock ditto $*" >> "${root}/ditto.log"
+mkdir -p "$2" 2>/dev/null || true
+if [ -d "$1" ]; then
+  mkdir -p "$2"
+  cp -R "$1/." "$2/" 2>/dev/null || true
+elif [ -f "$1" ]; then
+  mkdir -p "\`dirname "$2"\`"
+  cp "$1" "$2" 2>/dev/null || true
+fi
 exit 0
 `, 0o755);
 
-  write(join(bin, 'bless'), `#!/bin/sh
-echo "mock bless $*" >> "${root}/bless.log"
+  write(join(bin, 'nvram'), `#!/bin/sh
+echo "mock nvram $*" >> "${root}/nvram.log"
 exit 0
+`, 0o755);
+
+  write(join(bin, 'defaults'), `#!/bin/sh
+echo "mock defaults $*" >> "${root}/defaults.log"
+exit 0
+`, 0o755);
+
+  write(join(bin, 'mkdir'), `#!/bin/sh
+echo "mock mkdir $*" >> "${root}/mkdir.log"
+/bin/mkdir "$@"
 `, 0o755);
 
   write(join(bin, 'osascript'), `#!/bin/sh
@@ -158,9 +181,9 @@ exec "$@"
 `, 0o755);
 
   write(join(bin, 'sw_vers'), `#!/bin/sh
-printf '%s\\n' "ProductName:	Mac OS X"
-printf '%s\\n' "ProductVersion:	10.6.8"
-printf '%s\\n' "BuildVersion:	10K549"
+printf '%s\\n' "ProductName:\tMac OS X"
+printf '%s\\n' "ProductVersion:\t10.6.8"
+printf '%s\\n' "BuildVersion:\t10K549"
 `, 0o755);
 
   write(join(bin, 'open'), `#!/bin/sh
@@ -172,8 +195,10 @@ if [ "$1" = "-a" ]; then echo "Darwin macpro 10.8.0 Darwin Kernel Version 10.8.0
 `, 0o755);
 
   chmodSync(join(bin, 'diskutil'), 0o755);
-  chmodSync(join(bin, 'asr'), 0o755);
-  chmodSync(join(bin, 'bless'), 0o755);
+  chmodSync(join(bin, 'ditto'), 0o755);
+  chmodSync(join(bin, 'nvram'), 0o755);
+  chmodSync(join(bin, 'defaults'), 0o755);
+  chmodSync(join(bin, 'mkdir'), 0o755);
   chmodSync(join(bin, 'osascript'), 0o755);
   chmodSync(join(bin, 'sudo'), 0o755);
   chmodSync(join(bin, 'sw_vers'), 0o755);
@@ -187,8 +212,8 @@ function runScript(root: string): { status: number; out: string } {
     PATH: `${join(root, 'bin')}:/bin:/usr/bin`,
     LION_PATH: join(root, 'bin'),
     HOME: join(root, 'home'),
-    LION_APPS: join(root, 'Applications'),
     LION_VOLS: join(root, 'Volumes'),
+    LION_PREFS: join(root, 'Library/Preferences'),
     LION_SLEEP: '0',
   };
   const r = spawnSync('sh', [join(process.cwd(), SCRIPT)], { encoding: 'utf8', env, timeout: 20000 });
@@ -201,9 +226,9 @@ function agentB_scenarios(): void {
   const cases: Array<{ id: string; opts: Parameters<typeof makeMock>[1]; wantFail: boolean; needles: string[] }> = [
     {
       id: 'B-happy',
-      opts: { button: 'Erase Bay 4' },
+      opts: { button: 'Apply' },
       wantFail: false,
-      needles: ['sudo OK', 'LOCKED DEST_DEV=/dev/disk1s2', 'boot.efi present', 'operator confirmed Erase Bay 4', 'WITHDRAWN: 2016 clock'],
+      needles: ['sudo OK', 'LOCKED ESD_DEV=/dev/disk2s2', 'ditto ByHost OK', 'operator confirmed Apply', 'Graphics Mode=1024x768x32@60', 'No disk was erased', 'WITHDRAWN: 2016 clock'],
     },
     {
       id: 'B-cancel',
@@ -213,27 +238,33 @@ function agentB_scenarios(): void {
     },
     {
       id: 'B-boot-esd',
-      opts: { button: 'Erase Bay 4', bootName: 'Mac OS X Install ESD' },
+      opts: { button: 'Apply', bootName: 'Mac OS X Install ESD' },
       wantFail: true,
       needles: ['booted from the installer volume'],
     },
     {
       id: 'B-image',
-      opts: { button: 'Erase Bay 4', destProto: 'Disk Image' },
+      opts: { button: 'Apply', destProto: 'Disk Image' },
       wantFail: true,
-      needles: ['no physical volume named Mac OS X Install ESD'],
+      needles: ['Mac OS X Install ESD is not mounted'],
     },
     {
       id: 'B-mx500-named-esd',
-      opts: { button: 'Erase Bay 4', destMedia: 'CT1000MX500SSD1' },
+      opts: { button: 'Apply', destMedia: 'CT1000MX500SSD1' },
       wantFail: true,
       needles: ['MX500'],
     },
     {
-      id: 'B-nosource',
-      opts: { button: 'Erase Bay 4', haveSource: false },
+      id: 'B-noesd',
+      opts: { button: 'Apply', haveEsd: false },
       wantFail: true,
-      needles: ['InstallESD.dmg not found', 'No disk was erased'],
+      needles: ['Mac OS X Install ESD is not mounted', 'No disk was erased'],
+    },
+    {
+      id: 'B-nobyhost',
+      opts: { button: 'Apply', haveByHost: false },
+      wantFail: true,
+      needles: ['no ByHost display prefs', 'No disk was erased'],
     },
   ];
 
@@ -248,23 +279,28 @@ function agentB_scenarios(): void {
       const blob = `${r.out}\n${report}`;
       const failedRun = r.status !== 0 || /FAIL:/.test(blob);
       if (c.wantFail !== failedRun) {
-        fail(c.id, `status=${r.status} wantFail=${c.wantFail} tail=${blob.slice(-400)}`);
+        fail(c.id, `status=${r.status} wantFail=${c.wantFail} tail=${blob.slice(-500)}`);
       } else {
         const missing = c.needles.filter((n) => blob.indexOf(n) < 0);
         if (missing.length) fail(c.id, `missing ${missing.join(' | ')}`);
         else pass(c.id, `status=${r.status}`);
       }
-      if (c.id === 'B-cancel' || c.id === 'B-nosource' || c.id === 'B-boot-esd') {
-        if (existsSync(join(root, 'asr.log'))) fail(`${c.id}-noasr`, 'asr ran on a refuse/cancel path');
-        else pass(`${c.id}-noasr`, 'asr not invoked');
+      if (c.id === 'B-cancel' || c.id === 'B-noesd' || c.id === 'B-boot-esd' || c.id === 'B-nobyhost') {
+        if (existsSync(join(root, 'ditto.log'))) fail(`${c.id}-noditto`, 'ditto ran on a refuse/cancel path');
+        else pass(`${c.id}-noditto`, 'ditto not invoked');
       }
       if (c.id === 'B-happy') {
-        const bless = existsSync(join(root, 'bless.log')) ? readFileSync(join(root, 'bless.log'), 'utf8') : '';
-        if (bless.indexOf('--label') < 0) fail('B-happy-bless', bless);
-        else pass('B-happy-bless', 'bless --label');
-        const asr = existsSync(join(root, 'asr.log')) ? readFileSync(join(root, 'asr.log'), 'utf8') : '';
-        if (asr.indexOf('-source') < 0 || asr.indexOf('/dev/disk1s2') < 0) fail('B-happy-asr', asr);
-        else pass('B-happy-asr', 'asr targeted disk1s2');
+        const ditto = existsSync(join(root, 'ditto.log')) ? readFileSync(join(root, 'ditto.log'), 'utf8') : '';
+        if (ditto.indexOf('ByHost') < 0) fail('B-happy-ditto', ditto);
+        else pass('B-happy-ditto', 'ditto ByHost');
+        const nv = existsSync(join(root, 'nvram.log')) ? readFileSync(join(root, 'nvram.log'), 'utf8') : '';
+        if (nv.indexOf('Graphics Mode') < 0 || nv.indexOf('1024x768x32@60') < 0) fail('B-happy-nvram', nv);
+        else pass('B-happy-nvram', 'nvram Graphics Mode');
+        const def = existsSync(join(root, 'defaults.log')) ? readFileSync(join(root, 'defaults.log'), 'utf8') : '';
+        if (def.indexOf('Graphics Mode') < 0) fail('B-happy-defaults', def);
+        else pass('B-happy-defaults', 'defaults write Graphics Mode');
+        if (existsSync(join(root, 'asr.log'))) fail('B-happy-noasr', 'asr ran');
+        else pass('B-happy-noasr', 'asr not invoked');
       }
     } finally {
       rmSync(root, { recursive: true, force: true });
@@ -288,7 +324,7 @@ function agentZip(): void {
 function main(): void {
   console.log('agent A = Snow Leopard syntax');
   agentA_syntax();
-  console.log('agent B = mocked 10.6.8 asr / refuse paths');
+  console.log('agent B = mocked 10.6.8 display-lock / refuse paths');
   agentB_scenarios();
   console.log('agent Z = zip is one script');
   agentZip();
