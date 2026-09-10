@@ -135,3 +135,16 @@ run the env Terminal lines; (4) else power off, boot 10.6, report - next = spare
 (DVI-VGA passive adapter works on the GTX 285) or archive.org block-level restore. Installed
 Lion with full 10.7 NVIDIA kexts may re-pick an EDID-valid mode even where the env stayed on
 the EFI framebuffer, so out-of-range may be env-only.
+
+## 2026-09-09i headless auto-install wave (session 01a0889a)
+
+Operator: the VGA-to-HDMI converter cannot pass the env's mode on either DVI/VGA port; asks
+"changing cards possible?" - answer yes (any PCIe x16; needs Mac EFI ROM for visible picker;
+zero-spend = shelf card only) but parked in favor of a headless path: the restored ESD volume
+on Untitled is writable from 10.6, so inject /usr/local/libexec/arena-lion.sh + a RunAtLoad
+LaunchDaemon (org.arena.lion-autoinstall.plist) that sets date 0801120013, diskutil mountAll,
+runs installer -pkg /Packages/OSInstall.mpkg -target "/Volumes/start disk clone" -verboseR,
+copies the log to the Lion SSD Base volume root (lion-cli.log) and reboots. Operator boots the
+ESD volume blind via Option, walks away; reads /lion-cli.log from 10.6 after the auto-reboot.
+Scratch-volume-only modification, fully reversible. Card swap and archive.org block-level
+restore remain fallbacks.
