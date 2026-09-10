@@ -263,8 +263,8 @@ function agentB_scenarios(): void {
     {
       id: 'B-nobyhost',
       opts: { button: 'Apply', haveByHost: false },
-      wantFail: true,
-      needles: ['no ByHost display prefs', 'No disk was erased'],
+      wantFail: false,
+      needles: ['BYHOST=none', 'skip ditto ByHost', 'Graphics Mode=1024x768x32@60', 'No disk was erased'],
     },
   ];
 
@@ -285,9 +285,14 @@ function agentB_scenarios(): void {
         if (missing.length) fail(c.id, `missing ${missing.join(' | ')}`);
         else pass(c.id, `status=${r.status}`);
       }
-      if (c.id === 'B-cancel' || c.id === 'B-noesd' || c.id === 'B-boot-esd' || c.id === 'B-nobyhost') {
+      if (c.id === 'B-cancel' || c.id === 'B-noesd' || c.id === 'B-boot-esd') {
         if (existsSync(join(root, 'ditto.log'))) fail(`${c.id}-noditto`, 'ditto ran on a refuse/cancel path');
         else pass(`${c.id}-noditto`, 'ditto not invoked');
+      }
+      if (c.id === 'B-nobyhost') {
+        const nv = existsSync(join(root, 'nvram.log')) ? readFileSync(join(root, 'nvram.log'), 'utf8') : '';
+        if (nv.indexOf('1024x768x32@60') < 0) fail('B-nobyhost-nvram', nv);
+        else pass('B-nobyhost-nvram', 'nvram without ByHost');
       }
       if (c.id === 'B-happy') {
         const ditto = existsSync(join(root, 'ditto.log')) ? readFileSync(join(root, 'ditto.log'), 'utf8') : '';

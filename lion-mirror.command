@@ -172,8 +172,17 @@ say "LOCKED ESD_NAME=$ESD_NAME"
 say "LOCKED ESD_PROTO=$ESD_PROTO"
 say "LOCKED ESD_MEDIA=$ESD_MEDIA"
 
-if [ ! -d "$LION_PREFS/ByHost" ]; then
-  fail "no ByHost display prefs on Lion SSD Base"
+BYHOST=""
+if [ -d "$LION_PREFS/ByHost" ]; then
+  BYHOST="$LION_PREFS/ByHost"
+  say "BYHOST=$BYHOST"
+fi
+if [ -z "$BYHOST" ] && [ -d "$HOME/Library/Preferences/ByHost" ]; then
+  BYHOST="$HOME/Library/Preferences/ByHost"
+  say "BYHOST=$BYHOST"
+fi
+if [ -z "$BYHOST" ]; then
+  say "BYHOST=none (Graphics Mode lock only)"
 fi
 
 say ""
@@ -203,13 +212,21 @@ PREF_DIR="$ESD/Library/Preferences"
 if [ ! -d "$PREF_DIR" ]; then
   sudo mkdir -p "$PREF_DIR" || fail "mkdir Preferences failed"
 fi
-sudo ditto /Library/Preferences/ByHost "$PREF_DIR/ByHost" || fail "ditto ByHost failed"
-say "ditto ByHost OK"
-if [ -f /Library/Preferences/com.apple.windowserver.plist ]; then
-  sudo ditto /Library/Preferences/com.apple.windowserver.plist "$PREF_DIR/com.apple.windowserver.plist" || true
+if [ -n "$BYHOST" ]; then
+  sudo ditto "$BYHOST" "$PREF_DIR/ByHost" || fail "ditto ByHost failed"
+  say "ditto ByHost OK"
+  ls -la "$PREF_DIR/ByHost" 2>/dev/null || true
+else
+  say "skip ditto ByHost — not present on 10.6"
+fi
+if [ -f "$LION_PREFS/com.apple.windowserver.plist" ]; then
+  sudo ditto "$LION_PREFS/com.apple.windowserver.plist" "$PREF_DIR/com.apple.windowserver.plist" || true
   say "ditto windowserver.plist OK"
 fi
-ls -la "$PREF_DIR/ByHost" 2>/dev/null || true
+if [ -f "$HOME/Library/Preferences/com.apple.windowserver.plist" ]; then
+  sudo ditto "$HOME/Library/Preferences/com.apple.windowserver.plist" "$PREF_DIR/com.apple.windowserver.plist" || true
+  say "ditto user windowserver.plist OK"
+fi
 
 say ""
 say "===== 6. GRAPHICS MODE 1024x768x32@60 ====="
