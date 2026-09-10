@@ -123,3 +123,15 @@ start disk clone). Run allowed to complete on either disk. Post-boot plan: set d
 to a physical disk; if it is not the CT1000MX500SSD, Disk Utility Restore the installed Lion
 volume onto the MX500 volume (block copy - no Apple signature verification applies to a
 restore of an installed system), then Startup Disk select + reboot.
+
+## 2026-09-09h ESD boot out-of-range on the Dell 4K (session 01a0889a)
+
+Photo receipt: Option picker WAS visible; after selecting the ESD volume ("Mac OS X") the Dell
+OSD says input timing not supported (3840x2160@60 listed) - firmware/early-boot mode from the
+ESD boot is out of the monitor's lock range while 10.6 boots fine. Ordered zero-cost wave:
+(1) power-cycle the monitor with the Mac still booted into the env (re-lock receipts,
+macrumors 1903777); (2) explicit monitor input select if OSD persists; (3) if display returns,
+run the env Terminal lines; (4) else power off, boot 10.6, report - next = spare display
+(DVI-VGA passive adapter works on the GTX 285) or archive.org block-level restore. Installed
+Lion with full 10.7 NVIDIA kexts may re-pick an EDID-valid mode even where the env stayed on
+the EFI framebuffer, so out-of-range may be env-only.
