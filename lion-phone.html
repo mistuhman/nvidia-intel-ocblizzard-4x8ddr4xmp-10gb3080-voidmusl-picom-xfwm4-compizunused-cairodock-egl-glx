@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lion SSD Fix — Mac Pro 1,1 Phone Mirror</title>
+<style>
+body{font-family:-apple-system,Helvetica,Arial,sans-serif;margin:0;padding:16px;line-height:1.5;background:#f5f5f7;color:#111}
+h1{font-size:22px;margin:0 0 8px}
+h2{font-size:18px;margin:24px 0 8px}
+a.btn{display:block;background:#007aff;color:#fff;text-decoration:none;padding:14px 18px;border-radius:10px;margin:10px 0;text-align:center;font-weight:600}
+a.btn.secondary{background:#34c759}
+a.btn.tertiary{background:#5856d6}
+pre{background:#fff;border:1px solid #ddd;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+textarea{width:100%;height:180px;border:1px solid #ccc;border-radius:8px;padding:10px;font-family:monospace}
+.card{background:#fff;border-radius:12px;padding:16px;margin:12px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.small{font-size:12px;color:#666}
+</style>
+</head>
+<body>
+<h1>Mac Pro 1,1 Lion SSD Fix</h1>
+<p class="small">Fast SSD: Crucial MX500 Bay3 — Goal: boot Lion 10.7.5 off SSD + new admin account. Works on any browser: phone, Arctic Fox 47.3 mac32, TenSixFox.</p>
+
+<div class="card">
+<h2>1 — Download Fix ZIP (tap one)</h2>
+<a class="btn" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip">Download via raw.githubusercontent.com (Arctic Fox OK, TLS 1.2)</a>
+<a class="btn secondary" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip">Download via jsDelivr CDN (shorter, faster on phone)</a>
+<a class="btn tertiary" href="/zip" id="liveLink">Download via Live Preview Mirror (this server) — /zip</a>
+<p class="small">If on Snow Leopard: after download, unzip to Desktop, double-click <code>lion-ssd-lion-boot-fix.command</code>. If exec bit lost: <code>chmod +x ~/Desktop/*.command</code></p>
+</div>
+
+<div class="card">
+<h2>2 — Short link for Arctic Fox (typeable on phone)</h2>
+<pre id="shortLinks">https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/zip  (replace ibl4qjyh4hwsu23wxyi8r with live preview host)
+</pre>
+<p class="small">To make even shorter: open is.gd on phone → paste long URL → Create → you get https://is.gd/XXXXXX — works in Arctic Fox.</p>
+</div>
+
+<div class="card">
+<h2>3 — Phone debug: send log back (easy from phone)</h2>
+<p>After running <code>lion-ssd-lion-boot-fix.command</code> on Mac, it writes <code>~/Desktop/lion-ssd-lion-boot-fix.txt</code>. Upload it here:</p>
+<textarea id="logBox" placeholder="Paste log here or drag file..."></textarea>
+<p><button onclick="uploadLog()" style="padding:12px 18px;border-radius:8px;border:0;background:#ff3b30;color:#fff;font-weight:600;width:100%">Upload Log to Mirror</button></p>
+<pre id="uploadResult" class="small"></pre>
+<p class="small">Alternative one-liner on Mac (no browser needed):<br>
+<code>cat ~/Desktop/lion-*.txt | nc termbin.com 9999</code><br>
+It returns a URL like https://termbin.com/abc123 — copy that URL to your phone and paste in Arena chat.</p>
+</div>
+
+<div class="card">
+<h2>4 — Quick fix commands (copy-paste in Terminal on Snow Leopard)</h2>
+<pre>sudo xattr -cr "/Applications/Install OS X Lion.app"
+sudo date 0101000016
+open "/Applications/Install OS X Lion.app"
+# after install starts:
+sudo sntp -sS time.apple.com</pre>
+</div>
+
+<script>
+function uploadLog(){
+  const text = document.getElementById('logBox').value;
+  if(!text.trim()){ alert('Paste log first'); return; }
+  fetch('/upload', {method:'POST', body:text, headers:{'Content-Type':'text/plain'}})
+    .then(r=>r.text()).then(t=>{
+      document.getElementById('uploadResult').textContent = 'Uploaded: ' + t + '\nCopy this URL to Arena chat or open on phone.';
+    }).catch(e=>{
+      document.getElementById('uploadResult').textContent = 'Upload failed: ' + e + '\nFallback: cat log | nc termbin.com 9999';
+    });
+}
+document.getElementById('liveLink').href = location.origin + '/zip';
+</script>
+</body>
+</html>

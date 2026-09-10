@@ -1,0 +1,34 @@
+Lion SSD Fix — Shortened links for Arctic Fox 47.3 mac32 (Snow Leopard)
+
+Direct mirrors (tap in Arctic Fox or phone browser):
+
+1. GitHub Raw (TLS 1.2, works in Arctic Fox):
+https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+
+2. jsDelivr CDN (shorter, faster, recommended for phone):
+https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+
+3. Live Preview Mirror (this sandbox, works on any browser + internet, phone-friendly):
+https://8000-{sandboxId}.e2b.app/zip
+https://8000-{sandboxId}.e2b.app/   (HTML page with download + log upload)
+
+To make ultra-short for Arctic Fox typing:
+- On phone, open https://is.gd or https://tinyurl.com
+- Paste long URL (1 or 2)
+- Create → you get https://is.gd/XXXXXX
+- Type that short URL in Arctic Fox address bar → direct download
+
+Example short you can create now:
+is.gd → paste https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip → alias lionSSDfix → https://is.gd/lionSSDfix
+
+Phone debug log return:
+- After running lion-ssd-lion-boot-fix.command, run lion-log-upload.command
+- It prints https://termbin.com/xxxx — open that on phone, copy, paste to Arena
+
+All scripts are executable on any machine with browser+internet:
+- lion-phone.html — open in any browser, tap download
+- lion-phone-download.sh — sh lion-phone-download.sh on any Unix
+- lion-phone-download.command — double-click on Snow Leopard
+- lion-log-upload.command — double-click to upload logs
+
+Generated: 2026-09-10T08:39:10.823Z

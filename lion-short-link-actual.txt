@@ -1,0 +1,31 @@
+Lion SSD Fix — SHORT LINK FOR ARCTIC FOX (phone-typeable)
+
+DIRECT FILE MIRROR — WORKS ON ANY BROWSER + INTERNET (phone, Arctic Fox 47.3, TenSixFox):
+This is the live preview server from this session — direct download, no GitHub TLS issues:
+
+https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/zip
+https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/
+
+TAP IN ARCTIC FOX:
+Open Arctic Fox 47.3 mac32 → address bar → paste https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/zip → Enter → Save to ~/Downloads
+
+PERMANENT MIRRORS (if live preview expires after session):
+
+1. Raw GitHub (works in Arctic Fox TLS 1.2):
+https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+
+2. jsDelivr CDN (shorter, faster on phone):
+https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+
+ULTRA-SHORT (create on phone in 10s):
+- On phone, open https://is.gd → paste long URL → Create → you get https://is.gd/XXXXXX
+- Example: is.gd/lionSSDfix → paste raw URL → https://is.gd/lionSSDfix
+- Then type https://is.gd/lionSSDfix in Arctic Fox → direct download
+
+PHONE DEBUG LOG RETURN:
+- After running lion-ssd-lion-boot-fix.command, double-click lion-log-upload.command
+- It prints https://termbin.com/xxxx
+- Open that URL on phone → copy → paste in Arena chat
+- OR open https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/ → paste log in textarea → Upload → copy returned URL
+
+All artifacts are executable on any machine with browser+internet.
