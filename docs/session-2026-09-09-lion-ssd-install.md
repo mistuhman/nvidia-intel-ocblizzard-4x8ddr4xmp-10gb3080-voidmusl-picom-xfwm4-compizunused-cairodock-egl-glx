@@ -181,3 +181,8 @@ Photo receipt of Terminal running `lion.command`:
 Operator booted the restored ESD volume blind; screen showed unsupported timing for ~3 min; observed split-second red text when shutting off / rebooting.
 Analysis: During shutdown/reset, the GPU video mode briefly drops back to standard VESA/VGA timing before power down, allowing the Dell monitor to momentarily sync and display the console buffer text.
 Next verification: Boot back to 10.6 and inspect `/lion-cli.log` to determine whether the installer was actively extracting packages or if an error occurred.
+
+## 2026-09-09n headless installation in flight (session 01a0889a)
+
+Operator clarification: the installer is actively running uninterrupted in headless mode (8 minutes elapsed). The red text observation was from the prior reboot mode drop.
+Plan: Await automatic reboot (~15-20 minutes total duration). Upon automatic reboot into 10.6, inspect `/lion-cli.log`. If installer returned exit status 0 ("The install was successful"), proceed to Option-boot the Crucial MX500 target SSD ("start disk clone").
