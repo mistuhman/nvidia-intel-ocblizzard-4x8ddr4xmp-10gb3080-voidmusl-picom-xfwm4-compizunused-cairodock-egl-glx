@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator last reported: launched 10.6 on Lion SSD Base, selected ESD. Outcome of that Option-boot is UNVERIFIED (no photo after the volume-root bless). Ask for a photograph of the current Mac screen. Do not assume installer GUI. Do not Restart until the photo is read.",
+  "nextAction": "Wave = Burn + logs only, per operator request. 1) Arctic Fox -> da.gd/lpg -> Burn (falls back to typing da.gd/lzr; both serve the identical zip, verified 2026-09-10). 2) Double-click lion-mirror.command on 10.6.8 on Lion SSD Base -> password -> Repair. 3) Attach ~/Desktop/lion-mirror.txt on the same page -> Sent -> paste the file contents back into CHAT (the agent cannot read the webhook inbox: webhook.site/<uuid>.json 404s and the inbox page is JS-only; da.gd itself is TLS-filtered from the sandbox, so link liveness is verified from the Mac only). Then, and only then: Option-boot Mac OS X Install ESD -> install onto start disk clone. Do not restart or re-Option-boot until the Repair log is read.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -75,7 +75,9 @@
         "url": "https://da.gd/lup",
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
-    ]
+    ],
+    "zipEquivalence": "VERIFIED 2026-09-10: lion-mirror.zip on the pinned 7333b49 tag, on this branch, and in the working tree are all git blob 660617a1e9f4c2dbb92b0aa743dd62e78c381237 (2600 bytes). lzr and lmz serve the same bytes, so the 12h jsDelivr branch cache cannot hand the Mac a stale helper right now.",
+    "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that."
   },
   "helper": {
     "command": "lion-mirror.command",
@@ -138,5 +140,7 @@
     "Mac commands: pasteable bash, one command per line, no chaining; this Mac path prefers Arctic Fox + Burn/Repair .command, not Terminal",
     "da.gd slugs are write-once",
     "Keep-as-Mac 2026-09-08i: transplant CLOSED"
-  ]
+  ],
+  "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
+  "logChannel": "chat paste-back of ~/Desktop/lion-mirror.txt (attach POST marks delivery; webhook inbox is not machine-readable from the sandbox)"
 }
