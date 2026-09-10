@@ -212,7 +212,11 @@ nvram "Graphics Mode" 2>/dev/null || say "nvram Graphics Mode absent"
 say ""
 say "===== 6. BLESS ESD ====="
 CS="$ESD/System/Library/CoreServices"
-sudo bless --folder "$CS" --file "$CS/boot.efi" --label "Mac OS X Install ESD" 2>&1 || fail "bless failed"
+ls -la "$ESD/boot.efi" 2>/dev/null || say "no volume-root boot.efi"
+ls -la "$CS/boot.efi" 2>/dev/null || true
+# Same bless that reached the installer GUI (no --file). --file CoreServices/boot.efi
+# made Option-ESD fall through to Lion SSD Base on this 32-bit EFI Mac Pro 1,1.
+sudo bless --folder "$CS" --label "Mac OS X Install ESD" 2>&1 || fail "bless failed"
 say "bless OK"
 sudo bless --info "$ESD" 2>&1 || true
 
