@@ -232,3 +232,8 @@ Photo receipt:
 
 Photo receipt of Startup Manager showing three boot options: `Lion SSD Base`, `EFI Boot`, `Mac OS X`.
 Clarification: The Apple Startup Manager renders the `.disk_label` embedded in the volume root. For all Apple InstallESD images, this label is `Mac OS X`. The third drive icon labeled `Mac OS X` is the injected Lion installer partition on `/dev/disk1s2`.
+
+## 2026-09-09u 12-minute run completion & log read wave (session 01a0889a)
+
+Operator report: 12 minutes elapsed since booting `Mac OS X`; system reached completion/sleep state.
+Action shipped: Power on / Option-boot into `Lion SSD Base` (10.6 Snow Leopard) and read `/lion-cli.log` to inspect package extraction status and exit code.
