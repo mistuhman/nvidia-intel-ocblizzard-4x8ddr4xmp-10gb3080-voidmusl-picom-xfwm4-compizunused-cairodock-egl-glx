@@ -34,6 +34,34 @@
 - The 2016 temporary date workaround should not be assumed to be the cause; the operator confirmed the normal clock was already correct and the error persisted.
 - The next continuation should choose and verify a new installation path rather than repeating the same outer/inner Lion installer attempts. A known Snow Leopard installer or a bootable Lion/InstallESD media path may be evaluated, with the Mac Pro 1,1 compatibility and bootloader limitations checked first.
 
+## 2026-09-10 — headless-injector audit receipt (session continuation)
+
+This section supersedes the stale clone-name mapping above. The live volume map from the
+operator's Disk Utility receipt is: `/dev/disk0s2` = Crucial MX500 target mounted as
+`start disk clone` (Bay 3); `/dev/disk1s2` = restored `Mac OS X Install ESD` (Bay 4);
+`/dev/disk2s2` = the working Snow Leopard system mounted as `Lion SSD Base` (Bay 1).
+No disk was erased during this audit.
+
+The user ran two read-only discovery wrappers from an executable-permission-preserving ZIP.
+The final report proves that the restored ESD contains `Packages/OSInstall.mpkg` (root:wheel,
+0644) and the injected `/usr/local/libexec/arena-lion.sh` (root:wheel, 0755). The custom
+`org.arena.lion-autoinstall.plist` is also root:wheel, 0644, and `plutil` reports it is valid;
+it points to `/bin/sh /usr/local/libexec/arena-lion.sh` with `RunAtLoad=true`. Nevertheless,
+`lion-cli.log` is absent on both known target volumes, so there is no receipt that the payload
+ever executed.
+
+The ESD's `/etc/rc.local` is absent. The full discovery scan found no
+`com.apple.OSInstaller.plist` at the assumed path and its LaunchDaemons/`/etc` references
+contain only the custom `org.arena` plist. The former conclusion that this ESD's boot sequence
+could be safely hijacked through a known `com.apple.OSInstaller.plist` or `rc.cdrom` path is
+therefore WITHDRAWN: those paths are not established on this media. Do not re-run the old
+headless injector or alter a guessed startup file.
+
+**Current gate:** the installer artifact is intact and custom-file ownership/mode are closed,
+but its actual startup mechanism is still unknown. The next method must be selected from a
+source-backed MacPro1,1/Lion install path, not inferred from a nonexistent plist. The original
+Snow Leopard boot volume and the MX500 target remain preserved.
+
 ## Operator goal
 
 Boot the Mac from the SATA SSD with Lion, then create a clean installation administrator account and handle the remaining HDD bays from the working SSD system. Drive changes remain deferred until the OS boot path is proven.
