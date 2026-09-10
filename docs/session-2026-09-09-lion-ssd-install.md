@@ -148,3 +148,11 @@ copies the log to the Lion SSD Base volume root (lion-cli.log) and reboots. Oper
 ESD volume blind via Option, walks away; reads /lion-cli.log from 10.6 after the auto-reboot.
 Scratch-volume-only modification, fully reversible. Card swap and archive.org block-level
 restore remain fallbacks.
+
+## 2026-09-09j phone-operated delivery (session 01a0889a)
+
+Operator is at the Mac but reading chat on a phone - no manual entry. Payload shipped as
+scripts/arena-lion-autoinstall.command (double-clickable on 10.6; also published as a public
+gist for a short clickable URL): detaches the RO dmg, mountAll, injects arena-lion.sh +
+RunAtLoad plist into the scratch ESD volume, echoes next steps. Then Option-boot "Mac OS X"
+blind, auto-reboot, cat /lion-cli.log from 10.6.
