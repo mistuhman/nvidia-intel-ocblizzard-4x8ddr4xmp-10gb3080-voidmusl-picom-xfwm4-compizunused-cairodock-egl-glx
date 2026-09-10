@@ -5,44 +5,35 @@
 
 echo "=== arena-lion-autoinstall start ==="
 
+# Prompt for sudo password up-front so subsequent writes do not pause
+sudo -v || exit 1
+
 # Detach any read-only dmg mount first
 hdiutil detach /Volumes/Mac*ESD 2>/dev/null
 
-# Mount all connected disk partitions (10.6 compatible)
-echo "Mounting all connected partitions..."
+# Mount all connected disk partitions
 for d in /dev/disk[0-9]*; do
   sudo diskutil mount "$d" 2>/dev/null
 done
 
-# Find the writable ESD volume (restored on hard drive)
-TARGET_ESD=""
-for v in /Volumes/*; do
-  if [ "$v" = "/Volumes/Lion SSD Base" ] || [ "$v" = "/Volumes/start disk clone" ]; then
-    continue
-  fi
-  if [ -f "$v/Packages/OSInstall.mpkg" ] || [ -f "$v/System/Installation/Packages/OSInstall.mpkg" ]; then
-    TARGET_ESD="$v"
-    break
-  fi
-done
+# Target the restored ESD volume on the Samsung drive
+TARGET="/Volumes/Mac OS X Install ESD"
+if [ ! -d "$TARGET" ]; then
+  TARGET=$(ls -d /Volumes/Mac* 2>/dev/null | head -1)
+fi
 
-if [ -z "$TARGET_ESD" ]; then
-  echo "FAIL: Could not locate the restored Lion ESD volume."
-  echo "Currently mounted volumes:"
+if [ ! -d "$TARGET" ] || [ ! -d "$TARGET/Packages" ]; then
+  echo "FAIL: Could not locate /Volumes/Mac OS X Install ESD"
   ls -la /Volumes
-  echo ""
-  echo "Disk list:"
-  diskutil list
   exit 1
 fi
 
-echo "Found Lion ESD volume at: $TARGET_ESD"
+echo "Injecting payload into: $TARGET"
 
-# Inject the headless installer script
-sudo mkdir -p "$TARGET_ESD/usr/local/libexec"
-sudo tee "$TARGET_ESD/usr/local/libexec/arena-lion.sh" <<'EOS'
+# 1. Write the installer script
+sudo mkdir -p "$TARGET/usr/local/libexec"
+sudo tee "$TARGET/usr/local/libexec/arena-lion.sh" <<'EOS'
 #!/bin/sh
-# Headless Lion Installer Script (runs at boot from the restored ESD volume)
 [ -f /tmp/arena-running ] && exit 0
 touch /tmp/arena-running
 
@@ -52,41 +43,41 @@ for d in /dev/disk[0-9]*; do
   /usr/sbin/diskutil mount "$d" 2>/dev/null
 done
 
-LOGFILE="/Volumes/Lion SSD Base/lion-cli.log"
+LOG="/Volumes/Lion SSD Base/lion-cli.log"
 if [ ! -d "/Volumes/Lion SSD Base" ]; then
   mkdir -p "/Volumes/Lion SSD Base"
   mount -t hfs -o rw /dev/disk0s2 "/Volumes/Lion SSD Base" 2>/dev/null
 fi
 
-[ ! -d "/Volumes/Lion SSD Base" ] && LOGFILE="/tmp/lion-cli.log"
+[ ! -d "/Volumes/Lion SSD Base" ] && LOG="/tmp/lion-cli.log"
 
-/bin/echo "AUTOINSTALL-STARTED" > "$LOGFILE"
-/bin/date >> "$LOGFILE"
-/bin/date 0801120013 >> "$LOGFILE" 2>&1
+/bin/echo "AUTOINSTALL-STARTED" > "$LOG"
+/bin/date >> "$LOG"
+/bin/date 0801120013 >> "$LOG" 2>&1
 
 PKG="/Packages/OSInstall.mpkg"
 if [ ! -f "$PKG" ]; then
   PKG="/System/Installation/Packages/OSInstall.mpkg"
 fi
 
-/bin/echo "Installing $PKG to /Volumes/start disk clone..." >> "$LOGFILE"
-/usr/sbin/installer -pkg "$PKG" -target "/Volumes/start disk clone" -verboseR >> "$LOGFILE" 2>&1
+/bin/echo "Installing $PKG to /Volumes/start disk clone..." >> "$LOG"
+/usr/sbin/installer -pkg "$PKG" -target "/Volumes/start disk clone" -verboseR >> "$LOG" 2>&1
 STATUS=$?
 
-/bin/echo "Installer finished with exit status: $STATUS" >> "$LOGFILE"
-/bin/date >> "$LOGFILE"
+/bin/echo "Installer finished with exit status: $STATUS" >> "$LOG"
+/bin/date >> "$LOG"
 
-cp "$LOGFILE" "/Volumes/start disk clone/lion-cli.log" 2>/dev/null
+cp "$LOG" "/Volumes/start disk clone/lion-cli.log" 2>/dev/null
 
 sync
 /sbin/reboot
 EOS
 
-sudo chmod 755 "$TARGET_ESD/usr/local/libexec/arena-lion.sh"
-sudo chown root:wheel "$TARGET_ESD/usr/local/libexec/arena-lion.sh"
+sudo chmod 755 "$TARGET/usr/local/libexec/arena-lion.sh"
+sudo chown root:wheel "$TARGET/usr/local/libexec/arena-lion.sh"
 
-# Hook 1: LaunchDaemon
-sudo tee "$TARGET_ESD/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist" <<'EOS'
+# 2. Hook 1: LaunchDaemon
+sudo tee "$TARGET/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist" <<'EOS'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -97,31 +88,32 @@ sudo tee "$TARGET_ESD/System/Library/LaunchDaemons/org.arena.lion-autoinstall.pl
 </dict>
 </plist>
 EOS
-sudo chown root:wheel "$TARGET_ESD/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist"
-sudo chmod 644 "$TARGET_ESD/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist"
 
-# Hook 2: /etc/rc.local
-sudo tee "$TARGET_ESD/etc/rc.local" <<'EOS'
+sudo chown root:wheel "$TARGET/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist"
+sudo chmod 644 "$TARGET/System/Library/LaunchDaemons/org.arena.lion-autoinstall.plist"
+
+# 3. Hook 2: /etc/rc.local
+sudo tee "$TARGET/etc/rc.local" <<'EOS'
 #!/bin/sh
 /bin/sh /usr/local/libexec/arena-lion.sh &
 EOS
-sudo chmod 755 "$TARGET_ESD/etc/rc.local"
-sudo chown root:wheel "$TARGET_ESD/etc/rc.local"
+sudo chmod 755 "$TARGET/etc/rc.local"
+sudo chown root:wheel "$TARGET/etc/rc.local"
 
-# Hook 3: /etc/rc.cdrom append if present
-if [ -f "$TARGET_ESD/etc/rc.cdrom" ]; then
-  if ! grep -q "arena-lion.sh" "$TARGET_ESD/etc/rc.cdrom"; then
-    echo "/bin/sh /usr/local/libexec/arena-lion.sh &" | sudo tee -a "$TARGET_ESD/etc/rc.cdrom" >/dev/null
+# 4. Hook 3: /etc/rc.cdrom append if present
+if [ -f "$TARGET/etc/rc.cdrom" ]; then
+  if ! grep -q "arena-lion.sh" "$TARGET/etc/rc.cdrom"; then
+    echo "/bin/sh /usr/local/libexec/arena-lion.sh &" | sudo tee -a "$TARGET/etc/rc.cdrom" >/dev/null
   fi
 fi
 
 echo ""
-echo "=== SUCCESS: INJECTED INTO $TARGET_ESD ==="
+echo "=== ALL INJECTIONS SUCCESSFUL INTO $TARGET ==="
 echo ""
 echo "NEXT STEPS:"
 echo "1. Reboot your Mac Pro."
 echo "2. Hold down the OPTION key during boot."
-echo "3. Click the 'Mac OS X' volume icon."
+echo "3. Click the 'Mac OS X Install ESD' (or 'Mac OS X') volume icon."
 echo "4. The screen will show timing unsupported (black/out-of-range), but the installer is running in the background (~15-20 min)."
 echo "5. When complete, the Mac Pro will automatically reboot back into 10.6."
 echo "6. In Terminal, run: cat /lion-cli.log"
