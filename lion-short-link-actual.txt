@@ -1,20 +1,19 @@
-ONE LINK FOR ALL — Arctic Fox + phone, no tinyurl, no e2b sandbox (Sandbox Not Found)
+LIVE Arctic Fox links (canonical: docs/lion-workflow.json)
+Print: node tools/lion-status.ts
 
-https://da.gd/lionfix
+TYPE INTO ARCTIC FOX:
 
-This is ONE link for everything (19K full pack):
-- lion-ssd-lion-boot-fix.command (main fix to boot Lion off fast SSD)
-- lion-log-upload.command (easy log return via termbin)
-- lion-phone.html, download scripts, README
+da.gd/lzr  current helper zip (SHA 7333b49 lion-mirror.zip, volume-root bless)
+da.gd/lpg  Aqua page: lmz download + native .txt attach + Burn (Burn hits lmz)
+da.gd/lmz  branch zip (write-once slug; jsDelivr branch cache 12h — may be stale)
 
-Tap in Arctic Fox 47.3 mac32:
-Type https://da.gd/lionfix in address bar → Enter → Save to ~/Downloads → unzip to Desktop → double-click fix.
+WITHDRAWN — do not type:
 
-One-liner Terminal (type from phone into Mac Terminal, no browser):
-curl -L -o ~/Downloads/fix.zip https://da.gd/lionfix && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
+da.gd/lionfix  still 01a08a55 lion-phone-debug-pack.zip (date-fix). write-once.
+da.gd/lup      dead e2b.app sandbox (Sandbox Not Found).
 
-Other permanent da.gd links:
-https://da.gd/mOycI → raw GitHub fix ZIP (11K)
-https://da.gd/XeHlN → jsDelivr fix ZIP (11K)
-https://da.gd/lionsd → small fix ZIP
-https://da.gd/gOvc2 → full phone debug pack (same as lionfix)
+da.gd slugs cannot be retargeted (400). New destination = new slug + update
+docs/lion-workflow.json.
+
+Job of the zip: one file lion-mirror.command (Repair ESD bless). No asr, no
+erase, no clock. Report ~/Desktop/lion-mirror.txt attach on lpg.

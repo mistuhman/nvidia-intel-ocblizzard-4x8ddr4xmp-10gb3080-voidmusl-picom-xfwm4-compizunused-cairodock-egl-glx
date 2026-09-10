@@ -83,6 +83,9 @@ function main(): void {
   console.log(listDir('scripts').map((name) => `- ${name}`).join('\n') || '(none)');
   console.log('\ntools:');
   console.log(listDir('tools').map((name) => `- ${name}`).join('\n') || '(none)');
+  console.log('\nlion_workflow:');
+  console.log('- node tools/lion-status.ts');
+  console.log('- docs/lion-ssd-handoff.md');
   console.log('\nactive_objective:');
   printObjective(master);
 }
