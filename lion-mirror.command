@@ -1,12 +1,13 @@
 #!/bin/sh
 # Mac Pro 1,1 / Snow Leopard 10.6.8 — Lion SSD install helper (one script).
-# Double-click on Lion SSD Base. Enter admin password. Confirm Apply.
+# Double-click on Lion SSD Base. Enter admin password. Confirm Repair.
 #
-# Does: copy this Mac's working display prefs onto Mac OS X Install ESD
-#       and lock Graphics Mode to 1024x768x32@60 (VGA-HDMI safe).
+# Does: remove the Graphics Mode Boot.plist that made Install ESD show
+#       the prohibitory sign, clear nvram Graphics Mode, re-bless ESD.
 # Does NOT: restore/erase any disk, set the clock, fetch over HTTP.
 # Does NOT: touch Lion SSD Base or start disk clone / MX500 as a target.
-# WITHDRAWN: 2016 clock, Bay 4 remirror, headless injector.
+# WITHDRAWN: 2016 clock, Bay 4 remirror, headless injector,
+#            Graphics Mode in Apple Boot.plist (causes no-sign on 1,1 EFI).
 #
 # After success: Restart, hold Option, click Mac OS X Install ESD.
 
@@ -18,7 +19,6 @@ export PATH
 umask 022
 
 LION_VOLS="${LION_VOLS:-/Volumes}"
-LION_PREFS="${LION_PREFS:-/Library/Preferences}"
 LION_SLEEP="${LION_SLEEP:-2}"
 
 SELF="$0"
@@ -72,7 +72,8 @@ uname -a
 say ""
 say "WITHDRAWN: 2016 clock workaround."
 say "WITHDRAWN: remirror / Bay 4 erase."
-say "This run: copy display prefs + lock 1024x768x32@60 on Install ESD (VGA-HDMI)."
+say "WITHDRAWN: Graphics Mode in Apple Boot.plist (no-sign on Mac Pro 1,1)."
+say "This run: delete that plist, clear nvram, re-bless Install ESD."
 say ""
 
 if ! sudo -v; then
@@ -103,7 +104,7 @@ say "===== $LION_VOLS ====="
 ls -la "$LION_VOLS" 2>/dev/null || true
 
 say ""
-say "===== 3. INSTALL ESD (already mirrored, do not erase) ====="
+say "===== 3. INSTALL ESD ====="
 ESD=""
 ESD_DEV=""
 ESD_NAME=""
@@ -164,31 +165,20 @@ echo "$ESD_NAME" | grep -qi "Lion SSD Base"
 if [ $? -eq 0 ]; then
   fail "ESD path is Lion SSD Base — refusing"
 fi
+if [ ! -f "$ESD/System/Library/CoreServices/boot.efi" ]; then
+  fail "boot.efi missing on ESD — not bootable"
+fi
+say "boot.efi present"
 
 say ""
 say "LOCKED ESD=$ESD"
 say "LOCKED ESD_DEV=$ESD_DEV"
 say "LOCKED ESD_NAME=$ESD_NAME"
-say "LOCKED ESD_PROTO=$ESD_PROTO"
-say "LOCKED ESD_MEDIA=$ESD_MEDIA"
-
-BYHOST=""
-if [ -d "$LION_PREFS/ByHost" ]; then
-  BYHOST="$LION_PREFS/ByHost"
-  say "BYHOST=$BYHOST"
-fi
-if [ -z "$BYHOST" ] && [ -d "$HOME/Library/Preferences/ByHost" ]; then
-  BYHOST="$HOME/Library/Preferences/ByHost"
-  say "BYHOST=$BYHOST"
-fi
-if [ -z "$BYHOST" ]; then
-  say "BYHOST=none (Graphics Mode lock only)"
-fi
 
 say ""
-say "===== 4. CONFIRM DISPLAY LOCK ====="
+say "===== 4. CONFIRM REPAIR ====="
 CONFIRM=`osascript -e "tell application \"Finder\"
-display dialog \"Copy this Mac's working display settings onto Mac OS X Install ESD and lock 1024x768x32@60 so VGA-HDMI can show the installer.
+display dialog \"Repair Mac OS X Install ESD boot (remove Graphics Mode plist that caused the no-sign, re-bless).
 
 ESD: $ESD_NAME
 DEV: $ESD_DEV
@@ -196,55 +186,43 @@ DEV: $ESD_DEV
 Will NOT erase any disk.
 Will NOT restore a disk.
 Will NOT change the clock.
-Will NOT touch Lion SSD Base or start disk clone.\" buttons {\"Cancel\",\"Apply\"} default button 2 with icon note
+Will NOT touch Lion SSD Base or start disk clone.\" buttons {\"Cancel\",\"Repair\"} default button 2 with icon note
 set pressed to button returned of result
 return pressed
 end tell" 2>/dev/null` || true
 say "dialog=$CONFIRM"
-if [ "$CONFIRM" != "Apply" ]; then
+if [ "$CONFIRM" != "Repair" ]; then
   fail "operator cancelled — no disk was erased"
 fi
-say "operator confirmed Apply"
+say "operator confirmed Repair"
 
 say ""
-say "===== 5. COPY DISPLAY PREFS ====="
-PREF_DIR="$ESD/Library/Preferences"
-if [ ! -d "$PREF_DIR" ]; then
-  sudo mkdir -p "$PREF_DIR" || fail "mkdir Preferences failed"
-fi
-if [ -n "$BYHOST" ]; then
-  sudo ditto "$BYHOST" "$PREF_DIR/ByHost" || fail "ditto ByHost failed"
-  say "ditto ByHost OK"
-  ls -la "$PREF_DIR/ByHost" 2>/dev/null || true
+say "===== 5. REMOVE GRAPHICS MODE ====="
+BOOTPLIST="$ESD/Library/Preferences/SystemConfiguration/com.apple.Boot.plist"
+if [ -f "$BOOTPLIST" ]; then
+  sudo rm -f "$BOOTPLIST" || fail "could not remove Boot.plist"
+  say "removed $BOOTPLIST"
 else
-  say "skip ditto ByHost — not present on 10.6"
+  say "no Boot.plist (ok)"
 fi
-if [ -f "$LION_PREFS/com.apple.windowserver.plist" ]; then
-  sudo ditto "$LION_PREFS/com.apple.windowserver.plist" "$PREF_DIR/com.apple.windowserver.plist" || true
-  say "ditto windowserver.plist OK"
-fi
-if [ -f "$HOME/Library/Preferences/com.apple.windowserver.plist" ]; then
-  sudo ditto "$HOME/Library/Preferences/com.apple.windowserver.plist" "$PREF_DIR/com.apple.windowserver.plist" || true
-  say "ditto user windowserver.plist OK"
-fi
+sudo nvram -d "Graphics Mode" 2>/dev/null || true
+say "nvram Graphics Mode cleared"
+nvram "Graphics Mode" 2>/dev/null || say "nvram Graphics Mode absent"
 
 say ""
-say "===== 6. GRAPHICS MODE 1024x768x32@60 ====="
-SC="$PREF_DIR/SystemConfiguration"
-if [ ! -d "$SC" ]; then
-  sudo mkdir -p "$SC" || fail "mkdir SystemConfiguration failed"
-fi
-sudo defaults write "$SC/com.apple.Boot" "Graphics Mode" -string "1024x768x32@60" || fail "defaults write Graphics Mode failed"
-say "Boot.plist Graphics Mode=1024x768x32@60"
-sudo nvram "Graphics Mode"="1024x768x32@60" || fail "nvram Graphics Mode failed"
-say "nvram Graphics Mode=1024x768x32@60"
-nvram "Graphics Mode" 2>/dev/null || true
+say "===== 6. BLESS ESD ====="
+CS="$ESD/System/Library/CoreServices"
+sudo bless --folder "$CS" --file "$CS/boot.efi" --label "Mac OS X Install ESD" 2>&1 || fail "bless failed"
+say "bless OK"
+sudo bless --info "$ESD" 2>&1 || true
 
 say ""
 say "===== 7. NEXT ====="
-say "Display lock applied. No disk was erased."
+say "ESD boot repaired. No disk was erased."
+say "Lion is NOT installed yet — Lion SSD Base is still Snow Leopard 10.6.8."
 say "Apple menu > Restart, hold Option, click Mac OS X Install ESD."
-say "If the HDMI box still says timing error: photograph it and stop."
+say "If the no-sign returns: photograph it and stop."
+say "If HDMI says timing error: photograph it and stop."
 say "Installer destination = start disk clone. Do not erase it."
 say "Do not touch Lion SSD Base."
 ) > "$REPORT" 2>&1
