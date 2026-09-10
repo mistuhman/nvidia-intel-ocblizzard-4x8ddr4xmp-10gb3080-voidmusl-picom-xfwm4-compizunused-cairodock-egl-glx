@@ -51,8 +51,10 @@ Cause re-attribution: the blocking cert expired 2016-02-14 (Apple thread 2505933
 earlier 2016 date test sat on the wrong side of expiry and excluded nothing; an in-era date
 (2013, accepted receipt 255062266 "Lion - August 2013 - Works") was NEVER tested. Wave L2 =
 sudo date 0801120013 + outer installer onto the MX500 volume, CLI OSInstall.mpkg bypass as the
-same-wave fallback, date re-set in installer Terminal after the mid-install reboot (dead
-CR2032 resets the clock to 2001 at every power cycle).
+same-wave fallback. Operator 2026-09-09c: the clock has NEVER reset - date/time are current
+and hold; the stale dead-CR2032 resets-to-2001 note (case-swap-macpro-daily-driver.md step 3)
+does not apply to the present machine, so there is NO post-reboot date re-set step; after the
+install the date is set forward again once, from the booted system.
 
 Photo receipt (operator photo, read by vision): Install Mac OS X Lion window with target
 `Lion SSD Base`, `About 3 minutes remaining`, Cancel button; modal dialog
