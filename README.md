@@ -22,7 +22,7 @@ Run in one pass, parallel where independent:
 
 1. Read `MASTER.md` in full. It is JSON context, not prose policy: workflow rules, brute doctrine, the `objective`, machines, constraints. Read `ToDo.md` for the operator's live gates.
 2. Gather as much context as possible before touching anything: every `docs/` file relevant to the objective, `git log`, and all previously returned target receipts. Report what was NOT read.
-3. Establish ground truth with `node tools/orient.ts orient` and `node tools/next-gate.ts`.
+3. Establish ground truth with `node tools/orient.ts orient` and `node tools/next-gate.ts`. Mac Pro Lion SSD pickup: also `node tools/lion-status.ts` (source `docs/lion-workflow.json`; prose `docs/lion-ssd-handoff.md`).
 4. Deploy bounded agents: one task, source set, hypothesis, or verification target per agent (`node tools/agent-deploy.ts --objective=...`). Brute first: exhaust free context and searches before any hardware action; merge only receipts.
 5. Commands go to the operator directly in CHAT as pasteable bash blocks. One command per line, console-safe (no chaining, no tricky redirects), root blocks start with `id -u`. No registry ceremony, no `?(name)` tokens. Operator pastes output back; agent reads it, quotes verdict, attributes cause, then proposes next single knob.
 6. Never send a second wave before the first wave's output arrives.
@@ -43,6 +43,8 @@ Live reversible overclocking campaign on the operator's physical Void Linux desk
 | Lacks | GPU, X server, ffmpeg, browser | nothing relevant |
 | Can | author, verify syntax, commit | execute, observe, judge |
 
+Second physical machine (keep-as-Mac): Mac Pro 1,1 / A1186, Snow Leopard 10.6.8 on Lion SSD Base, Arctic Fox 47.3. Lion-from-SSD goal, links, and nextAction: `docs/lion-ssd-handoff.md` / `node tools/lion-status.ts`.
+
 ## Workflow
 
 Agent ↔ operator reciprocity loop: pasteable command block out → operator runs on target and pastes output back → verdict quoted + cause attributed → next single knob. One wave at a time.
@@ -51,7 +53,8 @@ Agent ↔ operator reciprocity loop: pasteable command block out → operator ru
 
 - `MASTER.md` — JSON context: screening rule, chat workflow, brute doctrine, objective, machines, constraints.
 - `ToDo.md` — operator-directed live checklist (OC + storage gates); operator-owned.
-- `tools/` — TypeScript agent tools (`orient.ts`, `next-gate.ts`, `agent-deploy.ts`, `paste-proof.ts`, `block-lint.ts`, `pr-budget.ts`, `test-all.ts`, `web-scrape.ts`, `github-files.ts`, `recovery-research.ts`). Run with `node tools/<name>.ts`.
+- `tools/` — TypeScript agent tools (`orient.ts`, `next-gate.ts`, `agent-deploy.ts`, `paste-proof.ts`, `block-lint.ts`, `pr-budget.ts`, `test-all.ts`, `web-scrape.ts`, `github-files.ts`, `recovery-research.ts`, `lion-status.ts`, `lion-mirror-sl-test.ts`). Run with `node tools/<name>.ts`. `tools/lion-phone-agent.ts` is WITHDRAWN (stale 01a08a55 URLs) — do not run it to refresh links.
+- Lion Mac (Mac Pro 1,1 / 10.6.8): `docs/lion-ssd-handoff.md` + `docs/lion-workflow.json`. Helper `lion-mirror.command` / `lion-mirror.zip`. Arctic Fox: `da.gd/lzr` (current zip, SHA-pinned), `da.gd/lmz` (branch zip, cache 12h), `da.gd/lpg` (Aqua attach/Burn). Never `da.gd/lionfix` or `da.gd/lup`. Do not erase Lion SSD Base or start disk clone.
 - `tools/` GPU OC lab (test before applying): `gpu-oc-plan.ts` (ladder / sweep / console-safe blocks), `gpu-curve.ts` (undervolt = power-trim graph, ASCII + CSV + SVG), `gpu-bench-parse.ts` (dmon + Superposition + Geekbench receipts), `gpu-oc-verify.ts` (ADVANCE/HOLD/REVERT + GWE profile), model in `tools/lib/gpu-model.ts`. Guide: `docs/oc-3080-oc-lab.md`.
 - `ci/workflows/` — workflow sources (`scripts/install-github-workflows.sh` copies them to `.github/workflows/`; the agent's GitHub App cannot push that path): `oc-tools-ci.yml` (selftests, shellcheck, determinism, PR budget), `gpu-oc-lab.yml` (manual sweep + curve + pasteable blocks), `gpu-clock-feature-matrix.yml` (one job per knob class), `gpu-receipt-ingest.yml` (paste receipts, get a verdict, commit the ledger).
 - `tools/` DDR4 lab: `ram-oc-plan.ts` (XMP 3733 → 4000 MT/s ladder with risk bands, BIOS keying, validation suite, inverse), `ram-validate-parse.ts` (PASS/FAIL/UNPROVEN per gate), target runner `scripts/ram-validate`. Guide: `docs/oc-ddr4-4000-lab.md`.

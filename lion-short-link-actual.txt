@@ -1,10 +1,19 @@
-ONE LINK — type this in Arctic Fox on Snow Leopard
+LIVE Arctic Fox links (canonical: docs/lion-workflow.json)
+Print: node tools/lion-status.ts
 
-da.gd/lmz
+TYPE INTO ARCTIC FOX:
 
-Goes to lion-mirror.zip (one script: lion-mirror.command).
-Destination host: cdn.jsdelivr.net
-Fresh da.gd pages show a click-through once — continue, then Save.
+da.gd/lzr  current helper zip (SHA 7333b49 lion-mirror.zip, volume-root bless)
+da.gd/lpg  Aqua page: lmz download + native .txt attach + Burn (Burn hits lmz)
+da.gd/lmz  branch zip (write-once slug; jsDelivr branch cache 12h — may be stale)
 
-Do not use da.gd/lionfix (old multi-file pack).
-Do not curl (Snow Leopard curl is TLS 1.0; GitHub/jsDelivr need TLS 1.2).
+WITHDRAWN — do not type:
+
+da.gd/lionfix  still 01a08a55 lion-phone-debug-pack.zip (date-fix). write-once.
+da.gd/lup      dead e2b.app sandbox (Sandbox Not Found).
+
+da.gd slugs cannot be retargeted (400). New destination = new slug + update
+docs/lion-workflow.json.
+
+Job of the zip: one file lion-mirror.command (Repair ESD bless). No asr, no
+erase, no clock. Report ~/Desktop/lion-mirror.txt attach on lpg.

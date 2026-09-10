@@ -1,5 +1,9 @@
 # STATE.md — canonical machine facts
 
+**Mac Pro Lion SSD (live 2026-09-10, parallel to this OMEN file):**
+`docs/lion-ssd-handoff.md` + `node tools/lion-status.ts`. Do not use this OMEN
+STATE.md as Lion disk/boot truth.
+
 **Read this first, every session, before proposing anything.** It exists because
 I repeatedly re-derived facts that were already in a receipt and got them wrong.
 Regenerate the live half with `scripts/omen-omni.sh`, which writes the whole

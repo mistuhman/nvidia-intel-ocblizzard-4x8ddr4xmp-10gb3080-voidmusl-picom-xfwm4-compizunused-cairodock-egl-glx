@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 /**
+ * WITHDRAWN — do not run to refresh Arctic Fox links.
+ * Canonical Lion URLs / nextAction: docs/lion-workflow.json
+ * Print: node tools/lion-status.ts
+ * Handoff: docs/lion-ssd-handoff.md
+ * This generator still emits 01a08a55 da.gd/mOycI / lion-phone-debug-pack URLs.
+ *
  * lion-phone-agent.ts — TypeScript agent factory for Lion SSD boot fix
  * 
  * Purpose: produce bounded agents each time that have jobs to make scripts

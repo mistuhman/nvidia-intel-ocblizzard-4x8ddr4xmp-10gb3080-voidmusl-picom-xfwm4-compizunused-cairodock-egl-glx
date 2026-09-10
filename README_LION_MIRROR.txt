@@ -1,13 +1,25 @@
 Mac Pro 1,1 — one script (Snow Leopard 10.6.8)
 
 Zip contains ONLY lion-mirror.command (tested: dash -n, bash --posix -n,
-mocked asr/bless/osascript, refuse MX500 / boot / disk-image / cancel).
+mocked bless/nvram/osascript). No asr. No erase. No clock.
 
-At the gray picker: click Lion SSD Base. Do not click EFI Boot or Mac OS X.
+Current job: Repair ESD boot — remove Graphics Mode Boot.plist, nvram -d
+Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi
+--label Mac OS X Install ESD. Confirm button: Repair.
 
-On the desktop: unzip, double-click lion-mirror.command, admin password,
-confirm Erase Bay 4 only if dest is the installer disk (not the 1 TB SSD).
-Report: ~/Desktop/lion-mirror.txt
+Arctic Fox:
+  da.gd/lzr  current zip (SHA-pinned)
+  da.gd/lpg  Aqua page: attach ~/Desktop/lion-mirror.txt + Burn (Burn -> lmz)
+  da.gd/lmz  branch zip (jsDelivr cache 12h)
 
-Then Restart, hold Option, click Mac OS X Install ESD.
-Install onto start disk clone. Do not erase it. Do not replace drives yet.
+Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b).
+
+On Lion SSD Base: unzip, double-click lion-mirror.command, admin password,
+Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lpg.
+
+Then Restart, hold Option, click Mac OS X Install ESD only.
+Install onto start disk clone. Do not erase it. Do not erase Lion SSD Base.
+
+Canonical links + nextAction: docs/lion-workflow.json
+Print: node tools/lion-status.ts
+Handoff: docs/lion-ssd-handoff.md

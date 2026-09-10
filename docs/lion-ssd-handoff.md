@@ -1,0 +1,69 @@
+# Lion SSD handoff — Mac Pro 1,1
+
+**New chat pickup.** First message `README.md` still bootstraps the whole repo. Then run:
+
+```
+node tools/orient.ts orient
+node tools/lion-status.ts
+node tools/lion-mirror-sl-test.ts
+```
+
+Canonical machine-readable state (links, volumes, next action, withdrawn slugs):
+
+`docs/lion-workflow.json`
+
+`node tools/lion-status.ts` prints it. `node tools/lion-status.ts selftest` checks helper files, bless shape, and that `da.gd/lionfix` stays withdrawn. Update the JSON when a link, bless, volume node, or nextAction changes — do not leave live URLs only in chat.
+
+Longer receipts: `docs/session-2026-09-09-lion-ssd-install.md` (clone + first installer failures). This file is the 2026-09-10 continuation.
+
+## Goal
+
+Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. Do not replace Bay 1 until proven.
+
+## Where we left off (2026-09-10 17:40 PDT)
+
+- Working OS is still **Snow Leopard 10.6.8** on **Lion SSD Base** (Startup Disk, Bay 1).
+- Bay 4 **Mac OS X Install ESD** is an asr mirror of inner `InstallESD.dmg` (4.4G). `OSInstall.mpkg` + both `boot.efi` present.
+- Option-boot of ESD **did** reach the installer GUI once, then VGA→HDMI **timing error**.
+- `Graphics Mode` in Apple `com.apple.Boot.plist` caused the **prohibitory sign**; firmware fell through to Lion SSD Base.
+- Last successful helper log blessed **volume-root** `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078) — same as the GUI-reaching asr bless. CoreServices `boot.efi` is Jul 29 2012; do not bless that file.
+- Operator then: launched 10.6 on Lion SSD Base, selected ESD. **Photo of that boot result was not returned** (docs/PR request interrupted). Next physical action is a photograph of the current screen.
+
+## Live links (Arctic Fox)
+
+| Type | Type this | Job |
+|---|---|---|
+| Current zip | `da.gd/lzr` | SHA-pinned `lion-mirror.zip` (volume-root bless). Prefer this if Burn/lmz looks stale. |
+| Branch zip | `da.gd/lmz` | Same zip on branch. Write-once slug. jsDelivr branch cache 12h. |
+| Attach page | `da.gd/lpg` | htmlpreview of `lion.html`: lmz link, Mac Choose File `.txt`, Burn (Burn → lmz). |
+| Logs | webhook from lpg attach | `~/Desktop/lion-mirror.txt` |
+
+**Never:** `da.gd/lionfix` (old date-fix pack), `da.gd/lup` (dead e2b), tinyurl.
+
+da.gd slugs are write-once. To change a destination, add a new slug and update `docs/lion-workflow.json`.
+
+## Helper
+
+One file in the zip: `lion-mirror.command` (`#!/bin/sh`, Snow Leopard). Double-click on Lion SSD Base. Button **Repair**. Writes `~/Desktop/lion-mirror.txt`. Attach on `da.gd/lpg`.
+
+Does **not** asr, erase, or set the clock.
+
+Tests: `node tools/lion-mirror-sl-test.ts` (agents A syntax / B mocked 10.6 / Z one-file exec zip).
+
+## Do not
+
+Erase Lion SSD Base or start disk clone. Remirror Bay 4. Date to 2015/2016. `lion-installer-date-fix.command`. Power APEX. Headless injector / boot-audit double-click. Rewrite `ToDo.md`. jsDelivr HTML pages (served `text/plain`). e2b.app from the Mac.
+
+## Tools map
+
+| Tool | Repro command |
+|---|---|
+| Lion workflow | `node tools/lion-status.ts` |
+| Lion workflow gate | `node tools/lion-status.ts selftest` |
+| Helper SL tests | `node tools/lion-mirror-sl-test.ts` |
+| Full gate | `node tools/test-all.ts` |
+| Stale phone pack generator | `tools/lion-phone-agent.ts` — **do not run to refresh links** |
+
+## Operator rules that still bind
+
+One physical action per Mac message. Arctic Fox + `.command`, not Terminal, for this Lion path. Keep-as-Mac (transplant closed).
