@@ -227,3 +227,8 @@ Photo receipt:
 - `/dev/disk2s2` mounted as `Lion SSD Base` (10.6.8 running system).
 - Cause of prior paste issue: `sudo` prompted for Password inside the heredoc stream.
 - Fix: `lion.command` asks for `sudo -v` at line 1, targets `/Volumes/Mac OS X Install ESD` directly, and writes triple hooks.
+
+## 2026-09-09t Startup Manager label clarification (session 01a0889a)
+
+Photo receipt of Startup Manager showing three boot options: `Lion SSD Base`, `EFI Boot`, `Mac OS X`.
+Clarification: The Apple Startup Manager renders the `.disk_label` embedded in the volume root. For all Apple InstallESD images, this label is `Mac OS X`. The third drive icon labeled `Mac OS X` is the injected Lion installer partition on `/dev/disk1s2`.
