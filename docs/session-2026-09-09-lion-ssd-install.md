@@ -245,3 +245,11 @@ Technical answer:
 1. Normal Option-boot does not alter NVRAM `efi-boot-device`.
 2. However, when the OS X `installer` tool finishes installing to a target volume (`start disk clone`), it automatically executes `bless` on the target volume to set it as the primary boot disk.
 3. If the installation succeeded, the Mac Pro may boot directly into Mac OS X 10.7 Lion Setup Assistant on the Crucial MX500 SSD. If it booted into 10.6 Snow Leopard, `/lion-cli.log` holds the receipt.
+
+## 2026-09-09w log verification & ESD environment audit (session 01a0889a)
+
+Operator report: `/lion-cli.log` does not exist; Mac Pro booted into `Lion SSD Base` (10.6.8).
+Diagnostics wave shipped:
+1. Verify if `arena-lion.sh` exists on `/Volumes/Mac OS X Install ESD`.
+2. Check for log file on all mounted volumes (`/Volumes/*/lion-cli.log`).
+3. Read the early-boot script `/Volumes/Mac OS X Install ESD/etc/rc.cdrom` to verify boot hooks.
