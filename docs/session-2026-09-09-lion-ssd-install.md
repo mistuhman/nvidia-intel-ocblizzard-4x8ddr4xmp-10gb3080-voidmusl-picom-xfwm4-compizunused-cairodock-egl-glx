@@ -91,6 +91,17 @@ outside the installer environment: DU-restore InstallESD.dmg onto the Untitled v
 installer -pkg OSInstall.mpkg -target /Volumes/start* -verboseR (SE 216730 receipt pattern).
 PR #72 opened 2026-09-09 from arena/01a0889a for this session's receipts and waves.
 
+## 2026-09-09f Branch A first attempt (session 01a0889a)
+
+Photo receipt: hdiutil attach verified ALL InstallESD CRC32s (overall $D61C13C2) - image
+intact, corruption class CLOSED; mounted /Volumes/Mac OS X Install ESD (disk3). sudo warned
+timestamp too far in the future (2026 ticket vs live 2013 clock) - clock still 2013.
+installer CLI rejected .../System/Installation/Packages/OSInstall.mpkg as invalid: on the RAW
+mounted ESD the packages live at top-level /Packages (the macrumors 2355618 script copies them
+into System/Installation only when BUILDING media); unmatched glob passed literally.
+L4 = sudo installer -pkg /Volumes/Mac*ESD/Packages/OSInstall.mpkg -target /Volumes/start* -verboseR;
+bless follow-up queued if the install succeeds but does not boot; Branch B pre-approved.
+
 Photo receipt: Terminal shows `sudo date 0801120013` + date output ending `DT 2013` +
 `open /Applications/Install*Lion.app`; installer shows Mac OS X Lion "Preparing to install.
 Your computer will restart automatically." with progress bar and NO verification dialog -
