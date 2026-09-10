@@ -102,6 +102,17 @@ into System/Installation only when BUILDING media); unmatched glob passed litera
 L4 = sudo installer -pkg /Volumes/Mac*ESD/Packages/OSInstall.mpkg -target /Volumes/start* -verboseR;
 bless follow-up queued if the install succeeds but does not boot; Branch B pre-approved.
 
+## 2026-09-09g Branch A closed, Branch B live (session 01a0889a)
+
+Operator receipt: "command line installs of mac os x are not supported on systems older than
+10.7" - the 10.6 host installer refuses OS mpkgs; the SE/macrumors CLI receipts were run from
+INSIDE the 10.7 installer environment. Branch A CLOSED. Branch B (pre-approved): DU restore of
+the mounted+verified ESD volume onto Untitled (only Untitled erased), Option-boot it, env
+Terminal: date 0801120013 + bare installer -pkg /Volumes/Mac*ESD/Packages/OSInstall.mpkg
+-target /Volumes/start* -verboseR; then Option-boot the MX500 result; date forward. If the env
+CLI still raises the verifier notice, next class = archive.org prebuilt installed-Lion image
+restored block-level (no installer at all).
+
 Photo receipt: Terminal shows `sudo date 0801120013` + date output ending `DT 2013` +
 `open /Applications/Install*Lion.app`; installer shows Mac OS X Lion "Preparing to install.
 Your computer will restart automatically." with progress bar and NO verification dialog -
