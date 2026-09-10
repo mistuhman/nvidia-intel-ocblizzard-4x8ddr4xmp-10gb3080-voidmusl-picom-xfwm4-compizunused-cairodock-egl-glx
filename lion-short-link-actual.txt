@@ -1,31 +1,34 @@
-Lion SSD Fix — SHORT LINK FOR ARCTIC FOX (phone-typeable)
+Lion SSD Fix — Shortened links for Arctic Fox 47.3 mac32 (NO tinyurl, fails on Arctic)
 
-DIRECT FILE MIRROR — WORKS ON ANY BROWSER + INTERNET (phone, Arctic Fox 47.3, TenSixFox):
-This is the live preview server from this session — direct download, no GitHub TLS issues:
+PRIMARY — da.gd (open-source, minimal HTML, works on Firefox 45 / Arctic Fox):
+https://da.gd/mOycI  -> raw GitHub lion-ssd-lion-boot-fix.zip (11K)
+https://da.gd/XeHlN  -> jsDelivr CDN fix (11K, faster)
+https://da.gd/gOvc2 -> jsDelivr lion-phone-debug-pack.zip (19K, full phone tools)
 
-https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/zip
-https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/
+BACKUP — clck.ru (also simple, works on old browsers):
+https://clck.ru/3Vjn94 -> raw GitHub
+https://clck.ru/3VjnBe -> jsDelivr
 
-TAP IN ARCTIC FOX:
-Open Arctic Fox 47.3 mac32 → address bar → paste https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/zip → Enter → Save to ~/Downloads
-
-PERMANENT MIRRORS (if live preview expires after session):
-
-1. Raw GitHub (works in Arctic Fox TLS 1.2):
+LONG PERMANENT (if shortener fails):
+https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
 https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
 
-2. jsDelivr CDN (shorter, faster on phone):
-https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip
+TYPE FROM PHONE INTO MAC (Arctic Fox address bar):
+https://da.gd/mOycI
 
-ULTRA-SHORT (create on phone in 10s):
-- On phone, open https://is.gd → paste long URL → Create → you get https://is.gd/XXXXXX
-- Example: is.gd/lionSSDfix → paste raw URL → https://is.gd/lionSSDfix
-- Then type https://is.gd/lionSSDfix in Arctic Fox → direct download
+One-liner Terminal (type from phone into Mac Terminal, no browser):
+curl -L -o ~/Downloads/fix.zip https://da.gd/mOycI && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
 
-PHONE DEBUG LOG RETURN:
-- After running lion-ssd-lion-boot-fix.command, double-click lion-log-upload.command
-- It prints https://termbin.com/xxxx
-- Open that URL on phone → copy → paste in Arena chat
-- OR open https://8000-ibl4qjyh4hwsu23wxyi8r.e2b.app/ → paste log in textarea → Upload → copy returned URL
+Phone debug log return (easy from phone):
+- After running lion-ssd-lion-boot-fix.command, run lion-log-upload.command
+- It prints https://termbin.com/xxxx — open that URL on phone, copy, paste in Arena chat
+- Or open live mirror if still running: POST log to /upload
 
-All artifacts are executable on any machine with browser+internet.
+All scripts executable on any machine with browser+internet:
+- lion-phone.html — open in any browser, tap download (uses da.gd)
+- lion-phone-download.sh — sh lion-phone-download.sh on any Unix
+- lion-phone-download.command — double-click on Snow Leopard
+- lion-log-upload.command — double-click to upload logs
+
+Generated: 2026-09-10T08:54:02.876Z
+Note: e2b.app sandbox links expire (Sandbox Not Found) — use da.gd permanent links above.

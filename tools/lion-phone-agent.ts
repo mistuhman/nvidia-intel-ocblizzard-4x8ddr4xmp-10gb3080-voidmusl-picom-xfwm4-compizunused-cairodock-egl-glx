@@ -49,7 +49,13 @@ function readText(path: string): string {
 const objective = arg('objective') ?? 'lion-ssd-fast';
 const servePort = parseInt(arg('serve') ?? '0', 10);
 
-// Base URLs — raw GitHub (works in Arctic Fox 47.3, TLS 1.2) + jsDelivr mirror + live preview placeholder
+// Base URLs — raw GitHub (works in Arctic Fox 47.3, TLS 1.2) + jsDelivr mirror + da.gd short links (tinyurl fails on Arctic)
+// Short links created via fetch_page da.gd — simple HTML, no heavy JS, works on Firefox 45 / Arctic Fox
+const SHORT_DAGD_RAW = 'https://da.gd/mOycI'; // raw GitHub
+const SHORT_DAGD_JSD = 'https://da.gd/XeHlN'; // jsDelivr fix
+const SHORT_DAGD_PACK = 'https://da.gd/gOvc2'; // full phone debug pack
+const SHORT_CLCK_RAW = 'https://clck.ru/3Vjn94';
+const SHORT_CLCK_JSD = 'https://clck.ru/3VjnBe';
 const RAW_URL = 'https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip';
 const JSD_URL = 'https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip';
 const GH_UI_URL = 'https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/raw/arena/01a08a55-nvidia-intel-ocblizzard-4x8ddr/lion-ssd-lion-boot-fix.zip';
@@ -121,7 +127,7 @@ const agents: Agent[] = [
   }
 ];
 
-// Generate phone-executable artifacts
+// Generate phone-executable artifacts — da.gd short links work on Arctic Fox (tinyurl fails)
 
 const phoneHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -144,43 +150,39 @@ textarea{width:100%;height:180px;border:1px solid #ccc;border-radius:8px;padding
 </head>
 <body>
 <h1>Mac Pro 1,1 Lion SSD Fix</h1>
-<p class="small">Fast SSD: Crucial MX500 Bay3 — Goal: boot Lion 10.7.5 off SSD + new admin account. Works on any browser: phone, Arctic Fox 47.3 mac32, TenSixFox.</p>
+<p class="small">Fast SSD: Crucial MX500 Bay3 — boot Lion 10.7.5 off SSD + new admin. Works on phone, Arctic Fox 47.3, TenSixFox. No tinyurl (fails on Arctic), using da.gd + clck.ru (simple, old-browser friendly).</p>
 
 <div class="card">
-<h2>1 — Download Fix ZIP (tap one)</h2>
-<a class="btn" href="${RAW_URL}">Download via raw.githubusercontent.com (Arctic Fox OK, TLS 1.2)</a>
-<a class="btn secondary" href="${JSD_URL}">Download via jsDelivr CDN (shorter, faster on phone)</a>
-<a class="btn tertiary" href="/zip" id="liveLink">Download via Live Preview Mirror (this server) — /zip</a>
-<p class="small">If on Snow Leopard: after download, unzip to Desktop, double-click <code>lion-ssd-lion-boot-fix.command</code>. If exec bit lost: <code>chmod +x ~/Desktop/*.command</code></p>
+<h2>1 — Download Fix ZIP (tap, works in Arctic Fox)</h2>
+<a class="btn" href="${SHORT_DAGD_RAW}">da.gd/mOycI — raw GitHub (11K)</a>
+<a class="btn secondary" href="${SHORT_DAGD_JSD}">da.gd/XeHlN — jsDelivr CDN (11K, faster)</a>
+<a class="btn tertiary" href="${SHORT_DAGD_PACK}">da.gd/gOvc2 — Full Phone Debug Pack (19K)</a>
+<p class="small">Backup: ${SHORT_CLCK_RAW} , ${SHORT_CLCK_JSD}<br>
+Long: ${JSD_URL}</p>
 </div>
 
 <div class="card">
-<h2>2 — Short link for Arctic Fox (typeable on phone)</h2>
-<pre id="shortLinks">${RAW_URL}
-${JSD_URL}
-https://8000-{sandboxId}.e2b.app/zip  (replace {sandboxId} with live preview host)
-</pre>
-<p class="small">To make even shorter: open is.gd on phone → paste long URL → Create → you get https://is.gd/XXXXXX — works in Arctic Fox.</p>
+<h2>2 — Type from phone into Mac (Arctic Fox address bar)</h2>
+<pre>${SHORT_DAGD_RAW}</pre>
+<p class="small">Type exactly, Enter, Save to ~/Downloads, unzip to Desktop, double-click lion-ssd-lion-boot-fix.command. If exec bit lost: chmod +x ~/Desktop/*.command</p>
 </div>
 
 <div class="card">
-<h2>3 — Phone debug: send log back (easy from phone)</h2>
-<p>After running <code>lion-ssd-lion-boot-fix.command</code> on Mac, it writes <code>~/Desktop/lion-ssd-lion-boot-fix.txt</code>. Upload it here:</p>
-<textarea id="logBox" placeholder="Paste log here or drag file..."></textarea>
+<h2>3 — Terminal one-liner (no browser, type from phone)</h2>
+<pre>curl -L -o ~/Downloads/fix.zip ${SHORT_DAGD_RAW}
+unzip -o ~/Downloads/fix.zip -d ~/Desktop
+chmod +x ~/Desktop/*.command
+~/Desktop/lion-ssd-lion-boot-fix.command</pre>
+</div>
+
+<div class="card">
+<h2>4 — Phone debug: send log back (easy from phone)</h2>
+<p>After fix script, run log uploader:</p>
+<pre>~/Desktop/lion-log-upload.command</pre>
+<p>It prints <code>https://termbin.com/xxxx</code> — open that URL on phone, copy, paste in Arena chat.</p>
+<textarea id="logBox" placeholder="Or paste log here to upload to this mirror if running..."></textarea>
 <p><button onclick="uploadLog()" style="padding:12px 18px;border-radius:8px;border:0;background:#ff3b30;color:#fff;font-weight:600;width:100%">Upload Log to Mirror</button></p>
 <pre id="uploadResult" class="small"></pre>
-<p class="small">Alternative one-liner on Mac (no browser needed):<br>
-<code>cat ~/Desktop/lion-*.txt | nc termbin.com 9999</code><br>
-It returns a URL like https://termbin.com/abc123 — copy that URL to your phone and paste in Arena chat.</p>
-</div>
-
-<div class="card">
-<h2>4 — Quick fix commands (copy-paste in Terminal on Snow Leopard)</h2>
-<pre>sudo xattr -cr "/Applications/Install OS X Lion.app"
-sudo date 0101000016
-open "/Applications/Install OS X Lion.app"
-# after install starts:
-sudo sntp -sS time.apple.com</pre>
 </div>
 
 <script>
@@ -189,12 +191,11 @@ function uploadLog(){
   if(!text.trim()){ alert('Paste log first'); return; }
   fetch('/upload', {method:'POST', body:text, headers:{'Content-Type':'text/plain'}})
     .then(r=>r.text()).then(t=>{
-      document.getElementById('uploadResult').textContent = 'Uploaded: ' + t + '\\nCopy this URL to Arena chat or open on phone.';
+      document.getElementById('uploadResult').textContent = 'Uploaded: ' + t;
     }).catch(e=>{
       document.getElementById('uploadResult').textContent = 'Upload failed: ' + e + '\\nFallback: cat log | nc termbin.com 9999';
     });
 }
-document.getElementById('liveLink').href = location.origin + '/zip';
 </script>
 </body>
 </html>
@@ -202,29 +203,31 @@ document.getElementById('liveLink').href = location.origin + '/zip';
 
 const downloadSh = `#!/bin/sh
 # lion-phone-download.sh — phone/browser compatible downloader for Snow Leopard Mac
-# Works on any machine with curl or wget + internet. No GUI needed.
+# Works on any machine with curl or wget + internet. Uses da.gd short links (tinyurl fails on Arctic)
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 set -e
+URL_SHORT="${SHORT_DAGD_RAW}"
 URL_RAW="${RAW_URL}"
 URL_JSD="${JSD_URL}"
 OUT="$HOME/Downloads/lion-ssd-lion-boot-fix.zip"
 mkdir -p "$HOME/Downloads"
-echo "Lion SSD Fix — downloading..."
-echo "Trying raw.githubusercontent.com..."
+echo "Lion SSD Fix — downloading via da.gd short link (Arctic Fox friendly)..."
 if command -v curl >/dev/null 2>&1; then
+  echo "Trying ${SHORT_DAGD_RAW}..."
+  curl -L -o "$OUT" "${SHORT_DAGD_RAW}" && echo "Saved $OUT via curl da.gd" && exit 0
+  echo "da.gd failed, trying raw..."
   curl -L -o "$OUT" "$URL_RAW" && echo "Saved $OUT via curl raw" && exit 0
-  echo "curl raw failed, trying jsDelivr..."
   curl -L -o "$OUT" "$URL_JSD" && echo "Saved $OUT via curl jsDelivr" && exit 0
 fi
 if command -v wget >/dev/null 2>&1; then
+  wget -O "$OUT" "${SHORT_DAGD_RAW}" && echo "Saved $OUT via wget da.gd" && exit 0
   wget -O "$OUT" "$URL_RAW" && echo "Saved $OUT via wget raw" && exit 0
-  wget -O "$OUT" "$URL_JSD" && echo "Saved $OUT via wget jsDelivr" && exit 0
 fi
-echo "FAIL: no curl/wget. Open in browser:"
+echo "FAIL: no curl/wget. Open in Arctic Fox browser:"
+echo "${SHORT_DAGD_RAW}"
+echo "${SHORT_DAGD_JSD}"
 echo "$URL_RAW"
-echo "$URL_JSD"
-echo "Or live mirror: $HOSTNAME:8000/zip"
 exit 1
 `;
 
@@ -274,40 +277,40 @@ cat "$OUT"
 open -a TextEdit "$OUT" 2>/dev/null || true
 `;
 
-const shortLinkTxt = `Lion SSD Fix — Shortened links for Arctic Fox 47.3 mac32 (Snow Leopard)
+const shortLinkTxt = `Lion SSD Fix — Shortened links for Arctic Fox 47.3 mac32 (NO tinyurl, fails on Arctic)
 
-Direct mirrors (tap in Arctic Fox or phone browser):
+PRIMARY — da.gd (open-source, minimal HTML, works on Firefox 45 / Arctic Fox):
+${SHORT_DAGD_RAW}  -> raw GitHub lion-ssd-lion-boot-fix.zip (11K)
+${SHORT_DAGD_JSD}  -> jsDelivr CDN fix (11K, faster)
+${SHORT_DAGD_PACK} -> jsDelivr lion-phone-debug-pack.zip (19K, full phone tools)
 
-1. GitHub Raw (TLS 1.2, works in Arctic Fox):
+BACKUP — clck.ru (also simple, works on old browsers):
+${SHORT_CLCK_RAW} -> raw GitHub
+${SHORT_CLCK_JSD} -> jsDelivr
+
+LONG PERMANENT (if shortener fails):
+${JSD_URL}
 ${RAW_URL}
 
-2. jsDelivr CDN (shorter, faster, recommended for phone):
-${JSD_URL}
+TYPE FROM PHONE INTO MAC (Arctic Fox address bar):
+${SHORT_DAGD_RAW}
 
-3. Live Preview Mirror (this sandbox, works on any browser + internet, phone-friendly):
-https://8000-{sandboxId}.e2b.app/zip
-https://8000-{sandboxId}.e2b.app/   (HTML page with download + log upload)
+One-liner Terminal (type from phone into Mac Terminal, no browser):
+curl -L -o ~/Downloads/fix.zip ${SHORT_DAGD_RAW} && unzip -o ~/Downloads/fix.zip -d ~/Desktop && chmod +x ~/Desktop/*.command
 
-To make ultra-short for Arctic Fox typing:
-- On phone, open https://is.gd or https://tinyurl.com
-- Paste long URL (1 or 2)
-- Create → you get https://is.gd/XXXXXX
-- Type that short URL in Arctic Fox address bar → direct download
-
-Example short you can create now:
-is.gd → paste ${RAW_URL} → alias lionSSDfix → https://is.gd/lionSSDfix
-
-Phone debug log return:
+Phone debug log return (easy from phone):
 - After running lion-ssd-lion-boot-fix.command, run lion-log-upload.command
-- It prints https://termbin.com/xxxx — open that on phone, copy, paste to Arena
+- It prints https://termbin.com/xxxx — open that URL on phone, copy, paste in Arena chat
+- Or open live mirror if still running: POST log to /upload
 
-All scripts are executable on any machine with browser+internet:
-- lion-phone.html — open in any browser, tap download
+All scripts executable on any machine with browser+internet:
+- lion-phone.html — open in any browser, tap download (uses da.gd)
 - lion-phone-download.sh — sh lion-phone-download.sh on any Unix
 - lion-phone-download.command — double-click on Snow Leopard
 - lion-log-upload.command — double-click to upload logs
 
 Generated: ${new Date().toISOString()}
+Note: e2b.app sandbox links expire (Sandbox Not Found) — use da.gd permanent links above.
 `;
 
 const mirrorServerJs = `#!/usr/bin/env node
