@@ -218,3 +218,12 @@ Root cause attribution:
    - Partition-scanning mount loop for 10.6.
    - Triple execution hooks on target ESD: LaunchDaemon (`org.arena.lion-autoinstall.plist`), `/etc/rc.local`, and `/etc/rc.cdrom` append.
    - Dual log fallback: writes to `/Volumes/Lion SSD Base/lion-cli.log` and copies to `/Volumes/start disk clone/lion-cli.log`.
+
+## 2026-09-09s volume confirmed on /dev/disk1s2 & up-front sudo (session 01a0889a)
+
+Photo receipt:
+- `/dev/disk0s2` mounted as `start disk clone` (Crucial MX500 target SSD).
+- `/dev/disk1s2` mounted as `Mac OS X Install ESD` (995 GB partition with `Install Mac OS X Lion.app` and `Packages`).
+- `/dev/disk2s2` mounted as `Lion SSD Base` (10.6.8 running system).
+- Cause of prior paste issue: `sudo` prompted for Password inside the heredoc stream.
+- Fix: `lion.command` asks for `sudo -v` at line 1, targets `/Volumes/Mac OS X Install ESD` directly, and writes triple hooks.
