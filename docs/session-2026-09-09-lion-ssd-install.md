@@ -89,6 +89,7 @@ from the running 10.6.8, targeting the MX500 volume directly. Branch B if the CL
 outside the installer environment: DU-restore InstallESD.dmg onto the Untitled volume
 (only Untitled erased), Option-boot it, env Terminal: date 0801120013 + plain
 installer -pkg OSInstall.mpkg -target /Volumes/start* -verboseR (SE 216730 receipt pattern).
+PR #72 opened 2026-09-09 from arena/01a0889a for this session's receipts and waves.
 
 Photo receipt: Terminal shows `sudo date 0801120013` + date output ending `DT 2013` +
 `open /Applications/Install*Lion.app`; installer shows Mac OS X Lion "Preparing to install.
