@@ -165,3 +165,13 @@ Fix delivered:
 2. Short URL `da.gd/ytW5F` (11 characters) created pointing directly to `lion.command`.
 3. Fallback click route: `github.com/mistuhman` -> repository -> `lion.command` -> Raw.
 4. Execution flow unchanged: save to Desktop, double-click (or `bash ~/Desktop/lion.command`), reboot to "Mac OS X" blind via Option key, auto-reboot to 10.6, verify `/Volumes/Lion SSD Base/lion-cli.log`.
+
+## 2026-09-09l mountAll & unmounted volume fix (session 01a0889a)
+
+Photo receipt of Terminal running `lion.command`:
+1. `diskutil: did not recognize verb "mountAll"` -> 10.6 `diskutil` binary does not support `mountAll`.
+2. `/Volumes` only showed `Lion SSD Base`, `firefoxos`, `start disk clone` because the restored ESD partition on the second drive was unmounted.
+3. Fix implemented in `lion.command`:
+   - Iterative partition mount: `for d in /dev/disk[0-9]*; do diskutil mount "$d"; done`.
+   - Dynamic ESD finder: scans `/Volumes/*` for `OSInstall.mpkg` rather than assuming `/Volumes/Mac*`.
+   - Same resilient loop inside the injected headless `arena-lion.sh` payload.
