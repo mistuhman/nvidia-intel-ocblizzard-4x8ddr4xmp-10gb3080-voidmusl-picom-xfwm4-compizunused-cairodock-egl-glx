@@ -1,24 +1,23 @@
 LION-SSD | gate 1 of 1 | relay today's Repair report, then stop
 
-STATE: PR #76 and #77 merged to main. The relay page, both zips, the imaging tool
-and every art receipt are on main. If this box shows text, the page reaches the
-repo and nothing on the Mac has to be typed again.
+STATE: current session branch carries the reproducible relay page and bundle.
+Type only the short da.gd links below from the phone into Arctic Fox; never use
+TinyURL, da.gd/lmz, or da.gd/lpg for this session.
 
 DO NOW (clicks only):
-1. Open the page (bookmark it or use the phone-minted da.gd slug).
-2. Click Burn. It fetches lion-mirror2.zip pinned to tag lion-relay-1, which is
-   always moved to the newest relay build. Either zip name is byte-identical.
-   The zip holds lion-mirror.command (exec bit) and lion.html (this page).
-3. Unzip on the Desktop, double-click lion.html so the page also works offline.
+1. Type da.gd/lionrelay into Arctic Fox. It opens the current relay page.
+2. The page's Burn button goes to da.gd/lionzip. If downloading directly, type
+   da.gd/lionzip; it contains lion-mirror.command and lion.html.
+3. If you downloaded the bundle, unzip on the Desktop and double-click lion.html
+   so the page also works offline.
 4. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
-   as text/plain, the same verdict lines as a ?log= query, and the file as before.
+   as text/plain, the same verdict lines as a query, and the file as before.
 5. Reply here with one word: sent
 
-WHY THE TAG AND NOT A BRANCH: jsDelivr returns HTTP 500 for @main on this repo and
-caches a branch path for ~12h while ignoring cache-buster query strings at the edge.
-A tag ref resolves instantly, so the bundle link is stable. The Commands panel above
-reads raw.githubusercontent instead (branch first, then main, ~5 min max-age), which
-is why this text can change without waiting on any cache.
+WHY THESE LINKS: da.gd slugs are write-once and the exact destinations are recorded
+in docs/lion-workflow.json. node tools/lion-status.ts prints them; its selftest
+checks both short links and rejects TinyURL. The page itself is carried by the
+current branch so the Commands panel needs no typed long URL.
 
 IN THE INBOX BUT UNREADABLE BY THE OLD PAGE'S DESIGN:
 14:02 7199B, 14:25 4185B, 14:32 4185B, 14:33 7564B, 14:46 7564B, 14:48 4826B,

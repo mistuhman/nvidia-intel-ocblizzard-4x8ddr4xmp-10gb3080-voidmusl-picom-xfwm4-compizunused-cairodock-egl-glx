@@ -11,7 +11,9 @@
         "links": {
             "currentZip": "https://da.gd/lzr",
             "branchZip": "https://da.gd/lmz",
-            "attachPage": "https://da.gd/lpg"
+            "attachPage": "https://da.gd/lpg",
+            "phonePage": "https://da.gd/lionrelay",
+            "phoneZip": "https://da.gd/lionzip"
         },
         "never": [
             "https://da.gd/lionfix",
@@ -21,11 +23,11 @@
         ],
         "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
         "nextAction": "see docs/lion-workflow.json nextAction (Burn + logs wave)",
-        "linkCheck": "2026-09-10: lzr and lmz serve byte-identical zip (blob 660617a1, 2600 bytes) so either works; da.gd is TLS-filtered from the sandbox and the webhook inbox is not machine-readable from here, so logs return by chat paste-back.",
+        "linkCheck": "2026-09-11: current phone links da.gd/lionrelay (page) and da.gd/lionzip (bundle) were minted through the da.gd page-fetch route and verified with each slug's + coshorten destination. Current-session zips are byte-identical git blob cec911146c3dc99b755e1f8ebcb7f33e230fdb3e. Legacy lzr/lmz/lpg are not the current path; TinyURL is never used.",
         "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
         "statusNote": "2026-09-10 late: relay shipped. The 14:02-17:16 burns were multipart-only and are still unread; the report must be re-picked once on the rev 2 page. Repair outcome UNVERIFIED, Option-boot gate closed until LIONMIRROR1 arrives.",
         "relay": "lion.html rev 2 turns a burn into an agent-readable log: the page reads ~/Desktop/lion-mirror.txt with FileReader and POSTs the whole report as text/plain (plus a ?log= verdict query and the old multipart file). Read it at docs/lion-workflow.json links.logRead with fetch_page, never curl.",
-        "openItem": "no URL shortener is reachable from the sandbox (da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me all HTTP 000 over TLS). Mint slugs from a phone browser instead, or rely on the Mac reaching the page inside the Burn zip.",
+        "openItem": "Shell and Node direct egress cannot reach shorteners reliably, but fetch_page reaches da.gd. The reproducible workflow is Node URL-encode exact destination -> fetch da.gd/?url=...&shorturl=... -> fetch da.gd/<slug>+ and compare coshorten output. Current slugs are da.gd/lionrelay and da.gd/lionzip; never use TinyURL.",
         "commands": "etc/lion-command.txt is the inbound channel the page renders; a push to the session branch is visible in ~5 min via raw, so short commands never have to be typed on the Mac again."
     },
     "macArt": {

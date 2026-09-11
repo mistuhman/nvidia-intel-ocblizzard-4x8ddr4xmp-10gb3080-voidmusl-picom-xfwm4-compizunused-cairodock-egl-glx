@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-10",
+  "updated": "2026-09-11",
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator clicks Burn on the page, unzips, double-clicks lion.html, picks ~/Desktop/lion-mirror.txt in the Log box, replies sent. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. Zero typing on the Mac: the page ships inside the zip the operator already downloads, or is reached from its own history.",
+  "nextAction": "Operator types da.gd/lionrelay into Arctic Fox (or da.gd/lionzip for the current bundle), picks ~/Desktop/lion-mirror.txt in the Log box, replies sent. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. No TinyURL, no long URL typing, and no second physical action until the report is read.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -60,10 +60,22 @@
       "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/af06a36b9898c4e9526ea247186e9bf9cdebc14a/lion.html",
       "job": "Aqua page: da.gd/lmz link + native .txt attach (POST webhook) + Burn button (Burn still hits da.gd/lmz)."
     },
+    "phonePage": {
+      "type": "da.gd/lionrelay",
+      "url": "https://da.gd/lionrelay",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion.html",
+      "job": "Current session relay page. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionrelay+."
+    },
+    "phoneZip": {
+      "type": "da.gd/lionzip",
+      "url": "https://da.gd/lionzip",
+      "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip",
+      "job": "Current session bundle. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionzip+."
+    },
     "logInbox": {
       "type": "webhook.site",
       "url": "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6",
-      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt here from the lpg attach control."
+      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt here from the current relay page."
     },
     "withdrawn": [
       {
@@ -77,7 +89,7 @@
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
     ],
-    "zipEquivalence": "VERIFIED 2026-09-10: lion-mirror.zip on the pinned 7333b49 tag, on this branch, and in the working tree are all git blob 660617a1e9f4c2dbb92b0aa743dd62e78c381237 (2600 bytes). lzr and lmz serve the same bytes, so the 12h jsDelivr branch cache cannot hand the Mac a stale helper right now.",
+    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob cec911146c3dc99b755e1f8ebcb7f33e230fdb3e (SHA-256 f8632964e490f9a2dca67c8bad5b078f152fddd187f81d0cf50148180c7bb742; 2 entries: executable helper + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",
@@ -94,13 +106,13 @@
       "url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5",
       "job": "the agent reads this with fetch_page and takes the newest entry whose content begins with LIONMIRROR1; that content IS the report."
     },
-    "openItem": "da.gd slugs cannot be minted from the sandbox at all: da.gd, is.gd, v.gd, tinyurl, t.ly and spoo.me all fail TLS here (HTTP 000). A shorter human-typed link must therefore be minted from the operator phone browser (paste the pageBranch URL, set a shortcode). No typing is required in the meantime: the Mac reaches the page from its own history at da.gd/lpg, or the page arrives inside the Burn zip.",
+    "openItem": "Shell and Node egress cannot reach the shortener reliably, but the page-fetch workflow can mint and verify da.gd links. On 2026-09-11, da.gd/lionrelay and da.gd/lionzip were created with the encoded da.gd ?url=...&shorturl=... route and verified with each slug's + coshorten route. Do not use TinyURL, lpg, or lmz for this session.",
     "bundlePin": {
       "type": "jsDelivr (tag)",
       "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
       "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
     },
-    "shortenBlocked": "2026-09-11: no URL can be minted from the agent sandbox. da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me ALL fail TLS (HTTP 000); da.gd also empty-replies on port 80; uploads.github.com EOFs so no release asset. Mint slugs from the phone (it reaches da.gd) or skip the URL entirely: the page ships in the bundle the operator already unzips."
+    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay and lionzip. TinyURL is never used."
   },
   "helper": {
     "command": "lion-mirror.command",
@@ -171,12 +183,12 @@
   "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
   "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
   "glossary": {
-    "burned": "report .txt attached on da.gd/lpg and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
-    "burnButton": "the Burn link on da.gd/lpg, fetches lion-mirror.zip from da.gd/lmz",
+    "burned": "report .txt attached on the current da.gd/lionrelay page and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
+    "burnButton": "the Burn link on the current relay page fetches the current bundle through da.gd/lionzip",
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11 05:27Z: PR #76 MERGED to main (c93cac2) - relay page, both zips, the imaging tool and all art receipts are on main. Relay is live. The 14:02-17:16 burns stay multipart-only and unread; the report must be re-picked once on rev 2. Repair outcome UNVERIFIED, Option-boot gate closed.",
+  "status": "2026-09-11: PR #79 is open from the fixed session branch. Current phone links are da.gd/lionrelay (page) and da.gd/lionzip (bundle), both verified with da.gd coshorten receipts. The 14:02-17:16 uploads stay multipart-only and unread; Repair outcome UNVERIFIED, Option-boot gate closed.",
   "relay": {
     "page": "lion.html",
     "files": [

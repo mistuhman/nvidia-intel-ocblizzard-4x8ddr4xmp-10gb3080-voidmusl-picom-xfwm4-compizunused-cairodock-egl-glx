@@ -33,18 +33,19 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 
 | Type | Type this | Job |
 |---|---|---|
-| Current zip | `da.gd/lzr` | SHA-pinned `lion-mirror.zip` (volume-root bless). Prefer this if Burn/lmz looks stale. |
-| Branch zip | `da.gd/lmz` | Same zip on branch. Write-once slug. jsDelivr branch cache 12h. |
-| Attach page | `da.gd/lpg` | htmlpreview of `lion.html`: lmz link, Mac Choose File `.txt`, Burn (Burn → lmz). |
-| Logs | webhook from lpg attach | `~/Desktop/lion-mirror.txt` |
+| Current relay page | `da.gd/lionrelay` | Current session page: Commands panel plus plain-text log relay. |
+| Current bundle | `da.gd/lionzip` | Current session `lion-mirror2.zip` containing `lion-mirror.command` and `lion.html`. |
+| Logs | choose `~/Desktop/lion-mirror.txt` on the relay page | The page sends text/plain and the query summary; the agent reads `links.logRead`. |
+| Legacy helper | `da.gd/lzr` | Old SHA-pinned one-script helper only; do not use for the current relay wave. |
+| Legacy branch/page | `da.gd/lmz`, `da.gd/lpg` | Write-once stale destinations; do not use for the current session. |
 
-**Never:** `da.gd/lionfix` (old date-fix pack), `da.gd/lup` (dead e2b), tinyurl.
+**Never:** `da.gd/lionfix` (old date-fix pack), `da.gd/lup` (dead e2b), or TinyURL.
 
-da.gd slugs are write-once. To change a destination, add a new slug and update `docs/lion-workflow.json`.
+da.gd slugs are write-once. The current `lionrelay` and `lionzip` destinations are recorded and checked in `docs/lion-workflow.json` by `node tools/lion-status.ts selftest`.
 
 ## Helper
 
-One file in the zip: `lion-mirror.command` (`#!/bin/sh`, Snow Leopard). Double-click on Lion SSD Base. Button **Repair**. Writes `~/Desktop/lion-mirror.txt`. Attach on `da.gd/lpg`.
+The current zip has two files: `lion-mirror.command` (`#!/bin/sh`, Snow Leopard) and `lion.html`. Double-click `lion.html` or use `da.gd/lionrelay`; the page exposes the bundle and log relay. Double-click the command on Lion SSD Base, press **Repair**, and it writes `~/Desktop/lion-mirror.txt`. Attach through `da.gd/lionrelay`.
 
 Does **not** asr, erase, or set the clock.
 

@@ -1,21 +1,22 @@
-Mac Pro 1,1 — one script (Snow Leopard 10.6.8)
+Mac Pro 1,1 — one repair script plus the relay page (Snow Leopard 10.6.8)
 
-Zip contains ONLY lion-mirror.command (tested: dash -n, bash --posix -n,
-mocked bless/nvram/osascript). No asr. No erase. No clock.
+The current zip contains lion-mirror.command and lion.html. The script is tested
+with dash -n, bash --posix -n, and mocked bless/nvram/osascript. No asr. No erase.
+No clock change.
 
 Current job: Repair ESD boot — remove Graphics Mode Boot.plist, nvram -d
 Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi
 --label Mac OS X Install ESD. Confirm button: Repair.
 
-Arctic Fox:
-  da.gd/lzr  current zip (SHA-pinned)
-  da.gd/lpg  Aqua page: attach ~/Desktop/lion-mirror.txt + Burn (Burn -> lmz)
-  da.gd/lmz  branch zip (jsDelivr cache 12h)
+Arctic Fox — type only these current short links:
+  da.gd/lionrelay  current relay page; choose ~/Desktop/lion-mirror.txt
+  da.gd/lionzip    current bundle with lion-mirror.command + lion.html
 
-Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b).
+Legacy and stale: da.gd/lzr, da.gd/lmz, da.gd/lpg.
+Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b). Never TinyURL.
 
-On Lion SSD Base: unzip, double-click lion-mirror.command, admin password,
-Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lpg.
+On Lion SSD Base: use da.gd/lionzip, unzip, double-click lion.html,
+admin password, Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lionrelay.
 
 Then Restart, hold Option, click Mac OS X Install ESD only.
 Install onto start disk clone. Do not erase it. Do not erase Lion SSD Base.

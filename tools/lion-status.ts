@@ -23,6 +23,8 @@ type Workflow = {
     currentZip: Link;
     branchZip: Link;
     attachPage: Link;
+    phonePage: Link;
+    phoneZip: Link;
     logInbox: Link;
     withdrawn: Link[];
   };
@@ -62,6 +64,8 @@ function printStatus(w: Workflow): void {
   p(`  currentZip: ${w.links.currentZip.url} -> ${w.links.currentZip.dest ?? ''}`);
   p(`  branchZip: ${w.links.branchZip.url}`);
   p(`  attachPage: ${w.links.attachPage.url}`);
+  p(`  phonePage: ${w.links.phonePage.url} -> ${w.links.phonePage.dest ?? ''}`);
+  p(`  phoneZip: ${w.links.phoneZip.url} -> ${w.links.phoneZip.dest ?? ''}`);
   p(`  logInbox: ${w.links.logInbox.url}`);
   p('withdrawn:');
   const withdrawn = [...w.links.withdrawn].sort((a, b) => a.type.localeCompare(b.type));
@@ -98,6 +102,13 @@ function selftest(w: Workflow): void {
   else pass('link-lmz', w.links.branchZip.url);
   if (!w.links?.attachPage?.url?.includes('da.gd/lpg')) fail('link-lpg', String(w.links?.attachPage?.url));
   else pass('link-lpg', w.links.attachPage.url);
+  if (!w.links?.phonePage?.url?.includes('da.gd/lionrelay') || !w.links.phonePage.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion.html')) fail('link-phone-page', JSON.stringify(w.links?.phonePage));
+  else pass('link-phone-page', `${w.links.phonePage.url} -> ${w.links.phonePage.dest}`);
+  if (!w.links?.phoneZip?.url?.includes('da.gd/lionzip') || !w.links.phoneZip.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip')) fail('link-phone-zip', JSON.stringify(w.links?.phoneZip));
+  else pass('link-phone-zip', `${w.links.phoneZip.url} -> ${w.links.phoneZip.dest}`);
+  const operatorLinks = [w.links.phonePage.url, w.links.phoneZip.url];
+  if (operatorLinks.some((x) => /tinyurl/i.test(x))) fail('no-tinyurl', operatorLinks.join(','));
+  else pass('no-tinyurl', operatorLinks.join(','));
   const withdrawnTypes = (w.links.withdrawn ?? []).map((x) => x.type).sort();
   if (!withdrawnTypes.includes('da.gd/lionfix')) fail('withdrawn-lionfix', withdrawnTypes.join(','));
   else pass('withdrawn-lionfix', 'listed');
