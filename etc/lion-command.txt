@@ -1,26 +1,29 @@
 LION-SSD | gate 1 of 1 | relay today's Repair report, then stop
 
-STATE: PR #76 merged to main at 2026-09-11 05:27 UTC (c93cac2). The relay page and
-both zips are on main. If this box shows text, the page is reaching the repo fine.
+STATE: PR #76 and #77 merged to main. The relay page, both zips, the imaging tool
+and every art receipt are on main. If this box shows text, the page reaches the
+repo and nothing on the Mac has to be typed again.
 
-DO NOW (clicks only, nothing to type):
-1. Click Burn on this page. Either zip name works and they are byte-identical:
-   lion-mirror.zip (what da.gd/lmz resolves to) or lion-mirror2.zip.
-   Each contains lion-mirror.command (exec bit) and lion.html (this page).
-2. Unzip on the Desktop, then double-click lion.html to keep using it offline.
-3. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
+DO NOW (clicks only):
+1. Open the page (bookmark it or use the phone-minted da.gd slug).
+2. Click Burn. It fetches lion-mirror2.zip pinned to tag lion-relay-1, which is
+   always moved to the newest relay build. Either zip name is byte-identical.
+   The zip holds lion-mirror.command (exec bit) and lion.html (this page).
+3. Unzip on the Desktop, double-click lion.html so the page also works offline.
+4. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
    as text/plain, the same verdict lines as a ?log= query, and the file as before.
-4. Reply here with one word: sent
+5. Reply here with one word: sent
 
-IF BURN STILL GIVES A ONE-FILE ZIP: the jsDelivr branch cache has not refreshed
-(it holds a branch path about 12h and ignores cache-buster query strings at the edge).
-Do not wait on it - open lion-mirror2.zip from the Burn link on this page instead,
-which is a fresh path that cannot be cached.
+WHY THE TAG AND NOT A BRANCH: jsDelivr returns HTTP 500 for @main on this repo and
+caches a branch path for ~12h while ignoring cache-buster query strings at the edge.
+A tag ref resolves instantly, so the bundle link is stable. The Commands panel above
+reads raw.githubusercontent instead (branch first, then main, ~5 min max-age), which
+is why this text can change without waiting on any cache.
 
-ALREADY IN THE INBOX BUT UNREADABLE BY DESIGN OF THE OLD PAGE:
+IN THE INBOX BUT UNREADABLE BY THE OLD PAGE'S DESIGN:
 14:02 7199B, 14:25 4185B, 14:32 4185B, 14:33 7564B, 14:46 7564B, 14:48 4826B,
 14:59 4930B, 15:02 4902B (uuid 3dc2ab98 = lastVerifiedBless), 17:16 4902B.
-Those were multipart uploads, so the agent can see the envelope and not the bytes.
+Those were multipart uploads: the agent sees the envelope, never the bytes.
 
 HOLD until the agent reads the summary:
 - no Restart, no Option-boot, no second Repair

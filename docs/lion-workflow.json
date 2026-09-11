@@ -94,7 +94,13 @@
       "url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5",
       "job": "the agent reads this with fetch_page and takes the newest entry whose content begins with LIONMIRROR1; that content IS the report."
     },
-    "openItem": "da.gd slugs cannot be minted from the sandbox at all: da.gd, is.gd, v.gd, tinyurl, t.ly and spoo.me all fail TLS here (HTTP 000). A shorter human-typed link must therefore be minted from the operator phone browser (paste the pageBranch URL, set a shortcode). No typing is required in the meantime: the Mac reaches the page from its own history at da.gd/lpg, or the page arrives inside the Burn zip."
+    "openItem": "da.gd slugs cannot be minted from the sandbox at all: da.gd, is.gd, v.gd, tinyurl, t.ly and spoo.me all fail TLS here (HTTP 000). A shorter human-typed link must therefore be minted from the operator phone browser (paste the pageBranch URL, set a shortcode). No typing is required in the meantime: the Mac reaches the page from its own history at da.gd/lpg, or the page arrives inside the Burn zip.",
+    "bundlePin": {
+      "type": "jsDelivr (tag)",
+      "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
+      "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
+    },
+    "shortenBlocked": "2026-09-11: no URL can be minted from the agent sandbox. da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me ALL fail TLS (HTTP 000); da.gd also empty-replies on port 80; uploads.github.com EOFs so no release asset. Mint slugs from the phone (it reaches da.gd) or skip the URL entirely: the page ships in the bundle the operator already unzips."
   },
   "helper": {
     "command": "lion-mirror.command",
