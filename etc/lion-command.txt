@@ -1,35 +1,31 @@
-LION-SSD | gate 1 of 1 | relay today's Repair report, then stop
+LION-SSD | gate 1 of 1 | BOOTLOG1 read; hold for the next non-destructive method
 
-STATE: PR #76 and #77 merged to main. The relay page, both zips, the imaging tool
-and every art receipt are on main. If this box shows text, the page reaches the
-repo and nothing on the Mac has to be typed again.
+STATE: the current session branch carries the reproducible relay page and bundle.
+Use only these short links from the phone into Arctic Fox; never use TinyURL,
+da.gd/lmz, or da.gd/lpg for this session:
+  da.gd/lionrelay  current readable-report relay page
+  da.gd/lionzip    current three-file bundle
 
-DO NOW (clicks only):
-1. Open the page (bookmark it or use the phone-minted da.gd slug).
-2. Click Burn. It fetches lion-mirror2.zip pinned to tag lion-relay-1, which is
-   always moved to the newest relay build. Either zip name is byte-identical.
-   The zip holds lion-mirror.command (exec bit) and lion.html (this page).
-3. Unzip on the Desktop, double-click lion.html so the page also works offline.
-4. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
-   as text/plain, the same verdict lines as a ?log= query, and the file as before.
-5. Reply here with one word: sent
+BOOTLOG1 RECEIPT READ BY THE AGENT:
+2026-09-11 16:37:58 PDT | webhook uuid 9d0bfed6 | 61946 bytes | 675 lines
+- root report: /lion-boot-log.txt; Desktop copy: /Users/admin/Desktop/lion-boot-log.txt
+- the collector was read-only; no disk was erased, restored, blessed, mounted, or changed
+- boot time after the failed attempt: 16:17:30 PDT
+- boot-args is absent; Snow Leopard recorded no ESD-specific boot error
+- Lion SSD Base = disk0s2 / Bay 1; start disk clone = disk1s2 / Bay 3; ESD = disk2s2 / Bay 4
+- ESD root boot.efi = Oct 3 2012; CoreServices boot.efi = Jul 29 2012; finderinfo 2078
 
-WHY THE TAG AND NOT A BRANCH: jsDelivr returns HTTP 500 for @main on this repo and
-caches a branch path for ~12h while ignoring cache-buster query strings at the edge.
-A tag ref resolves instantly, so the bundle link is stable. The Commands panel above
-reads raw.githubusercontent instead (branch first, then main, ~5 min max-age), which
-is why this text can change without waiting on any cache.
+INTERPRETATION:
+The ESD handoff starts before returning to Snow Leopard, but the failure is pre-OS.
+The root text report cannot capture EFI/boot.efi screen output, and no second Repair
+is justified by this receipt.
 
-IN THE INBOX BUT UNREADABLE BY THE OLD PAGE'S DESIGN:
-14:02 7199B, 14:25 4185B, 14:32 4185B, 14:33 7564B, 14:46 7564B, 14:48 4826B,
-14:59 4930B, 15:02 4902B (uuid 3dc2ab98 = lastVerifiedBless), 17:16 4902B.
-Those were multipart uploads: the agent sees the envelope, never the bytes.
+HOLD — NO MAC ACTION NOW:
+- no reboot and no second Option-boot
+- no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
+- never erase Lion SSD Base or start disk clone
+- do not select an install destination
 
-HOLD until the agent reads the summary:
-- no Restart, no Option-boot, no second Repair
-- never erase Lion SSD Base or start disk clone, never remirror Bay 4
-- never run lion-installer-date-fix.command, never visit da.gd/lionfix or da.gd/lup
-
-RELEASED ONLY BY THE NEXT VERSION OF THIS FILE:
-Option at the chime, choose "Mac OS X Install ESD", install onto "start disk clone"
-(Bay 3 MX500), do not erase, then create the new admin after the first Lion boot.
+The next physical action will be issued only after the agent chooses a non-destructive
+boot method from this receipt. The prior readable Repair receipt was:
+burned: text=ok query=ok

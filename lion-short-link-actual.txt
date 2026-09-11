@@ -1,19 +1,29 @@
-LIVE Arctic Fox links (canonical: docs/lion-workflow.json)
-Print: node tools/lion-status.ts
+LIVE CURRENT LION LINKS — type these short URLs into Arctic Fox
 
-TYPE INTO ARCTIC FOX:
+Current relay page:
+da.gd/lionrelay
 
-da.gd/lzr  current helper zip (SHA 7333b49 lion-mirror.zip, volume-root bless)
-da.gd/lpg  Aqua page: lmz download + native .txt attach + Burn (Burn hits lmz)
-da.gd/lmz  branch zip (write-once slug; jsDelivr branch cache 12h — may be stale)
+Current bundle (lion-mirror2.zip):
+da.gd/lionzip
 
-WITHDRAWN — do not type:
+The exact destinations and mint/verification receipts are canonical in:
+docs/lion-workflow.json
 
-da.gd/lionfix  still 01a08a55 lion-phone-debug-pack.zip (date-fix). write-once.
-da.gd/lup      dead e2b.app sandbox (Sandbox Not Found).
+Reproducible verification:
+node tools/lion-status.ts
+node tools/lion-status.ts selftest
 
-da.gd slugs cannot be retargeted (400). New destination = new slug + update
-docs/lion-workflow.json.
+The selftest checks the da.gd/lionrelay and da.gd/lionzip destinations for the
+fixed session branch and rejects TinyURL. The links were minted 2026-09-11 with
+da.gd's encoded ?url=...&shorturl=... route and verified with da.gd/lionrelay+
+and da.gd/lionzip+ coshorten receipts.
 
-Job of the zip: one file lion-mirror.command (Repair ESD bless). No asr, no
-erase, no clock. Report ~/Desktop/lion-mirror.txt attach on lpg.
+LEGACY — do not type for this session:
+da.gd/lzr
+da.gd/lmz
+da.gd/lpg
+
+WITHDRAWN — never type:
+da.gd/lionfix
+da.gd/lup
+TinyURL

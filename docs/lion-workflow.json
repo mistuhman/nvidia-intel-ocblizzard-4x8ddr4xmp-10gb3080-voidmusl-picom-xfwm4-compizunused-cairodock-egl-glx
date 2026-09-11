@@ -1,17 +1,18 @@
 {
-  "updated": "2026-09-10",
+  "updated": "2026-09-11",
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator clicks Burn on the page, unzips, double-clicks lion.html, picks ~/Desktop/lion-mirror.txt in the Log box, replies sent. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. Zero typing on the Mac: the page ships inside the zip the operator already downloads, or is reached from its own history.",
+  "nextAction": "BOOTLOG1 readable report received from /lion-boot-log.txt (webhook uuid 9d0bfed6, 61946 bytes / 675 lines) and reviewed. It confirms the running system is still Snow Leopard on Lion SSD Base in Bay 1, start disk clone remains Bay 3, ESD remains Bay 4, the ESD root boot.efi remains blessed, and no disk was erased or changed. The failed ESD handoff is pre-OS: boot-args is absent and the Snow Leopard logs contain no ESD-specific boot error. Do not reboot, repeat Repair, remirror, or select a target until the next non-destructive boot method is explicitly released; the root text log cannot capture EFI screen output.",
   "lastVerifiedBless": {
-    "when": "2026-09-10 17:40:20 PDT",
-    "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
+    "when": "2026-09-11 16:10:02 PDT",
+    "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
     "blessedFile": "/Volumes/Mac OS X Install ESD/boot.efi",
     "blessedFileDate": "Oct 3 2012",
     "blessedFolder": "/Volumes/Mac OS X Install ESD/System/Library/CoreServices",
     "finderinfoFileId": 2078,
-    "note": "Matches the asr run that reached the installer GUI. CoreServices/boot.efi is a different date (Jul 29 2012) and made Option-ESD fall through to Lion SSD Base."
+    "reportVerdict": "ESD boot repaired. No disk was erased.",
+    "note": "Current readable report: boot volume is Lion SSD Base in Bay 1; start disk clone is disk1s2 in Bay 3; Mac OS X Install ESD is disk2s2 in Bay 4. Repair confirmed, Graphics Mode removed, nvram cleared, bless OK. Lion is not installed yet."
   },
   "volumes": [
     {
@@ -60,10 +61,22 @@
       "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/af06a36b9898c4e9526ea247186e9bf9cdebc14a/lion.html",
       "job": "Aqua page: da.gd/lmz link + native .txt attach (POST webhook) + Burn button (Burn still hits da.gd/lmz)."
     },
+    "phonePage": {
+      "type": "da.gd/lionrelay",
+      "url": "https://da.gd/lionrelay",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion.html",
+      "job": "Current session relay page. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionrelay+."
+    },
+    "phoneZip": {
+      "type": "da.gd/lionzip",
+      "url": "https://da.gd/lionzip",
+      "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip",
+      "job": "Current session bundle. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionzip+."
+    },
     "logInbox": {
       "type": "webhook.site",
       "url": "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6",
-      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt here from the lpg attach control."
+      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt or ~/Desktop/lion-boot-log.txt here from the current relay page."
     },
     "withdrawn": [
       {
@@ -77,7 +90,7 @@
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
     ],
-    "zipEquivalence": "VERIFIED 2026-09-10: lion-mirror.zip on the pinned 7333b49 tag, on this branch, and in the working tree are all git blob 660617a1e9f4c2dbb92b0aa743dd62e78c381237 (2600 bytes). lzr and lmz serve the same bytes, so the 12h jsDelivr branch cache cannot hand the Mac a stale helper right now.",
+    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob 5501fbf3819661a6d033718286920363aea8c3ff (SHA-256 fdd04f26f422c722fae10fc8bef9afa4b646940a7f5aa14bd22f9626c62b173a; 3 entries: executable helper + executable boot-log collector + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",
@@ -94,18 +107,18 @@
       "url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5",
       "job": "the agent reads this with fetch_page and takes the newest entry whose content begins with LIONMIRROR1; that content IS the report."
     },
-    "openItem": "da.gd slugs cannot be minted from the sandbox at all: da.gd, is.gd, v.gd, tinyurl, t.ly and spoo.me all fail TLS here (HTTP 000). A shorter human-typed link must therefore be minted from the operator phone browser (paste the pageBranch URL, set a shortcode). No typing is required in the meantime: the Mac reaches the page from its own history at da.gd/lpg, or the page arrives inside the Burn zip.",
+    "openItem": "Shell and Node egress cannot reach the shortener reliably, but the page-fetch workflow can mint and verify da.gd links. On 2026-09-11, da.gd/lionrelay and da.gd/lionzip were created with the encoded da.gd ?url=...&shorturl=... route and verified with each slug's + coshorten route. Do not use TinyURL, lpg, or lmz for this session.",
     "bundlePin": {
       "type": "jsDelivr (tag)",
       "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
       "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
     },
-    "shortenBlocked": "2026-09-11: no URL can be minted from the agent sandbox. da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me ALL fail TLS (HTTP 000); da.gd also empty-replies on port 80; uploads.github.com EOFs so no release asset. Mint slugs from the phone (it reaches da.gd) or skip the URL entirely: the page ships in the bundle the operator already unzips."
+    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay and lionzip. TinyURL is never used."
   },
   "helper": {
     "command": "lion-mirror.command",
     "zip": "lion-mirror.zip",
-    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair Mac OS X Install ESD boot - remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair. lion-mirror2.zip ships the same helper plus the rev 2 relay page.",
+    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair Mac OS X Install ESD boot - remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair. lion-mirror2.zip ships the same helper, the safe lion-boot-log.command collector, and the rev 2 relay page.",
     "doesNot": [
       "asr",
       "erase any disk",
@@ -126,7 +139,7 @@
     {
       "path": "tools/lion-mirror-sl-test.ts",
       "run": "node tools/lion-mirror-sl-test.ts",
-      "job": "Agents A/B/Z: 10.6.8 syntax (dash/posix), mocked bless/nvram/osascript refuse paths, zip is one executable script"
+      "job": "Agents A/B/Z: 10.6.8 syntax (dash/posix), mocked bless/nvram/osascript refuse paths, zip has executable Repair + boot-log tools and a non-executable page"
     },
     {
       "path": "tools/lion-phone-agent.ts",
@@ -171,21 +184,51 @@
   "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
   "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
   "glossary": {
-    "burned": "report .txt attached on da.gd/lpg and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
-    "burnButton": "the Burn link on da.gd/lpg, fetches lion-mirror.zip from da.gd/lmz",
+    "burned": "report .txt attached on the current da.gd/lionrelay page and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
+    "burnButton": "the Burn link on the current relay page fetches the current bundle through da.gd/lionzip",
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11 05:27Z: PR #76 MERGED to main (c93cac2) - relay page, both zips, the imaging tool and all art receipts are on main. Relay is live. The 14:02-17:16 burns stay multipart-only and unread; the report must be re-picked once on rev 2. Repair outcome UNVERIFIED, Option-boot gate closed.",
+  "status": "2026-09-11: readable Repair report uuid 2ad981cf verified bless and no disk erase. Readable BOOTLOG1 uuid 9d0bfed6 was received from /lion-boot-log.txt at 61946 bytes / 675 lines. It confirms all three volumes and ESD bless remain intact, boot-args is absent, and the failed ESD handoff leaves no ESD-specific entry in Snow Leopard logs. Lion remains uninstalled; no further reboot, Repair, remirror, date fix, or target selection is authorized until the next method is explicitly chosen.",
   "relay": {
     "page": "lion.html",
     "files": [
       "lion-mirror.command",
+      "lion-boot-log.command",
       "lion.html"
     ],
     "zip": "lion-mirror2.zip",
     "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
-    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)",
-    "commands": "etc/lion-command.txt - the text the Commands panel renders. An agent edit is visible on the Mac within ~5 min after push to the session branch, then permanently once merged to main."
+    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly two executable entries (repair + boot-log) and the page is non-executable)",
+    "commands": "etc/lion-command.txt - the text the Commands panel renders. It now carries the safe root-level boot-log wave; a push to the session branch is visible in ~5 min via raw."
+  },
+  "lastOptionBootAttempt": {
+    "when": "2026-09-11, user photo/report (desktop clock displayed Fri 4:19 PM)",
+    "selected": "Mac OS X Install ESD",
+    "screen": "brief prohibitory symbol, then white-background Apple logo with loading sign, then Snow Leopard login",
+    "result": "installer GUI not reached; Mac returned to Snow Leopard; no disk erased",
+    "interpretation": "ESD boot handoff begins but fails before the Lion installer GUI; the helper text report cannot record this post-boot screen path"
+  },
+  "diagnostic": {
+    "command": "lion-boot-log.command",
+    "rootReport": "/lion-boot-log.txt",
+    "desktopReport": "~/Desktop/lion-boot-log.txt",
+    "job": "Read-only post-fallback capture of the operator screen result plus NVRAM boot keys, dmesg, system.log, disk inventory, ESD boot files, and bless metadata. It cannot redirect pre-OS EFI screen text; it does not bless, mount, erase, restore, set the clock, or change NVRAM.",
+    "bundle": "lion-mirror2.zip",
+    "relay": "da.gd/lionrelay",
+    "lastReport": "webhook UUID prefix 9d0bfed6; BOOTLOG1 size=61946 lines=675; readable text/plain"
+  },
+  "lastBootLog": {
+    "when": "2026-09-11 16:37:58 PDT",
+    "report": "BOOTLOG1 size=61946 lines=675",
+    "rootReport": "/lion-boot-log.txt",
+    "desktopReport": "/Users/admin/Desktop/lion-boot-log.txt",
+    "operatorScreenResult": "not recorded by the dialog; chat receipt is brief prohibitory, then white Apple logo/loading sign, then Snow Leopard login",
+    "bootTime": "2026-09-11 16:17:30 PDT; collector generated 20 minutes later",
+    "bootArgs": "absent (nvram reported boot-args data was not found)",
+    "esd": "/dev/disk2s2 Bay 4; root boot.efi Oct 3 2012; CoreServices boot.efi Jul 29 2012; finderinfo 2078",
+    "volumes": "disk0s2 Lion SSD Base Bay 1; disk1s2 start disk clone Bay 3; disk2s2 Mac OS X Install ESD Bay 4",
+    "verdict": "No disk was erased, restored, blessed, mounted, or changed by the collector; no ESD-specific error was recorded by Snow Leopard.",
+    "uuidPrefix": "9d0bfed6"
   }
 }

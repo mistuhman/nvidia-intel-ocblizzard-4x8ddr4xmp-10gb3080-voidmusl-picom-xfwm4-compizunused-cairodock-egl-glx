@@ -23,6 +23,8 @@ type Workflow = {
     currentZip: Link;
     branchZip: Link;
     attachPage: Link;
+    phonePage: Link;
+    phoneZip: Link;
     logInbox: Link;
     withdrawn: Link[];
   };
@@ -62,6 +64,8 @@ function printStatus(w: Workflow): void {
   p(`  currentZip: ${w.links.currentZip.url} -> ${w.links.currentZip.dest ?? ''}`);
   p(`  branchZip: ${w.links.branchZip.url}`);
   p(`  attachPage: ${w.links.attachPage.url}`);
+  p(`  phonePage: ${w.links.phonePage.url} -> ${w.links.phonePage.dest ?? ''}`);
+  p(`  phoneZip: ${w.links.phoneZip.url} -> ${w.links.phoneZip.dest ?? ''}`);
   p(`  logInbox: ${w.links.logInbox.url}`);
   p('withdrawn:');
   const withdrawn = [...w.links.withdrawn].sort((a, b) => a.type.localeCompare(b.type));
@@ -98,6 +102,13 @@ function selftest(w: Workflow): void {
   else pass('link-lmz', w.links.branchZip.url);
   if (!w.links?.attachPage?.url?.includes('da.gd/lpg')) fail('link-lpg', String(w.links?.attachPage?.url));
   else pass('link-lpg', w.links.attachPage.url);
+  if (!w.links?.phonePage?.url?.includes('da.gd/lionrelay') || !w.links.phonePage.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion.html')) fail('link-phone-page', JSON.stringify(w.links?.phonePage));
+  else pass('link-phone-page', `${w.links.phonePage.url} -> ${w.links.phonePage.dest}`);
+  if (!w.links?.phoneZip?.url?.includes('da.gd/lionzip') || !w.links.phoneZip.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip')) fail('link-phone-zip', JSON.stringify(w.links?.phoneZip));
+  else pass('link-phone-zip', `${w.links.phoneZip.url} -> ${w.links.phoneZip.dest}`);
+  const operatorLinks = [w.links.phonePage.url, w.links.phoneZip.url];
+  if (operatorLinks.some((x) => /tinyurl/i.test(x))) fail('no-tinyurl', operatorLinks.join(','));
+  else pass('no-tinyurl', operatorLinks.join(','));
   const withdrawnTypes = (w.links.withdrawn ?? []).map((x) => x.type).sort();
   if (!withdrawnTypes.includes('da.gd/lionfix')) fail('withdrawn-lionfix', withdrawnTypes.join(','));
   else pass('withdrawn-lionfix', 'listed');
@@ -107,6 +118,14 @@ function selftest(w: Workflow): void {
   else pass('helper-command', w.helper.command);
   if (!existsSync(w.helper.zip)) fail('helper-zip', w.helper.zip);
   else pass('helper-zip', w.helper.zip);
+  const bootLog = 'lion-boot-log.command';
+  if (!existsSync(bootLog)) fail('boot-log-command', bootLog);
+  else pass('boot-log-command', bootLog);
+  const bootLogText = existsSync(bootLog) ? readFileSync(bootLog, 'utf8') : '';
+  if (!/BOOTLOG1/.test(bootLogText) || !/lion-boot-log\.txt/.test(bootLogText)) fail('boot-log-report', 'missing BOOTLOG1/root report');
+  else pass('boot-log-report', '/lion-boot-log.txt');
+  if (/diskutil\s+erase|bless\s+--(folder|file|mount)|nvram\s+-d|\basr\b/.test(bootLogText)) fail('boot-log-readonly', 'mutation token in diagnostic');
+  else pass('boot-log-readonly', 'read-only');
   const cmd = readFileSync(w.helper.command, 'utf8');
   if (/Erase Bay 4/.test(cmd)) fail('no-erase-bay4', 'Erase Bay 4 still in helper');
   else pass('no-erase-bay4', 'absent');

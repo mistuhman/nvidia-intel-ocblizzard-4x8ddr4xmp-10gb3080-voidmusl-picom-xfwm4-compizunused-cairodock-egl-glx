@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const SCRIPT = 'lion-mirror.command';
+const BOOT_LOG = 'lion-boot-log.command';
 const ZIP = 'lion-mirror.zip';
 const ZIP2 = 'lion-mirror2.zip';
 let failed = 0;
@@ -66,6 +67,37 @@ function agentA_syntax(): void {
   if (dash.error) pass('A-dash-n', 'dash not installed — skipped');
   else if (dash.status !== 0) fail('A-dash-n', dash.stderr);
   else pass('A-dash-n', 'dash -n');
+}
+
+function agentBootLog_syntax(): void {
+  const text = readFileSync(BOOT_LOG, 'utf8');
+  if (!text.startsWith('#!/bin/sh')) fail('C-shebang', '#!/bin/sh');
+  else pass('C-shebang', '#!/bin/sh');
+  const forbidden: Array<[string, RegExp]> = [
+    ['C-asr', /\basr\b/],
+    ['C-erase', /diskutil\s+erase|erase\s+Bay/i],
+    ['C-bless-mutate', /bless\s+--(folder|file|mount)/],
+    ['C-nvram-mutate', /nvram\s+-d|nvram\s+[^\n]*=/],
+    ['C-mount', /diskutil\s+mount/],
+    ['C-rm', /\brm\s/],
+    ['C-date-mutate', /date\s+(0101|0808)/],
+  ];
+  for (const [id, re] of forbidden) {
+    if (re.test(text)) fail(id, 'forbidden mutation present');
+    else pass(id, 'absent');
+  }
+  if (!/ROOT_REPORT=.*lion-boot-log\.txt/.test(text)) fail('C-root-report', 'missing root-level report');
+  else pass('C-root-report', '/lion-boot-log.txt');
+  if (!/sudo cp/.test(text)) fail('C-root-copy', 'missing root copy');
+  else pass('C-root-copy', 'sudo cp');
+  if (!/dmesg/.test(text) || !/system\.log/.test(text)) fail('C-boot-evidence', 'missing dmesg/system.log');
+  else pass('C-boot-evidence', 'dmesg + system.log');
+  for (const [id, args] of [['C-bash-n', ['bash', ['-n', BOOT_LOG]]], ['C-posix-n', ['bash', ['--posix', '-n', BOOT_LOG]]], ['C-dash-n', ['dash', ['-n', BOOT_LOG]]]] as const) {
+    const r = spawnSync(args[0], args[1], { encoding: 'utf8' });
+    if (r.error) pass(id, `${args[0]} not installed — skipped`);
+    else if (r.status !== 0) fail(id, r.stderr || 'syntax error');
+    else pass(id, `${args[0]} -n`);
+  }
 }
 
 function write(path: string, body: string, mode = 0o644): void {
@@ -322,7 +354,7 @@ function agentZip(): void {
   // branch path that the CDN caches for ~12h, so a cache that has not refreshed must
   // still land the operator the relay page: either name works, and the new name exists
   // so a fresh cache lookup can never serve the pre-page archive.
-  const want = [SCRIPT, PAGE];
+  const want = [SCRIPT, BOOT_LOG, PAGE];
   for (const z of [ZIP, ZIP2]) {
     if (!existsSync(z)) {
       fail('Z-exists', `${z} missing`);
@@ -332,9 +364,10 @@ function agentZip(): void {
     const sorted = names.slice().sort().join(',');
     if (sorted !== want.slice().sort().join(',')) fail(`Z-entries:${z}`, sorted);
     else pass(`Z-entries:${z}`, sorted);
-    // the invariant that actually matters: exactly one executable, and it is the helper
-    if (exec.length !== 1 || exec[0] !== SCRIPT) fail(`Z-exec:${z}`, exec.join(',') || 'none');
-    else pass(`Z-exec:${z}`, 'unix exec bit on ' + SCRIPT);
+    // Both shell tools are executable; the relay page is not.
+    const expectedExec = [SCRIPT, BOOT_LOG].sort().join(',');
+    if (exec.slice().sort().join(',') !== expectedExec) fail(`Z-exec:${z}`, exec.join(',') || 'none');
+    else pass(`Z-exec:${z}`, 'unix exec bits on repair + boot-log tools');
   }
   const a = execFileSync('sha256sum', [ZIP, ZIP2], { encoding: 'utf8' }).split('\n');
   const hash = (l: string) => l.trim().split(/\s+/)[0];
@@ -347,7 +380,9 @@ function main(): void {
   agentA_syntax();
   console.log('agent B = mocked 10.6.8 ESD repair / refuse paths');
   agentB_scenarios();
-  console.log('agent Z = zips carry one executable helper, page non-exec');
+  console.log('agent C = read-only root-level post-fallback boot log');
+  agentBootLog_syntax();
+  console.log('agent Z = zips carry two executable tools, page non-exec');
   agentZip();
   if (failed) {
     console.log(`SL_TEST=FAIL count=${failed}`);

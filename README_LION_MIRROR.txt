@@ -1,24 +1,28 @@
-Mac Pro 1,1 — one script (Snow Leopard 10.6.8)
+Mac Pro 1,1 — one repair script plus the relay page (Snow Leopard 10.6.8)
 
-Zip contains ONLY lion-mirror.command (tested: dash -n, bash --posix -n,
-mocked bless/nvram/osascript). No asr. No erase. No clock.
+The current zip contains lion-mirror.command, lion-boot-log.command, and lion.html.
+The Repair script is tested with dash -n, bash --posix -n, and mocked bless/nvram/osascript.
+The boot-log script is read-only against disks/NVRAM/logs and writes only
+/lion-boot-log.txt plus ~/Desktop/lion-boot-log.txt. No asr. No erase. No clock change.
 
 Current job: Repair ESD boot — remove Graphics Mode Boot.plist, nvram -d
 Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi
 --label Mac OS X Install ESD. Confirm button: Repair.
 
-Arctic Fox:
-  da.gd/lzr  current zip (SHA-pinned)
-  da.gd/lpg  Aqua page: attach ~/Desktop/lion-mirror.txt + Burn (Burn -> lmz)
-  da.gd/lmz  branch zip (jsDelivr cache 12h)
+Arctic Fox — type only these current short links:
+  da.gd/lionrelay  current relay page; choose ~/Desktop/lion-mirror.txt
+  da.gd/lionzip    current bundle with lion-mirror.command + lion.html
 
-Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b).
+Legacy and stale: da.gd/lzr, da.gd/lmz, da.gd/lpg.
+Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b). Never TinyURL.
 
-On Lion SSD Base: unzip, double-click lion-mirror.command, admin password,
-Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lpg.
+On Lion SSD Base: use da.gd/lionzip, unzip, double-click lion.html,
+admin password, Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lionrelay.
 
-Then Restart, hold Option, click Mac OS X Install ESD only.
-Install onto start disk clone. Do not erase it. Do not erase Lion SSD Base.
+The 2026-09-11 readable report is verified: Repair and bless succeeded, and no disk was erased.
+The released ESD attempt showed a brief prohibitory symbol, then Apple logo/loading, then returned to Snow Leopard; no installer GUI appeared.
+BOOTLOG1 is now read: `/lion-boot-log.txt`, webhook uuid `9d0bfed6`, 61946 bytes / 675 lines. It confirms the three-volume map, ESD root bless/finderinfo 2078, absent boot-args, and no disk changes; Snow Leopard has no ESD-specific error because the failure is pre-OS.
+Hold now. Do not reboot, run the visible withdrawn audit/date-fix files, repeat Repair, remirror Bay 4, or erase start disk clone/Lion SSD Base until the next non-destructive boot method is explicitly released.
 
 Canonical links + nextAction: docs/lion-workflow.json
 Print: node tools/lion-status.ts

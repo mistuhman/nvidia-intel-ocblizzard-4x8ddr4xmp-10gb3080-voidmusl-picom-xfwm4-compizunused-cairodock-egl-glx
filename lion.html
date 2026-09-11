@@ -96,17 +96,17 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <h1>Burn</h1>
   </div>
   <div id="body">
-    <p>Bundle (helper + this page, two files) - pinned to tag <b>lion-relay-1</b>, which is always moved to the newest relay build:</p>
-    <p><a class="link" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip">lion-mirror2.zip</a>
-       &nbsp;&middot;&nbsp; <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-mirror2.zip" download="lion-mirror2.zip">raw fallback</a>
-       &nbsp;&middot;&nbsp; <a class="link" href="https://da.gd/lmz">da.gd/lmz</a> (older helper only: it resolves to a different arena branch)</p>
+    <p>Bundle (Repair helper + boot-log collector + this page, three files) - phone-shortened current-session link: <b>da.gd/lionzip</b></p>
+    <p><a class="link" href="https://da.gd/lionzip">lion-mirror2.zip</a>
+       &nbsp;&middot;&nbsp; <a class="link" href="https://da.gd/lionrelay">da.gd/lionrelay</a> (this page)</p>
 
     <fieldset>
       <legend>Log</legend>
-      <p class="note">Pick <b>lion-mirror.txt</b> on the Desktop. No typing, no pasting. One
-      selection sends the report <b>three</b> ways: the verdict lines as plain text, the same
-      verdict lines as a query, and the full file as before. The agent can read the first two;
-      only the inbox owner can read a raw multipart upload.</p>
+      <p class="note">Pick <b>lion-mirror.txt</b> or <b>lion-boot-log.txt</b> on the Desktop. No typing, no
+      pasting. The boot-log command also writes the canonical <b>/lion-boot-log.txt</b> at the
+      root of the running Snow Leopard volume. One selection sends the report <b>three</b> ways:
+      the verdict lines as plain text, the same verdict lines as a query, and the full file as
+      before. The agent can read the first two; only the inbox owner can read a raw multipart upload.</p>
       <div class="row">
         <span class="k">Attach .txt:</span>
         <input type="file" id="pick" name="log" accept=".txt,text/plain">
@@ -132,7 +132,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <iframe name="dropframe"></iframe>
 
     <div id="btns">
-      <a class="aqua default" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip">Burn</a>
+      <a class="aqua default" href="https://da.gd/lionzip">Burn</a>
     </div>
   </div>
 </div>
@@ -143,10 +143,10 @@ var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom
 // works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
 // max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
 var CANDIDATES = [
-  "https://raw.githubusercontent.com/" + REPO + "/arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
   "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
 ];
-var KEY = /(bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired)/i;
+var KEY = /(BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback)/i;
 
 function st(msg, bad) {
   var e = document.getElementById("st");
@@ -215,7 +215,7 @@ function handle(file) {
         f2.submit();
       }
     } catch (e) { /* multipart copy is best-effort */ }
-    st("sent: text=" + (a ? "ok" : "blocked") + " query=" + (b ? "ok" : "blocked") +
+    st("burned: text=" + (a ? "ok" : "blocked") + " query=" + (b ? "ok" : "blocked") +
        " (" + sum.split("\n").length + " verdict lines, " + (file.size || 0) + " bytes)", !a && !b);
   };
   r.onerror = function () { st("could not read the file", true); };
