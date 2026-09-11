@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator types da.gd/lionrelay into Arctic Fox (or da.gd/lionzip for the current bundle), picks ~/Desktop/lion-mirror.txt in the Log box, replies sent. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. No TinyURL, no long URL typing, and no second physical action until the report is read.",
+  "nextAction": "Operator types da.gd/lionrelay into Arctic Fox (or da.gd/lionzip for the current bundle), runs the current helper only if the existing report is not sufficient, picks ~/Desktop/lion-mirror.txt in the Log box, waits for burned: text=ok query=ok, and replies burned. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. No TinyURL, no long URL typing, and no second physical action until the report is read.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -89,7 +89,7 @@
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
     ],
-    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob cec911146c3dc99b755e1f8ebcb7f33e230fdb3e (SHA-256 f8632964e490f9a2dca67c8bad5b078f152fddd187f81d0cf50148180c7bb742; 2 entries: executable helper + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
+    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob 48fc5246545fbd378c16d5e6e7cb761022c2f04e (SHA-256 e5a342df311c599c4db3f408ee0e5b69737975928606a0783d943f25ae3a855e; 2 entries: executable helper + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",

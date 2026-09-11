@@ -12,7 +12,7 @@ DO NOW (clicks only):
    so the page also works offline.
 4. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
    as text/plain, the same verdict lines as a query, and the file as before.
-5. Reply here with one word: sent
+5. Wait for the page to show burned: text=ok query=ok, then reply here with one word: burned
 
 WHY THESE LINKS: da.gd slugs are write-once and the exact destinations are recorded
 in docs/lion-workflow.json. node tools/lion-status.ts prints them; its selftest
