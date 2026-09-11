@@ -318,30 +318,28 @@ function execEntries(zip: string): { names: string[]; exec: string[] } {
 }
 
 function agentZip(): void {
-  // Two artefacts ship the same helper: the SHA-pinned one-file zip that da.gd/lzr
-  // still serves, and the branch zip that also carries the relay page. The invariant
-  // that matters is not "one file" - it is "exactly one executable, and it is the
-  // .command", so a double-click cannot pick up a stray binary.
-  const zips: { path: string; want: string[]; label: string }[] = [
-    { path: ZIP, want: [SCRIPT], label: 'Z-pin' },
-    { path: ZIP2, want: [SCRIPT, PAGE], label: 'Z-page' },
-  ];
-  for (const z of zips) {
-    if (!existsSync(z.path)) {
-      fail(`${z.label}-exists`, `${z.path} missing`);
+  // Both zip names carry the SAME bytes on purpose. da.gd/lmz resolves to a jsDelivr
+  // branch path that the CDN caches for ~12h, so a cache that has not refreshed must
+  // still land the operator the relay page: either name works, and the new name exists
+  // so a fresh cache lookup can never serve the pre-page archive.
+  const want = [SCRIPT, PAGE];
+  for (const z of [ZIP, ZIP2]) {
+    if (!existsSync(z)) {
+      fail('Z-exists', `${z} missing`);
       continue;
     }
-    const { names, exec } = execEntries(z.path);
+    const { names, exec } = execEntries(z);
     const sorted = names.slice().sort().join(',');
-    const want = z.want.slice().sort().join(',');
-    if (sorted !== want) fail(`${z.label}-entries`, sorted);
-    else pass(`${z.label}-entries`, sorted);
-    if (exec.length !== 1 || exec[0] !== SCRIPT) fail(`${z.label}-exec`, exec.join(',') || 'none');
-    else pass(`${z.label}-exec`, 'unix exec bit on ' + SCRIPT);
+    if (sorted !== want.slice().sort().join(',')) fail(`Z-entries:${z}`, sorted);
+    else pass(`Z-entries:${z}`, sorted);
+    // the invariant that actually matters: exactly one executable, and it is the helper
+    if (exec.length !== 1 || exec[0] !== SCRIPT) fail(`Z-exec:${z}`, exec.join(',') || 'none');
+    else pass(`Z-exec:${z}`, 'unix exec bit on ' + SCRIPT);
   }
-  const info = execFileSync('zipinfo', ['-l', ZIP2], { encoding: 'utf8' });
-  if (!/-rw-r--r--.*lion\.html/.test(info.replace(/\s+/g, ' ')) && !/lion\.html/.test(info)) fail('Z-html-mode', 'page not world-readable in zip');
-  else pass('Z-html-mode', 'lion.html non-exec');
+  const a = execFileSync('sha256sum', [ZIP, ZIP2], { encoding: 'utf8' }).split('\n');
+  const hash = (l: string) => l.trim().split(/\s+/)[0];
+  if (a.length < 2 || hash(a[0]) !== hash(a[1])) fail('Z-identical', 'the two zips diverged');
+  else pass('Z-identical', hash(a[0]).slice(0, 12));
 }
 
 function main(): void {
