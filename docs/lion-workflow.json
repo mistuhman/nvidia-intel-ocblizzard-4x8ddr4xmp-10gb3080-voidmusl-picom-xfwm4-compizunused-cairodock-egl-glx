@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator last reported: launched 10.6 on Lion SSD Base, selected ESD. Outcome of that Option-boot is UNVERIFIED (no photo after the volume-root bless). Ask for a photograph of the current Mac screen. Do not assume installer GUI. Do not Restart until the photo is read.",
+  "nextAction": "Operator: open the relay page (links.pageBranch, a click - nothing to type), press Reload in Commands, then in the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report as text/plain plus a verdict query; the agent reads links.logRead itself and replies with the verdict quote and the single next action.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -75,12 +75,30 @@
         "url": "https://da.gd/lup",
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
-    ]
+    ],
+    "zipEquivalence": "VERIFIED 2026-09-10: lion-mirror.zip on the pinned 7333b49 tag, on this branch, and in the working tree are all git blob 660617a1e9f4c2dbb92b0aa743dd62e78c381237 (2600 bytes). lzr and lmz serve the same bytes, so the 12h jsDelivr branch cache cannot hand the Mac a stale helper right now.",
+    "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
+    "pageBranch": {
+      "type": "htmlpreview (branch)",
+      "url": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion.html",
+      "job": "relay page rev 2: reads the Desktop report with FileReader and POSTs it three ways - text/plain body (agent-readable), ?log= verdict query (agent-readable), and the original multipart file for the archive. Also pulls etc/lion-command.txt from the branch so the operator never types a command."
+    },
+    "branchZip2": {
+      "type": "jsDelivr (branch)",
+      "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip",
+      "job": "two files: lion-mirror.command (exec bit) + lion.html (rev 2 page). Burn on the new page fetches this. New filename on purpose: jsDelivr caches the branch 12h and lion-mirror.zip is already cached."
+    },
+    "logRead": {
+      "type": "webhook API",
+      "url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5",
+      "job": "the agent reads this with fetch_page and takes the newest entry whose content begins with LIONMIRROR1; that content IS the report."
+    },
+    "openItem": "da.gd/lmz still resolves to lion-mirror.zip (single-file helper) and da.gd is unreachable from the sandbox, so no agent can repoint it. To move lmz onto the two-file zip, mint a new write-once slug from a machine that can reach da.gd, or keep using the jsDelivr URL above."
   },
   "helper": {
     "command": "lion-mirror.command",
     "zip": "lion-mirror.zip",
-    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair ESD boot — remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair.",
+    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair Mac OS X Install ESD boot - remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair. lion-mirror2.zip ships the same helper plus the rev 2 relay page.",
     "doesNot": [
       "asr",
       "erase any disk",
@@ -89,7 +107,8 @@
       "touch Lion SSD Base or start disk clone as a target"
     ],
     "report": "~/Desktop/lion-mirror.txt",
-    "slTest": "node tools/lion-mirror-sl-test.ts"
+    "slTest": "node tools/lion-mirror-sl-test.ts",
+    "zipPage": "lion-mirror2.zip"
   },
   "tools": [
     {
@@ -131,12 +150,33 @@
     "bless --file CoreServices/boot.efi (wrong file; Option-ESD falls through to Lion SSD Base)",
     "Power the APEX",
     "Double-click lion-installer-boot-audit.command or the withdrawn injector",
-    "Rewrite ToDo.md"
+    "Rewrite ToDo.md",
+    "Read the inbox with curl from the agent sandbox (filtered) - use fetch_page on links.logRead",
+    "Rely on a multipart attach as delivery to the agent: content stays empty for file uploads"
   ],
   "operatorConstraints": [
     "One physical action per message",
     "Mac commands: pasteable bash, one command per line, no chaining; this Mac path prefers Arctic Fox + Burn/Repair .command, not Terminal",
     "da.gd slugs are write-once",
     "Keep-as-Mac 2026-09-08i: transplant CLOSED"
-  ]
+  ],
+  "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
+  "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
+  "glossary": {
+    "burned": "report .txt attached on da.gd/lpg and POSTed to the webhook inbox - NOT a download, NOT a Repair run",
+    "burnButton": "the Burn link on da.gd/lpg, fetches lion-mirror.zip from da.gd/lmz",
+    "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
+    "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
+  },
+  "status": "2026-09-10 late: relay page shipped (lion.html rev 2) so burns become agent-readable. Today 19:16-ish burns (14:02..17:16) were multipart-only, so their bytes are still unread - the file must be re-picked once on the new page. Repair outcome therefore UNVERIFIED; Option-boot gate stays closed.",
+  "relay": {
+    "page": "lion.html",
+    "files": [
+      "lion-mirror.command",
+      "lion.html"
+    ],
+    "zip": "lion-mirror2.zip",
+    "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
+    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)"
+  }
 }

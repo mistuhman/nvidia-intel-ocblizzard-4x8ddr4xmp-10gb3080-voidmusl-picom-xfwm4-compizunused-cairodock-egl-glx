@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 image-search/
+
+# compiled render prompts are object files: regenerate with `node tools/mac-storage-art.ts prompt --plate=ID --pass=N`
+receipts/mac-art/prompts/

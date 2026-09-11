@@ -1,0 +1,31 @@
+LION-SSD | gate 1 of 1 | relay today's Repair report, then stop
+
+DO NOW (clicks only, nothing to type):
+1. On this page click Burn (or the da.gd/lmz link) and unzip on the Desktop.
+   The branch zip carries lion-mirror.command AND this page as lion.html.
+2. Double-click lion.html on the Desktop so the page runs locally too.
+3. In the Log box choose ~/Desktop/lion-mirror.txt. One selection sends:
+   the verdict lines as text/plain, the same lines as a ?log= query,
+   and the whole file as the original multipart attach.
+4. Reply here with the single word: sent
+
+WHY THIS PAGE EXISTS (agent-verified 2026-09-10):
+The inbox list is readable anonymously, but it stores only metadata for a
+multipart upload - "content" is empty and the per-request and file download
+routes are owner-authenticated. So every burn so far was delivered and unread.
+A text/plain body lands in "content" instead, which the agent can read.
+
+BURNS ALREADY IN THE INBOX (metadata the agent could see):
+14:02 7199B, 14:25 4185B, 14:32 4185B, 14:33 7564B, 14:46 7564B,
+14:48 4826B, 14:59 4930B, 15:02 4902B (uuid 3dc2ab98 = lastVerifiedBless),
+17:16 4902B (newest = today's Repair run).
+
+HOLD until the agent reads the summary:
+- no Restart, no Option-boot, no second Repair
+- never erase Lion SSD Base or start disk clone, never remirror Bay 4
+- never run lion-installer-date-fix.command, never visit da.gd/lionfix or da.gd/lup
+
+RELEASED ONLY BY THE NEXT COMMAND FILE:
+Option at the chime, choose "Mac OS X Install ESD", install onto
+"start disk clone" (Bay 3 MX500), do not erase, then create the new admin
+account after the first Lion boot.

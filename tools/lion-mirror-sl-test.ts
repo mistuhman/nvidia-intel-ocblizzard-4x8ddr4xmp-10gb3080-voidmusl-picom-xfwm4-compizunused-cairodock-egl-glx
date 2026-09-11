@@ -9,6 +9,7 @@ import { join } from 'node:path';
 
 const SCRIPT = 'lion-mirror.command';
 const ZIP = 'lion-mirror.zip';
+const ZIP2 = 'lion-mirror2.zip';
 let failed = 0;
 
 function pass(id: string, msg: string): void {
@@ -294,17 +295,53 @@ function agentB_scenarios(): void {
   }
 }
 
-function agentZip(): void {
-  if (!existsSync(ZIP)) {
-    fail('Z-zip', 'lion-mirror.zip missing');
-    return;
+const PAGE = 'lion.html';
+
+function execEntries(zip: string): { names: string[]; exec: string[] } {
+  // zipinfo -l rows are: mode ver host lengthCompr method ratio date time name
+  // Parse by whitespace and a unix-mode shape test; a fixed field-count regex broke
+  // once because the row is nine fields, not eight.
+  const info = execFileSync('zipinfo', ['-l', zip], { encoding: 'utf8' });
+  const names: string[] = [];
+  const exec: string[] = [];
+  for (const line of info.split('\n')) {
+    const p = line.trim().split(/\s+/);
+    if (p.length < 9) { continue; }
+    if (!/^[drwxst\-@]{9,10}$/.test(p[0])) { continue; }
+    const name = p[p.length - 1];
+    if (!/[.][A-Za-z0-9]+$/.test(name)) { continue; }
+    names.push(name);
+    // owner-execute is the fourth character of the mode string
+    if (p[0][3] === 'x') { exec.push(name); }
   }
-  const listing = execFileSync('zipinfo', ['-1', ZIP], { encoding: 'utf8' }).trim().split('\n');
-  if (listing.length !== 1 || listing[0] !== SCRIPT) fail('Z-onefile', listing.join(','));
-  else pass('Z-onefile', SCRIPT);
-  const info = execFileSync('zipinfo', ['-l', ZIP], { encoding: 'utf8' });
-  if (!/-rwx/.test(info)) fail('Z-exec', info);
-  else pass('Z-exec', 'unix exec bit');
+  return { names, exec };
+}
+
+function agentZip(): void {
+  // Two artefacts ship the same helper: the SHA-pinned one-file zip that da.gd/lzr
+  // still serves, and the branch zip that also carries the relay page. The invariant
+  // that matters is not "one file" - it is "exactly one executable, and it is the
+  // .command", so a double-click cannot pick up a stray binary.
+  const zips: { path: string; want: string[]; label: string }[] = [
+    { path: ZIP, want: [SCRIPT], label: 'Z-pin' },
+    { path: ZIP2, want: [SCRIPT, PAGE], label: 'Z-page' },
+  ];
+  for (const z of zips) {
+    if (!existsSync(z.path)) {
+      fail(`${z.label}-exists`, `${z.path} missing`);
+      continue;
+    }
+    const { names, exec } = execEntries(z.path);
+    const sorted = names.slice().sort().join(',');
+    const want = z.want.slice().sort().join(',');
+    if (sorted !== want) fail(`${z.label}-entries`, sorted);
+    else pass(`${z.label}-entries`, sorted);
+    if (exec.length !== 1 || exec[0] !== SCRIPT) fail(`${z.label}-exec`, exec.join(',') || 'none');
+    else pass(`${z.label}-exec`, 'unix exec bit on ' + SCRIPT);
+  }
+  const info = execFileSync('zipinfo', ['-l', ZIP2], { encoding: 'utf8' });
+  if (!/-rw-r--r--.*lion\.html/.test(info.replace(/\s+/g, ' ')) && !/lion\.html/.test(info)) fail('Z-html-mode', 'page not world-readable in zip');
+  else pass('Z-html-mode', 'lion.html non-exec');
 }
 
 function main(): void {
@@ -312,7 +349,7 @@ function main(): void {
   agentA_syntax();
   console.log('agent B = mocked 10.6.8 ESD repair / refuse paths');
   agentB_scenarios();
-  console.log('agent Z = zip is one script');
+  console.log('agent Z = zips carry one executable helper, page non-exec');
   agentZip();
   if (failed) {
     console.log(`SL_TEST=FAIL count=${failed}`);

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024" font-family="Helvetica, Arial, sans-serif">
+<rect width="1536" height="1024" fill="#05070A"/>
+<text x="24" y="42" fill="#E8EDF4" font-size="28" font-weight="700" letter-spacing="2">APPLERAID-FREE PATH — HARDWARE RAID 5 MAP FOR BTC COLD STORAGE</text>
+<path d="M 1379.9,61.4 L 1379.9,102.4 L 768.0,122.9 L 156.1,102.4 L 156.1,61.4 L 768.0,41.0 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="75.4" y="71.0" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BTC COLD VAULT</text>
+<text x="75.4" y="99.0" fill="#A9B6C6" font-size="11">Mac Pro 1,1 · boot SSD on the logic board + three 1 TB HDDs as a hardware RAID 5 set on a PCIe controller.</text>
+<path d="M 378.8,261.1 L 378.8,373.8 L 245.8,430.1 L 112.7,373.8 L 112.7,261.1 L 245.8,204.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="106.2" y="234.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BOOT SSD</text>
+<text x="106.2" y="262.8" fill="#A9B6C6" font-size="11">Lion SSD Base — 1 TB 2.5in SATA SSD — boot</text>
+<text x="106.2" y="277.1" fill="#A9B6C6" font-size="11">volume 10.6.8 to 10.7 — Mac OS Extended</text>
+<text x="106.2" y="291.4" fill="#A9B6C6" font-size="11">(Journaled), GUID — DELIBERATELY NOT a member</text>
+<text x="106.2" y="305.7" fill="#A9B6C6" font-size="11">of the RAID set.</text>
+<path d="M 751.5,202.2 L 751.5,279.0 L 645.1,317.4 L 538.7,279.0 L 538.7,202.2 L 645.1,163.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="536.2" y="193.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">1 TB HDD</text>
+<text x="536.2" y="221.8" fill="#A9B6C6" font-size="11">Member 0 — Bay 2 — 1 TB 3.5in HDD —</text>
+<text x="536.2" y="236.1" fill="#A9B6C6" font-size="11">3 Gb/s — channel 1 of the RAID</text>
+<text x="536.2" y="250.4" fill="#A9B6C6" font-size="11">controller.</text>
+<path d="M 751.5,386.6 L 751.5,463.4 L 645.1,501.8 L 538.7,463.4 L 538.7,386.6 L 645.1,348.2 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="536.2" y="378.2" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">1 TB HDD</text>
+<text x="536.2" y="406.2" fill="#A9B6C6" font-size="11">Member 1 — Bay 3 — 1 TB 3.5in HDD —</text>
+<text x="536.2" y="420.5" fill="#A9B6C6" font-size="11">3 Gb/s — channel 2 of the RAID</text>
+<text x="536.2" y="434.8" fill="#A9B6C6" font-size="11">controller.</text>
+<path d="M 751.5,570.9 L 751.5,647.7 L 645.1,686.1 L 538.7,647.7 L 538.7,570.9 L 645.1,532.5 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="536.2" y="562.5" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">1 TB HDD</text>
+<text x="536.2" y="590.5" fill="#A9B6C6" font-size="11">Member 2 — Bay 4 — 1 TB 3.5in HDD —</text>
+<text x="536.2" y="604.8" fill="#A9B6C6" font-size="11">3 Gb/s — channel 3 of the RAID</text>
+<text x="536.2" y="619.1" fill="#A9B6C6" font-size="11">controller.</text>
+<path d="M 1090.5,343.0 L 1090.5,496.6 L 990.7,573.4 L 891.0,496.6 L 891.0,343.0 L 990.7,266.2 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="889.5" y="296.2" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">RAID 5</text>
+<text x="889.5" y="324.2" fill="#A9B6C6" font-size="11">Distributed parity striping</text>
+<text x="889.5" y="338.5" fill="#A9B6C6" font-size="11">across three members: 3 TB raw</text>
+<text x="889.5" y="352.8" fill="#A9B6C6" font-size="11">becomes 2 TB usable ((n-1) x</text>
+<text x="889.5" y="367.1" fill="#A9B6C6" font-size="11">member), survives the loss of any</text>
+<text x="889.5" y="381.4" fill="#A9B6C6" font-size="11">one member, rebuilds onto a</text>
+<text x="889.5" y="395.7" fill="#A9B6C6" font-size="11">replacement drive. Not</text>
+<text x="889.5" y="410.0" fill="#A9B6C6" font-size="11">expressible in Disk Utility —</text>
+<text x="889.5" y="424.3" fill="#A9B6C6" font-size="11">AppleRAID is stripe/mirror/concat</text>
+<text x="889.5" y="438.6" fill="#A9B6C6" font-size="11">only.</text>
+<path d="M 1427.4,343.0 L 1427.4,496.6 L 1321.0,573.4 L 1214.5,496.6 L 1214.5,343.0 L 1321.0,266.2 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="1212.1" y="296.2" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">BTC COLD VAULT</text>
+<text x="1212.1" y="324.2" fill="#A9B6C6" font-size="11">2 TB usable — Mac OS Extended</text>
+<text x="1212.1" y="338.5" fill="#A9B6C6" font-size="11">(Journaled), GUID partition map —</text>
+<text x="1212.1" y="352.8" fill="#A9B6C6" font-size="11">mount point /Volumes/BTCColdVault —</text>
+<text x="1212.1" y="367.1" fill="#A9B6C6" font-size="11">exported and unmounted when not in</text>
+<text x="1212.1" y="381.4" fill="#A9B6C6" font-size="11">use, no auto-mount at login.</text>
+<path d="M 1382.1,783.4 L 1382.1,834.6 L 983.0,860.2 L 584.0,834.6 L 584.0,783.4 L 983.0,757.8 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="536.2" y="787.8" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">2 TB USABLE</text>
+<text x="536.2" y="815.8" fill="#A9B6C6" font-size="11">Capacity plan: ~700 GB Bitcoin full chain (2026, still growing) + chainstate + wallet + headroom inside 2 TB usable. A pruned node needs only a few</text>
+<text x="536.2" y="830.1" fill="#A9B6C6" font-size="11">GB.</text>
+<path d="M 436.1,650.2 L 436.1,783.4 L 276.5,849.9 L 116.9,783.4 L 116.9,650.2 L 276.5,583.7 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="106.2" y="613.7" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">NOT A BACKUP</text>
+<text x="106.2" y="641.7" fill="#A9B6C6" font-size="11">RAID 5 is redundancy, not backup. A rebuild reads 2 TB:</text>
+<text x="106.2" y="656.0" fill="#A9B6C6" font-size="11">about a 15% chance of an unrecoverable read error on</text>
+<text x="106.2" y="670.3" fill="#A9B6C6" font-size="11">1e14-rated consumer drives, about 1.5% on 1e15</text>
+<text x="106.2" y="684.6" fill="#A9B6C6" font-size="11">enterprise drives. Seeds and keys stay offline on paper</text>
+<text x="106.2" y="698.9" fill="#A9B6C6" font-size="11">or steel, never on this array.</text>
+<path d="M 1379.9,883.2 L 1379.9,908.8 L 768.0,921.6 L 156.1,908.8 L 156.1,883.2 L 768.0,870.4 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="75.4" y="900.4" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">HFS+J · GUID · 3 GB/S</text>
+<text x="75.4" y="928.4" fill="#A9B6C6" font-size="11">Volume format Mac OS Extended (Journaled) on GUID — APFS is not mountable by 10.7. Every drive is SATA 3 Gb/s; the PCIe 1.0 x4 uplink is about 1 GB/s and is not the bottleneck for three HDDs.</text>
+<path d="M 1090.5,617.0 L 1090.5,663.0 L 990.7,686.1 L 891.0,663.0 L 891.0,617.0 L 990.7,593.9 Z" fill="#0A0E14" fill-opacity="0.72" stroke="#E8EDF4" stroke-opacity="0.55" stroke-width="2"/>
+<text x="889.5" y="623.9" fill="#E8EDF4" font-size="20" font-weight="700" letter-spacing="1.5">PCIE · SLOT 4</text>
+<text x="889.5" y="651.9" fill="#A9B6C6" font-size="11">Three HDD channels pass through</text>
+<text x="889.5" y="666.2" fill="#A9B6C6" font-size="11">the PCIe 1.0 x4 RAID controller</text>
+<text x="889.5" y="680.5" fill="#A9B6C6" font-size="11">in slot 4, about 1 GB/s uplink.</text>
+</svg>
