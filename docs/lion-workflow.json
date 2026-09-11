@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Current readable LIONMIRROR1 report received and reviewed: Repair verified, Mac OS X Install ESD is blessed, and no disk was erased. Next single physical wave is Apple menu > Restart, hold Option at the chime, and choose Mac OS X Install ESD only. If no-sign or HDMI timing error appears, stop and photograph it; if the installer GUI opens normally, stop there for the next target-selection wave. Do not erase either SSD.",
+  "nextAction": "The first released Option-boot attempt selected Mac OS X Install ESD, showed a brief prohibitory symbol, then an Apple logo/spinner, and returned to the Snow Leopard login; the installer GUI was not reached and no disk was erased. Do not run the withdrawn desktop audit/date-fix files, repeat Repair, or remirror Bay 4. Next single diagnostic wave: restart, hold Option, select Mac OS X Install ESD, and capture the boot screen/verbose text with the phone; stop at the first failure or fallback. Do not select an install destination.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -189,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: PR #79 is open from the fixed session branch. Current phone links are da.gd/lionrelay (page) and da.gd/lionzip (bundle), both verified with da.gd coshorten receipts. Readable report uuid 2ad981cf was received through the current relay with burned: text=ok query=ok; Repair is verified and the Option-boot wave is released. No Lion installation has occurred yet; stop at the normal installer GUI before selecting the target.",
+  "status": "2026-09-11: readable report uuid 2ad981cf verified Repair/bless and no disk erase. The released Option-boot attempt selected Mac OS X Install ESD but briefly showed prohibitory, then Apple logo/spinner, then returned to Snow Leopard; installer GUI not reached and Lion remains uninstalled. Do not use withdrawn audit/date-fix files, repeat Repair, or remirror Bay 4; collect a boot-screen/verbose receipt on the next controlled diagnostic wave.",
   "relay": {
     "page": "lion.html",
     "files": [
@@ -200,5 +200,12 @@
     "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
     "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)",
     "commands": "etc/lion-command.txt - the text the Commands panel renders. An agent edit is visible on the Mac within ~5 min after push to the session branch, then permanently once merged to main."
+  },
+  "lastOptionBootAttempt": {
+    "when": "2026-09-11, user photo/report (desktop clock displayed Fri 4:19 PM)",
+    "selected": "Mac OS X Install ESD",
+    "screen": "brief prohibitory symbol, then white-background Apple logo with loading sign, then Snow Leopard login",
+    "result": "installer GUI not reached; Mac returned to Snow Leopard; no disk erased",
+    "interpretation": "ESD boot handoff begins but fails before the Lion installer GUI; the helper text report cannot record this post-boot screen path"
   }
 }

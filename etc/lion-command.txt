@@ -15,13 +15,24 @@ REPORT READ BY THE AGENT:
 - bless OK; volume-root /Volumes/Mac OS X Install ESD/boot.efi; finderinfo 2078
 - ESD boot repaired. No disk was erased. Lion is NOT installed yet.
 
-NEXT SINGLE MAC WAVE — OPTION-BOOT THE ESD, THEN STOP:
-1. From Snow Leopard choose Apple menu > Restart.
-2. At the chime hold Option and choose "Mac OS X Install ESD" only.
-3. If a no-sign or HDMI timing error appears, stop and photograph it. If the installer GUI opens
-   normally, stop at its first screen and send the screen here; do not select a destination yet.
+RESULT OF THE RELEASED OPTION-BOOT WAVE:
+The operator selected "Mac OS X Install ESD". The screen showed a prohibitory symbol briefly,
+then a white-background Apple logo/loading sign, then returned to the Snow Leopard login.
+The installer GUI was not reached and no disk was erased. The text report cannot record this
+post-boot screen path because it runs before the reboot.
 
-AFTER THE INSTALLER SCREEN IS RELEASED:
+DO NOT:
+- double-click the visible lion-installer-boot-audit or lion-installer-date-fix files
+- run the withdrawn injector/date-fix path, repeat Repair, or remirror Bay 4
+
+NEXT SINGLE DIAGNOSTIC WAVE — CAPTURE THE BOOT HANDOFF:
+1. Aim the phone camera at the monitor and use video if possible.
+2. From Snow Leopard choose Apple menu > Restart.
+3. At the chime hold Option and choose "Mac OS X Install ESD" only. If possible, use Command-V
+   for verbose boot text after selecting it. Stop at the first prohibitory/error/fallback and send
+   the screen or last visible text. Do not select an install destination.
+
+AFTER THE INSTALLER SCREEN IS PROVEN:
 Choose the existing "start disk clone" on the Bay 3 MX500 as the destination. Do not erase it.
 Do not erase "Lion SSD Base". After the first Lion boot, create the requested new administrator.
 

@@ -19,9 +19,9 @@ On Lion SSD Base: use da.gd/lionzip, unzip, double-click lion.html,
 admin password, Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lionrelay.
 
 The 2026-09-11 readable report is verified: Repair and bless succeeded, and no disk was erased.
-Next one-action wave: from Snow Leopard choose Restart, hold Option at the chime, and click Mac OS X Install ESD only.
-If the installer GUI opens normally, stop there for the target-selection wave. If no-sign or HDMI timing error appears, stop and photograph it.
-Do not erase start disk clone or Lion SSD Base.
+The released ESD attempt showed a brief prohibitory symbol, then Apple logo/loading, then returned to Snow Leopard; no installer GUI appeared.
+Next one-action diagnostic: use phone video if possible, restart, hold Option, click Mac OS X Install ESD only, and capture the first failure/fallback or verbose text.
+Do not run the visible withdrawn audit/date-fix files. Do not erase start disk clone or Lion SSD Base.
 
 Canonical links + nextAction: docs/lion-workflow.json
 Print: node tools/lion-status.ts

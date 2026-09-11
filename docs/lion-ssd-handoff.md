@@ -27,7 +27,8 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - Option-boot of ESD **did** reach the installer GUI once, then VGA→HDMI **timing error**.
 - `Graphics Mode` in Apple `com.apple.Boot.plist` caused the **prohibitory sign**; firmware fell through to Lion SSD Base.
 - Last successful helper log blessed **volume-root** `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078) — same as the GUI-reaching asr bless. CoreServices `boot.efi` is Jul 29 2012; do not bless that file.
-- Current readable report (webhook uuid `2ad981cf`, 4902 bytes / 124 lines) confirms Repair, cleared Graphics Mode/nvram, volume-root bless of `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078), and **no disk erased**. The next one-action wave is Restart, hold Option at the chime, and choose `Mac OS X Install ESD`; stop at a no-sign/HDMI timing error, or at the normal installer GUI before selecting a destination.
+- Current readable report (webhook uuid `2ad981cf`, 4902 bytes / 124 lines) confirms Repair, cleared Graphics Mode/nvram, volume-root bless of `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078), and **no disk erased**.
+- Released Option-boot attempt: operator selected `Mac OS X Install ESD`; a prohibitory symbol appeared briefly, followed by the Apple logo/loading sign, then the Mac returned to the Snow Leopard login. Installer GUI was not reached. Next one-action diagnostic is a phone-video/verbose capture of that handoff; do not run the withdrawn audit/date-fix files, repeat Repair, or remirror Bay 4.
 
 ## Live links (Arctic Fox)
 
