@@ -1,45 +1,52 @@
-LION-SSD | gate 1 of 1 | Repair verified; release the Option picker one wave at a time
+LION-SSD | gate 1 of 1 | capture the ESD boot handoff as a root-level text report
 
 STATE: the current session branch carries the reproducible relay page and bundle.
 Use only these short links from the phone into Arctic Fox; never use TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
-  da.gd/lionzip    current helper + relay bundle
+  da.gd/lionzip    current three-file bundle
 
-REPORT READ BY THE AGENT:
+CURRENT BUNDLE:
+- lion-mirror.command      current ESD Repair helper; do not run it again now
+- lion-boot-log.command    safe post-fallback boot-handoff collector
+- lion.html                relay page
+
+WHY THIS LOG: the EFI/boot.efi screen runs before Snow Leopard's shell and cannot
+redirect its console text into a file after the fallback. The collector therefore
+records the operator's observed screen result plus read-only NVRAM boot keys, dmesg,
+system.log, disk inventory, ESD boot files, and bless metadata. It does not repair,
+bless, mount, erase, restore, set the clock, or change NVRAM.
+
+REPORT ALREADY READ BY THE AGENT:
 2026-09-11 16:10:02 PDT | webhook uuid 2ad981cf | 4902 bytes | 124 lines
-- BOOT volume: Lion SSD Base, /dev/disk0s2, Bay 1, Snow Leopard 10.6.8
-- INSTALLER: Mac OS X Install ESD, /dev/disk2s2, Bay 4
-- TARGET: start disk clone, /dev/disk1s2, Bay 3 MX500
 - Repair confirmed; Graphics Mode removed; nvram Graphics Mode absent
 - bless OK; volume-root /Volumes/Mac OS X Install ESD/boot.efi; finderinfo 2078
-- ESD boot repaired. No disk was erased. Lion is NOT installed yet.
+- ESD boot repaired. No disk was erased.
 
-RESULT OF THE RELEASED OPTION-BOOT WAVE:
-The operator selected "Mac OS X Install ESD". The screen showed a prohibitory symbol briefly,
-then a white-background Apple logo/loading sign, then returned to the Snow Leopard login.
-The installer GUI was not reached and no disk was erased. The text report cannot record this
-post-boot screen path because it runs before the reboot.
+RELEASED OPTION-BOOT RESULT:
+The operator selected Mac OS X Install ESD. The screen showed a prohibitory
+symbol briefly, then a white-background Apple logo/loading sign, then returned
+to the Snow Leopard login. The installer GUI was not reached.
+
+DO NOW — ONE DIAGNOSTIC/LOGGING WAVE, NO REBOOT:
+1. Type da.gd/lionzip into Arctic Fox and download the current bundle.
+2. Unzip it on the Desktop. Double-click lion-boot-log.command only.
+3. In its one screen-result dialog choose "Prohibitory then fallback".
+4. The command writes the canonical root-level file /lion-boot-log.txt and a Finder-
+   friendly duplicate ~/Desktop/lion-boot-log.txt. It only reads the disks/logs/NVRAM;
+   it does not change them.
+5. Open da.gd/lionrelay and choose the Desktop copy lion-boot-log.txt. Wait for
+   burned: text=ok query=ok, then reply here with one word: burned
 
 DO NOT:
 - double-click the visible lion-installer-boot-audit or lion-installer-date-fix files
-- run the withdrawn injector/date-fix path, repeat Repair, or remirror Bay 4
-
-NEXT SINGLE DIAGNOSTIC WAVE — CAPTURE THE BOOT HANDOFF:
-1. Aim the phone camera at the monitor and use video if possible.
-2. From Snow Leopard choose Apple menu > Restart.
-3. At the chime hold Option and choose "Mac OS X Install ESD" only. If possible, use Command-V
-   for verbose boot text after selecting it. Stop at the first prohibitory/error/fallback and send
-   the screen or last visible text. Do not select an install destination.
-
-AFTER THE INSTALLER SCREEN IS PROVEN:
-Choose the existing "start disk clone" on the Bay 3 MX500 as the destination. Do not erase it.
-Do not erase "Lion SSD Base". After the first Lion boot, create the requested new administrator.
-
-DO NOT:
-- run a second Repair, remirror Bay 4, or run lion-installer-date-fix.command
-- touch Lion SSD Base or start disk clone with erase tools
+- run the withdrawn injector/date-fix path, lion-mirror.command, or another Repair
+- remirror Bay 4 or erase Lion SSD Base / start disk clone
+- perform another reboot until the root-level report is read
 - visit da.gd/lionfix or da.gd/lup
-- power or troubleshoot the APEX before Lion is booted and proven
 
-The report receipt was: burned: text=ok query=ok.
+AFTER THE AGENT READS BOOTLOG1:
+The next physical action will be chosen from the text receipt. Lion installation
+remains pending; the Bay 3 start disk clone remains preserved.
+
+The previous readable receipt was: burned: text=ok query=ok.

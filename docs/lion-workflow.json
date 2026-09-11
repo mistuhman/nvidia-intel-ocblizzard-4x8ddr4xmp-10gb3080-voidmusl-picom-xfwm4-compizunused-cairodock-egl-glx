@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "The first released Option-boot attempt selected Mac OS X Install ESD, showed a brief prohibitory symbol, then an Apple logo/spinner, and returned to the Snow Leopard login; the installer GUI was not reached and no disk was erased. Do not run the withdrawn desktop audit/date-fix files, repeat Repair, or remirror Bay 4. Next single diagnostic wave: restart, hold Option, select Mac OS X Install ESD, and capture the boot screen/verbose text with the phone; stop at the first failure or fallback. Do not select an install destination.",
+  "nextAction": "The released Option-boot selected Mac OS X Install ESD, showed a brief prohibitory symbol, then an Apple logo/spinner, and returned to Snow Leopard; installer GUI was not reached and no disk was erased. Current next single diagnostic wave is to download da.gd/lionzip, double-click the bundled lion-boot-log.command, choose Prohibitory then fallback, and attach ~/Desktop/lion-boot-log.txt through da.gd/lionrelay. The command also writes the canonical /lion-boot-log.txt and does not alter disks, NVRAM, bless state, or the clock. Do not reboot or select a destination until BOOTLOG1 is read.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -76,7 +76,7 @@
     "logInbox": {
       "type": "webhook.site",
       "url": "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6",
-      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt here from the current relay page."
+      "job": "Arctic Fox POSTs ~/Desktop/lion-mirror.txt or ~/Desktop/lion-boot-log.txt here from the current relay page."
     },
     "withdrawn": [
       {
@@ -90,7 +90,7 @@
         "why": "write-once. Dead e2b.app sandbox. Arctic Fox got Sandbox Not Found."
       }
     ],
-    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob 48fc5246545fbd378c16d5e6e7cb761022c2f04e (SHA-256 e5a342df311c599c4db3f408ee0e5b69737975928606a0783d943f25ae3a855e; 2 entries: executable helper + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
+    "zipEquivalence": "VERIFIED 2026-09-11: current-session lion-mirror.zip and lion-mirror2.zip are byte-identical git blob 5501fbf3819661a6d033718286920363aea8c3ff (SHA-256 fdd04f26f422c722fae10fc8bef9afa4b646940a7f5aa14bd22f9626c62b173a; 3 entries: executable helper + executable boot-log collector + relay page). The current phone bundle is da.gd/lionzip; legacy lzr/lmz are not asserted equivalent.",
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",
@@ -118,7 +118,7 @@
   "helper": {
     "command": "lion-mirror.command",
     "zip": "lion-mirror.zip",
-    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair Mac OS X Install ESD boot - remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair. lion-mirror2.zip ships the same helper plus the rev 2 relay page.",
+    "job": "Snow Leopard 10.6.8 double-click helper. Current: Repair Mac OS X Install ESD boot - remove Graphics Mode Boot.plist, nvram -d Graphics Mode, bless --folder CoreServices --file VOLUME-ROOT boot.efi --label Mac OS X Install ESD. Confirm button Repair. lion-mirror2.zip ships the same helper, the safe lion-boot-log.command collector, and the rev 2 relay page.",
     "doesNot": [
       "asr",
       "erase any disk",
@@ -139,7 +139,7 @@
     {
       "path": "tools/lion-mirror-sl-test.ts",
       "run": "node tools/lion-mirror-sl-test.ts",
-      "job": "Agents A/B/Z: 10.6.8 syntax (dash/posix), mocked bless/nvram/osascript refuse paths, zip is one executable script"
+      "job": "Agents A/B/Z: 10.6.8 syntax (dash/posix), mocked bless/nvram/osascript refuse paths, zip has executable Repair + boot-log tools and a non-executable page"
     },
     {
       "path": "tools/lion-phone-agent.ts",
@@ -189,17 +189,18 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: readable report uuid 2ad981cf verified Repair/bless and no disk erase. The released Option-boot attempt selected Mac OS X Install ESD but briefly showed prohibitory, then Apple logo/spinner, then returned to Snow Leopard; installer GUI not reached and Lion remains uninstalled. Do not use withdrawn audit/date-fix files, repeat Repair, or remirror Bay 4; collect a boot-screen/verbose receipt on the next controlled diagnostic wave.",
+  "status": "2026-09-11: readable Repair report uuid 2ad981cf verified bless and no disk erase. The released ESD Option-boot showed a brief prohibitory symbol, then Apple logo/spinner, then returned to Snow Leopard; installer GUI not reached. Current bundle now includes the read-only lion-boot-log.command, which writes /lion-boot-log.txt plus a Desktop copy for the da.gd/lionrelay receipt. No second Repair, remirror, date fix, or destination selection is authorized.",
   "relay": {
     "page": "lion.html",
     "files": [
       "lion-mirror.command",
+      "lion-boot-log.command",
       "lion.html"
     ],
     "zip": "lion-mirror2.zip",
     "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
-    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)",
-    "commands": "etc/lion-command.txt - the text the Commands panel renders. An agent edit is visible on the Mac within ~5 min after push to the session branch, then permanently once merged to main."
+    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly two executable entries (repair + boot-log) and the page is non-executable)",
+    "commands": "etc/lion-command.txt - the text the Commands panel renders. It now carries the safe root-level boot-log wave; a push to the session branch is visible in ~5 min via raw."
   },
   "lastOptionBootAttempt": {
     "when": "2026-09-11, user photo/report (desktop clock displayed Fri 4:19 PM)",
@@ -207,5 +208,13 @@
     "screen": "brief prohibitory symbol, then white-background Apple logo with loading sign, then Snow Leopard login",
     "result": "installer GUI not reached; Mac returned to Snow Leopard; no disk erased",
     "interpretation": "ESD boot handoff begins but fails before the Lion installer GUI; the helper text report cannot record this post-boot screen path"
+  },
+  "diagnostic": {
+    "command": "lion-boot-log.command",
+    "rootReport": "/lion-boot-log.txt",
+    "desktopReport": "~/Desktop/lion-boot-log.txt",
+    "job": "Read-only post-fallback capture of the operator screen result plus NVRAM boot keys, dmesg, system.log, disk inventory, ESD boot files, and bless metadata. It cannot redirect pre-OS EFI screen text; it does not bless, mount, erase, restore, set the clock, or change NVRAM.",
+    "bundle": "lion-mirror2.zip",
+    "relay": "da.gd/lionrelay"
   }
 }

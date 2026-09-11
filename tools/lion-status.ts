@@ -118,6 +118,14 @@ function selftest(w: Workflow): void {
   else pass('helper-command', w.helper.command);
   if (!existsSync(w.helper.zip)) fail('helper-zip', w.helper.zip);
   else pass('helper-zip', w.helper.zip);
+  const bootLog = 'lion-boot-log.command';
+  if (!existsSync(bootLog)) fail('boot-log-command', bootLog);
+  else pass('boot-log-command', bootLog);
+  const bootLogText = existsSync(bootLog) ? readFileSync(bootLog, 'utf8') : '';
+  if (!/BOOTLOG1/.test(bootLogText) || !/lion-boot-log\.txt/.test(bootLogText)) fail('boot-log-report', 'missing BOOTLOG1/root report');
+  else pass('boot-log-report', '/lion-boot-log.txt');
+  if (/diskutil\s+erase|bless\s+--(folder|file|mount)|nvram\s+-d|\basr\b/.test(bootLogText)) fail('boot-log-readonly', 'mutation token in diagnostic');
+  else pass('boot-log-readonly', 'read-only');
   const cmd = readFileSync(w.helper.command, 'utf8');
   if (/Erase Bay 4/.test(cmd)) fail('no-erase-bay4', 'Erase Bay 4 still in helper');
   else pass('no-erase-bay4', 'absent');

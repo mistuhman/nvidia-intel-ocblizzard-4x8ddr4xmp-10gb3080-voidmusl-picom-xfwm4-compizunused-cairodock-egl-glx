@@ -96,16 +96,17 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <h1>Burn</h1>
   </div>
   <div id="body">
-    <p>Bundle (helper + this page, two files) - phone-shortened current-session link: <b>da.gd/lionzip</b></p>
+    <p>Bundle (Repair helper + boot-log collector + this page, three files) - phone-shortened current-session link: <b>da.gd/lionzip</b></p>
     <p><a class="link" href="https://da.gd/lionzip">lion-mirror2.zip</a>
        &nbsp;&middot;&nbsp; <a class="link" href="https://da.gd/lionrelay">da.gd/lionrelay</a> (this page)</p>
 
     <fieldset>
       <legend>Log</legend>
-      <p class="note">Pick <b>lion-mirror.txt</b> on the Desktop. No typing, no pasting. One
-      selection sends the report <b>three</b> ways: the verdict lines as plain text, the same
-      verdict lines as a query, and the full file as before. The agent can read the first two;
-      only the inbox owner can read a raw multipart upload.</p>
+      <p class="note">Pick <b>lion-mirror.txt</b> or <b>lion-boot-log.txt</b> on the Desktop. No typing, no
+      pasting. The boot-log command also writes the canonical <b>/lion-boot-log.txt</b> at the
+      root of the running Snow Leopard volume. One selection sends the report <b>three</b> ways:
+      the verdict lines as plain text, the same verdict lines as a query, and the full file as
+      before. The agent can read the first two; only the inbox owner can read a raw multipart upload.</p>
       <div class="row">
         <span class="k">Attach .txt:</span>
         <input type="file" id="pick" name="log" accept=".txt,text/plain">
@@ -145,7 +146,7 @@ var CANDIDATES = [
   "https://raw.githubusercontent.com/" + REPO + "/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
   "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
 ];
-var KEY = /(bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired)/i;
+var KEY = /(BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback)/i;
 
 function st(msg, bad) {
   var e = document.getElementById("st");
