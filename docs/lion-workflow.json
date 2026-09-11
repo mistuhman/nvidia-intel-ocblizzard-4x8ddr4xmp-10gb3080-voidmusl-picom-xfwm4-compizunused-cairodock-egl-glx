@@ -3,15 +3,16 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator types da.gd/lionrelay into Arctic Fox (or da.gd/lionzip for the current bundle), runs the current helper only if the existing report is not sufficient, picks ~/Desktop/lion-mirror.txt in the Log box, waits for burned: text=ok query=ok, and replies burned. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. No TinyURL, no long URL typing, and no second physical action until the report is read.",
+  "nextAction": "Current readable LIONMIRROR1 report received and reviewed: Repair verified, Mac OS X Install ESD is blessed, and no disk was erased. Next single physical wave is Apple menu > Restart, hold Option at the chime, and stop at Startup Manager for the agent to review; do not select a disk until that screen is confirmed. After release, choose Mac OS X Install ESD and install Lion onto start disk clone (Bay 3 MX500) without erasing either SSD.",
   "lastVerifiedBless": {
-    "when": "2026-09-10 17:40:20 PDT",
-    "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
+    "when": "2026-09-11 16:10:02 PDT",
+    "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
     "blessedFile": "/Volumes/Mac OS X Install ESD/boot.efi",
     "blessedFileDate": "Oct 3 2012",
     "blessedFolder": "/Volumes/Mac OS X Install ESD/System/Library/CoreServices",
     "finderinfoFileId": 2078,
-    "note": "Matches the asr run that reached the installer GUI. CoreServices/boot.efi is a different date (Jul 29 2012) and made Option-ESD fall through to Lion SSD Base."
+    "reportVerdict": "ESD boot repaired. No disk was erased.",
+    "note": "Current readable report: boot volume is Lion SSD Base in Bay 1; start disk clone is disk1s2 in Bay 3; Mac OS X Install ESD is disk2s2 in Bay 4. Repair confirmed, Graphics Mode removed, nvram cleared, bless OK. Lion is not installed yet."
   },
   "volumes": [
     {
@@ -188,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: PR #79 is open from the fixed session branch. Current phone links are da.gd/lionrelay (page) and da.gd/lionzip (bundle), both verified with da.gd coshorten receipts. The 14:02-17:16 uploads stay multipart-only and unread; Repair outcome UNVERIFIED, Option-boot gate closed.",
+  "status": "2026-09-11: PR #79 is open from the fixed session branch. Current phone links are da.gd/lionrelay (page) and da.gd/lionzip (bundle), both verified with da.gd coshorten receipts. Readable report uuid 2ad981cf was received through the current relay with burned: text=ok query=ok; Repair is verified and the Option-boot gate is released for the next one-action screen check. No Lion installation has occurred yet.",
   "relay": {
     "page": "lion.html",
     "files": [

@@ -1,34 +1,35 @@
-LION-SSD | gate 1 of 1 | relay today's Repair report, then stop
+LION-SSD | gate 1 of 1 | Repair verified; release the Option picker one wave at a time
 
-STATE: current session branch carries the reproducible relay page and bundle.
-Type only the short da.gd links below from the phone into Arctic Fox; never use
-TinyURL, da.gd/lmz, or da.gd/lpg for this session.
+STATE: the current session branch carries the reproducible relay page and bundle.
+Use only these short links from the phone into Arctic Fox; never use TinyURL,
+da.gd/lmz, or da.gd/lpg for this session:
+  da.gd/lionrelay  current readable-report relay page
+  da.gd/lionzip    current helper + relay bundle
 
-DO NOW (clicks only):
-1. Type da.gd/lionrelay into Arctic Fox. It opens the current relay page.
-2. The page's Burn button goes to da.gd/lionzip. If downloading directly, type
-   da.gd/lionzip; it contains lion-mirror.command and lion.html.
-3. If you downloaded the bundle, unzip on the Desktop and double-click lion.html
-   so the page also works offline.
-4. In the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report
-   as text/plain, the same verdict lines as a query, and the file as before.
-5. Wait for the page to show burned: text=ok query=ok, then reply here with one word: burned
+REPORT READ BY THE AGENT:
+2026-09-11 16:10:02 PDT | webhook uuid 2ad981cf | 4902 bytes | 124 lines
+- BOOT volume: Lion SSD Base, /dev/disk0s2, Bay 1, Snow Leopard 10.6.8
+- INSTALLER: Mac OS X Install ESD, /dev/disk2s2, Bay 4
+- TARGET: start disk clone, /dev/disk1s2, Bay 3 MX500
+- Repair confirmed; Graphics Mode removed; nvram Graphics Mode absent
+- bless OK; volume-root /Volumes/Mac OS X Install ESD/boot.efi; finderinfo 2078
+- ESD boot repaired. No disk was erased. Lion is NOT installed yet.
 
-WHY THESE LINKS: da.gd slugs are write-once and the exact destinations are recorded
-in docs/lion-workflow.json. node tools/lion-status.ts prints them; its selftest
-checks both short links and rejects TinyURL. The page itself is carried by the
-current branch so the Commands panel needs no typed long URL.
+NEXT SINGLE MAC WAVE — STOP AT THE STARTUP MANAGER:
+1. From Snow Leopard choose Apple menu > Restart.
+2. At the chime hold Option and stop when the startup-disk icons appear.
+3. Do not select a disk yet. Photograph the picker, especially any no-sign or HDMI timing error,
+   and send the photo here for release of the next action.
 
-IN THE INBOX BUT UNREADABLE BY THE OLD PAGE'S DESIGN:
-14:02 7199B, 14:25 4185B, 14:32 4185B, 14:33 7564B, 14:46 7564B, 14:48 4826B,
-14:59 4930B, 15:02 4902B (uuid 3dc2ab98 = lastVerifiedBless), 17:16 4902B.
-Those were multipart uploads: the agent sees the envelope, never the bytes.
+AFTER THE PICKER IS RELEASED:
+Choose "Mac OS X Install ESD" only. In the Lion installer choose the existing
+"start disk clone" on the Bay 3 MX500 as the destination. Do not erase it.
+Do not erase "Lion SSD Base". After the first Lion boot, create the requested new administrator.
 
-HOLD until the agent reads the summary:
-- no Restart, no Option-boot, no second Repair
-- never erase Lion SSD Base or start disk clone, never remirror Bay 4
-- never run lion-installer-date-fix.command, never visit da.gd/lionfix or da.gd/lup
+DO NOT:
+- run a second Repair, remirror Bay 4, or run lion-installer-date-fix.command
+- touch Lion SSD Base or start disk clone with erase tools
+- visit da.gd/lionfix or da.gd/lup
+- power or troubleshoot the APEX before Lion is booted and proven
 
-RELEASED ONLY BY THE NEXT VERSION OF THIS FILE:
-Option at the chime, choose "Mac OS X Install ESD", install onto "start disk clone"
-(Bay 3 MX500), do not erase, then create the new admin after the first Lion boot.
+The report receipt was: burned: text=ok query=ok.

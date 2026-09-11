@@ -20,14 +20,14 @@ Longer receipts: `docs/session-2026-09-09-lion-ssd-install.md` (clone + first in
 
 Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. Do not replace Bay 1 until proven.
 
-## Where we left off (2026-09-10 17:40 PDT)
+## Where we left off (2026-09-11 16:10 PDT)
 
 - Working OS is still **Snow Leopard 10.6.8** on **Lion SSD Base** (Startup Disk, Bay 1).
 - Bay 4 **Mac OS X Install ESD** is an asr mirror of inner `InstallESD.dmg` (4.4G). `OSInstall.mpkg` + both `boot.efi` present.
 - Option-boot of ESD **did** reach the installer GUI once, then VGA→HDMI **timing error**.
 - `Graphics Mode` in Apple `com.apple.Boot.plist` caused the **prohibitory sign**; firmware fell through to Lion SSD Base.
 - Last successful helper log blessed **volume-root** `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078) — same as the GUI-reaching asr bless. CoreServices `boot.efi` is Jul 29 2012; do not bless that file.
-- Operator then: launched 10.6 on Lion SSD Base, selected ESD. **Photo of that boot result was not returned** (docs/PR request interrupted). Next physical action is a photograph of the current screen.
+- Current readable report (webhook uuid `2ad981cf`, 4902 bytes / 124 lines) confirms Repair, cleared Graphics Mode/nvram, volume-root bless of `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078), and **no disk erased**. The next one-action wave is Restart, hold Option at the chime, and stop at Startup Manager for screen review; the agent must release disk selection afterward.
 
 ## Live links (Arctic Fox)
 

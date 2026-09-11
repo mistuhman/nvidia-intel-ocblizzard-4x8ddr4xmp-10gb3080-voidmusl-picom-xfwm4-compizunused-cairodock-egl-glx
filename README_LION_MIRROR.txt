@@ -18,8 +18,9 @@ Never da.gd/lionfix (old date-fix pack). Never da.gd/lup (dead e2b). Never TinyU
 On Lion SSD Base: use da.gd/lionzip, unzip, double-click lion.html,
 admin password, Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/lionrelay.
 
-Then Restart, hold Option, click Mac OS X Install ESD only.
-Install onto start disk clone. Do not erase it. Do not erase Lion SSD Base.
+The 2026-09-11 readable report is verified: Repair and bless succeeded, and no disk was erased.
+Next one-action wave: from Snow Leopard choose Restart, hold Option at the chime, and stop at the startup manager for a screen review.
+After release, click Mac OS X Install ESD only, then install onto start disk clone. Do not erase it. Do not erase Lion SSD Base.
 
 Canonical links + nextAction: docs/lion-workflow.json
 Print: node tools/lion-status.ts
