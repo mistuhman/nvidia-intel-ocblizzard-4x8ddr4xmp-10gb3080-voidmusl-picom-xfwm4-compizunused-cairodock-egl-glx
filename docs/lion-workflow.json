@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Operator: open the relay page (links.pageBranch, a click - nothing to type), press Reload in Commands, then in the Log box choose ~/Desktop/lion-mirror.txt. One pick sends the whole report as text/plain plus a verdict query; the agent reads links.logRead itself and replies with the verdict quote and the single next action.",
+  "nextAction": "Operator clicks Burn on the page, unzips, double-clicks lion.html, picks ~/Desktop/lion-mirror.txt in the Log box, replies sent. Agent then reads links.logRead, quotes the verdict, and releases the Option-boot step. Zero typing on the Mac: the page ships inside the zip the operator already downloads, or is reached from its own history.",
   "lastVerifiedBless": {
     "when": "2026-09-10 17:40:20 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes uuid 3dc2ab98",
@@ -80,20 +80,20 @@
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",
-      "url": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion.html",
-      "job": "relay page rev 2: reads the Desktop report with FileReader and POSTs it three ways - text/plain body (agent-readable), ?log= verdict query (agent-readable), and the original multipart file for the archive. Also pulls etc/lion-command.txt from the branch so the operator never types a command."
+      "url": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/main/lion.html",
+      "job": "relay page rev 2, now on main. Commands panel walks raw branch then raw main (ACAO *, ~5 min max-age) because jsDelivr holds a branch path ~12h and ignores ?cb= at the edge."
     },
     "branchZip2": {
-      "type": "jsDelivr (branch)",
-      "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip",
-      "job": "two files: lion-mirror.command (exec bit) + lion.html (rev 2 page). Burn on the new page fetches this. New filename on purpose: jsDelivr caches the branch 12h and lion-mirror.zip is already cached."
+      "type": "jsDelivr (main)",
+      "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@main/lion-mirror2.zip",
+      "job": "helper + page. lion-mirror.zip and lion-mirror2.zip are byte-identical on purpose: if the 12h cache still serves the pre-page archive under the old name, the new name is a fresh path that cannot be cached."
     },
     "logRead": {
       "type": "webhook API",
       "url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5",
       "job": "the agent reads this with fetch_page and takes the newest entry whose content begins with LIONMIRROR1; that content IS the report."
     },
-    "openItem": "da.gd/lmz still resolves to lion-mirror.zip (single-file helper) and da.gd is unreachable from the sandbox, so no agent can repoint it. To move lmz onto the two-file zip, mint a new write-once slug from a machine that can reach da.gd, or keep using the jsDelivr URL above."
+    "openItem": "da.gd slugs cannot be minted from the sandbox at all: da.gd, is.gd, v.gd, tinyurl, t.ly and spoo.me all fail TLS here (HTTP 000). A shorter human-typed link must therefore be minted from the operator phone browser (paste the pageBranch URL, set a shortcode). No typing is required in the meantime: the Mac reaches the page from its own history at da.gd/lpg, or the page arrives inside the Burn zip."
   },
   "helper": {
     "command": "lion-mirror.command",
@@ -152,7 +152,8 @@
     "Double-click lion-installer-boot-audit.command or the withdrawn injector",
     "Rewrite ToDo.md",
     "Read the inbox with curl from the agent sandbox (filtered) - use fetch_page on links.logRead",
-    "Rely on a multipart attach as delivery to the agent: content stays empty for file uploads"
+    "Rely on a multipart attach as delivery to the agent: content stays empty for file uploads",
+    "Assume a jsDelivr branch path is fresh: it caches ~12h and a ?cb= query does not bust it at the edge. Use raw.githubusercontent for anything that must be current, or a new filename."
   ],
   "operatorConstraints": [
     "One physical action per message",
@@ -168,7 +169,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-10 late: relay page shipped (lion.html rev 2) so burns become agent-readable. Today 19:16-ish burns (14:02..17:16) were multipart-only, so their bytes are still unread - the file must be re-picked once on the new page. Repair outcome therefore UNVERIFIED; Option-boot gate stays closed.",
+  "status": "2026-09-11 05:27Z: PR #76 MERGED to main (c93cac2) - relay page, both zips, the imaging tool and all art receipts are on main. Relay is live. The 14:02-17:16 burns stay multipart-only and unread; the report must be re-picked once on rev 2. Repair outcome UNVERIFIED, Option-boot gate closed.",
   "relay": {
     "page": "lion.html",
     "files": [
@@ -177,6 +178,7 @@
     ],
     "zip": "lion-mirror2.zip",
     "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
-    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)"
+    "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly one executable entry and it is the .command)",
+    "commands": "etc/lion-command.txt - the text the Commands panel renders. An agent edit is visible on the Mac within ~5 min after push to the session branch, then permanently once merged to main."
   }
 }

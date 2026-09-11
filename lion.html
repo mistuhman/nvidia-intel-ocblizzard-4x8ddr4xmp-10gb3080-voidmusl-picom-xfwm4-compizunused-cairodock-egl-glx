@@ -97,7 +97,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
   </div>
   <div id="body">
     <p>Mirror download (helper + this page, two files):</p>
-    <p><a class="link" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip">lion-mirror2.zip</a>
+    <p><a class="link" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@main/lion-mirror2.zip">lion-mirror2.zip</a>
        &nbsp;&middot;&nbsp; <a class="link" href="https://da.gd/lmz">da.gd/lmz</a> (older single-file helper, no page)</p>
 
     <fieldset>
@@ -131,13 +131,20 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <iframe name="dropframe"></iframe>
 
     <div id="btns">
-      <a class="aqua default" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip">Burn</a>
+      <a class="aqua default" href="https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@main/lion-mirror2.zip">Burn</a>
     </div>
   </div>
 </div>
 <script type="text/javascript">
 var INBOX = "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6";
-var CMDS = "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt";
+var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx";
+// branch first so a fresh agent push is visible in ~5 min, then main so the page still
+// works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
+// max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
+var CANDIDATES = [
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a08beb-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
+];
 var KEY = /(bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired)/i;
 
 function st(msg, bad) {
@@ -216,21 +223,34 @@ function handle(file) {
 
 function pull() {
   var s = document.getElementById("pullst");
-  try {
-    var x = new XMLHttpRequest();
-    x.open("GET", CMDS + "?cb=" + (new Date().getTime()), true);
-    x.onreadystatechange = function () {
-      if (x.readyState !== 4) { return; }
-      if (x.status === 200 || x.status === 0) {
-        if (x.responseText && x.responseText.length > 0) {
+  var i = 0;
+  s.innerHTML = "fetching...";
+  function attempt() {
+    if (i >= CANDIDATES.length) {
+      s.innerHTML = "no source reachable - use the Burn link below";
+      return;
+    }
+    var url = CANDIDATES[i] + "?cb=" + (new Date().getTime());
+    i = i + 1;
+    try {
+      var x = new XMLHttpRequest();
+      x.open("GET", url, true);
+      x.timeout = 12000;
+      x.ontimeout = function () { attempt(); };
+      x.onerror = function () { attempt(); };
+      x.onreadystatechange = function () {
+        if (x.readyState !== 4) { return; }
+        if ((x.status === 200 || x.status === 0) && x.responseText && x.responseText.length > 0) {
           document.getElementById("cmd").value = x.responseText;
-          s.innerHTML = "loaded " + x.responseText.length + " bytes";
-        } else { s.innerHTML = "empty response (offline?)"; }
-      } else { s.innerHTML = "HTTP " + x.status; }
-    };
-    x.send("");
-    s.innerHTML = "fetching...";
-  } catch (e) { s.innerHTML = "blocked: " + e; }
+          s.innerHTML = "loaded " + x.responseText.length + " bytes from " + (url.indexOf("/main/") > 0 ? "main" : "branch");
+          return;
+        }
+        attempt();
+      };
+      x.send("");
+    } catch (e) { attempt(); }
+  }
+  attempt();
 }
 
 document.getElementById("pick").onchange = function () {
