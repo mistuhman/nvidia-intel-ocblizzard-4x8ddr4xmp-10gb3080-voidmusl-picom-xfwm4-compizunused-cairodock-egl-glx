@@ -29,7 +29,8 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - Last successful helper log blessed **volume-root** `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078) — same as the GUI-reaching asr bless. CoreServices `boot.efi` is Jul 29 2012; do not bless that file.
 - Current readable report (webhook uuid `2ad981cf`, 4902 bytes / 124 lines) confirms Repair, cleared Graphics Mode/nvram, volume-root bless of `/Volumes/Mac OS X Install ESD/boot.efi` (Oct 3 2012, finderinfo 2078), and **no disk erased**.
 - Released Option-boot attempt: operator selected `Mac OS X Install ESD`; a prohibitory symbol appeared briefly, followed by the Apple logo/loading sign, then the Mac returned to the Snow Leopard login. Installer GUI was not reached.
-- Current next one-action diagnostic is the new bundled `lion-boot-log.command`: it asks for the observed screen result, reads post-fallback NVRAM/dmesg/system.log/disk/ESD evidence, and writes `/lion-boot-log.txt` plus `~/Desktop/lion-boot-log.txt`. It does not alter disks, NVRAM, bless state, or the clock. Attach the Desktop copy through `da.gd/lionrelay`; do not run the withdrawn audit/date-fix files, repeat Repair, or remirror Bay 4.
+- BOOTLOG1 is now readable (webhook uuid `9d0bfed6`, 61946 bytes / 675 lines). It records the root report `/lion-boot-log.txt`, absent `boot-args`, the three intact volume mappings, ESD root bless/finderinfo 2078, and **no disk changes**. Snow Leopard has no ESD-specific failure entry because the failure is pre-OS; the operator's chat receipt remains brief prohibitory → Apple logo/loading → Snow Leopard login.
+- Hold with no reboot, second Repair, date-fix/injector/audit file, Bay 4 remirror, or target selection. The next action must be a separately released non-destructive boot method.
 
 ## Live links (Arctic Fox)
 

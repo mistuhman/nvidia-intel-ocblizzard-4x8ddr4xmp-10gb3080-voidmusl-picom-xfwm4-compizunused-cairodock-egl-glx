@@ -21,8 +21,8 @@ admin password, Repair. Report: ~/Desktop/lion-mirror.txt — attach on da.gd/li
 
 The 2026-09-11 readable report is verified: Repair and bless succeeded, and no disk was erased.
 The released ESD attempt showed a brief prohibitory symbol, then Apple logo/loading, then returned to Snow Leopard; no installer GUI appeared.
-Next one-action diagnostic: download the current bundle from da.gd/lionzip, double-click lion-boot-log.command, choose “Prohibitory then fallback,” and attach ~/Desktop/lion-boot-log.txt through da.gd/lionrelay.
-It also writes the canonical root-level /lion-boot-log.txt. Do not reboot, run the visible withdrawn audit/date-fix files, or erase start disk clone/Lion SSD Base until BOOTLOG1 is read.
+BOOTLOG1 is now read: `/lion-boot-log.txt`, webhook uuid `9d0bfed6`, 61946 bytes / 675 lines. It confirms the three-volume map, ESD root bless/finderinfo 2078, absent boot-args, and no disk changes; Snow Leopard has no ESD-specific error because the failure is pre-OS.
+Hold now. Do not reboot, run the visible withdrawn audit/date-fix files, repeat Repair, remirror Bay 4, or erase start disk clone/Lion SSD Base until the next non-destructive boot method is explicitly released.
 
 Canonical links + nextAction: docs/lion-workflow.json
 Print: node tools/lion-status.ts

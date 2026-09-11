@@ -1,4 +1,4 @@
-LION-SSD | gate 1 of 1 | capture the ESD boot handoff as a root-level text report
+LION-SSD | gate 1 of 1 | BOOTLOG1 read; hold for the next non-destructive method
 
 STATE: the current session branch carries the reproducible relay page and bundle.
 Use only these short links from the phone into Arctic Fox; never use TinyURL,
@@ -6,47 +6,26 @@ da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
 
-CURRENT BUNDLE:
-- lion-mirror.command      current ESD Repair helper; do not run it again now
-- lion-boot-log.command    safe post-fallback boot-handoff collector
-- lion.html                relay page
+BOOTLOG1 RECEIPT READ BY THE AGENT:
+2026-09-11 16:37:58 PDT | webhook uuid 9d0bfed6 | 61946 bytes | 675 lines
+- root report: /lion-boot-log.txt; Desktop copy: /Users/admin/Desktop/lion-boot-log.txt
+- the collector was read-only; no disk was erased, restored, blessed, mounted, or changed
+- boot time after the failed attempt: 16:17:30 PDT
+- boot-args is absent; Snow Leopard recorded no ESD-specific boot error
+- Lion SSD Base = disk0s2 / Bay 1; start disk clone = disk1s2 / Bay 3; ESD = disk2s2 / Bay 4
+- ESD root boot.efi = Oct 3 2012; CoreServices boot.efi = Jul 29 2012; finderinfo 2078
 
-WHY THIS LOG: the EFI/boot.efi screen runs before Snow Leopard's shell and cannot
-redirect its console text into a file after the fallback. The collector therefore
-records the operator's observed screen result plus read-only NVRAM boot keys, dmesg,
-system.log, disk inventory, ESD boot files, and bless metadata. It does not repair,
-bless, mount, erase, restore, set the clock, or change NVRAM.
+INTERPRETATION:
+The ESD handoff starts before returning to Snow Leopard, but the failure is pre-OS.
+The root text report cannot capture EFI/boot.efi screen output, and no second Repair
+is justified by this receipt.
 
-REPORT ALREADY READ BY THE AGENT:
-2026-09-11 16:10:02 PDT | webhook uuid 2ad981cf | 4902 bytes | 124 lines
-- Repair confirmed; Graphics Mode removed; nvram Graphics Mode absent
-- bless OK; volume-root /Volumes/Mac OS X Install ESD/boot.efi; finderinfo 2078
-- ESD boot repaired. No disk was erased.
+HOLD — NO MAC ACTION NOW:
+- no reboot and no second Option-boot
+- no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
+- never erase Lion SSD Base or start disk clone
+- do not select an install destination
 
-RELEASED OPTION-BOOT RESULT:
-The operator selected Mac OS X Install ESD. The screen showed a prohibitory
-symbol briefly, then a white-background Apple logo/loading sign, then returned
-to the Snow Leopard login. The installer GUI was not reached.
-
-DO NOW — ONE DIAGNOSTIC/LOGGING WAVE, NO REBOOT:
-1. Type da.gd/lionzip into Arctic Fox and download the current bundle.
-2. Unzip it on the Desktop. Double-click lion-boot-log.command only.
-3. In its one screen-result dialog choose "Prohibitory then fallback".
-4. The command writes the canonical root-level file /lion-boot-log.txt and a Finder-
-   friendly duplicate ~/Desktop/lion-boot-log.txt. It only reads the disks/logs/NVRAM;
-   it does not change them.
-5. Open da.gd/lionrelay and choose the Desktop copy lion-boot-log.txt. Wait for
-   burned: text=ok query=ok, then reply here with one word: burned
-
-DO NOT:
-- double-click the visible lion-installer-boot-audit or lion-installer-date-fix files
-- run the withdrawn injector/date-fix path, lion-mirror.command, or another Repair
-- remirror Bay 4 or erase Lion SSD Base / start disk clone
-- perform another reboot until the root-level report is read
-- visit da.gd/lionfix or da.gd/lup
-
-AFTER THE AGENT READS BOOTLOG1:
-The next physical action will be chosen from the text receipt. Lion installation
-remains pending; the Bay 3 start disk clone remains preserved.
-
-The previous readable receipt was: burned: text=ok query=ok.
+The next physical action will be issued only after the agent chooses a non-destructive
+boot method from this receipt. The prior readable Repair receipt was:
+burned: text=ok query=ok
