@@ -33,3 +33,13 @@ HOLD until the agent reads the summary:
 RELEASED ONLY BY THE NEXT VERSION OF THIS FILE:
 Option at the chime, choose "Mac OS X Install ESD", install onto "start disk clone"
 (Bay 3 MX500), do not erase, then create the new admin after the first Lion boot.
+
+SHORT LINK (typeable on the Mac) - mint it once from the phone, which can paste:
+  go to da.gd, set Short Code to: lpg2
+  paste this as the long URL:
+  https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/lion-relay-1/lion.html
+  then type da.gd/lpg2 on the Mac, forever. It is pinned to the TAG, and the agent
+  moves that tag to each new relay build, so the short link never goes stale and
+  never needs re-minting. da.gd is write-once: one slug, no edits, that is why this
+  tag indirection exists. The agent cannot mint it (no shortener egress from the
+  sandbox) - only a browser can.

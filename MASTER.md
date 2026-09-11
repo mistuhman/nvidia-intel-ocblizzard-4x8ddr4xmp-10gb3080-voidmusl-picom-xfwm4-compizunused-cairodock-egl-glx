@@ -26,7 +26,8 @@
         "statusNote": "2026-09-10 late: relay shipped. The 14:02-17:16 burns were multipart-only and are still unread; the report must be re-picked once on the rev 2 page. Repair outcome UNVERIFIED, Option-boot gate closed until LIONMIRROR1 arrives.",
         "relay": "lion.html rev 2 turns a burn into an agent-readable log: the page reads ~/Desktop/lion-mirror.txt with FileReader and POSTs the whole report as text/plain (plus a ?log= verdict query and the old multipart file). Read it at docs/lion-workflow.json links.logRead with fetch_page, never curl.",
         "openItem": "no URL shortener is reachable from the sandbox (da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me all HTTP 000 over TLS). Mint slugs from a phone browser instead, or rely on the Mac reaching the page inside the Burn zip.",
-        "commands": "etc/lion-command.txt is the inbound channel the page renders; a push to the session branch is visible in ~5 min via raw, so short commands never have to be typed on the Mac again."
+        "commands": "etc/lion-command.txt is the inbound channel the page renders; a push to the session branch is visible in ~5 min via raw, so short commands never have to be typed on the Mac again.",
+        "shortLink": "da.gd/lpg2 (to be minted by the operator from a phone) -> htmlpreview of lion.html AT TAG lion-relay-1. The tag is the mutable pointer, so the immutable short link stays fresh. Mint target URL is in docs/lion-workflow.json links.mint."
     },
     "macArt": {
         "tool": "node tools/mac-storage-art.ts",

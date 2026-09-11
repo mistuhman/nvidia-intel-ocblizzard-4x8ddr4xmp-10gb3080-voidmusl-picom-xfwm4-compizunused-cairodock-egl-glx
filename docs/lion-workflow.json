@@ -81,8 +81,8 @@
     "sandboxVisibility": "da.gd is filtered from the agent sandbox (curl: SSL_ERROR_SYSCALL on da.gd:443, HTTP 000 for lzr/lmz/lpg). Absence of resolution from the sandbox is NOT evidence a slug is dead - only the Mac can prove that.",
     "pageBranch": {
       "type": "htmlpreview (branch)",
-      "url": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/main/lion.html",
-      "job": "relay page rev 2, now on main. Commands panel walks raw branch then raw main (ACAO *, ~5 min max-age) because jsDelivr holds a branch path ~12h and ignores ?cb= at the edge."
+      "url": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/lion-relay-1/lion.html",
+      "job": "relay page. Pinned to the TAG, not a branch or main: jsDelivr 500s for @main here, branch paths cache ~12h, and raw+CDN both resolve a tag ref instantly. The agent moves the tag on each relay build, so this URL and any da.gd slug pointed at it stay current."
     },
     "branchZip2": {
       "type": "jsDelivr (main)",
@@ -100,7 +100,13 @@
       "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
       "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
     },
-    "shortenBlocked": "2026-09-11: no URL can be minted from the agent sandbox. da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me ALL fail TLS (HTTP 000); da.gd also empty-replies on port 80; uploads.github.com EOFs so no release asset. Mint slugs from the phone (it reaches da.gd) or skip the URL entirely: the page ships in the bundle the operator already unzips."
+    "shortenBlocked": "2026-09-11: no URL can be minted from the agent sandbox. da.gd, is.gd, v.gd, tinyurl, t.ly, spoo.me ALL fail TLS (HTTP 000); da.gd also empty-replies on port 80; uploads.github.com EOFs so no release asset. Mint slugs from the phone (it reaches da.gd) or skip the URL entirely: the page ships in the bundle the operator already unzips.",
+    "mint": {
+      "target": "lpg2",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/lion-relay-1/lion.html",
+      "who": "operator, from a phone browser (phones paste, the Mac does not). da.gd is write-once and unreachable from the sandbox, so the agent can never mint it.",
+      "note": "Verified 2026-09-11: raw and jsDelivr both serve this repo at ref lion-relay-1, and a tag move is picked up immediately (the retag to bb1d5f1 showed the new command text at once)."
+    }
   },
   "helper": {
     "command": "lion-mirror.command",
