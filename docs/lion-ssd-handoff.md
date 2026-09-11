@@ -31,6 +31,7 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - Released Option-boot attempt: operator selected `Mac OS X Install ESD`; a prohibitory symbol appeared briefly, followed by the Apple logo/loading sign, then the Mac returned to the Snow Leopard login. Installer GUI was not reached.
 - BOOTLOG1 is now readable (webhook uuid `9d0bfed6`, 61946 bytes / 675 lines). It records the root report `/lion-boot-log.txt`, absent `boot-args`, the three intact volume mappings, ESD root bless/finderinfo 2078, and **no disk changes**. Snow Leopard has no ESD-specific failure entry because the failure is pre-OS; the operator's chat receipt remains brief prohibitory → Apple logo/loading → Snow Leopard login.
 - Hold with no reboot, second Repair, date-fix/injector/audit file, Bay 4 remirror, or target selection. The next action must be a separately released non-destructive boot method.
+- RELEASED 2026-09-11 (session 01a09141): **VERBOSE1** — Option-picker `Mac OS X Install ESD` with Command-V held, then photograph the stop screen. Held keys only, zero mutation. Inbox rechecked: 16 requests, nothing newer than BOOTLOG1 (`9d0bfed6`). Next method ships only after the VERBOSE1 photo is read.
 
 ## Live links (Arctic Fox)
 

@@ -189,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: readable Repair report uuid 2ad981cf verified bless and no disk erase. Readable BOOTLOG1 uuid 9d0bfed6 was received from /lion-boot-log.txt at 61946 bytes / 675 lines. It confirms all three volumes and ESD bless remain intact, boot-args is absent, and the failed ESD handoff leaves no ESD-specific entry in Snow Leopard logs. Lion remains uninstalled; no further reboot, Repair, remirror, date fix, or target selection is authorized until the next method is explicitly chosen.",
+  "status": "2026-09-11: BOOTLOG1 (uuid 9d0bfed6, 61946 bytes / 675 lines) reviewed: pre-OS ESD handoff failure, boot-args absent, no disk changes, bless still volume-root boot.efi Oct 3 2012 finderinfo 2078. Inbox rechecked 2026-09-11: 16 requests total, nothing newer than the BOOTLOG1 text post. VERBOSE1 released as the single next method (picker ESD + Command-V + photo). Repair receipt 2ad981cf stands.",
   "relay": {
     "page": "lion.html",
     "files": [

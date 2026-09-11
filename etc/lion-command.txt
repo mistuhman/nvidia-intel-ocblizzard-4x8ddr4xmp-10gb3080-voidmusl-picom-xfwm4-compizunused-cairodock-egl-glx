@@ -1,7 +1,6 @@
-LION-SSD | gate 1 of 1 | BOOTLOG1 read; hold for the next non-destructive method
+LION-SSD | VERBOSE1 RELEASED 2026-09-11 | one action: picker + Command-V + photo
 
-STATE: the current session branch carries the reproducible relay page and bundle.
-Use only these short links from the phone into Arctic Fox; never use TinyURL,
+STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
@@ -10,22 +9,32 @@ BOOTLOG1 RECEIPT READ BY THE AGENT:
 2026-09-11 16:37:58 PDT | webhook uuid 9d0bfed6 | 61946 bytes | 675 lines
 - root report: /lion-boot-log.txt; Desktop copy: /Users/admin/Desktop/lion-boot-log.txt
 - the collector was read-only; no disk was erased, restored, blessed, mounted, or changed
-- boot time after the failed attempt: 16:17:30 PDT
 - boot-args is absent; Snow Leopard recorded no ESD-specific boot error
 - Lion SSD Base = disk0s2 / Bay 1; start disk clone = disk1s2 / Bay 3; ESD = disk2s2 / Bay 4
 - ESD root boot.efi = Oct 3 2012; CoreServices boot.efi = Jul 29 2012; finderinfo 2078
+- inbox rechecked: 16 requests total, nothing newer than this BOOTLOG1 post
 
 INTERPRETATION:
-The ESD handoff starts before returning to Snow Leopard, but the failure is pre-OS.
-The root text report cannot capture EFI/boot.efi screen output, and no second Repair
-is justified by this receipt.
+The ESD handoff fails pre-OS, and the root text report cannot capture EFI screen
+output. The verbose screen is the missing receipt: text means the kernel phase
+started (the stop line names the fault); no text means the failure is in the
+boot.efi phase before the kernel.
 
-HOLD — NO MAC ACTION NOW:
-- no reboot and no second Option-boot
+RELEASED — DO THIS ONE THING (VERBOSE1):
+1. Apple menu > Restart, then immediately hold Option to the picker.
+2. Arrow keys to Mac OS X Install ESD (do not click yet).
+3. Press and HOLD Command-V, then press Enter; keep holding V until text
+   appears on screen or the Snow Leopard login returns.
+4. Photograph the screen where it stops and paste the photo in chat.
+
+MUTATES NOTHING: held keys only. No disk, NVRAM, bless, erase, or file change.
+If the Snow Leopard login returns, stop there; that photo is still the receipt.
+
+STILL FORBIDDEN:
 - no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
 - never erase Lion SSD Base or start disk clone
 - do not select an install destination
+- no further reboot until the next method ships after this photo is read
 
-The next physical action will be issued only after the agent chooses a non-destructive
-boot method from this receipt. The prior readable Repair receipt was:
+Prior readable Repair receipt was:
 burned: text=ok query=ok
