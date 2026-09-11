@@ -51,7 +51,8 @@
       "type": "da.gd/lmz",
       "url": "https://da.gd/lmz",
       "dest": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@arena/01a08b54-nvidia-intel-ocblizzard-4x8ddr/lion-mirror.zip",
-      "job": "same zip on the live branch. da.gd slug is write-once. jsDelivr branch cache 12h; purge may throttle."
+      "job": "same zip on the live branch. da.gd slug is write-once. jsDelivr branch cache 12h; purge may throttle.",
+      "warning": "MEASURED 2026-09-11: da.gd/lmz resolves to jsDelivr on arena/01a08b54-nvidia-intel-ocblizzard-4x8ddr - a DIFFERENT session branch, not 01a08beb and not main. That branch only ever held the one-file helper, so the Burn click on the old lpg page can never deliver the relay page, and no agent on this session branch can fix it (push is restricted to this branch, and da.gd is write-once and unreachable here). Consequence: the relay page must be reached by its own URL (pageBranch), or from the Burn link printed on the page itself, which points at @main/lion-mirror2.zip. To retire the dead end, mint a new slug from a phone browser aimed at links.pageBranch.url and use that from then on."
     },
     "attachPage": {
       "type": "da.gd/lpg",
