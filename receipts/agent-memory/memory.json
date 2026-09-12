@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 68,
+  "lastSeq": 70,
   "entries": [
     {
       "seq": 1,
@@ -1391,6 +1391,58 @@
       "kind": "note",
       "text": "QUEUED (not done) 2026-09-12 session 01a097ba: wire UPLOADS CROSSREF BLOCK into tools/mac-guide-art.ts emitPrompt + selftest assertion - deferred because plates are paused on 4 uncovered uploads-gate claims and the change would churn 15+ committed prompt receipts; ship it at the start of the next mac-guide render session (verify-before-render stays a manual contract step until then).",
       "sha256": "ea03ced2c153f9558c62efbcaa7e837f9a24fa727abb29d156f153ceae11a345"
+    },
+    {
+      "seq": 69,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "pins unseated (with 6 identical photos of the Mac Pro 3,1 interior bay area, chat-only, /home/user/uploads/ absent from sandbox again)",
+      "demands": [
+        "photo receipt recorded",
+        "answer applies to GPU 6-pin unseat question claim 3"
+      ],
+      "sha256": "d8d6a506c8345d4afdcda305f04b71c2b7ac7c5538a4bc1ef86210f409a62342"
+    },
+    {
+      "seq": 70,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-bay-work-2026-09-12b",
+      "tool": "operator chat attachment x6 identical (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "TWO Western Digital GREEN drives are on scene in the Mac Pro bay area, apparently partially pulled/angled out of the sled cage during work: right drive label reads WD10EAVS Caviar GP GreenPower (1TB class, Green Power by WD banner, SATA, Product of Thailand, Mdl WD10EAVS-00D7B1 class, date code ~2012), left drive is a second WD Green with white label + green accent (model partially readable)",
+          "evidence": "chat photo read; WD10EAVS label text legible on right drive",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Sled blank covers remain latched in a row above the work area with orange latch dots; RED STICKER edge visible at frame right on the rightmost sled",
+          "evidence": "chat photo read; red sticker consistent with prior photo (seq 62)",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "A black bundled cable harness (four lines, two velcro straps) routes from the front-left toward the drive bays - the SATA data/power run awaiting connection",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "GTX 285 still seated in its slot: black shroud + finned top at frame bottom center on the blue board; PCIe slot silks (SLOT2 class) visible lower right; the two 6-pin connectors NOT visible in this frame (state unchanged since seq 62 unseated, per operator words pins unseated)",
+          "evidence": "chat photo read; operator words for pin state",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Work matches the receipted chassis-session step (3) HDD swap + the 4x1TB Green plan (macGuide session directive): WD Greens are the Mac-side drives going into freed bays, NOT the OMEN bulk drives (ST2000NM0033/DT01ACA200 are 2TB and different labels)",
+          "evidence": "drive model + plan cross-ref docs/lion-workflow.json nextAction; MASTER macGuide.session wording 4x1TB Green",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Bay number etchings NOT readable in this frame; drive presence per sled still not determinable (covers closed); DIMM/riser area not shown",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "f88e6dc3d53413f06cc38d44647f32b068ec061185e05012b1a5b06ddf9a9822"
     }
   ],
   "stacks": [
@@ -1433,7 +1485,9 @@
         65,
         66,
         67,
-        68
+        68,
+        69,
+        70
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"

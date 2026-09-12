@@ -84,3 +84,29 @@ README + MASTER lionMac statusNote updated this commit to the achieved Bay 1 sta
 2. Top-down of each memory riser (FB-DIMM count).
 3. Operator words: were the 6-pins unplugged on purpose (H1) or knocked loose (H2)?
 4. AMD card label/model photo before install (when it arrives).
+
+## Entry 2026-09-12d (session 01a097ba) — chassis session IN PROGRESS: WD Greens on scene
+
+Source: chat-attachment:macpro31-bay-work-2026-09-12b (seq 70; 6 identical copies, bytes NOT
+persisted) + operator words verbatim: "pins unseated" (seq 69).
+
+| Item | Observed | Confidence |
+|---|---|---|
+| Drives on scene | TWO WD Green drives angled in the bay area mid-work; right label legible: WD10EAVS Caviar GP GreenPower (1TB class, Mdl -00D7B1 class, Product of Thailand, ~2012 date); left = second WD Green (model partial) | HIGH (2nd model MEDIUM) |
+| sled covers | remain latched above, orange dots, red sticker at right | HIGH |
+| cable harness | 4-line black bundle, two velcro straps, routed to the bays, connectors waiting | HIGH |
+| GPU | GTX 285 still seated (shroud + fins, SLOT2-class silks); 6-pins not in frame | HIGH |
+| GPU 6-pin state | operator words: "pins unseated" — state CONFIRMED unseated; intent (H1 deliberate swap-prep vs H2 knocked loose) still not explicitly answered | words receipt |
+| frame contents | no risers/DIMMs, no bay digits, no AMD card yet | — |
+
+Reading: this matches the receipted session arc — HDD swap step (3) + the 4x1TB Green plan
+(macGuide directive): the WD10EAVS Greens are MAC-side drives entering freed bays, not the
+OMEN bulk pair (ST2000NM0033 / DT01ACA200, 2TB, different labels). Two of four Greens
+visible; total count on scene UNSEEN.
+
+### Updated photo requests (re-issued until covered)
+1. Sled latch faces straight-on: bay numbers + drive per sled + red-sticker bay (claim 1).
+2. Riser top-down: FB-DIMM count per riser (claim 2).
+3. AMD card label/model photo when it arrives (claim 4) — still the G0 gate for the swap.
+4. Drive manifest: how many WD Greens total (2 of 4?), full model strings, and which bays
+   they land in — needed before the RAID-format wave names its target.
