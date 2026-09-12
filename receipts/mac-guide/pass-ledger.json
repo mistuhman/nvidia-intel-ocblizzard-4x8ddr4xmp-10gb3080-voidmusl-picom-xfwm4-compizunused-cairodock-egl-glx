@@ -1,0 +1,461 @@
+{
+  "schema": "mac-guide-ledger.v1",
+  "plates": {
+    "g01-overview": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p1.txt",
+          "promptHash": "55f952c4ed039d3fe7d4152f247d83388224382750d2b332fa0bebe1df0ba5bc",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g01-overview-p1.png",
+              "sha256": "e8a332c1b7b01ab2461a7815947d0ec562413310cbc3dd393be33ac63a60833d",
+              "bytes": 3049601,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 46.54,
+            "stddev": 53.69,
+            "pctDark": 0.6166,
+            "pctBright": 0.0234,
+            "edgeRatio": 0.1041,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p2.txt",
+          "promptHash": "a7a8c87d85778f49238fd604bb96e9b8fe9388c7eb98911f0860a4f3f4e86401",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p2.png",
+              "sha256": "4bc237e8b14fb9a73bba3a8f8edab01d2fef3a68512b43779bc4674bc6279c75",
+              "bytes": 1662527,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 201.51,
+            "stddev": 83.62,
+            "pctDark": 0.056,
+            "pctBright": 0.7134,
+            "edgeRatio": 0.1248,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g02-poweroff": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g02-poweroff-p1.txt",
+          "promptHash": "77f250935c92f733cbe4bd1f7c3abb3ce3656f85a1690b6bbd55bb075673d96a",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g02-poweroff-p1.png",
+              "sha256": "94dcb222a780e26633936408359808764fb1114c801d1a77c58d7c3ffa897e09",
+              "bytes": 3032481,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 37.76,
+            "stddev": 55.15,
+            "pctDark": 0.7371,
+            "pctBright": 0.0359,
+            "edgeRatio": 0.1175,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g02-poweroff-p2.txt",
+          "promptHash": "b0c50ff34ba311ee41880f2c7911b18616d49194d986e55bf19327ca5f5ebad8",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g02-poweroff-p2.png",
+              "sha256": "5f21c3c95df5621f8f8358f81e4a477e7ac8243a07c7c96dd551c2ed572bb7cc",
+              "bytes": 1571954,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 219.4,
+            "stddev": 75.02,
+            "pctDark": 0.0812,
+            "pctBright": 0.8253,
+            "edgeRatio": 0.1757,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g03-hidden-sata": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g03-hidden-sata-p1.txt",
+          "promptHash": "55445a5bcd6cbeb1e3965c8beb565e7f906d3547208cf36eb30266b1ad2315b4",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g03-hidden-sata-p1.png",
+              "sha256": "5eb424810f56f98ae124facc56c023272a29f62738e89e0861597e53291b8590",
+              "bytes": 2967017,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 54.55,
+            "stddev": 49.65,
+            "pctDark": 0.5796,
+            "pctBright": 0.0087,
+            "edgeRatio": 0.0748,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g03-hidden-sata-p2.txt",
+          "promptHash": "c966ad312977b427beaa355f31eff60706f60a947d68e3b7448ba1c140a9d952",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g03-hidden-sata-p2.png",
+              "sha256": "30934c7efe7d4de2b084d2b1099f77154a69e5e8d566db10e3f659e98ebf6023",
+              "bytes": 1634880,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 230.82,
+            "stddev": 58.76,
+            "pctDark": 0.0374,
+            "pctBright": 0.8729,
+            "edgeRatio": 0.1527,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g04-ssd-mount": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g04-ssd-mount-p1.txt",
+          "promptHash": "e0981863760e50c2a937f010f090fc3e8732de6a14523c35b74024a556c81f03",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g04-ssd-mount-p1.png",
+              "sha256": "0b9e6b39992105dc1a67c97a88116dd8249cdadffd3a464984465b8809c863df",
+              "bytes": 2912061,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 54.19,
+            "stddev": 65.48,
+            "pctDark": 0.5885,
+            "pctBright": 0.0455,
+            "edgeRatio": 0.0836,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g04-ssd-mount-p2.txt",
+          "promptHash": "b8a24b7474aa48182ee0cdad0c754f6c0ccd129f2b6f4d7500f51e04353d1b58",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g04-ssd-mount-p2.png",
+              "sha256": "b7f4f3ee257b24b7ccf54537b7b87788e31fdaa43f51bb50281505b2cf6f150d",
+              "bytes": 1250123,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 233.65,
+            "stddev": 56.05,
+            "pctDark": 0.0329,
+            "pctBright": 0.8876,
+            "edgeRatio": 0.1069,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g05-hdd-install": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g05-hdd-install-p1.txt",
+          "promptHash": "abaaae38f24ee8a2c9f8c32403e43d201a118d88e5d4933f3f6dbf1ad8f3b380",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g05-hdd-install-p1.png",
+              "sha256": "8ca54b82390271adac679d9d26c88c88a1d1cbba328f3b63af32258e6e7d316e",
+              "bytes": 3002133,
+              "w": 1619,
+              "h": 971
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 43.18,
+            "stddev": 53.17,
+            "pctDark": 0.6824,
+            "pctBright": 0.0245,
+            "edgeRatio": 0.0825,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g05-hdd-install-p2.txt",
+          "promptHash": "ef42ef7961473da248a6862f6ba5ac78c88e20e032ae89b502e16a895bde4ddb",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g05-hdd-install-p2.png",
+              "sha256": "be194ad5c136de7cae5cf0f93efe92d37bdb66ba34ce44e044cf0bdf7fb78d83",
+              "bytes": 1531886,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 229.24,
+            "stddev": 60.25,
+            "pctDark": 0.0374,
+            "pctBright": 0.864,
+            "edgeRatio": 0.1466,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g06-gpu-swap": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g06-gpu-swap-p1.txt",
+          "promptHash": "a18d823d98ccf49035cb5a0ee2343597dfac3f9dc3e2b182add6b1e458bcf060",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g06-gpu-swap-p1.png",
+              "sha256": "b9d1680b2495c3f26945b0b15d72294b4afed4a89335195d6eae19f39e0c683a",
+              "bytes": 2772360,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 39.88,
+            "stddev": 53.95,
+            "pctDark": 0.7157,
+            "pctBright": 0.0195,
+            "edgeRatio": 0.09,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g06-gpu-swap-p2.txt",
+          "promptHash": "0414de9ed611fcd57910f783b0b16280b36147ab140e22e2f7a539c2eebf02cb",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g06-gpu-swap-p2.png",
+              "sha256": "225071c2bfeefbfbac17e8994fdc3042d7101e22e0d77f6823f37aef47514939",
+              "bytes": 1388117,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 232.62,
+            "stddev": 58.24,
+            "pctDark": 0.0404,
+            "pctBright": 0.8829,
+            "edgeRatio": 0.1193,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g07-cable-check": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g07-cable-check-p1.txt",
+          "promptHash": "87d9ec33a8a03e2d1aeba828f58028fa7f46d9a5533573b735e322505f406e1d",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g07-cable-check-p1.png",
+              "sha256": "b21666c029590fb516f0e8c4426a539c9d65f8d680b490579da56d829db62c7f",
+              "bytes": 2946742,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 42.17,
+            "stddev": 52.81,
+            "pctDark": 0.6838,
+            "pctBright": 0.0192,
+            "edgeRatio": 0.1063,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g07-cable-check-p2.txt",
+          "promptHash": "15fbb44e104070ea247cfe9e09b3bc00ff5a806315b967b1e5ca1a20ddf4b932",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g07-cable-check-p2.png",
+              "sha256": "7dfe635fbdda805877fc46f8ef1a55e17485bd463715d4398c0332e9d3bcd654",
+              "bytes": 1433267,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 231.4,
+            "stddev": 58.2,
+            "pctDark": 0.0371,
+            "pctBright": 0.8712,
+            "edgeRatio": 0.1259,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    },
+    "g08-boot-verify": {
+      "passes": [
+        {
+          "pass": 1,
+          "promptFile": "receipts/mac-guide/prompts/g08-boot-verify-p1.txt",
+          "promptHash": "2bbf0dc8f885e38ed035fcc4d9ea579d5d88f6660f4221d750cc1f2ffd352bbd",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-g08-boot-verify-p1.png",
+              "sha256": "1b22e83d9c4901b097874a07b1203f866936302f441c612889ed33b2918a377c",
+              "bytes": 2606121,
+              "w": 1672,
+              "h": 941
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 107.5,
+            "stddev": 98.36,
+            "pctDark": 0.4364,
+            "pctBright": 0.3223,
+            "edgeRatio": 0.0834,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 2,
+          "promptFile": "receipts/mac-guide/prompts/g08-boot-verify-p2.txt",
+          "promptHash": "23deb8e5b02d251a172866c13f12886576ca4489a276c7b14124def9044b5d83",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g08-boot-verify-p2.png",
+              "sha256": "f05851b4ce65d8e5a44fbb8b493eb2faee3bbc7a74b217541eb80b0f9c598bec",
+              "bytes": 1471603,
+              "w": 1536,
+              "h": 1024
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 224.68,
+            "stddev": 68.12,
+            "pctDark": 0.0573,
+            "pctBright": 0.8435,
+            "edgeRatio": 0.1487,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 3
+    }
+  }
+}

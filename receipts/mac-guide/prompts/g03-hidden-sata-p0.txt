@@ -1,0 +1,88 @@
+PLATE g03-hidden-sata — STEP 3 — HIDDEN SATA PORTS
+PURPOSE: Remove fan assembly ghost, reveal two spare SATA ports SATA5 SATA6 behind fan under Bay1, route cable to optical.
+VIEW: orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel
+CANVAS: 1536 x 1024 px (fixed, do not crop)
+
+ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
+- step [panel] at x=2 y=2 w=18 h=8
+    SHORT LABEL (only text allowed in image): STEP 3
+    MEANING (visual, not text): Uniform sidepanel step3.
+- fan-input [panel] at x=24 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): FAN IN
+    MEANING (visual, not text): Fan assembly module solid in place over logic board covering hidden SATA ports, 2 screws.
+- fan-ghost [panel] at x=44 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): FAN OUT
+    MEANING (visual, not text): Ghost transparent dashed fan module lifted 40mm up showing ports underneath, arrow lift up, output state.
+- sata-ports [panel] at x=24 y=32 w=20 h=18
+    SHORT LABEL (only text allowed in image): SATA5 SATA6
+    MEANING (visual, not text): Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location, labelled SATA5 SATA6, black line art connector detail.
+- cable-route [cable] at x=46 y=32 w=20 h=18
+    SHORT LABEL (only text allowed in image): ROUTE 50MM
+    MEANING (visual, not text): SATA data cable solid from port along chassis edge to lower optical bay with 50mm service loop zero tension, arrow route direction, ghost showing cable path before routing.
+- optical-target [bay] at x=24 y=54 w=20 h=18
+    SHORT LABEL (only text allowed in image): OPTICAL BAY
+    MEANING (visual, not text): Lower optical bay empty target for SSD, metal cover, PATA Molex power, accurate.
+- sidepanel [panel] at x=2 y=14 w=18 h=76
+    SHORT LABEL (only text allowed in image): HIDDEN SATA
+    MEANING (visual, not text): Uniform sidepanel wording: 1 Remove 2 screws fan module, 2 Lift straight up ghost shows ports, 3 Identify SATA5 SATA6 behind, 4 Route 9-18in cable to optical lower bay 50mm loop.
+- footer [footer] at x=2 y=92 w=96 h=5
+    SHORT LABEL (only text allowed in image): STEP3 SATA
+    MEANING (visual, not text): Footer step3 hidden ports free 4 bays.
+
+STYLE CONTRACT (authoritative, from docs/macpro-storage-style.md):
+# Mac Pro + OMEN chassis guide — BLACK AND WHITE efficient style contract
+
+Operator directive 2026-09-12 corrected: NO Quake Live color, NO AMOLED, NO neon.
+Style is BLACK AND WHITE efficient line art, Japanese compactness, Helvetica font, LEGO instruction manual.
+
+## Palette
+- `black-line` #000000 100% line, 1.5px stroke for primary edges
+- `gray-50` #808080 50% for ghost/transparent previous state
+- `gray-20` #CCCCCC 20% for secondary construction lines
+- `white-paper` #FFFFFF paper background, no texture
+- `black-fill-10` #000000 at 10% for subtle panel fill
+- No color. No amber, no cyan, no blue. Black and white only.
+
+## Typography
+- `helvetica` Helvetica Neue / Helvetica, 75 Bold Condensed for labels, 55 Roman for detail
+- In-image label budget: 4 words / 24 chars max, ALL CAPS, Helvetica Bold, black on white
+- No other font. No serif. Numbers are Helvetica Bold.
+
+## Geometry — LEGO + Japanese compactness
+- Panels are **uniform side-panel** every step: same camera angle, same framing, same scale
+- Each step shows INPUT state (solid) and OUTPUT state (ghost transparent 40% with dashed outline) to show movement
+- Example: power cable IN at start of step, END of step shows same cable transparent with it partially out, arrow indicating pull direction
+- Orthographic isometric or straight side view, not perspective distorted
+- Line weight: 1.5px primary, 0.75px secondary, 0.5px ghost dashed 4-2
+- Arrows: simple black line with triangle head, Helvetica label beside arrow
+- Grid: 8px module, compact, no wasted space, Japanese manual density
+
+## Iconography — accurate hardware
+- Mac Pro 3,1: aluminium cheese-grater tower, side panel off, left side 4 drive bays vertical stack Bay1 bottom to Bay4 top as in operator photo, each bay has individual sled with handle and captive thumbscrew, sled slides horizontally from front, connector faces rear, fan assembly top behind bays, logic board with PCIe slots Slot1 x16 double-wide bottom, Slot2 X16, Slot3 X4, Slot4 X4, GTX 285 black double-wide with blower and two 6-pin power rear as in photo, memory risers lower front windows purple caps visible.
+- HDD: 3.5in WD Caviar Green 1TB WD10EACS, label white green, mounted on sled with 4x M3x5 screws, orientation label up, connector rear, sled lip and spring tab accurate as in reference.
+- SSD: Crucial MX500 1TB 2.5in silver, label blue, 2.5->5.25 adapter bracket black, mounted in lower optical bay, Molex 4-pin white to SATA power adapter, SATA data blue or black straight ends, 50mm service loop.
+- AMD card: blue shroud ATI Radeon HD 4890 style with single fan center, dual DVI plus HDMI, as on desk in photo, bracket silver.
+- OMEN ATX board: Micro ATX board as in operator photo 2026-09-12, LGA1700 socket center with ILM lever, 4 DIMM slots right of socket black, NVMe M.2 blue label below CPU, PCIe x16 silver slot below that, rear I/O shield left side with honeycomb, 4 PCIe slot covers, OMEN AIO pump block black with OMEN logo dangling on hoses front bottom as in photo, two 120mm fans on right side vertical rad mount, 24-pin ATX and 8-pin CPU top left, CR2032 coin bottom left, front panel headers bottom.
+- UPS: CyberPower 1500VA black tower with power button blue LED, USB ports front as in photo.
+- No invented parts. No extra drives. No MacBook. No rack server.
+
+## Composition — uniform sidepanel flow
+1. Every plate uses SAME camera: Mac Pro side open 3/4 view from left front, or OMEN case side open straight side view as per plate purpose, consistent across 8 steps.
+2. Each step has LEFT side: numbered step hexagon black outline, TITLE, and uniform sidepanel list of actions with Helvetica wording compact.
+3. Input solid, output ghost transparent dashed, arrow shows action vector.
+4. Drives drawn in correct physical bay position: Bay1 bottom, Bay4 top, sled fully seated vs partially out ghost.
+5. No text overlaps edge, no leader crosses another, arrow does not cross label.
+6. Aspect fixed per plate 1536x1024.
+
+## Negative constraints
+`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`, `no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`, `no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`, `no-paragraph-in-image`, `no-text-walls`, `no-color-fill`
+
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill.
+
+PASS-0 CORRECTIONS:
+- Black white line art only
+- Ghost transparent fan lifted
+- Arrow lift and route
+- Accurate port location behind fan under Bay1
+Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.
+PASS: 0

@@ -1,0 +1,112 @@
+{
+  "schema": "mac-guide-facts.v1",
+  "updated": "2026-09-12",
+  "session": "01a093b6",
+  "subject": "Mac Pro 3,1 Early 2008 chassis guide: SSD relocation to free 4 bays for 4x1TB HDD + AMD GPU swap",
+  "facts": [
+    {
+      "id": "G-01",
+      "topic": "machine",
+      "claim": "Target is Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, BootROM MP31.006C.B05, Lion 10.7 on Bay 1 Lion SSD Base.",
+      "value": "MacPro3,1 Early 2008",
+      "source": { "ref": "docs/lion-workflow.json", "url": "", "quote": "Mac Pro 3,1 Early 2008" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-02",
+      "topic": "bays",
+      "claim": "Four independent 3Gb/s SATA cable-free direct-attach bays, numbered 1 bottom to 4 top in chassis photo, with captive sleds.",
+      "value": "4 bays, Bay1 bottom, Bay4 top",
+      "source": { "ref": "Apple Mac Pro Early 2008 tech specs + operator photo 2026-09-12", "url": "https://support.apple.com/kb/SP30", "quote": "Four independent 3Gb/s Serial ATA cable-free bays" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-03",
+      "topic": "spare-sata",
+      "claim": "Two spare SATA II 3Gb/s ports on logic board behind fan assembly under Bay 1, unused in stock 3,1, routable to optical bays.",
+      "value": "2 hidden SATA ports behind fan",
+      "source": { "ref": "docs/macpro-storage-facts.json F-04 + blog.greggant Definitive Mac Pro Upgrade Guide", "url": "https://blog.greggant.com/posts/2018/05/07/definitive-mac-pro-upgrade-guide.html", "quote": "two unused SATA ports located in the upper left corner behind fan assembly" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-04",
+      "topic": "optical",
+      "claim": "Optical bays on Mac Pro 1,1-3,1 are PATA/ATA-100 with 4-pin Molex power; SATA SSD needs Molex->SATA power adapter and data from hidden SATA.",
+      "value": "optical PATA Molex, needs adapter",
+      "source": { "ref": "Apple Discussions thread 7404111", "url": "https://discussions.apple.com/thread/7404111", "quote": "ATA/IDE cabling in the Optical bays, with 4-pin molex power connectors" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-05",
+      "topic": "ssd-mount",
+      "claim": "2.5in SATA SSD can be mounted in lower optical bay with 2.5->5.25 adapter bracket, bootable via hidden SATA, freeing all 4 bays for 3.5in HDDs.",
+      "value": "SSD in optical bay bootable",
+      "source": { "ref": "MaxUpgrades MaxConnect + Apple tech", "url": "https://www.maxupgrades.com/istore/", "quote": "install two SATA drives in the Optical bay with the Optical drive" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-06",
+      "topic": "gpu",
+      "claim": "Installed GPU is EVGA GTX 285 requiring two 6-pin PCIe power leads; photo shows both unplugged and dangling, must reconnect before boot.",
+      "value": "GTX 285 needs 2x 6-pin",
+      "source": { "ref": "docs/case-swap-macpro-plan.md + operator photo 2026-09-12", "url": "", "quote": "GTX 285, both 6-pin power leads" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-07",
+      "topic": "gpu-alt",
+      "claim": "Blue-shroud card on desk is AMD ATI GPU (alternative to GTX 285), needs digital cable (DVI/HDMI/DP) not VGA-HDMI converter, Mac-EFI required for boot screens.",
+      "value": "AMD card needs digital + EFI",
+      "source": { "ref": "ToDo.md step 0 display decision + operator photo", "url": "", "quote": "AMD card + digital cable, Mac-EFI or no boot screens" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-08",
+      "topic": "hdd",
+      "claim": "4x WD Caviar Green 1TB WD10EACS-00D6B0, SATA 3Gb/s 16MB cache, desktop Green with IntelliPark 8s head park, no TLER, mitigation wdidle3/idle3-tools.",
+      "value": "4x WD10EACS Green 1TB",
+      "source": { "ref": "operator photo 2026-09-12 label + WD spec", "url": "", "quote": "WD Caviar Green 1.0TB WD10EACS-00D6B0" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-09",
+      "topic": "clock",
+      "claim": "CR2032 dead, clock resets to 2001-01-01 on power loss, fix with sudo date MMDDhhmmYY after any power-off, do NOT set 2015/2016.",
+      "value": "CR2032 dead -> 2001 reset",
+      "source": { "ref": "docs/case-swap-macpro-daily-driver.md", "url": "", "quote": "CR2032 dead, resets to 2001" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-10",
+      "topic": "safety",
+      "claim": "Force-off at idle blind login is journal-safe; Mac must be powered off for chassis work; lower PCI bracket screw is captive preload, do not force.",
+      "value": "force-off safe, no force screw",
+      "source": { "ref": "docs/lion-workflow.json + case-swap-macpro-plan.md", "url": "", "quote": "force-off at idle blind login is journal-safe" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-11",
+      "topic": "display",
+      "claim": "GTX 285 Mac Edition has 2x dual-link DVI max 2560x1600; passive DVI->HDMI is single-link 1920x1200 ceiling, 1440p+ blinds machine with no auto-revert, 1080p ceiling on VGA chain.",
+      "value": "1080p ceiling VGA, 1440p ban",
+      "source": { "ref": "docs/lion-workflow.json doNot", "url": "", "quote": "Select 1440p or higher on the VGA-HDMI chain (1080p ceiling)" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-12",
+      "topic": "raid",
+      "claim": "AppleRAID software supports stripe/mirror/concat only, no RAID 5; RAID 5 in factory bays requires hardware RAID card + MaxConnect SAS/SATA breakout cable.",
+      "value": "AppleRAID no RAID5, needs HBA + cable",
+      "source": { "ref": "docs/macpro-storage-facts.json F-10 F-16", "url": "", "quote": "AppleRAID supports three basic types: stripe, mirror, concat" },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-13",
+      "topic": "boot",
+      "claim": "Lion SSD Base is boot volume Bay 1, 999.9GB, erase=NEVER, holds Lion 10.7 installed and booting; moving to optical bay requires Startup Disk bless, do NOT re-bless Bay 4 ESD.",
+      "value": "Bay1 Lion SSD Base NEVER erase",
+      "source": { "ref": "docs/lion-workflow.json volumes", "url": "", "quote": "Lion SSD Base | Bay 1 | erase=NEVER" },
+      "confidence": "HIGH"
+    }
+  ]
+}
