@@ -383,5 +383,18 @@
         "xfce4-screensaver XMB Sleep Wave installed and selected",
         "games campaign (CoD/Promod/Lunar stack) - remains PARKED per 2026-08-25 directive until OC objective closes",
         "viewport switcher target trial after desktop performance baseline is fixed"
-    ]
+    ],
+    "macGuide": {
+        "tool": "node tools/mac-guide-art.ts",
+        "selftest": "node tools/mac-guide-art.ts selftest",
+        "gate": "node tools/mac-guide-art.ts lint",
+        "facts": "docs/macpro-guide-facts.json",
+        "scene": "docs/macpro-guide-scene.json",
+        "style": "docs/macpro-guide-style-bw.md",
+        "ledger": "receipts/mac-guide/pass-ledger.json",
+        "passes": "P0 harvest - P1 lex - P2 resolve - P3 typecheck - P4 layout - P5 stylecheck - P6 emit - P7 render - P8 pixel-audit - P9 critique - P10 deduct",
+        "rule": "Black and white efficient line art Helvetica Japanese compactness LEGO manual uniform sidepanel every step same camera input solid output ghost transparent dashed 40% with arrow HDD placement accurate Bay1 bottom Bay4 top sled slide front to rear OMEN board accurate LGA1700 ILM 4 DIMM NVMe PCIe x16 honeycomb rear OMEN pump dangling Text budget 4 words 24 chars Fixpoint RESIDUAL 0",
+        "artifacts": "docs/macpro-guide-bw-g01..g08-overview..boot-verify-p2.png 8 plates black and white Pass 2 FIXPOINT AUDIT PASS",
+        "session": "01a093b6 2026-09-12 8-step chassis guide SSD to optical to free 4 bays for 4x1TB Green plus AMD GPU swap BW LEGO style per operator correction"
+    }
 }

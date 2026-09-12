@@ -1,0 +1,115 @@
+PLATE g02-poweroff — STEP 2 — POWER OFF SAFETY
+PURPOSE: Safe shutdown, cord IN solid ghost OUT 30mm transparent, clock CR2032 2001, no force screw, GPU 6-pin unplug ghost, UPS off, uniform sidepanel.
+VIEW: orthographic rear view Mac Pro 3,1 plus side view accurate to photo-1 black and white line art Helvetica uniform sidepanel
+CANVAS: 1536 x 1024 px (fixed, do not crop)
+
+ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
+- step [panel] at x=2 y=2 w=18 h=8
+    SHORT LABEL (only text allowed in image): STEP 2
+    MEANING (visual, not text): Uniform sidepanel step2 same position as step1.
+- power-in [panel] at x=24 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): POWER IN
+    MEANING (visual, not text): Power cord IN solid black line plugged into rear IEC socket input state solid.
+- power-ghost [cable] at x=44 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): POWER OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% power cord partially out 30mm with arrow pull out output state LEGO style.
+- clock [panel] at x=24 y=32 w=20 h=20
+    SHORT LABEL (only text allowed in image): CR2032 2001
+    MEANING (visual, not text): CR2032 coin battery bottom left board clock resets to 2001 on power loss icon clock arrow to 2001 Helvetica.
+- screw [panel] at x=46 y=32 w=20 h=20
+    SHORT LABEL (only text allowed in image): NO FORCE
+    MEANING (visual, not text): Lower PCI bracket screw close-up captive preload turns but stays ghost transparent showing screw not rising no force cross icon.
+- gpu-power [cable] at x=24 y=56 w=20 h=20
+    SHORT LABEL (only text allowed in image): GPU 6-PIN
+    MEANING (visual, not text): GTX 285 two 6-pin power leads input solid connected then ghost transparent unplugged dangling as in photo-1 arrow unplug accurate.
+- ups [panel] at x=46 y=56 w=20 h=20
+    SHORT LABEL (only text allowed in image): UPS OFF
+    MEANING (visual, not text): CyberPower 1500VA UPS front panel power button off black and white line art accurate.
+- sidepanel [panel] at x=2 y=14 w=18 h=76
+    SHORT LABEL (only text allowed in image): SAFETY STEPS
+    MEANING (visual, not text): Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep.
+- footer [footer] at x=2 y=92 w=96 h=5
+    SHORT LABEL (only text allowed in image): STEP2 SAFETY
+    MEANING (visual, not text): Footer step2 safety zero power.
+
+STYLE CONTRACT (authoritative, from docs/macpro-storage-style.md):
+# Mac Pro + OMEN chassis guide — BLACK AND WHITE efficient style contract v3
+
+Operator directive 2026-09-12 corrected twice: NO Quake Live color, NO AMOLED, NO neon, NO color fill.
+Style is BLACK AND WHITE efficient line art ONLY, Japanese compactness, Helvetica font, LEGO instruction manual.
+
+## Palette
+- `black-line` #000000 100% line, 1.5px stroke primary edges, 0.75px secondary
+- `ghost-40` #000000 at 40% opacity dashed 4-2 stroke 0.5px for previous state transparent partially out
+- `white-paper` #FFFFFF paper background, no texture, no gradient
+- No color. No gray fill. No amber, no cyan, no blue. Black lines on white only. Ghost is black at 40% dashed.
+
+## Typography
+- `helvetica` Helvetica Neue / Helvetica, 75 Bold Condensed for labels, 55 Roman for detail
+- In-image label budget: 4 words / 24 chars max, ALL CAPS, Helvetica Bold, black on white, 8px module
+- No other font. Numbers Helvetica Bold.
+- Uniform sidepanel every plate same position left 2,14,18,76 wording compact Japanese manual density
+
+## Geometry — LEGO + Japanese compactness
+- Uniform side-panel every time: same camera angle, same framing, same scale across 8 steps
+- Each movement/action recorded: INPUT solid black line 100% + OUTPUT ghost transparent 40% dashed partially out with arrow
+- Example: power cable IN solid plugged at start, END of same step ghost transparent partially out 30mm with arrow PULL
+- Orthographic straight views, not perspective distorted
+- Line weight: 1.5px primary, 0.75px secondary, 0.5px ghost dashed 4-2
+- Arrows: simple black line triangle head, Helvetica label beside
+- Grid: 8px module, compact, no wasted space
+- Aspect 1536x1024 fixed per plate
+
+## Iconography — incredibly accurate from operator photos 2026-09-12
+
+Mac Pro 3,1 Early 2008 photo reference (image-1):
+- Aluminium cheese-grater tower, side panel OFF, left side internal
+- Top: 2 optical bays 5.25in empty with metal covers, each cover has rectangular cutout bottom with screw hole top and bottom, as in photo
+- Middle: 4 HDD bays in horizontal row when case on side (vertical Bay1 bottom Bay4 top when upright), each bay has silver metal blank plate with small screw right side, red square sticker on rightmost Bay4 blank as in photo, as in photo
+- Sleds: individual sleds with handle lever front and captive thumbscrew, sled slides horizontally front to rear, connector faces rear, PCB down, M3x5 screws 4 per drive side+bottom, sled lip bent locating lip + bare steel spring tabs as in photo
+- Lower: large metal memory cage cover left, lower right drive cage windows show memory risers purple caps? Actually lower right shows blue PCB with capacitors purple, and blue drive backplane with 4 bays
+- PCIe: GTX 285 double-wide black blower EVGA label visible, two 6-pin power connectors rear dangling black cables as in photo, no GPU bracket force, lower bracket screw captive
+- Background desk: WD Green HDD white label green stripe, 3.5in on table left as in photo, Apple Time Capsule white right
+- Accurate to photo, no invented parts
+
+OMEN ATX board photo reference (image-2):
+- Board mounted in case, Micro ATX, LGA1700 socket center with ILM lever, socket EMPTY with paste residue gray as in photo, ILM metal frame, 4 DIMM slots right of socket black, vertical
+- NVMe M.2 blue label below CPU socket as in photo, PCIe x16 silver slot below NVMe, chipset heatsink black below that
+- Rear I/O shield left side honeycomb vent pattern, 5 PCIe slot covers horizontal, CR2032 coin battery bottom left near PCIe slots as in photo
+- OMEN AIO pump block black with OMEN logo dangling on hoses front bottom on case floor as in photo, hoses black thick, 2x120 fans vertical rad mount right side of case, black, 4 screws per fan
+- Front panel headers bottom edge, 24-pin ATX right edge middle, 8-pin CPU top left
+- Honeycomb pattern left side case vent, as in photo
+- No CPU installed in photo, show empty socket, accurate
+
+Other hardware:
+- HDD: WD Caviar Green 1TB WD10EACS white label green stripe as in photo, 3.5in
+- SSD: Crucial MX500 1TB 2.5in silver label blue as in photo
+- AMD card: blue shroud ATI Radeon HD 4890 single center fan as on desk earlier
+- UPS CyberPower 1500VA black tower
+
+## Composition — uniform sidepanel flow
+1. Every plate SAME camera per type: Mac Pro side open straight side view or OMEN case straight side view consistent
+2. Left side: STEP number black outline box, TITLE, uniform sidepanel list of actions Helvetica compact wording
+3. Input solid, output ghost 40% dashed, arrow vector
+4. Drives in correct bay: Bay1 bottom Bay4 top upright, sled fully seated vs partially out 20mm ghost
+5. No text overlaps, no leader crosses, arrow does not cross label
+6. Footer step name black line
+
+## Tokens for compile check
+black-line ghost-40 white-paper helvetica lego ghost transparent arrow uniform sidepanel japanese compactness accurate hardware black and white
+
+`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`, `no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`, `no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`, `no-paragraph-in-image`, `no-text-walls`, `no-color-fill`, `no-gray-fill`, `no-shading`, `no-gradient`
+
+
+## Negative constraints
+no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-logo-watermark no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-counts no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill no-gray-fill no-shading no-gradient
+
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading.
+
+PASS-0 CORRECTIONS:
+- Black white line art only
+- Input solid output ghost 40% dashed
+- Helvetica
+- Uniform sidepanel same camera
+Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.
+PASS: 0
