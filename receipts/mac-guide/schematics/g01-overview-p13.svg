@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <rect x="0" y="0" width="1536" height="1024" fill="#FFFFFF"/>
+  <g stroke="#000000" stroke-opacity="0.06" stroke-width="0.5">
+    <line x1="0" y1="0" x2="0" y2="1024"/>
+    <line x1="48" y1="0" x2="48" y2="1024"/>
+    <line x1="96" y1="0" x2="96" y2="1024"/>
+    <line x1="144" y1="0" x2="144" y2="1024"/>
+    <line x1="192" y1="0" x2="192" y2="1024"/>
+    <line x1="240" y1="0" x2="240" y2="1024"/>
+    <line x1="288" y1="0" x2="288" y2="1024"/>
+    <line x1="336" y1="0" x2="336" y2="1024"/>
+    <line x1="384" y1="0" x2="384" y2="1024"/>
+    <line x1="432" y1="0" x2="432" y2="1024"/>
+    <line x1="480" y1="0" x2="480" y2="1024"/>
+    <line x1="528" y1="0" x2="528" y2="1024"/>
+    <line x1="576" y1="0" x2="576" y2="1024"/>
+    <line x1="624" y1="0" x2="624" y2="1024"/>
+    <line x1="672" y1="0" x2="672" y2="1024"/>
+    <line x1="720" y1="0" x2="720" y2="1024"/>
+    <line x1="768" y1="0" x2="768" y2="1024"/>
+    <line x1="816" y1="0" x2="816" y2="1024"/>
+    <line x1="864" y1="0" x2="864" y2="1024"/>
+    <line x1="912" y1="0" x2="912" y2="1024"/>
+    <line x1="960" y1="0" x2="960" y2="1024"/>
+    <line x1="1008" y1="0" x2="1008" y2="1024"/>
+    <line x1="1056" y1="0" x2="1056" y2="1024"/>
+    <line x1="1104" y1="0" x2="1104" y2="1024"/>
+    <line x1="1152" y1="0" x2="1152" y2="1024"/>
+    <line x1="1200" y1="0" x2="1200" y2="1024"/>
+    <line x1="1248" y1="0" x2="1248" y2="1024"/>
+    <line x1="1296" y1="0" x2="1296" y2="1024"/>
+    <line x1="1344" y1="0" x2="1344" y2="1024"/>
+    <line x1="1392" y1="0" x2="1392" y2="1024"/>
+    <line x1="1440" y1="0" x2="1440" y2="1024"/>
+    <line x1="1488" y1="0" x2="1488" y2="1024"/>
+    <line x1="0" y1="0" x2="1536" y2="0"/>
+    <line x1="0" y1="48" x2="1536" y2="48"/>
+    <line x1="0" y1="96" x2="1536" y2="96"/>
+    <line x1="0" y1="144" x2="1536" y2="144"/>
+    <line x1="0" y1="192" x2="1536" y2="192"/>
+    <line x1="0" y1="240" x2="1536" y2="240"/>
+    <line x1="0" y1="288" x2="1536" y2="288"/>
+    <line x1="0" y1="336" x2="1536" y2="336"/>
+    <line x1="0" y1="384" x2="1536" y2="384"/>
+    <line x1="0" y1="432" x2="1536" y2="432"/>
+    <line x1="0" y1="480" x2="1536" y2="480"/>
+    <line x1="0" y1="528" x2="1536" y2="528"/>
+    <line x1="0" y1="576" x2="1536" y2="576"/>
+    <line x1="0" y1="624" x2="1536" y2="624"/>
+    <line x1="0" y1="672" x2="1536" y2="672"/>
+    <line x1="0" y1="720" x2="1536" y2="720"/>
+    <line x1="0" y1="768" x2="1536" y2="768"/>
+    <line x1="0" y1="816" x2="1536" y2="816"/>
+    <line x1="0" y1="864" x2="1536" y2="864"/>
+    <line x1="0" y1="912" x2="1536" y2="912"/>
+    <line x1="0" y1="960" x2="1536" y2="960"/>
+    <line x1="0" y1="1008" x2="1536" y2="1008"/>
+  </g>
+  <rect x="31" y="143" width="276" height="778" fill="none" stroke="#000000" stroke-width="1.5" stroke-dasharray="none"/>
+  <text x="39" y="161" font-family="Helvetica" font-size="14" font-weight="700">SCHEMATIC g01-overview PASS 13</text>
+  <text x="39" y="177" font-family="Helvetica" font-size="8">anchors: optical-left-cutouts, optical-right-plain, hdd-bay-row-x4, hdd-screw-right-end, red-outline-Bay4, memory-shroud-lower-left...</text>
+  <rect x="31" y="20" width="276" height="82" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="35" y="34" font-family="Helvetica" font-size="10" font-weight="700">STEP 1</text>
+  <rect x="369" y="61" width="737" height="881" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="373" y="75" font-family="Helvetica" font-size="10" font-weight="700">MAC PRO 3,1</text>
+    <rect x="377" y="308" width="176" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <circle cx="549" cy="343" r="3" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="561" y="308" width="176" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <circle cx="733" cy="343" r="3" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="745" y="308" width="176" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <circle cx="917" cy="343" r="3" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="929" y="308" width="176" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <circle cx="1101" cy="343" r="3" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="1095" y="312" width="10" height="10" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="377" y="131" width="310" height="106" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="381" y="137" width="28" height="18" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <rect x="433" y="137" width="28" height="18" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <rect x="723" y="131" width="354" height="106" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="605" y="457" width="427" height="106" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <line x1="615" y1="510" x2="1022" y2="510" stroke="#000000" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <path d="M 502 443 C 522 461, 609 447, 629 457" fill="none" stroke="#000000" stroke-width="1.5"/>
+    <circle cx="502" cy="443" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="0.75"/><text x="490" y="437" font-family="Helvetica" font-size="6">BOARD</text>
+    <circle cx="629" cy="457" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="0.75"/><text x="621" y="451" font-family="Helvetica" font-size="6">GPU</text>
+    <rect x="892" y="784" width="206" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="892" y="864" width="206" height="70" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <rect x="377" y="784" width="221" height="150" fill="none" stroke="#000000" stroke-width="0.75"/>
+    <circle cx="1100" cy="77" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="89" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="101" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="113" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="125" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="137" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="149" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="161" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="173" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="185" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="197" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="209" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="221" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="233" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="245" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="257" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="269" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="281" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="293" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="305" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="317" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="329" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="341" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="353" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="365" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="377" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="389" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="401" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="413" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="425" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="437" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="449" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="461" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="473" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="485" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="497" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="509" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="521" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="533" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="545" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="557" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="569" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="581" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="593" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="605" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="617" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="629" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="641" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="653" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="665" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="677" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="689" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="701" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="713" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="725" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="737" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="749" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="761" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="773" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="785" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="797" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="809" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="821" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="833" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="845" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="857" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="869" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="881" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="893" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="905" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+    <circle cx="1100" cy="917" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>
+  <rect x="369" y="102" width="154" height="410" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="373" y="116" font-family="Helvetica" font-size="10" font-weight="700">BAY 1-4</text>
+  <rect x="1106" y="123" width="215" height="102" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="1110" y="137" font-family="Helvetica" font-size="10" font-weight="700">WD GREEN</text>
+  <rect x="1352" y="123" width="154" height="102" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="1356" y="137" font-family="Helvetica" font-size="10" font-weight="700">TIMECAPSULE</text>
+  <rect x="369" y="553" width="154" height="102" fill="none" stroke="#000000" stroke-opacity="0.4" stroke-width="0.5" stroke-dasharray="4 2"/>
+  <text x="373" y="567" font-family="Helvetica" font-size="10" font-weight="700">GHOST OUT</text>
+  <rect x="553" y="573" width="123" height="61" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="557" y="587" font-family="Helvetica" font-size="10" font-weight="700">PULL</text>
+  <rect x="31" y="143" width="276" height="778" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="35" y="157" font-family="Helvetica" font-size="10" font-weight="700">INVENTORY LIST</text>
+  <rect x="31" y="942" width="1475" height="51" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="1.5"/>
+  <text x="35" y="956" font-family="Helvetica" font-size="10" font-weight="700">STEP1 INVENTORY</text>
+  <line x1="30.72" y1="942.08" x2="1505.28" y2="942.08" stroke="#000000" stroke-width="1.5"/>
+  <text x="30.72" y="972.8" font-family="Helvetica" font-size="9">STEP 1 — INVENTORY BAY MAP — Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cu</text>
+  <text x="1075.1999999999998" y="972.8" font-family="Helvetica" font-size="7">PASS 13  BLACK-LINE 1.5  GHOST-40 4-2  8PX GRID  1536x1024  HELVETICA</text>
+</svg>

@@ -1,6 +1,6 @@
 {
   "schema": "mac-guide-scene.v3-bw-lego-accurate",
-  "updated": "2026-09-12-v3",
+  "updated": "2026-09-12-v6c",
   "session": "01a093b6",
   "styleContract": "docs/macpro-guide-style-bw.md",
   "factsLedger": "docs/macpro-guide-facts.json",
@@ -16,7 +16,7 @@
   "plates": [
     {
       "id": "g01-overview",
-      "title": "STEP 1 \u2014 INVENTORY BAY MAP",
+      "title": "STEP 1 — INVENTORY BAY MAP",
       "purpose": "Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording. Board cable end in, GPU end out.",
       "canvas": {
         "w": 1536,
@@ -45,7 +45,7 @@
           "w": 48,
           "h": 86,
           "text": "MAC PRO 3,1",
-          "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear. Anchors: logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu (board end in to GPU end out), optical-left-cutouts + optical-right-plain, hdd-bay-row-x4 + hdd-screw-right-end + red-outline-Bay4, memory-shroud-lower-left + pcb-windows-x2-lower-right + honeycomb-right-edge, wd-green-desk-left + timecapsule-desk-right, psu-top + captive-screw. CORRECTED: fans = single blower module top edge behind Bay1 (not scattered), lower bay = horizontal 4-sled row with right-end screws and weathered Bay1, memory cage shroud solid lower-left, PCB windows lower-right two outline-only with caps per photo (no invented GPU RAM), honeycomb right edge, PSU top.",
+          "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear. Anchors: logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu (board end in to GPU end out), optical-left-cutouts + optical-right-plain, hdd-bay-row-x4 + hdd-screw-right-end + red-outline-Bay4, memory-shroud-lower-left + pcb-windows-x2-lower-right + honeycomb-right-edge, wd-green-desk-left + timecapsule-desk-right, psu-top + captive-screw. CORRECTED: fans = single blower module top edge behind Bay1 (not scattered), lower bay = horizontal 4-sled row with right-end screws and weathered Bay1, memory cage shroud solid lower-left, PCB windows lower-right two outline-only with caps per photo (no invented GPU RAM), honeycomb right edge, PSU top. v6c OPERATOR LAYOUT (upright open side, authority G-20): front LEFT fan tray holds TWO ~140mm blower encasings; between tray and RAM is the dual-CPU zone with finned heatsinks under a metal compartment cover; RAM cage right of CPUs; GTX 285 lies above the RAM showing its backplate, blower fan toward drive bays, bracket flush rear/right with DVI ports, THREE additional empty PCIe slot rails behind it and the booster power connector dangling from the case/board; four HDD bays L-to-R ABOVE the GPU blower; TOP compartments = encased DVD (one bay, second optical position empty) left and PSU secured in its own plain compartment right/behind; lower rear 140mm exhaust shown as diagonal cross-hatch lattice on the rear face; rear I/O cluster in full detail (3 USB, FW800, FW400, 2 TOSLINK, 2 audio, 2 GbE, IEC, latch, 3 blank PCI covers + GPU double-wide).",
           "facts": [
             "G-01",
             "G-02",
@@ -54,7 +54,10 @@
             "G-15",
             "G-16",
             "G-17",
-            "G-18"
+            "G-18",
+            "G-19",
+            "G-20",
+            "G-21"
           ]
         },
         {
@@ -152,17 +155,19 @@
         }
       ],
       "renderNotes": [
-        "PASS-5 COLOR FIX: absolutely zero color ink anywhere - sticker is a small EMPTY SQUARE OUTLINE (never fill it, never write the color name), PCBs and capacitors are black outlines on white",
-        "Ghost sled slides out the FRONT face of the bay row (toward viewer, same edge as the blank plates), 30mm, dashed 40%, arrow PULL 30MM - not out the rear",
-        "Keep pass-4 composition: optical covers (left with two cutouts), horizontal blank row with weathered leftmost, GTX285 horizontal center-right with two dangling 6-pin loops, memory shroud lower-left, cap windows lower-right outlines only, honeycomb right edge, WD Green desk left, Time Capsule desk right",
-        "English only, Helvetica caps, uniform sidepanel, footer PLATE G01 / MAC PRO 3,1 EARLY 2008 / PASS 5",
-        "PASS-8 FIXES per operator critique: remove invented GPU RAM - PCB windows are drive backplane + memory riser PCBs outline only, no VRAM hallucination; correct fans to single module top behind Bay1 covering logic board; correct lower bay/ram to photo positions (memory shroud lower-left, honeycomb right, sleds horizontal Bay1 left -> Bay4 right); GPU orientation keeps ok (horizontal double-wide center-right). Every trait filtered every image.",
-        "Keep schematic anchors tracing, PULL 30MM front ghost, Bay4 empty square outline only, board end in -> GPU end out, helmet consistent orthographic side view like g01 main comprehensive view."
+        "RECURRING FAILURES FROM p10-p13 (must not repeat): GTX 285 has EXACTLY ONE circular turbine fan at the inboard/LEFT end; the two stacked DVI ports live ONLY on the metal bracket at the RIGHT/rear frame rail (never in the top DVD/PSU compartments, never swapped to the inboard side)",
+        "left page rail always reads horizontally: boxed STEP 1 on top, MAC PRO 3,1, INVENTORY with five icons, footer rule; never rotated 90 degrees",
+        "top-left compartment is a slot-loading DVD face (one long horizontal disc slot); top-right is the blank PSU face; no ports on either",
+        "front fan tray is ONE ghosted tray (LIFT arrow) holding TWO equal round blower encasings; lower-rear exhaust is a large circular DIAGONAL CROSS-HATCH X-lattice, not dot stipple",
+        "each RAM riser board shows a round finger hole at both ends and exactly FOUR clipped finned FB-DIMMs; four sled faces carry one circled number each (empty square outline on face 4 only)",
+        "three empty horizontal PCI slot rails remain visible behind the installed GPU; one loose two-lead booster cable loops from a board connector near the GPU fan end",
+        "P14 WINNING RECIPE (do not re-derive): edit p12 (upright furniture) -> repaint GPU with a FULL-CARD proof crop that includes BOTH ends; required order left->right is booster plug, ONE turbine, plain shroud, exhaust slit band, dual-DVI bracket flush at the right/rear rail. Cropping out the bracket end makes the generator mirror the card - always attach both endcaps in the proof image.",
+        "P14 residual watch-items: booster lead must hang in a loose loop from the case into the card LEFT end face (not drape over the CPU tray, not arc over the shroud top); the 3 free PCIe retention rails sit ABOVE-BEHIND the GPU near the rear rail, not beside the card midpoint."
       ]
     },
     {
       "id": "g02-poweroff",
-      "title": "STEP 2 \u2014 POWER OFF SAFETY",
+      "title": "STEP 2 — POWER OFF SAFETY",
       "purpose": "Safe shutdown, cord IN solid ghost OUT 30mm transparent, clock CR2032 2001, no force screw, GPU 6-pin unplug ghost, UPS off, uniform sidepanel.",
       "canvas": {
         "w": 1536,
@@ -301,7 +306,7 @@
     },
     {
       "id": "g03-hidden-sata",
-      "title": "STEP 3 \u2014 HIDDEN SATA PORTS",
+      "title": "STEP 3 — HIDDEN SATA PORTS",
       "purpose": "Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
       "canvas": {
         "w": 1536,
@@ -426,7 +431,7 @@
     },
     {
       "id": "g04-ssd-mount",
-      "title": "STEP 4 \u2014 SSD TO OPTICAL BAY",
+      "title": "STEP 4 — SSD TO OPTICAL BAY",
       "purpose": "Mount Lion SSD in lower optical bay with 2.5->5.25 bracket and Molex power free Bay1-4 input empty output SSD installed ghost. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
       "canvas": {
         "w": 1536,
@@ -552,7 +557,7 @@
     },
     {
       "id": "g05-hdd-install",
-      "title": "STEP 5 \u2014 INSTALL 4x 1TB HDD",
+      "title": "STEP 5 — INSTALL 4x 1TB HDD",
       "purpose": "Install four WD Green 1TB into sleds Bay1-4 accurate placement Bay1 bottom Bay4 top upright sled slide front to rear ghost 20mm out to fully seated. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
       "canvas": {
         "w": 1536,
@@ -692,7 +697,7 @@
     },
     {
       "id": "g06-gpu-swap",
-      "title": "STEP 6 \u2014 GPU SWAP AMD",
+      "title": "STEP 6 — GPU SWAP AMD",
       "purpose": "Remove GTX 285 double-wide black blower from Slot1 x16 and install blue AMD ATI card digital cable keep old until POST no force screw ghost. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
       "canvas": {
         "w": 1536,
@@ -833,7 +838,7 @@
     },
     {
       "id": "g07-cable-check",
-      "title": "STEP 7 \u2014 CABLE VERIFY CLOSE",
+      "title": "STEP 7 — CABLE VERIFY CLOSE",
       "purpose": "Verify GPU power loose ghost to seated solid, SATA power backplane Molex SSD, SATA data hidden bays latched 50mm loop, fan back 2 screws, close case ghost open to closed.",
       "canvas": {
         "w": 1536,
@@ -987,7 +992,7 @@
     },
     {
       "id": "g08-boot-verify",
-      "title": "STEP 8 \u2014 BOOT LION VERIFY",
+      "title": "STEP 8 — BOOT LION VERIFY",
       "purpose": "Boot Lion SSD in optical, fix clock 2001 sudo date, lock 1080p not 1440p ban, About GPU, Disk Utility 4x HDD OK, OMEN board accurate to photo-2. [startup-disk-bless]",
       "canvas": {
         "w": 1536,

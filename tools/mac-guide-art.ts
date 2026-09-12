@@ -164,6 +164,25 @@ function checkRefs(refs: RefRegistry, spec: Spec, plates: Plate[]): Diag[] {
   }
   if ((spec.invariants ?? []).length < 10) d.push({ code: 'G-X-013', severity: 'ERROR', message: `spec invariants ${spec.invariants?.length ?? 0} < 10` });
   if (!spec.version) d.push({ code: 'G-X-014', severity: 'ERROR', message: 'spec has no version' });
+  // every run: every part a plate is allowed to draw must have >=1 persisted ref
+  // attached to that plate's plateRefs; <2 is a single-source warning; plates need >=3.
+  const byId = new Map(refs.images.map((r) => [r.id, r]));
+  for (const p of plates) {
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) { d.push({ code: 'G-X-015', severity: 'ERROR', plate: p.id, node: partId, message: `plate ${p.id} allowlists unknown catalog part ${partId}` }); continue; }
+      const strong = part.refs.filter((id) => mapped.includes(id) && byId.get(id)?.file);
+      if (strong.length === 0) d.push({ code: 'G-X-015', severity: 'ERROR', plate: p.id, node: partId, message: `part ${partId} has no persisted evidence ref attached to ${p.id}; run HARVEST/PERCEIVE agents (node tools/mac-guide-art.ts agents --plate=${p.id})` });
+      else if (strong.length < 2) d.push({ code: 'G-X-016', severity: 'WARN', plate: p.id, node: partId, message: `part ${partId} single-source on ${p.id}: ${strong.join(',')}` });
+    }
+    const persistedMapped = mapped.filter((id) => byId.get(id)?.file).length;
+    if (persistedMapped < 3) d.push({ code: 'G-X-017', severity: 'WARN', plate: p.id, message: `plate ${p.id} has only ${persistedMapped} persisted refs attached (<3)` });
+  }
+  for (const part of spec.chassisFaceParts) {
+    const totalStrong = part.refs.filter((id) => byId.get(id)?.file).length;
+    if (totalStrong < 2) d.push({ code: 'G-X-018', severity: 'WARN', node: part.id, message: `part ${part.id} has ${totalStrong} persisted ref(s) registry-wide (<2)` });
+  }
   return d;
 }
 
@@ -210,18 +229,152 @@ function refBlock(refs: RefRegistry, spec: Spec, plateId: string): string {
   return L.join('\n');
 }
 
+// ONE-IMAGE PERCEPTION AXES (operator directive 2026-09-12): one public image must yield
+// MANY deductions, not one. Every PERCEIVE agent works this exact checklist and logs each
+// axis into the ref details before a ref is allowed to anchor a render.
+const PERCEPTION_AXES: { id: string; axis: string }[] = [
+  { id: 'V1', axis: 'viewpoint/camera: which face(s), perspective angle, case orientation (upright/on-side), scale cue' },
+  { id: 'V2', axis: 'identity confirmation: exact machine/part model, document number, revision, publisher' },
+  { id: 'V3', axis: 'counts: every repeated feature counted (bays, cutouts, slots, DIMMs, clips, screws, ports, cables)' },
+  { id: 'V4', axis: 'orientation/facing: bracket vs fan ends, connector direction, which frame edge things meet' },
+  { id: 'V5', axis: 'fasteners: captive screws, thumbscrews, rail tabs, ejectors, finger holes - position and count' },
+  { id: 'V6', axis: 'connectors and cables: origin -> destination, pin/socket shape, dress path, laced vs loose' },
+  { id: 'V7', axis: 'material/finish/line language: stipple mesh, smooth aluminum, finned heatsink, ghost vs solid' },
+  { id: 'V8', axis: 'labels/legible text: exact strings, numbering (A/B, 1-4, slot numbers), caution glyphs' },
+  { id: 'V9', axis: 'adjacent/occluded parts: what sits next to/behind/hides the subject, compartment zones' },
+  { id: 'V10', axis: 'implied unseen faces: symmetry, the opposite end inferred, what the back must look like' },
+  { id: 'V11', axis: 'motion/interactions: pull/lift/press direction, hand grips, arrows and numbered badges' },
+  { id: 'V12', axis: 'negative facts: what is explicitly NOT present (fights hallucinated extras)' },
+  { id: 'V13', axis: 'contradictions vs operator photo/refs/spec: any mismatch, resolved operator > receipt > ref' },
+  { id: 'V14', axis: 'at least five non-obvious deductions beyond the literal subject; weak axes queue more HARVEST queries' },
+];
+
+// Deterministic HARVEST query generator: every catalog part must earn public imaging before
+// it can anchor a plate. Keywords come from the part id and its baked draw text.
+function harvestQueriesForPart(part: SpecPart): string[] {
+  const base = 'Mac Pro Early 2008 3,1 A1186';
+  const keys: Record<string, string[]> = {
+    'frame-handle-feet': ['outer case aluminum handle frame side panel removed'],
+    'front-mesh-face': ['front face mesh grille optical slot ports product'],
+    'optical-left-dualcutout': ['interior optical drive carrier cutout screws case on side'],
+    'optical-right-plain': ['interior optical drive bay blank carrier'],
+    'hdd-row-4-sleds': ['hard drive sled four bays faceplate insert'],
+    'front-fan-assembly': ['front fan assembly blower module hidden SATA'],
+    'logic-board-tray': ['logic board Xeon heatsink capacitors interior'],
+    'gpu-gtx285-blower': ['GTX 285 Mac Edition blower card bracket fan', 'EVGA 01G-P3-1080'],
+    'gpu-power-cables': ['GTX 285 booster cable logic board aux connectors'],
+    'memory-shroud': ['memory cage shroud cover lower compartment'],
+    'riser-window-2-banks': ['memory riser card FB-DIMM cage two banks installed'],
+    'riser-plates-A-B-out': ['memory riser card remove finger holes pull panel sticker'],
+    'latch-lever': ['rear locking latch lever side panel'],
+    'rear-io-plane': ['rear panel ports PCI covers power socket line drawing'],
+    'honeycomb-edge': ['rear honeycomb vent interior frame'],
+  };
+  return (keys[part.id] ?? [part.id.replace(/-/g, ' ')]).map((q) => `${base} ${q}`);
+}
+
+function cmdAgents(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find((a) => a.startsWith('--plate='))?.split('=')[1];
+  const plates = scene.plates.filter((p) => !plateId || p.id === plateId);
+  const plan: { run: string; agents: Record<string, unknown>[] } = { run: 'node tools/mac-guide-art.ts agents' + (plateId ? ` --plate=${plateId}` : ''), agents: [] };
+  for (const p of plates) {
+    const mapped = refs.plateRefs[p.id] ?? [];
+    const persistedMapped = mapped.filter((id) => { const r = refs.images.find((x) => x.id === id); return !!r?.file; });
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) continue;
+      const backed = part.refs.filter((id) => persistedMapped.includes(id));
+      if (backed.length === 0) {
+        plan.agents.push({ plate: p.id, agent: `HARVEST:${partId}`, task: `find public imaging that shows: ${part.draw}`, queries: harvestQueriesForPart(part), output: 'candidate image paths under image-search/, then run PERCEIVE', gate: 'no render until >=1 persisted ref baked with ingest and mapped to this plate' });
+        plan.agents.push({ plate: p.id, agent: `PERCEIVE:${partId}`, task: 'view each candidate image and log axes V1..V14 as ref details', axes: PERCEPTION_AXES.map((x) => `${x.id} ${x.axis}`), output: 'details JSON array (>=5 items, counts and orientation mandatory)', gate: 'image without logged axes cannot be ingested' });
+      }
+    }
+    plan.agents.push({ plate: p.id, agent: 'DEDUCE', task: 'from every mapped ref extract counts, orientations, fasteners, cables, implied opposite faces; cross-apply each detail to catalog parts', command: 'node tools/mac-guide-art.ts deduce --plate=' + p.id, output: 'evidence matrix + D-n deductions', gate: 'part with zero persisted evidence on this plate is an ERROR' });
+    plan.agents.push({ plate: p.id, agent: 'RECONCILE', task: 'operator chat photo is highest authority, then target receipts, then public refs; conflicts become findings and spec patches (never the reverse)', output: 'conflict list or empty' });
+    plan.agents.push({ plate: p.id, agent: 'BAKE', task: 'hash-lock every accepted image and attach its perception details', command: 'node tools/mac-guide-art.ts ingest --id=... --file=... --kind=... --source="..." --doc="..." --subject="..." --details=details.json --plates=' + p.id, output: 'registry entry with sha256' });
+    plan.agents.push({ plate: p.id, agent: 'GATE', task: 'evidence + determinism gates before any prompt', command: 'node tools/mac-guide-art.ts refs && node tools/mac-guide-art.ts selftest', output: 'errors=0' });
+    plan.agents.push({ plate: p.id, agent: 'CRITIQUE', task: 'after render, tick every allowed catalog part present/absent and INV-01..INV-10; findings -> deduct -> patch IR/spec/refs so next prompt hash moves', command: 'node tools/mac-guide-art.ts render + findings + deduct' });
+  }
+  // always: perceive any ref thinner than the 14-axis expectation
+  for (const r of refs.images) if (r.details.length < 5) plan.agents.push({ agent: `PERCEIVE:${r.id}`, task: 'ref has <5 baked details; re-run V1..V14 perception', file: r.file || 'chat-only' });
+  console.log(JSON.stringify(plan, null, 2));
+  const gaps = plan.agents.filter((a) => String(a.agent).startsWith('HARVEST')).length;
+  console.log(`AGENTS plates=${plates.length} agents=${plan.agents.length} harvestGaps=${gaps}`);
+  return 0;
+}
+
+function cmdIngest(args: string[]): number {
+  const get = (k: string) => args.find((a) => a.startsWith(`--${k}=`))?.slice(k.length + 3);
+  const id = get('id'); const file = get('file'); const kind = get('kind') ?? 'ref'; const source = get('source') ?? '';
+  const doc = get('doc') ?? ''; const subject = get('subject') ?? ''; const detailsPath = get('details');
+  const plates = (get('plates') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (!id || !file || !detailsPath || !source || !subject) { console.error('usage: ingest --id=ID --file=PATH --kind=KIND --source=SRC --doc=DOC --subject=TEXT --details=details.json [--plates=g01,g06]'); return 1; }
+  if (!existsSync(file)) { console.error(`missing ${file}`); return 1; }
+  const refs = loadRefs();
+  if (refs.images.some((r) => r.id === id)) { console.error(`ref id ${id} exists`); return 1; }
+  let details: string[];
+  try { details = JSON.parse(readFileSync(detailsPath, 'utf8')); } catch (e) { console.error(`details must be a JSON array of strings: ${(e as Error).message}`); return 1; }
+  if (!Array.isArray(details) || details.length < 5 || details.some((d) => typeof d !== 'string' || d.length < 10)) { console.error('need >=5 detail strings, each >=10 chars, covering V1..V14'); return 1; }
+  const buf = readFileSync(file);
+  const entry: RefImage = { id, file, persisted: true, kind, subject, source, doc, sha256: sha256(buf), details };
+  refs.images.push(entry);
+  refs.images.sort((a, b) => a.id.localeCompare(b.id));
+  refs.updated = new Date().toISOString().slice(0, 10);
+  for (const p of plates) { (refs.plateRefs[p] ??= []); if (!refs.plateRefs[p].includes(id)) refs.plateRefs[p].push(id); }
+  writeFileSync(REFS, JSON.stringify(refs, null, 2) + '\n');
+  const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const diags = checkRefs(refs, spec, scene.plates);
+  for (const d of diags) console.log(`${d.severity}\t${d.code}\t${d.plate ?? '-'}\t${d.node ?? '-'}\t${d.message}`);
+  console.log(`INGESTED id=${id} sha256=${entry.sha256} details=${details.length} plates=${plates.join(',') || 'none'} errors=${diags.filter((d) => d.severity === 'ERROR').length}`);
+  return diags.some((d) => d.severity === 'ERROR') ? 1 : 0;
+}
+
+function cmdDeduce(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find((a) => a.startsWith('--plate='))?.split('=')[1];
+  let errors = 0;
+  for (const p of scene.plates) {
+    if (plateId && p.id !== plateId) continue;
+    console.log(`PLATE ${p.id}`);
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) continue;
+      const evidence = part.refs.map((id) => { const r = refs.images.find((x) => x.id === id); return { id, present: mapped.includes(id), persisted: !!r?.file, kind: r?.kind ?? '-' }; });
+      const strong = evidence.filter((e) => e.present && e.persisted);
+      const verdict = strong.length === 0 ? 'ERROR no persisted evidence attached' : strong.length < 2 ? 'WARN single-source' : 'ok';
+      if (strong.length === 0) errors++;
+      console.log(`  ${verdict.padEnd(34)} ${partId}  evidence=${strong.map((e) => e.id).join(',') || '-'}`);
+    }
+    const chatOnly = mapped.filter((id) => refs.images.find((x) => x.id === id)?.persisted === false);
+    if (chatOnly.length) console.log(`  CHAT-ONLY (re-upload to attach as image): ${chatOnly.join(',')}`);
+  }
+  // one-image -> many deductions: each ref detail supports the catalog parts that cite it
+  console.log('ONE-IMAGE DEDUCTIONS');
+  let n = 0;
+  for (const r of refs.images) {
+    const supports = spec.chassisFaceParts.filter((part) => part.refs.includes(r.id));
+    if (supports.length) { n += supports.length; console.log(`  D-${String(n).padStart(2, '0')} ${r.id} anchors ${supports.length} part(s): ${supports.map((s) => s.id).join(', ')} (${r.details.length} logged perception axes)`); }
+  }
+  const diags = checkRefs(refs, spec, scene.plates);
+  for (const d of diags.filter((x) => x.severity !== 'INFO')) console.log(`${d.severity}\t${d.code}\t${d.plate ?? '-'}\t${d.node ?? '-'}\t${d.message}`);
+  console.log(`DEDUCE partEvidenceErrors=${errors} gateErrors=${diags.filter((d) => d.severity === 'ERROR').length}`);
+  return errors || diags.some((d) => d.severity === 'ERROR') ? 1 : 0;
+}
+
 // Which catalog parts each procedural plate needs; g01 gets the whole machine.
 function platePartAllowlist(plateId: string): string[] {
-  const ALL = ['frame-handle-feet', 'front-mesh-face', 'optical-left-dualcutout', 'optical-right-plain', 'hdd-row-4-sleds', 'front-fan-assembly', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'memory-shroud', 'riser-window-2-banks', 'riser-plates-A-B-out', 'latch-lever', 'rear-io-plane', 'honeycomb-edge'];
+  const ALL = ['frame-handle-feet', 'front-mesh-face', 'dvd-optical-bay', 'psu-compartment', 'hdd-row-4-sleds', 'front-fan-assembly', 'cpu-compartment-cover', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'memory-shroud', 'riser-window-2-banks', 'riser-plates-A-B-out', 'latch-lever', 'rear-io-plane', 'rear-140-exhaust', 'honeycomb-edge'];
   const map: Record<string, string[]> = {
     'g01-overview': ALL,
-    'g02-poweroff': ['frame-handle-feet', 'rear-io-plane', 'latch-lever', 'gpu-power-cables', 'honeycomb-edge'],
-    'g03-hidden-sata': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-fan-assembly', 'logic-board-tray', 'optical-left-dualcutout', 'optical-right-plain'],
-    'g04-ssd-mount': ['frame-handle-feet', 'optical-left-dualcutout', 'optical-right-plain', 'hdd-row-4-sleds', 'front-fan-assembly'],
-    'g05-hdd-install': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-mesh-face'],
-    'g06-gpu-swap': ['frame-handle-feet', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'rear-io-plane', 'latch-lever'],
+    'g02-poweroff': ['frame-handle-feet', 'rear-io-plane', 'rear-140-exhaust', 'latch-lever', 'gpu-gtx285-blower', 'gpu-power-cables', 'honeycomb-edge'],
+    'g03-hidden-sata': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-fan-assembly', 'cpu-compartment-cover', 'logic-board-tray', 'dvd-optical-bay', 'psu-compartment'],
+    'g04-ssd-mount': ['frame-handle-feet', 'dvd-optical-bay', 'psu-compartment', 'hdd-row-4-sleds', 'front-fan-assembly'],
+    'g05-hdd-install': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-mesh-face', 'dvd-optical-bay'],
+    'g06-gpu-swap': ['frame-handle-feet', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'rear-io-plane', 'rear-140-exhaust', 'latch-lever'],
     'g07-cable-check': ['frame-handle-feet', 'gpu-gtx285-blower', 'gpu-power-cables', 'logic-board-tray', 'rear-io-plane', 'honeycomb-edge'],
-    'g08-boot-verify': ['frame-handle-feet', 'front-mesh-face'],
+    'g08-boot-verify': ['frame-handle-feet', 'front-mesh-face', 'rear-140-exhaust'],
   };
   return map[plateId] ?? ALL;
 }
@@ -712,6 +865,15 @@ function cmdSelftest(): number {
   // every plate prompt must carry its ref tracing block with the mapped refs
   const traceOk = scene.plates.every(p=>{ const t=emitPrompt(scene,style,p.id,0,refs,spec).text; return (refs.plateRefs[p.id]??[]).every(id=>t.includes(`REF ${id} `)); });
   checks.push({ name:'ref-block-per-plate', ok:traceOk, detail:'all plateRefs traced' });
+  // perception axes V1..V14 exist and every persisted ref logs at least 5 detail deductions
+  checks.push({ name:'perception-axes-14', ok:PERCEPTION_AXES.length===14, detail:`axes=${PERCEPTION_AXES.length}` });
+  checks.push({ name:'ref-detail-depth', ok:refs.images.every(r=>r.persisted===false || r.details.length>=5), detail:refs.images.filter(r=>r.persisted!==false).map(r=>`${r.id}:${r.details.length}`).join(',') });
+  // g01 evidence matrix: every allowed part has persisted evidence
+  const g01Errors = checkRefs(refs,spec,scene.plates).filter(d=>d.severity==='ERROR');
+  checks.push({ name:'evidence-gate-clean', ok:g01Errors.length===0, detail:`errors=${g01Errors.length}` });
+  // agent plan covers all plates deterministically
+  const plan = (() => { let out=''; const log=console.log; console.log=(...a:unknown[])=>{out+=a.join(' ')+'\n';}; try { cmdAgents([]); } finally { console.log=log; } return JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)); })();
+  checks.push({ name:'agent-plan', ok:plan.agents.length>20 && plan.agents.some((a:Record<string,unknown>)=>a.agent==='DEDUCE'), detail:`agents=${plan.agents.length} harvestGaps=${plan.harvestGaps}` });
   for(const c of checks) console.log(`${c.ok?'PASS':'FAIL'}\t${c.name}\t${c.detail}`);
   const failed=checks.filter(c=>!c.ok).length; console.log(`SELFTEST checks=${checks.length} failed=${failed}`); return failed?1:0;
 }
@@ -722,6 +884,9 @@ function main(): void {
   switch(cmd){
     case 'passes': cmdPasses(); break;
     case 'refs': process.exit(cmdRefs(rest)); break;
+    case 'agents': process.exit(cmdAgents(rest)); break;
+    case 'ingest': process.exit(cmdIngest(rest)); break;
+    case 'deduce': process.exit(cmdDeduce(rest)); break;
     case 'facts': cmdFacts(rest); break;
     case 'ir': cmdIr(rest); break;
     case 'lint': process.exit(cmdLint(rest)); break;
@@ -734,7 +899,7 @@ function main(): void {
     case 'deduct': process.exit(cmdDeduct(rest)); break;
     case 'status': cmdStatus(); break;
     case 'selftest': process.exit(cmdSelftest()); break;
-    default: console.log('usage: node tools/mac-guide-art.ts <passes|refs|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
+    default: console.log('usage: node tools/mac-guide-art.ts <passes|refs|agents|ingest|deduce|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
   }
 }
 main();

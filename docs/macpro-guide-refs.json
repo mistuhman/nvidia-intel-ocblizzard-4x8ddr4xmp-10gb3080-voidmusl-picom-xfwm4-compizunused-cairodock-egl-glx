@@ -1,56 +1,11 @@
 {
   "schema": "mac-guide-refs.v1",
-  "updated": "2026-09-12-v6",
+  "updated": "2026-09-12-v6c",
   "session": "01a09486",
   "rule": "Operator directive 2026-09-12: every guide image must cross-reference public Apple/reference imaging down to the smallest observable detail; the same strict ruleset applies to every plate; details are baked, tracked, logged and audited before any render. Chat-only operator photos (not persisted to sandbox disk) are recorded in refs.chatOnly with full perception receipts and MUST be re-uploaded before they can be passed as image references.",
   "naming": "simple descriptive kebab names, no token ceremony",
   "imageDir": "docs/macpro-guide-refs",
   "images": [
-    {
-      "id": "panel-sticker",
-      "file": "",
-      "persisted": false,
-      "kind": "operator-photo-chat-only",
-      "subject": "Memory instruction infographic printed on the inside/back of the removable Mac Pro 3,1 access panel - OPERATOR'S PRIMARY STYLE+VIEW REFERENCE ('perfectly represents my vision')",
-      "source": "operator chat attachment 2026-09-12 (arena attachment; not written to sandbox disk - /home/user/uploads absent). Re-upload required to pass as image reference.",
-      "publisher": "Apple Computer Inc. (factory-printed panel label)",
-      "doc": "",
-      "sha256": "",
-      "details": [
-        "brushed silver aluminum panel background, black ink only, photographed at an angle with glare (glare is photo artifact, never art)",
-        "artwork left half: the Mac Pro tower shell shown lying on its back/open side, THREE-QUARTER PERSPECTIVE (~20-30 degree angled view from above and front), not flat orthographic",
-        "tower outline includes the signature one-piece top handle cutout and rounded stand/foot shapes at both frame ends",
-        "front mesh face is visible on the left of the shell with perforation stippling and the two long horizontal optical-slot trim bars one above the other, plus a vertical column of small port/button glyphs below them",
-        "memory compartment at the open face: TWO flat rectangular riser carrier plates drawn pulled straight OUT, perpendicular from the logic board plane, each plate carrying a row of upright DIMM outlines (3 to 4 per plate) with clips",
-        "UPPER carrier plate has a bold letter 'A' at its outer right corner; LOWER carrier plate has a bold letter 'B' at its outer right corner",
-        "the in-cage seated positions of both plates are drawn inside the shell; pulled-out plates are solid outline slightly offset, no heavy ghosting style but clearly detached",
-        "TWO solid black filled block arrows with triangular heads point horizontally outward from the open face, one per plate, showing straight pull direction",
-        "right half text block, top to bottom: 'IMPORTANT' in bold; English 'To install memory, see the user's guide.'; French 'Pour installer de la memoire, consultez le guide de l utilisateur.'; German 'Anleitungen zum Installieren von Speicher finden Sie im Benutzerhandbuch' (line cropped at right edge); Spanish 'Para instalar memoria, consulte la guia del usuario.'; fifth line is the Japanese translation of the same sentence (described only, NOT reproduced anywhere in our English-only guide art)",
-        "the five-language IMPORTANT text is recorded for fidelity to the reference but guide plates render ENGLISH ONLY per contract; the sticker's black-line + filled-block-arrow + three-quarter shell language is what gets copied, not its foreign text",
-        "line weights are uniform and thin, outline-only, no shading, no gray fill, no gradients - stippling used for the mesh grille only",
-        "composition is spacious: one chassis, one action, generous whitespace; the text occupies its own clean column and never overlaps the art",
-        "viewpoint target for the guide: same angled shell on its side; removed parts exit straight toward the viewer/open side with a single bold arrow; removed/next-state part may be dashed at 40% per contract but the solid arrow language is identical"
-      ]
-    },
-    {
-      "id": "apple-diy-memory-cover",
-      "file": "docs/macpro-guide-refs/apple-diy-memory-cover.jpg",
-      "persisted": true,
-      "kind": "apple-official-diy-sheet",
-      "subject": "Apple 'Memory Riser Card Replacement Instructions' page 1 for Mac Pro (Early 2008)",
-      "source": "Apple 073-1180 Rev. A, via yumpu document 55991164",
-      "publisher": "Apple Inc. 2008",
-      "doc": "073-1180 Rev. A",
-      "sha256": "b7a98331e370554e19e2e1f0931aaf119e65acddc8078150ef3a79bc8bfd3df7",
-      "details": [
-        "white page, black Apple logo + 'Mac Pro' wordmark top right, thin horizontal rule under header",
-        "large two-line sans-serif title, generous leading; numbered steps left column, black numerals",
-        "Warning callouts use a round-triangle caution icon with internal exclamation mark, bold 'Warning:' lead-in",
-        "no imagery on page 1 beyond header art: typographic restraint is the style signal",
-        "footer: copyright left, document number '073-1180 Rev. A' and page number right",
-        "defines the canonical typographic voice: sentence case instructions, short numbered actions, one action per number"
-      ]
-    },
     {
       "id": "apple-diy-gpu-sheet",
       "file": "docs/macpro-guide-refs/apple-diy-gpu-sheet.jpg",
@@ -73,6 +28,25 @@
       ]
     },
     {
+      "id": "apple-diy-memory-cover",
+      "file": "docs/macpro-guide-refs/apple-diy-memory-cover.jpg",
+      "persisted": true,
+      "kind": "apple-official-diy-sheet",
+      "subject": "Apple 'Memory Riser Card Replacement Instructions' page 1 for Mac Pro (Early 2008)",
+      "source": "Apple 073-1180 Rev. A, via yumpu document 55991164",
+      "publisher": "Apple Inc. 2008",
+      "doc": "073-1180 Rev. A",
+      "sha256": "b7a98331e370554e19e2e1f0931aaf119e65acddc8078150ef3a79bc8bfd3df7",
+      "details": [
+        "white page, black Apple logo + 'Mac Pro' wordmark top right, thin horizontal rule under header",
+        "large two-line sans-serif title, generous leading; numbered steps left column, black numerals",
+        "Warning callouts use a round-triangle caution icon with internal exclamation mark, bold 'Warning:' lead-in",
+        "no imagery on page 1 beyond header art: typographic restraint is the style signal",
+        "footer: copyright left, document number '073-1180 Rev. A' and page number right",
+        "defines the canonical typographic voice: sentence case instructions, short numbered actions, one action per number"
+      ]
+    },
+    {
       "id": "apple-interior-photo",
       "file": "docs/macpro-guide-refs/apple-interior-photo.jpg",
       "persisted": true,
@@ -92,6 +66,27 @@
         "RIGHT EDGE: silver locking latch lever angled outward mid-height; honeycomb/dot vent perforations along inner frame edges",
         "all zones are separated by clean aluminum frame rails; no cables visible across the open face in factory state",
         "counts that must never drift in guide art: optical carriers = 2 (left dual-cutout, right plain); HDD faces = exactly 4; riser banks visible = 2; cutouts on left optical carrier = 2 each with screw dot"
+      ]
+    },
+    {
+      "id": "apple-product-views",
+      "file": "docs/macpro-guide-refs/apple-product-views.jpg",
+      "persisted": true,
+      "kind": "product-photo-composite",
+      "subject": "Mac Pro Early 2008 A1186 marketing composite: front three-quarter view, access panel, and rear panel",
+      "source": "apple.techable.com Mac Pro 2008 Eight Core 2.8 GHz MA970LL/A A1186 EMC 2180 page",
+      "publisher": "Apple marketing image via Techable",
+      "doc": "MA970LL/A / A1186 / EMC 2180",
+      "sha256": "8aeda9c0cbb99a2ba618af434975eb6585d7e34a92376554bd2dc58f52183bfc",
+      "details": [
+        "FRONT: full-height perforated aluminum mesh face with dense round hole pattern across the entire front plane",
+        "two long horizontal optical slot bezels stacked in the upper third, rounded ends, spanning most of the face width",
+        "center I/O strip below the slots: circular power button at top, headphone/optical audio hole, two stacked USB ports, one FireWire 800 and one FireWire 400 port, all in a slim recessed vertical column",
+        "the one-piece aluminum carry handle forms a wide rectangular loop across the full top with open grip gap beneath",
+        "the bottom stand is a wide curved aluminum foot with open cutouts; front corners of the body are softly rounded where the handle hoop and foot meet",
+        "ACCESS PANEL (top-right in composite): flat aluminum door with a large centered faint Apple logo and a small square latch/handle cutout near one edge; bottom corners have notched standoffs that hook into the frame",
+        "REAR (small inset): mesh lower face, circular speaker grille, IEC socket top, five horizontal PCI slot covers, I/O cluster bottom-right exactly matching apple-rear-ports-lineart",
+        "body side profile is a simple tall rounded rectangle with slight taper; there are NO front-facing drive doors - HDD bays are internal, invisible from the front"
       ]
     },
     {
@@ -139,24 +134,119 @@
       ]
     },
     {
-      "id": "apple-product-views",
-      "file": "docs/macpro-guide-refs/apple-product-views.jpg",
+      "id": "evga-gtx285-angle",
+      "file": "docs/macpro-guide-refs/evga-gtx285-angle.jpg",
       "persisted": true,
-      "kind": "product-photo-composite",
-      "subject": "Mac Pro Early 2008 A1186 marketing composite: front three-quarter view, access panel, and rear panel",
-      "source": "apple.techable.com Mac Pro 2008 Eight Core 2.8 GHz MA970LL/A A1186 EMC 2180 page",
-      "publisher": "Apple marketing image via Techable",
-      "doc": "MA970LL/A / A1186 / EMC 2180",
-      "sha256": "8aeda9c0cbb99a2ba618af434975eb6585d7e34a92376554bd2dc58f52183bfc",
+      "kind": "product-photo",
+      "subject": "EVGA GTX 285 Mac Edition three-quarter end view showing power sockets, exhaust fins, bracket depth",
+      "source": "HotHardware EVGA GeForce GTX 285 Mac Edition press gallery (item 9961)",
+      "publisher": "HotHardware / EVGA",
+      "doc": "01G-P3-1080-TR",
+      "sha256": "517743e5d119b48c11a2ac865264671fd315035a70bba0da6494f7266606dc04",
       "details": [
-        "FRONT: full-height perforated aluminum mesh face with dense round hole pattern across the entire front plane",
-        "two long horizontal optical slot bezels stacked in the upper third, rounded ends, spanning most of the face width",
-        "center I/O strip below the slots: circular power button at top, headphone/optical audio hole, two stacked USB ports, one FireWire 800 and one FireWire 400 port, all in a slim recessed vertical column",
-        "the one-piece aluminum carry handle forms a wide rectangular loop across the full top with open grip gap beneath",
-        "the bottom stand is a wide curved aluminum foot with open cutouts; front corners of the body are softly rounded where the handle hoop and foot meet",
-        "ACCESS PANEL (top-right in composite): flat aluminum door with a large centered faint Apple logo and a small square latch/handle cutout near one edge; bottom corners have notched standoffs that hook into the frame",
-        "REAR (small inset): mesh lower face, circular speaker grille, IEC socket top, five horizontal PCI slot covers, I/O cluster bottom-right exactly matching apple-rear-ports-lineart",
-        "body side profile is a simple tall rounded rectangle with slight taper; there are NO front-facing drive doors - HDD bays are internal, invisible from the front"
+        "TWO side-by-side 6-pin (3x2 square hole) AUX POWER SOCKETS are recessed in the END CAP at the FAN end of the card - on the top-facing edge near the fan, not at the bracket end",
+        "the end cap beside the fan also has two small vent openings and a tiny red/white lead detail",
+        "the long card side is a wall of diagonal EXHAUST FIN slots (blower pushes air toward the bracket/rear)",
+        "the metal bracket is a deep L-plate with two stacked port windows and screw tab; PCB gold edge peeks under the shroud",
+        "double-slot thickness visible: shroud + bracket occupy two expansion openings",
+        "DEDUCTION: booster/aux cables route from logic board headers ALONG the board to the fan-end cap sockets, i.e. they enter the card at its inboard/front end, not the rear bracket"
+      ]
+    },
+    {
+      "id": "evga-gtx285-flat",
+      "file": "docs/macpro-guide-refs/evga-gtx285-flat.webp",
+      "persisted": true,
+      "kind": "product-photo",
+      "subject": "EVGA GeForce GTX 285 Mac Edition 01G-P3-1080-TR flat top view - authoritative card shape, bracket and fan orientation",
+      "source": "Newegg product N82E16814130500 official product image",
+      "publisher": "EVGA / Newegg",
+      "doc": "01G-P3-1080-TR",
+      "sha256": "071717d3db663e407a918a39c9e22f7ccf05584bbf0f1b9afaaf3da336e65422",
+      "details": [
+        "long double-slot blower card split into TWO shroud zones: left ~2/3 smooth dark shroud carrying EVGA wordmark top-left, small NVIDIA logo + GEFORCE GTX 285 lettering center, 'Mac Edition' small text upper-right of center; right ~1/3 a square-framed recess containing the CIRCULAR TURBINE FAN with radial blades and a round EVGA center cap",
+        "the metal I/O BRACKET is at the FAR LEFT end in this view: a thin vertical silver plate with stacked DVI port cutouts and a small circular port, plus the screw tab at its bottom",
+        "gold PCIe x16 edge contacts run along the whole bottom edge, segmented with the standard notch pattern; a short gold tail extends at bracket-side bottom",
+        "shroud surface has subtle curved sweep highlights (rendered as outline only in BW); the fan circle is the ONLY circular feature on the card face",
+        "card length dominates: roughly 4.3:1 length-to-height ratio; the fan zone is a near-square ~1/3 of total length",
+        "INSTALLED ORIENTATION DEDUCTION: in the case-on-side canon view the bracket end is at the REAR frame rail (RIGHT of the open face) and the fan end points inboard/LEFT; the p8 render inverted this and is wrong"
+      ]
+    },
+    {
+      "id": "ifixit-fan-removed-interior",
+      "file": "docs/macpro-guide-refs/ifixit-fan-removed-interior.jpg",
+      "persisted": true,
+      "kind": "ifixit-photo",
+      "subject": "Full interior factory photo fan removed: empty left recess, optical carriers, open bays, logic board, 3 PCI rails, PRAM cell, 2 riser bays top populated bottom empty",
+      "source": "iFixit guide 25936 Front Fan Assembly step 13 (interior with fan removed)",
+      "doc": "iFixit 25936",
+      "sha256": "fd2a34792f8cad6221e6165ccdd30868eee5c14883452e2ee73c6429c4eaa3c5",
+      "details": [
+        "straight-on open-face factory photo, case on side, with the front fan assembly REMOVED: the entire left half of the interior is one large empty smooth gray rectangular panel recess (source yellow oval highlights it), confirming the fan module covers that whole zone",
+        "top: two optical carriers - LEFT carrier is split as a dual plate carrying TWO small rounded-rectangle cutouts side by side each with two screw dots top and bottom; RIGHT carrier is one large plain plate - exactly four corner screw dots frame the carriers",
+        "middle: the four HDD sled faceplates in a row are ABSENT in this photo (bay frame open showing the drive backplane PCBs and small gray plastic latch tabs along the rails), proving the sled faces are separate captive parts from the frame",
+        "center: logic board with a small WHITE finned heatsink block upper-left of center, three long horizontal black PCIe slot rails across the middle-right, a silver coin cell (PRAM battery) near the slot bank, rows of cylindrical silver caps, and a small black module on the board",
+        "lower-right: framed memory cage window with TWO riser bays stacked; the TOP riser in this unit holds FB-DIMMs with silver heatsinks and clips, the BOTTOM riser bay is EMPTY showing only green/blue PCB, purple cylindrical caps and connector slots - confirming two identical removable boards, each with a round finger hole visible at the outer end",
+        "right frame edge: vertical metal rear-I/O rail with screws and a honeycomb perforated strip; no GPU installed so the PCI rails read clearly as three parallel horizontal black slots",
+        "lower-left: a large smooth blank shroud panel with rounded bottom corner and a vertical latch/rail at its right edge (memory/PSU zone cover)",
+        "deduction V3 counts confirmed: 2 optical carriers (2 cutouts on left), 4 HDD bay openings, 3 visible PCI slot rails, 2 riser bays, 1 PRAM coin cell, 1 empty fan bay; V12 negatives: no GPU, no sleds, no fan module present in this state",
+        "deduction V9: GPU plates occupy the PCI rail zone center-right when installed; fan tray occupies the large left recess; risers occupy lower-right - zone adjacency locks their relative placement in every render"
+      ]
+    },
+    {
+      "id": "ifixit-front-fan-lift",
+      "file": "docs/macpro-guide-refs/ifixit-front-fan-lift.jpg",
+      "persisted": true,
+      "kind": "ifixit-photo",
+      "subject": "Front fan tray lifting straight up with arrows, module = one silver tray, internal radial impeller, heat plates below",
+      "source": "iFixit guide 25936 Mac Pro (Early 2008) Front Fan Assembly Replacement step 15",
+      "doc": "iFixit 25936",
+      "sha256": "4a3e6cbd7246a9d7fd67b791c3a7a355a54a7a2353e014639ca6abd3c96cdce5",
+      "details": [
+        "three-quarter close view, case on its side, of the FRONT FAN ASSEMBLY lifting straight UP out of its bay (two yellow up-arrows on the smooth silver tray, motion is perpendicular to the open face, not pulled sideways)",
+        "the fan module is ONE flat rectangular silver tray assembly with a smooth top panel and vent slots along its lower lip; a white radial squirrel-cage impeller is visible in the right bay recess and the tray spans both recesses (single module, one part number, not separate fans)",
+        "below the lifted module sit two copper/brass-colored flat heat-exchanger plates with white fabric filter strips and brass screw posts, side by side over the processor zone",
+        "the case handle hoop is visible at upper-left, honeycomb mesh inner frame at upper-right, the blue memory cage/riser boards (gold contacts, dotted silkscreen) protrude in the foreground",
+        "silver rail guides and plastic latch hooks on the right frame receive the tray; the tray top aligns flush with the chassis rail when seated",
+        "deduction V10/V11: g03 plate must draw the fan tray ghosted straight upward the same short distance the arrows show, exposing the logic board strip and the two hidden SATA ports beneath, with one filled block arrow labelled LIFT",
+        "no GPU, no drives, no cables across the fan bay in this view; V12 negative fact: nothing else is removed to lift the tray"
+      ]
+    },
+    {
+      "id": "ifixit-gpu-booster-cable",
+      "file": "docs/macpro-guide-refs/ifixit-gpu-booster-cable.jpg",
+      "persisted": true,
+      "kind": "ifixit-photo",
+      "subject": "iFixit Mac Pro 2006-2008 graphic card guide: card bay context, the bundled black booster cable bundle and blue logic board aux connectors (step 5 callout)",
+      "source": "iFixit guide 14161 'Mac Pro Graphic Card for Mac Pro (2006 2007 2008) Replacement' step 5 'Card with Booster Cable'",
+      "publisher": "iFixit",
+      "doc": "iFixit 14161",
+      "sha256": "642a04166a447be045e62341672e86fc4c11a93cd779a1ad81a0e7164e8d8292",
+      "details": [
+        "open case on its side; optical carriers across the top edge match apple-interior-photo; the long blue logic board with the black finned heatsink and black PCIe slot rails runs across the middle",
+        "magnified callout shows the factory black BOOSTER CABLE bundle: twin black leads laced together lying across the blue PCB near white plastic guides, joining black rectangular aux power connectors on the board",
+        "silkscreen numbering (R2A1, NS, C5243, 8247C, connector silkscreens J6C1-style) confirms the cable origin is the LOGIC BOARD, never the PSU - matches G-17 board end in",
+        "PCI slots are long black horizontal rails parallel to the board; the card drops vertically onto them when the case is upright and lies across them when on its side",
+        "red plastic pull tabs / release levers sit on the slot bank - a small card-retention detail at the bracket-side rail",
+        "DEDUCTION: in guide art both booster leads should visibly originate at small board connector outlines behind the card and run to the fan-end cap; no cables cross toward the front mesh"
+      ]
+    },
+    {
+      "id": "ifixit-memory-cage-boards",
+      "file": "docs/macpro-guide-refs/ifixit-memory-cage-boards.jpg",
+      "persisted": true,
+      "kind": "ifixit-photo",
+      "subject": "Close view of two blue memory cage/riser boards in frame, finger holes at both ends, populated upper/bare lower",
+      "source": "iFixit guide 25939 Memory Cage with Rear Fan (Early 2008) step 10",
+      "doc": "iFixit 25939",
+      "sha256": "5c8261e4e17bfd84236fe1a9fea22e613b6d15fcc8dfbc0fbbef2e19ad3809dc",
+      "details": [
+        "close straight view into the lower compartment memory cage frame (case on side): TWO long rounded-corner BLUE boards stacked in separate rectangular aluminum windows, each board with a large round finger hole at BOTH ends (four holes total visible)",
+        "the UPPER blue board is populated: three large purple cylindrical capacitors on the left, rows of tan inductors and black IC blocks across the center and right, a gray coil block marked 1R0, silkscreen reference designators; the LOWER board is nearly bare blue with a few tiny white silkscreen dots (its components face the other side or it is the paired plane)",
+        "the boards are captive in a silver cage frame with rounded cutout corners; the frame is bolted to the chassis by silver Phillips screws on the dark rear panel above (two yellow arrows point to those screws)",
+        "top edge of frame reveals a SATA 3.0 Gb/s spec label and dark gray plastic drive/backplane pieces with silver captive screws",
+        "right edge shows honeycomb perforation and metal latch hardware",
+        "deduction V4/V9: the riser finger holes are at the board ends flush with the cage cutouts, which is what the panel-sticker plates A and B expose when pulled straight out; the A/B plates carry these blue boards plus the vertical FB-DIMMs seen in apple-riser-fbdimm-photo",
+        "deduction V12: no DIMMs are installed on these visible faces in this photo (DIMMs seat on the opposite face), so guide art must combine this cage/hole geometry with the heatsinked FB-DIMMs from apple-riser-fbdimm-photo rather than copying either alone"
       ]
     },
     {
@@ -177,17 +267,123 @@
         "motion is straight IN toward the backplane on rails, supported from underneath - never tilted, no screws turned to insert, the captive thumbscrew secures it afterward",
         "the faceplate sits nearly flush with the four-bay aluminum row when seated; above it the optical carrier screw dots are visible"
       ]
+    },
+    {
+      "id": "panel-sticker",
+      "file": "",
+      "persisted": false,
+      "kind": "operator-photo-chat-only",
+      "subject": "Memory instruction infographic printed on the inside/back of the removable Mac Pro 3,1 access panel - OPERATOR'S PRIMARY STYLE+VIEW REFERENCE ('perfectly represents my vision')",
+      "source": "operator chat attachment 2026-09-12 (arena attachment; not written to sandbox disk - /home/user/uploads absent). Re-upload required to pass as image reference.",
+      "publisher": "Apple Computer Inc. (factory-printed panel label)",
+      "doc": "",
+      "sha256": "",
+      "details": [
+        "brushed silver aluminum panel background, black ink only, photographed at an angle with glare (glare is photo artifact, never art)",
+        "artwork left half: the Mac Pro tower shell shown lying on its back/open side, THREE-QUARTER PERSPECTIVE (~20-30 degree angled view from above and front), not flat orthographic",
+        "tower outline includes the signature one-piece top handle cutout and rounded stand/foot shapes at both frame ends",
+        "front mesh face is visible on the left of the shell with perforation stippling and the two long horizontal optical-slot trim bars one above the other, plus a vertical column of small port/button glyphs below them",
+        "memory compartment at the open face: TWO flat rectangular riser carrier plates drawn pulled straight OUT, perpendicular from the logic board plane, each plate carrying a row of upright DIMM outlines (3 to 4 per plate) with clips",
+        "UPPER carrier plate has a bold letter 'A' at its outer right corner; LOWER carrier plate has a bold letter 'B' at its outer right corner",
+        "the in-cage seated positions of both plates are drawn inside the shell; pulled-out plates are solid outline slightly offset, no heavy ghosting style but clearly detached",
+        "TWO solid black filled block arrows with triangular heads point horizontally outward from the open face, one per plate, showing straight pull direction",
+        "right half text block, top to bottom: 'IMPORTANT' in bold; English 'To install memory, see the user's guide.'; French 'Pour installer de la memoire, consultez le guide de l utilisateur.'; German 'Anleitungen zum Installieren von Speicher finden Sie im Benutzerhandbuch' (line cropped at right edge); Spanish 'Para instalar memoria, consulte la guia del usuario.'; fifth line is the Japanese translation of the same sentence (described only, NOT reproduced anywhere in our English-only guide art)",
+        "the five-language IMPORTANT text is recorded for fidelity to the reference but guide plates render ENGLISH ONLY per contract; the sticker's black-line + filled-block-arrow + three-quarter shell language is what gets copied, not its foreign text",
+        "line weights are uniform and thin, outline-only, no shading, no gray fill, no gradients - stippling used for the mesh grille only",
+        "composition is spacious: one chassis, one action, generous whitespace; the text occupies its own clean column and never overlaps the art",
+        "viewpoint target for the guide: same angled shell on its side; removed parts exit straight toward the viewer/open side with a single bold arrow; removed/next-state part may be dashed at 40% per contract but the solid arrow language is identical"
+      ]
+    },
+    {
+      "id": "op-rear-io-photo",
+      "file": "",
+      "persisted": false,
+      "kind": "operator-photo-chat-only",
+      "subject": "Operator photo (3 identical attachments, chat-only): upright REAR panel of the actual Mac Pro 3,1 with GTX 285 installed",
+      "source": "operator chat attachment 2026-09-12 (not on sandbox disk; re-upload to attach as image reference)",
+      "publisher": "operator",
+      "doc": "",
+      "sha256": "",
+      "details": [
+        "V1 upright straight rear view of the powered machine, cables present (one beige USB plug in a top USB port, blue ethernet cable coiled at left, white cable lower left); art renders ports empty",
+        "V3/V8 full rear I/O inventory: full-height round-hole aluminum mesh; left vertical latch column with padlock icon at top, horizontal sliding T-latch, rounded finger pocket below",
+        "PCI framed opening upper-right: THREE blank horizontal slotted slot covers (rounded-end plates, twin rails each), then the GTX 285 double-wide zone = one dense vertical-fin exhaust bracket plus the metal I/O bracket holding TWO DVI-I connectors side by side (mixed pin-grid and blade cross), captive screws each end, small silver regulatory label strip under the bracket",
+        "lower-left large circular exhaust with DIAGONAL CROSS-HATCH X-lattice wire grille (operator: lower 140mm exhaust); fan blade glints visible low inside; this grille is an X-lattice, not dot stipple",
+        "lower-right I/O cluster: top row two USB-A rectangles; second row FireWire 800 (9-pin squircle) and one USB-A/FW400-class port; two square optical digital TOSLINK in/out with tiny in/out labels; two 3.5mm analog audio jacks; bottom two stacked RJ-45 Gigabit Ethernet jacks; tiny USB trident/FW/audio glyphs printed between ports",
+        "V9 the GPU bracket sits in the lower two of the five PCI openings; three blank covers remain above it, confirming one double-wide card plus three free slots toward the top of the opening",
+        "V12 negatives: no IEC power socket visible in this frame (it sits above the PCI frame per Apple rear line art), no antenna, no second card, no ports on the fan grille"
+      ]
     }
   ],
   "plateRefs": {
-    "g01-overview": ["panel-sticker", "apple-interior-photo", "apple-product-views", "apple-rear-ports-lineart", "apple-riser-fbdimm-photo", "ifixit-sled-insert-photo"],
-    "g02-poweroff": ["panel-sticker", "apple-diy-gpu-sheet", "apple-product-views", "apple-rear-ports-lineart"],
-    "g03-hidden-sata": ["apple-interior-photo", "panel-sticker", "apple-diy-memory-cover"],
-    "g04-ssd-mount": ["apple-interior-photo", "ifixit-sled-insert-photo", "apple-product-views"],
-    "g05-hdd-install": ["ifixit-sled-insert-photo", "apple-interior-photo", "panel-sticker"],
-    "g06-gpu-swap": ["apple-diy-gpu-sheet", "apple-interior-photo", "apple-rear-ports-lineart"],
-    "g07-cable-check": ["apple-diy-gpu-sheet", "apple-rear-ports-lineart", "apple-interior-photo"],
-    "g08-boot-verify": ["apple-product-views", "panel-sticker", "apple-rear-ports-lineart"]
+    "g01-overview": [
+      "panel-sticker",
+      "apple-interior-photo",
+      "apple-product-views",
+      "apple-rear-ports-lineart",
+      "apple-riser-fbdimm-photo",
+      "ifixit-sled-insert-photo",
+      "evga-gtx285-flat",
+      "evga-gtx285-angle",
+      "ifixit-gpu-booster-cable",
+      "ifixit-memory-cage-boards",
+      "ifixit-fan-removed-interior",
+      "op-rear-io-photo"
+    ],
+    "g02-poweroff": [
+      "panel-sticker",
+      "apple-diy-gpu-sheet",
+      "apple-product-views",
+      "apple-rear-ports-lineart",
+      "apple-interior-photo",
+      "evga-gtx285-angle",
+      "ifixit-gpu-booster-cable",
+      "op-rear-io-photo"
+    ],
+    "g03-hidden-sata": [
+      "apple-interior-photo",
+      "panel-sticker",
+      "apple-diy-memory-cover",
+      "apple-product-views",
+      "ifixit-front-fan-lift",
+      "ifixit-fan-removed-interior"
+    ],
+    "g04-ssd-mount": [
+      "apple-interior-photo",
+      "ifixit-sled-insert-photo",
+      "apple-product-views"
+    ],
+    "g05-hdd-install": [
+      "ifixit-sled-insert-photo",
+      "apple-interior-photo",
+      "panel-sticker",
+      "apple-product-views"
+    ],
+    "g06-gpu-swap": [
+      "apple-diy-gpu-sheet",
+      "apple-interior-photo",
+      "apple-rear-ports-lineart",
+      "evga-gtx285-flat",
+      "evga-gtx285-angle",
+      "ifixit-gpu-booster-cable",
+      "ifixit-fan-removed-interior",
+      "op-rear-io-photo"
+    ],
+    "g07-cable-check": [
+      "apple-diy-gpu-sheet",
+      "apple-rear-ports-lineart",
+      "apple-interior-photo",
+      "evga-gtx285-flat",
+      "evga-gtx285-angle",
+      "ifixit-gpu-booster-cable",
+      "ifixit-fan-removed-interior",
+      "op-rear-io-photo"
+    ],
+    "g08-boot-verify": [
+      "apple-product-views",
+      "panel-sticker",
+      "apple-rear-ports-lineart"
+    ]
   },
   "canonicalFacts": [
     "machine Mac Pro 3,1 Early 2008, A1186 family, EMC 2180, MacPro3,1; two FB-DIMM risers A (top/upside-down) and B (bottom), four slots each, 8 total",

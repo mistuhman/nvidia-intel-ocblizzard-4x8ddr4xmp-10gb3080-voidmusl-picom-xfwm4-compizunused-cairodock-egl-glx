@@ -1,6 +1,6 @@
 {
   "schema": "mac-guide-facts.v1",
-  "updated": "2026-09-12-v5",
+  "updated": "2026-09-12-v6c",
   "session": "01a093b6",
   "subject": "Mac Pro 3,1 Early 2008 chassis guide: SSD relocation to free 4 bays for 4x1TB HDD + AMD GPU swap",
   "facts": [
@@ -209,6 +209,18 @@
       "confidence": "HIGH"
     },
     {
+      "id": "G-19",
+      "topic": "gpu-geometry",
+      "claim": "EVGA GTX 285 Mac Edition (01G-P3-1080-TR) is a double-wide blower: ~2/3 smooth label shroud + ~1/3 square-framed circular turbine fan; metal I/O bracket with stacked DVI ports is at one short end and MUST sit flush against the rear PCI frame rail when installed; gold PCIe edge along the bottom; two side-by-side 6-pin aux sockets are recessed in the end cap at the FAN end, fed by the factory black booster cable bundle from logic board aux connectors (board end in), never PSU-fed. In case-on-side canon view bracket = rear/right, fan = inboard/left; p8 inverted them and was rejected.",
+      "value": "bracket flush rear/right, fan inboard/left, 6-pin pair at fan end cap",
+      "source": {
+        "ref": "Newegg N82E16814130500 flat product shot + HotHardware EVGA press gallery angled shot + iFixit guide 14161 step 5 booster cable; operator verdict 2026-09-12 p8 'everything is good, excluding the gpu'",
+        "url": "https://www.newegg.com/evga-geforce-gtx-285-for-mac-01g-p3-1080-tr/p/N82E16814130500",
+        "quote": "EVGA GeForce GTX 285 Mac Edition 01G-P3-1080-TR; iFixit step 5 'Card with Booster Cable'"
+      },
+      "confidence": "HIGH"
+    },
+    {
       "id": "G-18",
       "topic": "cages-screws",
       "claim": "Each HDD blank is an aluminum sled (captive front thumbscrew + small screw right end, rails, rear connector). Leftmost blanks weathered/scratched; sled slides front-to-rear 30mm on rails. PSU is smooth silver top above bays.",
@@ -217,6 +229,30 @@
         "ref": "Apple Mac Pro User Guide bay illustration + operator photo 2026-09-12",
         "url": "https://manuals.info.apple.com/MANUALS/0/MA636/en_US/Mac_Pro_Early2008.pdf",
         "quote": "hard drive sled with captive screw"
+      },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-20",
+      "topic": "interior-layout",
+      "claim": "Operator-verbatim upright open-side layout (2026-09-12): LEFT = front fan tray with TWO ~140mm blower encasings; between fans and RAM = dual CPUs and heatsinks under a metal compartment; right of CPUs = RAM cage; above RAM = GTX 285 backplate/blower with THREE more PCIe slots behind it and a power connector dangling from the case (booster cable); above the GPU blower fan = the four drive bays L-to-R; TOP compartments left-to-right = encased DVD drive (one cd/dvd bay) then the PSU in its own compartment behind/right of the DVD; lower REAR = 140mm exhaust. Rear I/O full detail required in art.",
+      "value": "fans L -> CPU compartment -> RAM R; GPU above RAM; 4 bays above GPU; DVD top-L, PSU top-R; 140 rear exhaust",
+      "source": {
+        "ref": "operator chat 2026-09-12 verbatim layout message",
+        "url": "",
+        "quote": "2x140mm fan encasings on the left, between that and the ram is the dual cpus and its heatsinks covered by the metal compartment. to the cpus right is the ram, above that is the backplate of the gtx 285 ... above the gpus blower fan is the drive bay, four drives left to right. on the top two compartments ... encased dvd drive with one cd/dvd bay. and to the right or behind the dvd drive is the power supply ... on the rear, there is a lower 140mm exhaust. make sure to include the i/o in full detail"
+      },
+      "confidence": "HIGH"
+    },
+    {
+      "id": "G-21",
+      "topic": "rear-io",
+      "claim": "Operator rear photo (chat-only, three identical frames, 2026-09-12): round-hole mesh; left latch column with padlock icon, sliding T-latch and finger pocket; PCI opening = three blank slotted covers, GPU double-wide vented fin bracket + bracket plate with two DVI-I connectors side by side and small regulatory label; lower-left circular exhaust uses a DIAGONAL CROSS-HATCH X-lattice (140mm); lower-right cluster = 2 USB-A top, FW800 + FW400/USB next row, two optical TOSLINK in/out, two analog audio jacks, two stacked RJ-45 GbE; IEC socket above PCI opening per Apple line art. Chat attachment not persisted to sandbox disk; ref id op-rear-io-photo.",
+      "value": "3 blank PCI covers + dual-DVI GTX bracket; cross-hatch 140 exhaust; full I/O cluster",
+      "source": {
+        "ref": "operator chat attachment 2026-09-12 (rear panel, /home/user/uploads absent on disk)",
+        "url": "",
+        "quote": "here is the side view of it open, first photo (actual attachment = upright rear panel)"
       },
       "confidence": "HIGH"
     }

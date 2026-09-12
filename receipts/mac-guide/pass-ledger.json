@@ -348,9 +348,486 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 9,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p9.txt",
+          "promptHash": "d01ab5947232ffea9559e3fb2daa009a2bad24b22c78abe76b4c6750dc5c7f7d",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p9.svg",
+          "schematicHash": "b2fd02f5c6b86ec1633db922f5d7a07d23b724c81b6e505d167a21e0a41a6d54",
+          "specVersion": "v6-ref-traced-2026-09-12b",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p9.png",
+              "sha256": "273a278d83f6de9579c0bd2f7605e7a756303e72ff40c1c2e30fae3a4eb75c3d",
+              "bytes": 1014597,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P9-01",
+              "severity": "INFO",
+              "note": "GPU CORRECTED per G-19: bracket with stacked DVI rectangles and screw tab flush to rear/right frame rail, turbine fan at inboard/left end, laced booster pair from board connectors behind the card into fan-end cap, long finned exhaust side; loose blower icon matches flat product-shot orientation"
+            },
+            {
+              "code": "F-P9-02",
+              "severity": "INFO",
+              "note": "riser boards now show finger holes at board ends, ejectors, heatsinked FB-DIMMs and two stacked banks; inventory MEMORY RISER and PROCESSOR icons catalogued and accepted"
+            },
+            {
+              "code": "F-P9-03",
+              "severity": "WARN",
+              "note": "each riser appears to show ~3 DIMM groups; spec requires 4 FB-DIMM slots per riser"
+            },
+            {
+              "code": "F-P9-04",
+              "severity": "WARN",
+              "note": "ghost PULL object is still a generic dashed rectangle rather than the sled faceplate with circled number and rails"
+            },
+            {
+              "code": "F-P9-05",
+              "severity": "WARN",
+              "note": "optical left carrier cutouts rendered as one merged/kidney shape; must be two separate rounded rectangles each with screw dots"
+            },
+            {
+              "code": "F-P9-06",
+              "severity": "WARN",
+              "note": "small empty square outline on sled 4 (Bay4 red-sticker stand-in) now reads like the same square button on all four faces; differentiate face 4 with an empty outline only"
+            },
+            {
+              "code": "F-P9-07",
+              "severity": "INFO",
+              "note": "wins retained: panel-sticker camera, mesh stipple, 4 numbered faces, blank shroud, latch, honeycomb edge, coin cell and PCI rails on board, filled block arrow, footer, zero color"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 226.95,
+            "stddev": 67.58,
+            "pctDark": 0.0546,
+            "pctBright": 0.8509,
+            "edgeRatio": 0.1777,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 10,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p10.png",
+              "sha256": "66a1e48df1a620b81e13fdb30610c08be36f7e74ba41eb219dc71f846a477fcb",
+              "bytes": 1126802,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P10-01",
+              "severity": "ERROR",
+              "note": "GTX 285 drawn with TWO circular fans (fan at both shroud ends); card has exactly one turbine fan at the inboard end"
+            },
+            {
+              "code": "F-P10-02",
+              "severity": "ERROR",
+              "note": "two DVI connectors wrongly rendered in the TOP drive/PSU compartment area; the only DVI pair is the GPU bracket at the rear/right frame rail"
+            },
+            {
+              "code": "F-P10-03",
+              "severity": "WARN",
+              "note": "DVD compartment reads as a display panel not a slot loader; sled numbers doubled on each face"
+            },
+            {
+              "code": "F-P10-04",
+              "severity": "INFO",
+              "note": "dual 140 blower tray ghost LIFT, two CPU heatsinks, cross-hatch exhaust and PSU/DVD split are new and correct"
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 220.48,
+            "stddev": 75.49,
+            "pctDark": 0.0818,
+            "pctBright": 0.8239,
+            "edgeRatio": 0.2256,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p10.txt",
+          "promptHash": "9481320a12ab50efb5ed33209f370241721c1e27629f89e0230b73e32013df8c",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p10.svg",
+          "schematicHash": "76f3d619e02b5751bfa91a0e5b4a0892191333e7f36def9ea264c6e554aa62d2",
+          "specVersion": "v6c-operator-layout-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ]
+        },
+        {
+          "pass": 11,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p11.png",
+              "sha256": "aa68bffe44758535bc25bd67e3dabe7006212be1efbc2275500d68e13fd36032",
+              "bytes": 1138989,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P11-01",
+              "severity": "ERROR",
+              "note": "left rail furniture rotated 90 degrees and STEP 1 box lost - text must read horizontally as on p9/p12"
+            },
+            {
+              "code": "F-P11-02",
+              "severity": "WARN",
+              "note": "RAM risers lose finger holes and show fin-rows rather than 4 clipped FB-DIMMs per board; GPU label text mirrored"
+            },
+            {
+              "code": "F-P11-03",
+              "severity": "INFO",
+              "note": "internals otherwise correct: single fan at inboard/left, bracket flush right frame, three free PCI rails, slot DVD vs plain PSU, two fan encasings LIFT ghost, two CPU heatsinks + coin cell, cross-hatch exhaust, numbered sleds"
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 211.3,
+            "stddev": 86.35,
+            "pctDark": 0.1211,
+            "pctBright": 0.7902,
+            "edgeRatio": 0.2273,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p11.txt",
+          "promptHash": "98dd087dbf6775ce73421a99b028024a656c11a5093e29d983d8cbe742bea9d2",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p11.svg",
+          "schematicHash": "098909e7e487585ce2c4d940ec76efd98c6862612847f0d0fcf0f6c6047e466d",
+          "specVersion": "v6c-operator-layout-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ]
+        },
+        {
+          "pass": 12,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p12.png",
+              "sha256": "a20f8489d3d5e4a2cf6288cf102f9f8631d671738d792f99ceede650c9799868",
+              "bytes": 1089585,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P12-01",
+              "severity": "ERROR",
+              "note": "GPU orientation flipped vs canon: two-port DVI bracket rendered inboard/left and turbine fan at rear/right honeycomb edge; bracket must be flush at the rear/right frame, fan inboard/left"
+            },
+            {
+              "code": "F-P12-02",
+              "severity": "WARN",
+              "note": "large circular cross-hatch rear exhaust missing; riser finger holes weak and stick count ~5; optical face not clearly slot loader"
+            },
+            {
+              "code": "F-P12-03",
+              "severity": "INFO",
+              "note": "rail furniture and page layout horizontal and correct; dual-blower LIFT tray correct"
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 222.98,
+            "stddev": 71.82,
+            "pctDark": 0.0644,
+            "pctBright": 0.8313,
+            "edgeRatio": 0.1946,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p12.txt",
+          "promptHash": "8b653574422634edf36b6bc25a4b35fc4cbd7ddecad226fc4ce06413be18cfa2",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p12.svg",
+          "schematicHash": "7908077f5e8ce34cf76fcc4d901b557346781ab40edb24a9bceee34ade591872",
+          "specVersion": "v6c-operator-layout-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ]
+        },
+        {
+          "pass": 13,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p13.png",
+              "sha256": "f3c8ea52b666fcbe557e4ab673a61dcd39c2e2fb093aec87e72e0b1836523bde",
+              "bytes": 1191104,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P13-01",
+              "severity": "ERROR",
+              "note": "left rail labels still rotated sideways despite correction request; STEP 1 furniture must be upright as p9/p12"
+            },
+            {
+              "code": "F-P13-02",
+              "severity": "WARN",
+              "note": "rear circular grille rendered as dot stipple rather than diagonal cross-hatch X-lattice; riser finger holes and 4-stick count still soft"
+            },
+            {
+              "code": "F-P13-03",
+              "severity": "INFO",
+              "note": "best combined internals: single fan inboard, DVI bracket at right frame near flush, 3 free rails, slot DVD, plain PSU, two heatsinks, dual blower LIFT tray, numbered sleds, detached set"
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 208.07,
+            "stddev": 88.37,
+            "pctDark": 0.1285,
+            "pctBright": 0.7719,
+            "edgeRatio": 0.2482,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p13.txt",
+          "promptHash": "76b851e5a91f3076a279a1a9784bb0740ae7286e94d546ba925ee937f7f41eb2",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p13.svg",
+          "schematicHash": "946d2997edeac6169a8646174d303aeef7b68cd2aff5cc00eec2d36b9f4303d9",
+          "specVersion": "v6c-operator-layout-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ]
+        },
+        {
+          "pass": 14,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p14.txt",
+          "promptHash": "3d68042480a93747aea5d06266960572b144a0b05e2e7f236264c5cfc19075e9",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p14.svg",
+          "schematicHash": "3b083a6fb2d78f1a89539c506bc326d1895d1d47d963762018f6430133f36f06",
+          "specVersion": "v6c-operator-layout-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p14.png",
+              "sha256": "421986803cf73efa0f2e7c12d5a6a95926ebb516a9da2db22d408e739797faf9",
+              "bytes": 940476,
+              "w": 1463,
+              "h": 720
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P14-01",
+              "severity": "WARN",
+              "part": "gpu-gtx285-blower",
+              "message": "RESOLVED p10-p13 ERROR class: p14 has exactly ONE circular turbine at the inboard/LEFT end, plain left shroud, fin band + metal bracket with TWO stacked DVI at the RIGHT/rear rail, horizontal GTX text. Merged p11 GPU geometry onto p12 upright furniture via 5-step edit chain (p14..p14e)."
+            },
+            {
+              "code": "F-P14-02",
+              "severity": "WARN",
+              "part": "gpu-gtx285-blower",
+              "message": "booster two-wire plug now seats in the card left end face but its lead loops over the TOP of the shroud toward the front frame rather than hanging in a loose loop; readable as the case-dangling connector, watch for drift on later passes."
+            },
+            {
+              "code": "F-P14-03",
+              "severity": "WARN",
+              "part": "gpu-gtx285-blower",
+              "message": "the 3 free PCIe retention rails render as short horizontal slot lines beside the card left/mid area instead of above-behind the GPU bracket as in p11; count present, position soft."
+            },
+            {
+              "code": "F-P14-04",
+              "severity": "WARN",
+              "part": "memory-riser-cage",
+              "message": "two riser shelves each carry two DIMM banks with the right-end finger hole visible; left-end finger holes and individual 4-stick count are not legible at this scale (inherited from p12 furniture; p11 had better stick detail)."
+            },
+            {
+              "code": "F-P14-05",
+              "severity": "WARN",
+              "part": "rear-io-plane",
+              "message": "open-side three-quarter view exposes only the cross-hatch circular 140 exhaust and mesh; the full lower I/O port cluster (USB/FW/TOSLINK/audio/2xGbE/latch) is not visible from this angle by construction; it must be detailed on g02/g07 rear-facing plates against op-rear-io-photo."
+            },
+            {
+              "code": "F-P14-06",
+              "severity": "WARN",
+              "part": "canvas",
+              "message": "generator returned 1463x720 (aspect 2.03) vs 1.5 canvas ask; same accepted G-RN-001 WARN class as p10-p13."
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 223.76,
+            "stddev": 73.6,
+            "pctDark": 0.0763,
+            "pctBright": 0.8424,
+            "edgeRatio": 0.1665,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 9
+      "nextPass": 15
     },
     "g02-poweroff": {
       "passes": [

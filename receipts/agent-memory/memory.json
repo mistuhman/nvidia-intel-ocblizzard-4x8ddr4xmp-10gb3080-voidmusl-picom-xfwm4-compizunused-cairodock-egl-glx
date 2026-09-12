@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 53,
+  "lastSeq": 56,
   "entries": [
     {
       "seq": 1,
@@ -1149,6 +1149,60 @@
         "g01 p4 exemplar"
       ],
       "sha256": "1101da786e81e3611754b5f87525b16bbec7471e7a71f174438db87135acb739"
+    },
+    {
+      "seq": 54,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "continue from last prompt. read each word verbatim and interpret it once more. here is the side view of it open, first photo. 2x140mm fan encasings on the left, between that and the ram is the dual cpus and its heatsinks covered by the metal compartment. to the cpus right is the ram, above that is the backplate of the gtx 285 alien. behind that is 3 more pcie slots and a dangling power connector for the gtx from the case. above the gpus blower fan is the drive bay, four drives left to right. on the top two compartments, from left to right, is the encased dvd drive with one cd/dvd bay. and to the right or behind the dvd drive is the power supply, also secured in another compartment. on the rear, there is a lower 140mm exhaust. make sure to include the i/o in full detail too",
+      "demands": [
+        "upright open-side interior zone layout",
+        "dual 140 fan tray left",
+        "dual CPU compartment",
+        "ram right of CPU",
+        "GPU above RAM backplate + 3 PCIe behind + dangling booster",
+        "four drive bays above GPU",
+        "encased DVD one bay top-left",
+        "PSU compartment top-right/behind",
+        "lower rear 140 exhaust",
+        "full rear I/O detail"
+      ],
+      "sha256": "eb52a0121b01daedb009ca884daeac0b7081d2bda0facde9dbc60ecca605a28e"
+    },
+    {
+      "seq": 55,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-rear-panel-2026-09-12 (3 identical frames)",
+      "tool": "read_file vision (operator photo, chat-only)",
+      "claims": [
+        {
+          "claim": "upright rear panel: round-hole mesh, left latch column with padlock icon/T-slide/finger pocket, PCI frame = 3 blank slotted covers + GTX285 double-wide finned exhaust bracket + bracket plate with TWO DVI-I side by side and regulatory label",
+          "evidence": "operator photo three identical attachments this session",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "lower-left circular exhaust is diagonal cross-hatch X-lattice ~140mm, not dot stipple; lower-right cluster 2 USB top, FW800/FW400+USB, 2 TOSLINK, 2 audio, 2 stacked RJ45; IEC socket above PCI frame",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "attachment not persisted to sandbox disk; /home/user/uploads absent; recorded as op-rear-io-photo chat-only ref and must be re-uploaded to attach",
+          "evidence": "filesystem scan",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "9d0bec3145b40f09e8e0de71f3c0b18a3ef39167435a97aba30681c897580ad8"
+    },
+    {
+      "seq": 56,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "g01-layout-v6c",
+      "value": "operator G-20 zone map: fan tray 2x140 LEFT, dual-CPU compartment, RAM cage RIGHT of CPUs, GTX285 above RAM (backplate visible, fan toward drive bays, bracket rear/right, 3 free PCI rails, dangling booster), 4 bays ABOVE GPU L-R, DVD top-left one optical bay, PSU top-right own compartment, 140 rear cross-hatch exhaust, full I/O",
+      "source": "operator verbatim 2026-09-12",
+      "sha256": "3235b699907812b4dc81e25bc8a0fa018fec8cb1e1c374c6bf0f679f3b586204"
     }
   ],
   "stacks": [
