@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 76,
+  "lastSeq": 78,
   "entries": [
     {
       "seq": 1,
@@ -1519,6 +1519,22 @@
       "kind": "note",
       "text": "2026-09-12f dual-donor verdict logged: electrically YES (two x16, one 6-pin per slot aux, per-card 150W envelope; 9800GT fits, Radeon margin depends on SKU 4850-vs-4870); stats honesty: no CrossFire/SLI on Mac EFI = zero FPS gain from pairing, wins are displays + OpenCL device; GTX 285 likely fastest single card of the three; sequence G1 Radeon-alone first then G5b add 9800GT, one change per power-on.",
       "sha256": "40e2b1d574c485e89c4d6e226589286e4b2c6e1e0227129e33ea36a7663d7db5"
+    },
+    {
+      "seq": 77,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "swapCard3870Mac",
+      "value": "swap card RECEIPTED: ATI Radeon HD 3870 Mac & PC Edition (operator words 2026-09-12 seq 77): 512MB GDDR4, 2x dual-link DVI, single-slot, 1x 6-pin, TDP ~106W vs 150W envelope = comfortable; Mac EFI firmware = BOOT SCREENS + Option-picker expected on 3,1 (better branch of approved condition); Lion native; DVI->HDMI to Dell S2725QS = 1080p-class (dual-link DVI ceiling 2560x1600, no 4K); G0 COMPLETE; booster routing per iFixit 14161: SLOT2 card uses UPPER aux connector",
+      "source": "operator words; iFixit 14161 + EveryMac + Wikipedia receipts",
+      "sha256": "4247a05f1705742ce9d934daef189942faba93a0ec6f7c6ec0fd2d44bccf4f63"
+    },
+    {
+      "seq": 78,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12g: captive-screw reframe receipted - the two captive thumbscrews hold the PCI bracket BAR and never come out (design); loosen 3-5 turns, lift bar, front latch up, straight pull; 2008 has no retaining rod; seized-screw tree = MASTER 2026-09-07h (hard press + rubber band, pliers, never drill). Video guidance: OWC installvideos portal (A1186 Early 2008 PCIe clip), iFixit 14161. Riser split: operator says visible in every picture; my perception could not resolve counts from chat-only photos - numbers as words anytime, LOW non-blocking.",
+      "sha256": "7d2de0742bc8200b2979e6d9f7abbf881ec72edfecee5d349004e245fcb1cdff"
     }
   ],
   "stacks": [

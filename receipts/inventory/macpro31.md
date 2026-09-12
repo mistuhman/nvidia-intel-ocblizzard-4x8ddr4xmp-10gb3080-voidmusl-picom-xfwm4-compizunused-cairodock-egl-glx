@@ -171,3 +171,31 @@ cable -> G3 power-on -> G4 display verify -> G5b SECOND change = add 9800 GT in 
 Inverse unchanged: GTX 285 + both 6-pins + VGA = proven 1080p state.
 G0 status: power class CLOSED for both donors (1x 6-pin each, words); exact Radeon SKU +
 Mac/PC edition remain the only G0 item (drives the 4870-vs-4850 margin note).
+
+## Entry 2026-09-12g (session 01a097ba) — 3870 Mac Edition receipted: G0 COMPLETE
+
+Operator words (seq 77): "3870 mac edition"; both donors 1x 6-pin (seq 74). Receipted card =
+ATI Radeon HD 3870 Mac & PC Edition (2008): 512MB GDDR4, 2x dual-link DVI, single-slot,
+TDP ~106W (S4 class specs). Consequences:
+- POWER: 106W vs 150W per-card envelope = comfortable margin. The 4870-margin question is
+  CLOSED. Both boosters now free for the G5b 9800 GT add.
+- FIRMWARE: Mac Edition = EFI firmware -> BOOT SCREENS + Option-picker EXPECTED on the 3,1.
+  The approved "or no boot screens" condition flips to its better branch (verify at G3;
+  PC-ROM behavior would be the discrepancy class).
+- DISPLAY: dual-link DVI tops at 2560x1600; over DVI->HDMI to the Dell S2725QS expect
+  1080p-class (not the panel's native 4K) - exactly the 1080p-lock goal; real-EDID digital
+  identity is what ends the 1440p poison.
+- G0 STATUS: COMPLETE. No open item blocks G1-G4.
+Captive-screw guidance receipted this entry (video refs): the two "captive" thumbscrews hold
+the PCI bracket BAR, not the card, and BY DESIGN never leave the bar (Wikipedia Mac Pro:
+loosen by hand, will not fall out). "Take out" is the wrong target: loosen each 3-5 turns
+CCW until the bar floats, lift the bar, free the card (front slot latch UP toward media
+shelf, straight pull, never rock side-to-side; 2008 has no retaining rod). If a screw is
+truly seized (not at its captive stop): hard-press Phillips + rubber band, locking pliers
+per the 2026-09-07h decision tree, never drill. Videos: OWC install-videos portal
+(eshop.macsales.com/installvideos) with an Early 2008 A1186-specific PCIe clip (EveryMac
+Q&A links it) + iFixit guide 14161 (exact photos, incl. booster routing: slot 1 = LOWER aux,
+slot 2 = UPPER aux -> the 3870 in SLOT2 uses the UPPER connector).
+Riser split: operator states it is visible in every picture; chat-only bytes do not persist
+and my perception could not resolve DIMM counts at delivered resolution - assertion logged,
+numbers welcome as words anytime; LOW, non-blocking.
