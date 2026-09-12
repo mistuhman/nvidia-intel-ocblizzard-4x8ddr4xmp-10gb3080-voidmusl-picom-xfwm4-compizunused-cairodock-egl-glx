@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 47,
+  "lastSeq": 48,
   "entries": [
     {
       "seq": 1,
@@ -1041,6 +1041,19 @@
         }
       ],
       "sha256": "81f53d01b23cbbcb5b470bc97daef7c3e298df75ba51ad8e9a68bade0b80cf04"
+    },
+    {
+      "seq": 48,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 46,
+      "summary": "Abandoned deviating trial batch, kept first image g01 p7 as baseline. Deleted p8,p9,g02p4/p5,g03-08 p4 pngs/prompts/schematics (10 pngs + 10 prompts + 11 svgs). Truncated ledger to g01 next8, others next4, RESIDUAL reflects kept state. Ready for PR.",
+      "actions": [
+        "rm docs/*p8 p9 g02p4 etc",
+        "ledger truncate to first image",
+        "keep docs/macpro-guide-bw-g01-overview-p7.png 1408x768 PASS 0.00 as baseline"
+      ],
+      "sha256": "42b6433f645a29a361814827fdcf126043a4f9f4550d6de4fbf9dd9f2acdf8c8"
     }
   ],
   "stacks": [
