@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "COLDBOOT1 update 2026-09-11: operator reports skype hung up, restarted now - the restart blockage is EXPLAINED (a hung Skype canceled logout; plausibly also the pane halted notice) and a restart is executed. No new physical action is released: the owed receipt is the boot observation (prohibitory vs straight-through, end state, and whether Apple-menu Restart or the power button was used). No prohibitory = Lion SSD Base selection had stuck; prohibitory detour = efi-boot-device still ESD. No Repair, remirror, date fix, or destination selection.",
+  "nextAction": "Clean boot 2026-09-11: operator reports booted straight to lion ssd, no prohib - bless-stuck CONFIRMED, SDBOOT1 inverse COMPLETE, clean state restored. Released (session 01a09141): FORENSIC1 is the single next wave - Arctic Fox da.gd/lionforens (lion-forensic.zip: read-only ESD collector, sha256 0d0ee722), unzip, double-click lion-forensic.command on Snow Leopard, attach lion-forensic.txt via da.gd/lionrelay. Report answers mach_kernel present and intact, ESD OS version, bless state. Stop and report on any step error. No Repair, remirror, date fix, or destination selection.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -113,7 +113,13 @@
       "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
       "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
     },
-    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay and lionzip. TinyURL is never used."
+    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay and lionzip. TinyURL is never used.",
+    "forensicZip": {
+      "type": "da.gd/lionforens",
+      "url": "https://da.gd/lionforens",
+      "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a09141-nvidia-intel-ocblizzard-4x8ddr/lion-forensic.zip",
+      "job": "FORENSIC1 read-only ESD collector (1721 bytes, sha256 0d0ee722c64cd00c506868111cd1ae71d9ced816cd67de006c7bf5ae4bdf73d3, 1 exec entry). Minted 2026-09-11 via the encoded da.gd route; da.gd truncates custom slugs to 10 chars (lionforensic became lionforens); verified via da.gd/lionforens+ coshorten. Report lion-forensic.txt attaches via da.gd/lionrelay (generic file picker, any .txt)."
+    }
   },
   "helper": {
     "command": "lion-mirror.command",
@@ -189,7 +195,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: restart blockage identified as hung Skype; operator restarted (method unreported). Awaiting boot observation to separate bless-stuck from bless-failed. SDBOOT1 stands: picker closed, ESD boot.efi-phase failure confirmed. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1/SDBOOT1 photos stand.",
+  "status": "2026-09-11: straight-to-SL boot with no prohibitory proves efi-boot-device is Lion SSD Base (pane bless had stuck; Skype was the only restart blocker). FORENSIC1 released: new collector plus verified slug da.gd/lionforens. SDBOOT1 stands (picker closed, ESD boot.efi-phase failure confirmed). Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 and SDBOOT1 photos stand.",
   "relay": {
     "page": "lion.html",
     "files": [
@@ -230,5 +236,6 @@
     "volumes": "disk0s2 Lion SSD Base Bay 1; disk1s2 start disk clone Bay 3; disk2s2 Mac OS X Install ESD Bay 4",
     "verdict": "No disk was erased, restored, blessed, mounted, or changed by the collector; no ESD-specific error was recorded by Snow Leopard.",
     "uuidPrefix": "9d0bfed6"
-  }
+  },
+  "commandsPanel": "STALE 2026-09-11: the frozen relay page (01a08f01 blob) pulls etc/lion-command.txt from arena/01a08f01 then main, never this branch; chat is authoritative and the operator has executed every wave from chat. lion.html left untouched (page changes cannot reach the frozen page without a new slug)."
 }

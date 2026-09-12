@@ -42,6 +42,9 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - RELEASED 2026-09-11 (session 01a09141): **COLDBOOT1** — save/close apps, hold power to force off, cord stays in (dead CR2032: AC preserves the clock), wait 10 s, power on, report prohibitory vs straight-through + end state. Hardware path, unblockable by software.
 - RECEIVED 2026-09-11: restart blockage IDENTIFIED — operator verbatim: "skype hung up, restarted now". A hung Skype canceled logout (plausibly also the pane halted notice). Restart executed; method (Apple menu vs power button) unreported.
 - HOLDING 2026-09-11 (session 01a09141): no new physical action — owed receipt is the boot observation (prohibitory vs straight-through, end state, restart path used). Routes bless-stuck (FORENSIC1 next) vs bless-failed (re-bless forensics next).
+- RECEIVED 2026-09-11: **clean boot** — operator verbatim: "booted straight to lion ssd, no prohib". Bless-stuck CONFIRMED (the pane bless wrote `efi-boot-device`; only its reboot call failed). SDBOOT1 inverse COMPLETE via Skype-clear + restart. Restart method unreported, now moot.
+- RELEASED 2026-09-11 (session 01a09141): **FORENSIC1** — new read-only collector `lion-forensic.command` in `lion-forensic.zip` (1721 bytes, sha256 `0d0ee722…`), Arctic Fox: `da.gd/lionforens` (da.gd truncates custom slugs to 10 chars; verified via `+` coshorten). Double-click on SL, attach `~/Desktop/lion-forensic.txt` via `da.gd/lionrelay` (generic picker, any .txt). Answers: `mach_kernel` present? intact? ESD OS version? No sudo, no writes except the report.
+- PANEL NOTE 2026-09-11: the frozen relay page pulls `etc/lion-command.txt` from `arena/01a08f01` then main — never this branch. The Commands panel is STALE for this session; chat is authoritative.
 
 ## Live links (Arctic Fox)
 

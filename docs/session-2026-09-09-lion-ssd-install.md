@@ -254,3 +254,41 @@ method becomes re-bless forensics, still non-destructive). The operator is
 explicitly NOT asked to reboot again — the observation of the boot that just
 happened is the receipt.
 
+## 2026-09-11 — Clean boot + FORENSIC1 release (session 01a09141)
+
+Operator reported verbatim: "booted straight to lion ssd, no prohib".
+Verdict: bless-stuck CONFIRMED — the Startup Disk pane bless wrote
+efi-boot-device=Lion SSD Base and only its reboot call failed; the hung Skype
+was the sole restart blocker. The SDBOOT1 inverse is COMPLETE and the Mac is
+in a clean boot state. The restart-method question is dropped as moot (zero
+routing value).
+
+Released next: **FORENSIC1** — read-only ESD forensics from Snow Leopard.
+New `lion-forensic.command` (no sudo, no dialog, auto-opens the report in
+TextEdit) reads: ESD root listing, mach_kernel (presence/size/file/md5/sha256,
+FAIL line if absent), both boot.efi (same treatment), bless --info,
+Boot.plist (expected absent), SystemVersion.plist (WHICH OS the ESD carries),
+OSInstall.mpkg re-confirm, nvram boot keys (expect efi-boot-device=Lion SSD
+Base, boot-args absent), diskutil list. Writes only
+~/Desktop/lion-forensic.txt. Verification receipts: bash -n, bash --posix -n,
+dash -n all PASS; 14 forbidden-token greps (agent-C list + sudo/curl/ditto)
+all absent; sandbox smoke run exit 0 with NOT_MOUNTED paths + FORENSIC1_DONE;
+zip 1721 bytes, 1 entry, -rwxr-xr-x preserved, sha256
+0d0ee722c64cd00c506868111cd1ae71d9ced816cd67de006c7bf5ae4bdf73d3. sl-test
+left untouched (agents C/Z hardcode the mirror pair; direct receipts above).
+
+Delivery: `da.gd/lionforens` -> raw 01a09141 lion-forensic.zip, minted
+2026-09-11 via the encoded da.gd route. LESSON: da.gd truncates custom slugs
+to 10 chars (lionforensic became lionforens; lionforensic+ is 404) — verified
+via da.gd/lionforens+ coshorten showing the exact raw URL. Report attaches via
+da.gd/lionrelay: the page file input is generic (no filename check, only label
+text names the old files), full text posts as text/plain, and the report
+carries KEY-regex verdict lines (boot.efi, Boot.plist, boot-args, FAIL, No
+disk was erased).
+
+PANEL STALENESS (recorded, not fixed): the frozen relay page (01a08f01 blob)
+pulls etc/lion-command.txt from arena/01a08f01 then main — never this branch —
+so every 01a09141 Commands-panel update has been invisible to the operator.
+Chat is authoritative (every wave this session executed from chat); lion.html
+left untouched since page changes cannot reach the frozen page without a new
+slug, and churning the typed URL mid-stream is refused.

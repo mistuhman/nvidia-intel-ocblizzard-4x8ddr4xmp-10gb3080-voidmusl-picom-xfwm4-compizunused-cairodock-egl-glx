@@ -6,6 +6,11 @@ da.gd/lionrelay
 Current bundle (lion-mirror2.zip):
 da.gd/lionzip
 
+Forensic collector (lion-forensic.zip, this branch):
+da.gd/lionforens
+(minted 2026-09-11 the same route, verified via da.gd/lionforens+ coshorten;
+note: da.gd truncates custom slugs to 10 chars, lionforensic became lionforens)
+
 The exact destinations and mint/verification receipts are canonical in:
 docs/lion-workflow.json
 

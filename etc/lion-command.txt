@@ -1,34 +1,40 @@
-LION-SSD | BOOT OBSERVATION OWED 2026-09-11 | report only, no physical action
+LION-SSD | FORENSIC1 RELEASED 2026-09-11 | one wave: download, run, attach
 
 STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
+  da.gd/lionforens FORENSIC1 collector (lion-forensic.zip, this branch)
 
-RECEIPT READ BY THE AGENT:
-2026-09-11 operator words: skype hung up, restarted now.
-- the restart blockage is IDENTIFIED: a hung Skype canceled logout
-- this plausibly explains the pane halted notice too (same logout path)
-- a restart is executed; do NOT reboot again for this receipt
+CLEAN-BOOT RECEIPT READ BY THE AGENT:
+2026-09-11 operator words: booted straight to lion ssd, no prohib.
+- bless-stuck CONFIRMED: pane bless wrote efi-boot-device, Skype was the
+  only restart blocker. SDBOOT1 inverse COMPLETE. Clean state restored.
 
-OWED — REPORT THE BOOT THAT JUST HAPPENED (words or photo):
-1. Prohibitory, or straight through from the chime?
-2. End state (expected: Snow Leopard login either way).
-3. Which restart worked: Apple menu Retry after Skype cleared, or the
-   power-button cold boot?
+RELEASED — DO THIS ONE WAVE (FORENSIC1, read-only, no password needed):
+1. Arctic Fox: type da.gd/lionforens, download lion-forensic.zip (~1.7 KB).
+2. Finder: double-click the zip to unzip. Expect exactly one file:
+   lion-forensic.command. Move it to the Desktop if it lands elsewhere.
+3. Double-click lion-forensic.command. If Snow Leopard warns it was
+   downloaded from the Internet, click Open. It never asks for a password:
+   if any password dialog appears, STOP and report.
+4. TextEdit opens lion-forensic.txt when done. Leave it open.
+5. Arctic Fox: open da.gd/lionrelay, Attach .txt, pick lion-forensic.txt
+   on the Desktop. Expect: burned: text=ok.
+6. Report here: the burned status, plus anything odd at any step.
 
-GATE: straight-to-SL with no prohibitory = the Lion SSD Base selection had
-stuck, clean state restored, forensics wave ships next. Prohibitory detour
-then SL = efi-boot-device still ESD, next method becomes re-bless forensics
-(still non-destructive).
+GATE: burned text=ok = the agent reads the full report and routes next
+(kernel missing = restore-path puzzle; kernel present = deeper forensics).
+Any step error = stop at that step, photograph or quote it, report.
+Do NOT double-click lion-mirror.command (Repair stays forbidden).
 
 STILL FORBIDDEN:
 - no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
 - never erase Lion SSD Base or start disk clone
 - do not select an install destination inside any installer
-- no further reboot until the next method ships after this receipt is read
+- no reboot until the next method ships after this receipt is read
 
 Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo,
 SDBOOT1 photo + booted to leopard, RESELECT1 partial, RESTART1 failed,
-Skype blocker + restart executed.
+Skype blocker + restart executed, clean boot no prohib.
 burned: text=ok query=ok
