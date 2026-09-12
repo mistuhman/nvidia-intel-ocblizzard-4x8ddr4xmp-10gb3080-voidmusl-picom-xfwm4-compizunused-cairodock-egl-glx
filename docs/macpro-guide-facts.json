@@ -9,7 +9,7 @@
       "topic": "machine",
       "claim": "Target is Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, BootROM MP31.006C.B05, Lion 10.7 on Bay 1 Lion SSD Base.",
       "value": "MacPro3,1 Early 2008",
-      "source": { "ref": "docs/lion-workflow.json", "url": "", "quote": "Mac Pro 3,1 Early 2008" },
+      "source": { "ref": "docs/lion-workflow.json + operator chat 2026-09-12", "url": "", "quote": "Mac Pro 3,1 Early 2008; operator confirmed 2026-09-12 with photo (chat attachment): 'it is a 3,1 early 2008'" },
       "confidence": "HIGH"
     },
     {

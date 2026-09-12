@@ -1,0 +1,439 @@
+{
+  "schema": "agent-memory.v1",
+  "created": "2026-09-12",
+  "updated": "2026-09-12",
+  "lastSeq": 26,
+  "entries": [
+    {
+      "seq": 1,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "read README.md and MASTER.md consult ToDo.md and then verify model image capability before waiting for continuation at further user prompt. if you cant see images just stop immediately",
+      "demands": [
+        "read README.md",
+        "read MASTER.md",
+        "consult ToDo.md",
+        "verify model image capability",
+        "then WAIT for continuation at further user prompt",
+        "if no image vision stop immediately"
+      ],
+      "sha256": "e38f79ae76f5166e15b43e2672c8822d616487411e089f803002803f950f3ffc"
+    },
+    {
+      "seq": 2,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 1,
+      "summary": "Read all three files in full; capability gate verified (bash/node/git/gh/web/process tools all present); vision confirmed by viewing docs/macpro-guide-bw-g01-overview-p3.png; held for continuation as ordered.",
+      "actions": [
+        "full read of README MASTER ToDo",
+        "capability gate verified",
+        "vision test on repo plate g01-p3",
+        "flagged 3,1-vs-1,1 model discrepancy",
+        "waited"
+      ],
+      "sha256": "e3790baaf860b422c3b5f47f1c3d5b61289a1b08251bd0dee60c1506e0ff1926"
+    },
+    {
+      "seq": 3,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-bw-g01-overview-p3.png",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "plate titled STEP 1 MAC PRO 3,1 BAY 1-4 GHOST OUT PULL INVENTORY LIST",
+          "evidence": "header banner read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "sidepanel text is Japanese",
+          "evidence": "readable kana/kanji column right side",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "EVGA GeForce GTX 285 double-wide in PCIe area, 2x 6-pin cables dangling",
+          "evidence": "label on shroud + two black connectors",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "WD Green 1.0TB bottom-left, Apple Time Capsule bottom-right",
+          "evidence": "white label green band; white puck with Apple logo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Bay1 bottom Bay4 top ordering with red sticker on Bay4",
+          "evidence": "sidebar bay stack diagram",
+          "confidence": "HIGH"
+        }
+      ],
+      "discrepancies": [
+        "plate title says MAC PRO 3,1 while MASTER.md still said Mac Pro 1,1 / A1186 2006 - filed as machine-model discrepancy, not silently resolved"
+      ],
+      "sha256": "4036f43834aeb19de501e23bbd94a6f91b60870c21cb0c53e10ad4a9f35934f2"
+    },
+    {
+      "seq": 4,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "continue with refining the image style, dont use actual japanese lettering. uniform consistent formatting with helvetica, english, and short comprehensive guiding words. make a mockup that has tons of sliders and photo editing tools that have values that can be stored in your memory so you know what design requirements are needed. and copy details exactly, the gpu orientation. motherboard layout, compartment layout etc. and if two sights cant be present at once (example being the ram cage and the mobo cpu sockets) then just include visuals of it assembled and disassembled (how to disassemble it, what to dissasemble) depending on conflicts. with heavy agentic learning each time, infact. make an agentic memory cache that we can use to track my prompts and your responses to reach 1:1 accuracy in how agents respond and percieve over making up discrepancies",
+      "demands": [
+        "refine image style",
+        "NO actual japanese lettering",
+        "uniform consistent formatting",
+        "helvetica",
+        "english",
+        "short comprehensive guiding words",
+        "mockup with tons of sliders",
+        "mockup with photo editing tools",
+        "slider values stored in agent memory so design requirements are known",
+        "copy details exactly: GPU orientation",
+        "copy details exactly: motherboard layout",
+        "copy details exactly: compartment layout",
+        "when two sights conflict (ram cage vs mobo cpu sockets) include ASSEMBLED and DISASSEMBLED visuals (how + what to disassemble)",
+        "heavy agentic learning each pass",
+        "build an agentic memory cache tracking operator prompts and agent responses",
+        "goal is 1:1 accuracy in agent response+perception over making up discrepancies"
+      ],
+      "sha256": "90ae7a99624610a9525bde3d9adb7b815705ea95a1da30c0e3c25abc334cd795"
+    },
+    {
+      "seq": 5,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 4,
+      "summary": "Built tools/agent-memory.ts (this cache); rewriting style contract to v4 English-only Helvetica; mockup + refined plate rendering queued; interrupted by operator model confirmation, resumed same turn.",
+      "actions": [
+        "agent-memory.ts written+selftested",
+        "session history seeded verbatim",
+        "style contract v4",
+        "model discrepancy resolution",
+        "mockup with sliders",
+        "g01 re-render under v4"
+      ],
+      "sha256": "d4257f25da00a0e968f9e30a1e71d36cd5782bacc4d0aa428db4c24cf48bc64b"
+    },
+    {
+      "seq": 6,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "it is a 3,1 early 2008",
+      "demands": [
+        "model identity confirmed: Mac Pro 3,1 Early 2008",
+        "resolves the 3,1-vs-1,1 discrepancy flagged at seq 3",
+        "photo uploads/image.jpg attached as ground truth"
+      ],
+      "sha256": "31d3f74a26da44c0dab028beac5e50b3cb4475df048995f6cc986b8ccfcd1257"
+    },
+    {
+      "seq": 7,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "uploads/image.jpg",
+      "tool": "read_file vision (operator photo, 1536x2048 class portrait)",
+      "claims": [
+        {
+          "claim": "case lying on side, side panel OFF, aluminum frame with black mesh gasket and corner screws visible",
+          "evidence": "full-frame composition",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "two optical bay covers top: left cover wide with TWO rectangular cutouts (screw each), right cover plain large",
+          "evidence": "top of frame",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "four HDD blank plates in a horizontal row (case-on-side projection of the upright vertical column); leftmost heavily scratched/weathered, middle two lightly scratched with small screws at right end, rightmost clean",
+          "evidence": "row of four silver blanks",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "RED SQUARE STICKER on the rightmost blank (Bay4)",
+          "evidence": "distinct red square, left edge of rightmost blank",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "large smooth silver memory-cage shroud occupying lower-left interior",
+          "evidence": "big blank aluminum box",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "logic board strip visible top-center with connectors; large black finned heatsink horizontal behind GPU",
+          "evidence": "dark PCB + fin block",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "GTX 285 double-wide black blower horizontal center-right, curved shroud, fins visible",
+          "evidence": "GPU shape matches photo-1 reference",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "TWO black 6-pin PCIe power cables UNPLUGGED and dangling in a loop at center-left toward memory cage",
+          "evidence": "two latched connectors hanging free",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "lower-right: two rectangular windows in silver cage showing BLUE PCBs with cylindrical electrolytic caps (slate/violet tops)",
+          "evidence": "drive-cage window stack",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "honeycomb perforated vent strip along right edge with silver latch handle top-right",
+          "evidence": "right frame edge",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "desk left: stack of bare 3.5in HDDs incl. WD Green white/green label; desk right: white Apple Time Capsule with Apple logo",
+          "evidence": "peripherals on desk",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "c53dd25c74ddcad2201385c76d506e7c369b146b79d0e269f9eb193bcb5be0ec"
+    },
+    {
+      "seq": 8,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "mac-pro-model-identity",
+      "sides": [
+        {
+          "claim": "Mac Pro 1,1 / A1186, 2006 operator-confirmed",
+          "source": "MASTER.md repo.priorSessions + README Machines row (stale current-state refs)"
+        },
+        {
+          "claim": "Mac Pro 3,1 Early 2008",
+          "source": "docs/lion-workflow.json + docs/macpro-guide-facts.json G-01 + plate g01 title"
+        },
+        {
+          "claim": "operator chat 2026-09-12: it is a 3,1 early 2008 (with photo uploads/image.jpg)",
+          "source": "agent-memory seq 6+7"
+        }
+      ],
+      "status": "RESOLVED 2026-09-12: Mac Pro 3,1 Early 2008 wins per MASTER truthOrder (operator report first); stale 1,1 refs corrected in README/MASTER current-state lines; ToDo untouched (operator-owned)",
+      "owner": "operator",
+      "sha256": "f170fdbc65561cd344f7f2c4007ffc54a1a1518b6a985ad3949b34c577e5c32b"
+    },
+    {
+      "seq": 9,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "machine.model",
+      "value": "Mac Pro 3,1 Early 2008 (A1186 family), operator quote: it is a 3,1 early 2008",
+      "source": "agent-memory seq 6 + uploads/image.jpg + docs/lion-workflow.json",
+      "sha256": "75aaed11e52167ed7cba1e7493ebe07c9cfd3432c02ff75d8a23310845a433ce"
+    },
+    {
+      "seq": 10,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.language",
+      "value": "ENGLISH ONLY, Helvetica; NO Japanese lettering anywhere in rendered images",
+      "source": "operator directive 2026-09-12 seq 4",
+      "sha256": "29d078fe0422b48c8ad649c3dc8d6272137f7f46542eb545a15298c2a4674b56"
+    },
+    {
+      "seq": 11,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.label-budget",
+      "value": "max 4 words / 24 chars, ALL CAPS, Helvetica Bold, short comprehensive guiding words",
+      "source": "docs/macpro-guide-style-bw.md v4 typography",
+      "sha256": "c39a5ffe3db48fa03b63224c5846c5f7795e67987ef1f7747cc14ee1b0956d7c"
+    },
+    {
+      "seq": 12,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.line-weights",
+      "value": "primary 1.5px, secondary 0.75px, ghost 0.5px dashed 4-2 at 40% opacity, black on white paper only",
+      "source": "docs/macpro-guide-style-bw.md v4 palette+geometry",
+      "sha256": "c19b2a7042cd35973a4cecfbb4236323d2fc679745c3d8298474cd1eef0fa340"
+    },
+    {
+      "seq": 13,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.ghost-system",
+      "value": "INPUT state solid black 100%; OUTPUT state ghost 40% dashed; motion arrow with distance (PULL 30mm, LIFT 20mm, PUSH IN)",
+      "source": "docs/macpro-guide-style-bw.md v4 geometry",
+      "sha256": "7555166c9869b613463aeef2b11c5727858523c6b9e79e87ec82122370e3b983"
+    },
+    {
+      "seq": 14,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.sidepanel",
+      "value": "uniform left panel x=2 y=14 w=18 h=76 every plate, same camera same framing same scale",
+      "source": "docs/macpro-guide-style-bw.md v4 composition",
+      "sha256": "0c803dac5ff8dc19edf7d6ecc535c6104f7d7a0a951027f3805ebccc2261675f"
+    },
+    {
+      "seq": 15,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.canvas",
+      "value": "1536x1024 fixed per plate, orthographic straight views, 8px grid",
+      "source": "docs/macpro-guide-style-bw.md v4 geometry",
+      "sha256": "68f64fed5271f6de785f5334a79663e8d9705bb47349c4effbb7090ef9b7fb0c"
+    },
+    {
+      "seq": 16,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.conflict-rule",
+      "value": "when two sights cannot coexist in one view (ram cage hides mobo cpu sockets), render ASSEMBLED + DISASSEMBLED pair with remove-order arrows (what to disassemble, how)",
+      "source": "operator directive 2026-09-12 seq 4",
+      "sha256": "87d854173781869ea8c2d077725f96da7325eb6331142db1834c7cb6488bb6ea"
+    },
+    {
+      "seq": 17,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "style.accuracy-contract",
+      "value": "copy details exactly from operator photos: GPU orientation horizontal center-right, mobo strip top with heatsink fins, memory cage shroud lower-left, 2x 6-pin dangling, red sticker Bay4, weathered blanks, blue-PCB windows lower-right, honeycomb right edge",
+      "source": "agent-memory seq 7 perception + docs/macpro-guide-style-bw.md v4 iconography",
+      "sha256": "3924d9bde06b53d889dd4053270e3a19da45243938795ba4fbaeebc0adb9ca25"
+    },
+    {
+      "seq": 18,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "uploads/image.jpg (operator photo, model confirmation) is visible in chat but NOT persisted to sandbox disk - /home/user/uploads/ does not exist. Durable receipt = agent-memory seq 7 perception claims + docs/macpro-guide-style-bw.md v4 iconography section. Do not cite a repo path for it.",
+      "sha256": "8b9fb05f4ae9250a8c9d7e03fd25f276926a1bbf2c9d383fbbc0687fa0459986"
+    },
+    {
+      "seq": 19,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "machine.model",
+      "value": "Mac Pro 3,1 Early 2008 (A1186 family), operator quote: it is a 3,1 early 2008",
+      "source": "agent-memory seq 6 + chat photo (perception seq 7) + docs/lion-workflow.json",
+      "sha256": "184fe275f31d6eab4cf3b84d26d533c66b3a02f75a3408d70d136b3173dd2633"
+    },
+    {
+      "seq": 20,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-mockup-toolpanel-p1.png",
+      "tool": "read_file vision (post-render critique)",
+      "claims": [
+        {
+          "claim": "12-tool left rail labeled MOVE..HAND in English caps",
+          "evidence": "icon column read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "CONTRACT inspector: 9 sliders LINE 1.5PX EDGE 0.75PX GHOST 40% DASH 4-2 GRID 8PX LABEL 24CH OPACITY 100% PULL 30MM LIFT 20MM with value chips",
+          "evidence": "right column read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "ASSEMBLED solid + DISASSEMBLED toggle; NO COLOR NO SHADING ENGLISH ONLY checked; histogram; layers PLATE GHOST OVERLAY GRID; status PLATE G01 PASS 4 / CANVAS 1536X1024 / STORED TO MEMORY",
+          "evidence": "read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "center preview solid tower + dashed ghost duplicate lifted right with PULL 30MM arrow; filmstrip ASSEMBLED/DISASSEMBLED pairs",
+          "evidence": "read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "WARN M-01: preview HDD blanks drawn vertical-ish vs photo horizontal row",
+          "evidence": "interior sketch",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "ead7419a849354cc4cc89c2bf043dca344939f5c56e30d194d9af56c5a459383"
+    },
+    {
+      "seq": 21,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "RENDER LESSON (pass 4, g01): naming a color in a render prompt (RED sticker) primes the model to FILL it even under an explicit no-color contract. Rule: describe geometry + outline-only, never the color word; and no-color is now MEASURED (tools/mac-guide-art.ts G-PX-006 chroma audit, >0.5% = FAIL), not assumed.",
+      "sha256": "bfeb1039c8af617536f0bd5ae0f0e40d6cfcdc3302808d954eb06d55641d91b8"
+    },
+    {
+      "seq": 22,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-bw-g01-overview-p5.png",
+      "tool": "read_file vision (post-render critique)",
+      "claims": [
+        {
+          "claim": "zero color ink; sticker is unfilled outline; PCB windows outline-only",
+          "evidence": "visual + measured colorPct=0.00 G-PX-006 silent",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "English-only Helvetica caps; sidepanel 5 numbered items; title STEP 1 MAC PRO 3,1 INVENTORY BAY MAP",
+          "evidence": "read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "photo-tracking: optical covers two-cutout left, scratched blank, GTX285 horizontal + 2 dangling 6-pin loops, memory shroud lower-left, cap windows, honeycomb right edge",
+          "evidence": "compared to seq-7 perception",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "WARN residuals: ghost sled floats off bay row; sticker sheet-like; desk props grouped",
+          "evidence": "visual",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "a11fc38236d795d2fdc431ca617f9578d9df94ff2cad64912526f16febe4e804"
+    },
+    {
+      "seq": 24,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "TOOL BUG CAUGHT (mac-guide-art findings): incoming.push(JSON.parse(inline)) nested a JSON array as ONE element -> findings=[[...]], and severity scans missed the ERRORs inside (pass 4 printed FINDINGS=1 for 4 pushed, verdict mislabeled PASS-WITH-WARN). Fix: Array.isArray guard + spread. Ledger flattened + verdicts recomputed. Catch channel: printed count disagreed with pushed count - always reconcile counts.",
+      "sha256": "3a1d515c67dedecf28f44524a383d9a7109b2c682a80bda8a23e976ef61f1459"
+    },
+    {
+      "seq": 25,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-mockup-conflict-pair-p1.png",
+      "tool": "read_file vision (post-render critique)",
+      "claims": [
+        {
+          "claim": "assembled half: shroud solid opaque, sockets NOT visible; disassembled half: shroud dashed lifted with LIFT 40MM arrow revealing riser DIMMs + dual CPU socket frames",
+          "evidence": "visual halves comparison",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "numbered remove steps 1 LATCH 2 LIFT 3 CLEAR TABS + sidepanel REMOVE ORDER 4 steps; captions SHROUD ON - SOCKETS HIDDEN / CAGE OUT - RISERS + SOCKETS",
+          "evidence": "read directly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "literalization defects: LEFT SIDEPANEL and FOOTER drawn as visible labels from prompt structure words",
+          "evidence": "visual",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "862cdbc80f55d9143245c75d72166f500fd630964cbb72d3c5212022959db23f"
+    },
+    {
+      "seq": 26,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 4,
+      "summary": "Delivered style v4 (English-only Helvetica, no Japanese lettering), agent-memory cache + seeded 23-entry ledger, tool-panel mockup with 9 stored slider values, g01 re-rendered to color-clean pass 5 (FIXPOINT, RESIDUAL=0), conflict-pair demo plate, findings tool bug fixed, no-color now measured (G-PX-006), model identity corrected to 3,1 everywhere current.",
+      "actions": [
+        "docs/macpro-guide-style-bw.md v4",
+        "tools/agent-memory.ts + receipts/agent-memory/memory.json",
+        "docs/macpro-guide-mockup-toolpanel-p1.png",
+        "docs/macpro-guide-bw-g01-overview-p4->p5 color fix",
+        "tools/mac-guide-art.ts G-PX-006 + findings array fix",
+        "docs/macpro-guide-mockup-conflict-pair-p1.png",
+        "README/MASTER 3,1 correction",
+        "scene IR manual-compactness + renderNotes patches"
+      ],
+      "sha256": "3a53837a44a70c7b0787770f02e302fa12c4b231fd780efdf5a527c56b576d3e"
+    }
+  ]
+}

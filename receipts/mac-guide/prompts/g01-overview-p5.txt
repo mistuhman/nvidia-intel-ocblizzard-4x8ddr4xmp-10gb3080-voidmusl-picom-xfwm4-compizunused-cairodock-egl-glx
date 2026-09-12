@@ -1,39 +1,36 @@
-PLATE g08-boot-verify — STEP 8 — BOOT LION VERIFY
-PURPOSE: Boot Lion SSD in optical, fix clock 2001 sudo date, lock 1080p not 1440p ban, About GPU, Disk Utility 4x HDD OK, OMEN board accurate to photo-2.
-VIEW: orthographic desktop verification windows plus OMEN board accurate to photo-2 black and white line art uniform sidepanel
+PLATE g01-overview — STEP 1 — INVENTORY BAY MAP
+PURPOSE: Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording.
+VIEW: orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, black and white line art Helvetica uniform sidepanel left manual compactness
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
-    SHORT LABEL (only text allowed in image): STEP 8
-    MEANING (visual, not text): Uniform sidepanel step8.
-- boot [panel] at x=24 y=8 w=18 h=14
-    SHORT LABEL (only text allowed in image): BOOT LION
-    MEANING (visual, not text): Power on Option if needed boot Lion SSD Base now in optical bay login verified solid ghost showing boot chime.
-- clock [panel] at x=42 y=8 w=18 h=14
-    SHORT LABEL (only text allowed in image): CLOCK FIX
-    MEANING (visual, not text): Clock shows 2001 due CR2032 dead Terminal sudo date MMDDhhmmYY fix not 2015 input 2001 ghost output correct date solid.
-- display [panel] at x=62 y=8 w=18 h=14
-    SHORT LABEL (only text allowed in image): 1080P LOCK
-    MEANING (visual, not text): Displays pref Scaled 1080p selected solid 1440p crossed out ghost blind warning no auto-revert.
-- about [panel] at x=24 y=26 w=18 h=14
-    SHORT LABEL (only text allowed in image): ABOUT GPU
-    MEANING (visual, not text): About This Mac window Early 2008 Processor Memory Graphics ATI Radeon or GTX 285 Software Mac OS X Lion 10.7.5 solid.
-- drives [panel] at x=42 y=26 w=18 h=14
-    SHORT LABEL (only text allowed in image): 4x HDD OK
-    MEANING (visual, not text): Disk Utility shows 4x Green Bay1-4 plus Lion SSD in optical all online verified checkmarks Bay1 bottom Bay4 top accurate.
-- omen-board-accurate [panel] at x=62 y=26 w=18 h=20
-    SHORT LABEL (only text allowed in image): OMEN BOARD
-    MEANING (visual, not text): OMEN ATX board accurate to photo-2: board mounted in case Micro ATX LGA1700 socket center EMPTY paste residue gray ILM lever metal frame, 4 DIMM slots right of socket black vertical, NVMe M.2 blue label below CPU, PCIe x16 silver below that, rear I/O left honeycomb vent pattern 5 PCIe slot covers, CR2032 coin bottom left near PCIe slots, OMEN AIO pump block black OMEN logo dangling front bottom on case floor hoses black thick 2x120 fans vertical rad mount right side black as in photo-2, front panel headers bottom, 24-pin ATX right edge middle 8-pin CPU top left, input board empty ghost output installed solid.
-- next [panel] at x=24 y=44 w=18 h=12
-    SHORT LABEL (only text allowed in image): NEXT RAID
-    MEANING (visual, not text): Next RAID format wipe target must be named Bay1 NEVER erase uniform sidepanel next action.
+    SHORT LABEL (only text allowed in image): STEP 1
+    MEANING (visual, not text): Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.
+- chassis-accurate [chassis] at x=24 y=6 w=48 h=86
+    SHORT LABEL (only text allowed in image): MAC PRO 3,1
+    MEANING (visual, not text): Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear.
+- bay-labels-accurate [panel] at x=24 y=10 w=10 h=40
+    SHORT LABEL (only text allowed in image): BAY 1-4
+    MEANING (visual, not text): Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.
+- desk-hdd-photo [hdd] at x=72 y=12 w=14 h=10
+    SHORT LABEL (only text allowed in image): WD GREEN
+    MEANING (visual, not text): WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.
+- desk-timecapsule [panel] at x=88 y=12 w=10 h=10
+    SHORT LABEL (only text allowed in image): TIMECAPSULE
+    MEANING (visual, not text): Apple Time Capsule white on desk right as in photo-1 with Apple logo.
+- ghost-sled [bay] at x=24 y=54 w=10 h=10
+    SHORT LABEL (only text allowed in image): GHOST OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.
+- arrow-pull [cable] at x=36 y=56 w=8 h=6
+    SHORT LABEL (only text allowed in image): PULL
+    MEANING (visual, not text): Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.
 - sidepanel [panel] at x=2 y=14 w=18 h=76
-    SHORT LABEL (only text allowed in image): BOOT VERIFY
-    MEANING (visual, not text): Uniform sidepanel wording: 1 Boot Lion SSD in optical IN solid ghost boot chime, 2 Clock 2001 ghost to correct date solid arrow fix, 3 Lock 1080p solid 1440p ghost crossed ban, 4 About GPU chipset solid, 5 Disk Utility 4xHDD OK plus SSD solid, 6 OMEN board accurate to photo-2 empty socket paste residue NVMe blue pump dangling bottom 2x120 fans vertical right, 7 Next RAID needs wipe target named.
+    SHORT LABEL (only text allowed in image): INVENTORY LIST
+    MEANING (visual, not text): Uniform sidepanel left every plate compact manual wording Helvetica: 1 Identify optical 2 empty metal covers cutouts, 2 Identify 4 HDD bays silver blanks red sticker Bay4, 3 Note GTX285 2x6-pin dangling, 4 Check WD Green on desk left, 5 Bay1 bottom Bay4 top upright.
 - footer [footer] at x=2 y=92 w=96 h=5
-    SHORT LABEL (only text allowed in image): STEP8 LION BOOTS
-    MEANING (visual, not text): Footer step8 Lion boots 4 bays free display 1080p clock fixed.
+    SHORT LABEL (only text allowed in image): STEP1 INVENTORY
+    MEANING (visual, not text): Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.
 
 STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
 # Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v4
@@ -133,11 +130,10 @@ no-gray-fill no-shading no-gradient no-japanese-text
 
 NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text.
 
-PASS-0 CORRECTIONS:
-- Black white line art only Helvetica no color
-- Ghost 2001 to correct date
-- Ghost 1440p crossed to 1080p solid
-- OMEN board accurate to photo-2 empty socket paste residue blue NVMe pump dangling bottom 2x120 fans vertical right
-- Uniform sidepanel same angle manual compactness
+PASS-5 CORRECTIONS:
+- PASS-5 COLOR FIX: absolutely zero color ink anywhere - sticker is a small EMPTY SQUARE OUTLINE (never fill it, never write the color name), PCBs and capacitors are black outlines on white
+- Ghost sled slides out the FRONT face of the bay row (toward viewer, same edge as the blank plates), 30mm, dashed 40%, arrow PULL 30MM - not out the rear
+- Keep pass-4 composition: optical covers (left with two cutouts), horizontal blank row with weathered leftmost, GTX285 horizontal center-right with two dangling 6-pin loops, memory shroud lower-left, cap windows lower-right outlines only, honeycomb right edge, WD Green desk left, Time Capsule desk right
+- English only, Helvetica caps, uniform sidepanel, footer PLATE G01 / MAC PRO 3,1 EARLY 2008 / PASS 5
 Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
-PASS: 0
+PASS: 5

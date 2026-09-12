@@ -46,6 +46,12 @@ run('python3', ['-m', 'json.tool', 'docs/macpro-storage-facts.json']);
 run('python3', ['-m', 'json.tool', 'docs/macpro-storage-scene.json']);
 run('node', ['tools/mac-storage-art.ts', 'selftest']);
 run('node', ['tools/mac-storage-art.ts', 'lint']);
+// BW LEGO guide lab + agentic memory cache (operator directive 2026-09-12)
+run('python3', ['-m', 'json.tool', 'docs/macpro-guide-facts.json']);
+run('python3', ['-m', 'json.tool', 'docs/macpro-guide-scene.json']);
+run('node', ['tools/mac-guide-art.ts', 'selftest']);
+run('node', ['tools/mac-guide-art.ts', 'lint']);
+run('node', ['tools/agent-memory.ts', 'selftest']);
 run('node', ['tools/lion-status.ts']);
 run('node', ['tools/lion-status.ts', 'selftest']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);

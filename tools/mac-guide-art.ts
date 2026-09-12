@@ -70,14 +70,15 @@ const LEX_RULES: { code: string; re: RegExp; label: string }[] = [
 
 const STYLE_TOKENS = [
   'black-line', 'ghost-40', 'white-paper',
-  'helvetica', 'lego', 'ghost', 'transparent', 'arrow', 'uniform sidepanel', 'japanese compactness',
-  'accurate hardware', 'black and white',
+  'helvetica', 'lego', 'ghost', 'transparent', 'arrow', 'uniform sidepanel', 'manual compactness',
+  'accurate hardware', 'black and white', 'english', 'short guiding words',
 ];
 const NEGATIVE_CONSTRAINTS = [
   'no-color', 'no-amoled', 'no-neon-glow-bloom', 'no-watermark', 'no-photoreal-human', 'no-brand-logo-watermark',
   'no-blurry-icons', 'no-extra-drives', 'no-macbook', 'no-rack-server',
   'no-invented-port-counts', 'no-raid-5-in-disk-utility', 'no-apfs-on-10-7',
   'no-paragraph-in-image', 'no-text-walls', 'no-color-fill', 'no-gray-fill', 'no-shading',
+  'no-japanese-text',
 ];
 
 function loadJson<T>(path: string): T {
@@ -250,7 +251,7 @@ function emitPrompt(scene: Scene, style: string, plateId: string, pass: number):
     lines.push(`    MEANING (visual, not text): ${n.detail}`);
   }
   lines.push('');
-  lines.push('STYLE CONTRACT (authoritative, from docs/macpro-storage-style.md):');
+  lines.push(`STYLE CONTRACT (authoritative, from ${STYLE}):`);
   lines.push(style.trim());
   lines.push('');
   lines.push(`NEGATIVE CONSTRAINTS: ${NEGATIVE_CONSTRAINTS.join(', ')}.`);
@@ -259,7 +260,7 @@ function emitPrompt(scene: Scene, style: string, plateId: string, pass: number):
     lines.push(`PASS-${pass} CORRECTIONS:`);
     for (const note of plate.renderNotes) lines.push(`- ${note}`);
   }
-  lines.push('Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.');
+  lines.push('Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.');
   lines.push(`PASS: ${pass}`);
   const text = lines.join('\n');
   mkdirSync(PROMPTDIR, { recursive: true });
@@ -283,25 +284,25 @@ function parsePng(buf: Buffer): Png {
   return { w,h,bitDepth,colorType,interlace,raw: inflateSync(Buffer.concat(idat)) };
 }
 const CHANNELS: Record<number,number> = { 0:1,2:3,3:1,4:2,6:4 };
-function unfilter(png: Png): number[] {
+function unfilter(png: Png): { lum: number[]; spread: number[] } {
   const ch=CHANNELS[png.colorType]; if(!ch) throw new Error(`color ${png.colorType}`); if(png.bitDepth!==8) throw new Error(`depth ${png.bitDepth}`); if(png.interlace!==0) throw new Error('interlaced');
-  const stride=png.w*ch; const out=new Array<number>(png.w*png.h).fill(0); const prev=Buffer.alloc(stride); const cur=Buffer.alloc(stride); let pos=0;
+  const stride=png.w*ch; const out=new Array<number>(png.w*png.h).fill(0); const sat=new Array<number>(png.w*png.h).fill(0); const prev=Buffer.alloc(stride); const cur=Buffer.alloc(stride); let pos=0;
   for(let y=0;y<png.h;y++){ const filter=png.raw[pos]; pos++; png.raw.copy(cur,0,pos,pos+stride); pos+=stride;
     for(let i=0;i<stride;i++){ const a=i>=ch?cur[i-ch]:0; const b=prev[i]; const c=i>=ch?prev[i-ch]:0; let v=cur[i];
       if(filter===1) v+=a; else if(filter===2) v+=b; else if(filter===3) v+= (a+b)>>1; else if(filter===4){ const p=a+b-c; const pa=Math.abs(p-a),pb=Math.abs(p-b),pc=Math.abs(p-c); v+= pa<=pb&&pa<=pc?a:(pb<=pc?b:c); }
       cur[i]=v&0xff;
     }
     cur.copy(prev); const rowBase=y*png.w;
-    for(let x=0;x<png.w;x++){ const i=x*ch; if(ch>=3) out[rowBase+x]=0.2126*cur[i]+0.7152*cur[i+1]+0.0722*cur[i+2]; else out[rowBase+x]=cur[i]; }
+    for(let x=0;x<png.w;x++){ const i=x*ch; if(ch>=3){ const R=cur[i],G=cur[i+1],B=cur[i+2]; out[rowBase+x]=0.2126*R+0.7152*G+0.0722*B; sat[rowBase+x]=Math.max(R,G,B)-Math.min(R,G,B); } else { out[rowBase+x]=cur[i]; sat[rowBase+x]=0; } }
   }
-  return out;
+  return { lum: out, spread: sat };
 }
-type Audit = { w:number;h:number;mean:number;stddev:number;pctDark:number;pctBright:number;edgeRatio:number;unique:number;verdict:string;diags:Diag[] };
+type Audit = { w:number;h:number;mean:number;stddev:number;pctDark:number;pctBright:number;edgeRatio:number;pctColor:number;unique:number;verdict:string;diags:Diag[] };
 function auditPng(file: string): Audit {
-  const buf=readFileSync(file); const png=parsePng(buf); const lum=unfilter(png); const stride=3; const vals:number[]=[]; const colors=new Set<number>(); let dark=0,bright=0,edges=0,pairs=0;
-  for(let y=0;y<png.h;y+=stride){ for(let x=0;x<png.w;x+=stride){ const v=lum[y*png.w+x]; vals.push(v); colors.add(Math.round(v/8)); if(v<40) dark++; if(v>200) bright++; if(x+stride<png.w){ const r=lum[y*png.w+x+stride]; if(Math.abs(v-r)>40) edges++; pairs++; } } }
+  const buf=readFileSync(file); const png=parsePng(buf); const { lum, spread }=unfilter(png); const stride=3; const vals:number[]=[]; const colors=new Set<number>(); let dark=0,bright=0,edges=0,pairs=0,colored=0;
+  for(let y=0;y<png.h;y+=stride){ for(let x=0;x<png.w;x+=stride){ const v=lum[y*png.w+x]; vals.push(v); colors.add(Math.round(v/8)); if(spread[y*png.w+x]>25) colored++; if(v<40) dark++; if(v>200) bright++; if(x+stride<png.w){ const r=lum[y*png.w+x+stride]; if(Math.abs(v-r)>40) edges++; pairs++; } } }
   const n=vals.length||1; const mean=vals.reduce((a,b)=>a+b,0)/n; const variance=vals.reduce((a,b)=>a+(b-mean)*(b-mean),0)/n; const stddev=Math.sqrt(variance);
-  const pctDark=dark/n; const pctBright=bright/n; const edgeRatio=pairs?edges/pairs:0;
+  const pctDark=dark/n; const pctBright=bright/n; const edgeRatio=pairs?edges/pairs:0; const pctColor=colored/n;
   // BW efficient style: white paper #FFFFFF, black-line 1.5px, mostly bright, low dark is correct
   const diags: Diag[]=[];
   if(pctDark<0.01) diags.push({ code:'G-PX-001', severity:'ERROR', message:`dark ${(pctDark*100).toFixed(1)}% <1% blank` });
@@ -309,8 +310,9 @@ function auditPng(file: string): Audit {
   if(pctBright<0.30) diags.push({ code:'G-PX-003', severity:'ERROR', message:`bright ${(pctBright*100).toFixed(1)}% <30% not white paper` });
   if(stddev<8) diags.push({ code:'G-PX-004', severity:'ERROR', message:`stddev ${stddev.toFixed(1)} <8 flat` });
   if(edgeRatio<0.01) diags.push({ code:'G-PX-005', severity:'WARN', message:`edge ${edgeRatio.toFixed(4)} <0.01 little detail` });
+  if(pctColor>0.005) diags.push({ code:'G-PX-006', severity:'ERROR', message:`color ${(pctColor*100).toFixed(2)}% chroma pixels >0.5% violates no-color` });
   const verdict=diags.some(x=>x.severity==='ERROR')?'FAIL':(diags.length?'PASS-WITH-WARN':'PASS');
-  return { w:png.w,h:png.h,mean,stddev,pctDark,pctBright,edgeRatio,unique:colors.size,verdict,diags };
+  return { w:png.w,h:png.h,mean,stddev,pctDark,pctBright,edgeRatio,pctColor,unique:colors.size,verdict,diags };
 }
 
 function cmdPasses(): void { for(const p of PASSES) console.log(`${p.id}\t${p.name}\tconsumes=${p.consumes}`); console.log(`PASSES=${PASSES.length}`); }
@@ -357,17 +359,23 @@ function cmdRender(args: string[]): number {
   const buf=readFileSync(file); const a=auditPng(file); const scene=loadJson<Scene>(SCENE); const p=scene.plates.find(x=>x.id===plate);
   const diags: Diag[]=[...a.diags]; if(p){ const want=p.canvas.w/p.canvas.h; const got=a.w/a.h; if(Math.abs(want-got)>0.02) diags.push({ code:'G-RN-001', severity:'WARN', plate, message:`aspect ${got.toFixed(3)} != ${want.toFixed(3)}` }); }
   const ledger=loadLedger(); const entry=plateEntry(ledger,plate); let rec=entry.passes.find(x=>x.pass===pass); if(!rec){ rec={ pass, artifacts:[], findings:[], patches:[], verdict:'RENDERED' }; entry.passes.push(rec); }
-  rec.artifacts=[{ file, sha256:sha256(buf), bytes:buf.length, w:a.w, h:a.h }]; rec.audit={ mean:Number(a.mean.toFixed(2)), stddev:Number(a.stddev.toFixed(2)), pctDark:Number(a.pctDark.toFixed(4)), pctBright:Number(a.pctBright.toFixed(4)), edgeRatio:Number(a.edgeRatio.toFixed(4)), unique:a.unique }; rec.auditVerdict=a.verdict; rec.verdict=diags.some(d=>d.severity==='ERROR')?'RENDER-FAIL':'RENDERED'; saveLedger(ledger);
-  console.log(`file=${file}`); console.log(`sha256=${sha256(buf)}`); console.log(`bytes=${buf.length}`); console.log(`dimensions=${a.w}x${a.h}`); console.log(`AUDIT=${a.verdict}`); for(const d of diags) console.log(`${d.severity}\t${d.code}\t${d.message}`); return 0;
+  rec.artifacts=[{ file, sha256:sha256(buf), bytes:buf.length, w:a.w, h:a.h }]; rec.audit={ mean:Number(a.mean.toFixed(2)), stddev:Number(a.stddev.toFixed(2)), pctDark:Number(a.pctDark.toFixed(4)), pctBright:Number(a.pctBright.toFixed(4)), edgeRatio:Number(a.edgeRatio.toFixed(4)), pctColor:Number(a.pctColor.toFixed(4)), unique:a.unique }; rec.auditVerdict=a.verdict; rec.verdict=diags.some(d=>d.severity==='ERROR')?'RENDER-FAIL':'RENDERED'; saveLedger(ledger);
+  console.log(`file=${file}`); console.log(`sha256=${sha256(buf)}`); console.log(`bytes=${buf.length}`); console.log(`dimensions=${a.w}x${a.h}`); console.log(`colorPct=${(a.pctColor*100).toFixed(2)}`); console.log(`AUDIT=${a.verdict}`); for(const d of diags) console.log(`${d.severity}\t${d.code}\t${d.message}`); return 0;
 }
 function cmdAudit(args: string[]): number {
   const file=args.find(a=>a.startsWith('--file='))?.split('=')[1]; if(!file){ console.error('usage: audit --file=PATH'); return 1; }
-  const a=auditPng(file); console.log(`file=${file} dim=${a.w}x${a.h} mean=${a.mean.toFixed(2)} std=${a.stddev.toFixed(2)} dark=${(a.pctDark*100).toFixed(1)}% bright=${(a.pctBright*100).toFixed(2)}% edge=${a.edgeRatio.toFixed(4)} verdict=${a.verdict}`); for(const d of a.diags) console.log(`${d.severity}\t${d.code}\t${d.message}`); return a.verdict==='FAIL'?1:0;
+  const a=auditPng(file); console.log(`file=${file} dim=${a.w}x${a.h} mean=${a.mean.toFixed(2)} std=${a.stddev.toFixed(2)} dark=${(a.pctDark*100).toFixed(1)}% bright=${(a.pctBright*100).toFixed(2)}% edge=${a.edgeRatio.toFixed(4)} color=${(a.pctColor*100).toFixed(2)}% verdict=${a.verdict}`); for(const d of a.diags) console.log(`${d.severity}\t${d.code}\t${d.message}`); return a.verdict==='FAIL'?1:0;
 }
 function cmdFindings(args: string[]): number {
   const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1]; const pass=Number(args.find(a=>a.startsWith('--pass='))?.split('=')[1] ?? '1'); const inline=args.find(a=>a.startsWith('--add='))?.slice(6); const file=args.find(a=>a.startsWith('--file='))?.split('=')[1];
   if(!plate){ console.error('usage: findings --plate=ID --pass=N --add=JSON'); return 1; }
-  const incoming: Finding[]=[]; if(inline) incoming.push(JSON.parse(inline)); if(file) incoming.push(...JSON.parse(readFileSync(file,'utf8')));
+  const incoming: Finding[] = [];
+  const absorb = (parsed: unknown) => {
+    if (Array.isArray(parsed)) for (const f of parsed) incoming.push(f as Finding);
+    else incoming.push(parsed as Finding);
+  };
+  if (inline) absorb(JSON.parse(inline));
+  if (file) absorb(JSON.parse(readFileSync(file, 'utf8')));
   const ledger=loadLedger(); const entry=plateEntry(ledger,plate); let rec=entry.passes.find(x=>x.pass===pass); if(!rec){ rec={ pass, artifacts:[], findings:[], patches:[], verdict:'CRITIQUED' }; entry.passes.push(rec); }
   rec.findings.push(...incoming); rec.verdict=rec.findings.some(f=>f.severity==='ERROR')?'FAIL':'PASS-WITH-WARN'; saveLedger(ledger);
   console.log(`FINDINGS=${rec.findings.length}`); return 0;
