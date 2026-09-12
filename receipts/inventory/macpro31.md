@@ -110,3 +110,35 @@ visible; total count on scene UNSEEN.
 3. AMD card label/model photo when it arrives (claim 4) — still the G0 gate for the swap.
 4. Drive manifest: how many WD Greens total (2 of 4?), full model strings, and which bays
    they land in — needed before the RAID-format wave names its target.
+
+## Entry 2026-09-12e (session 01a097ba) — resolutions: 6-pin intent, bay numbering, donor cards
+
+Source: operator words verbatim "unplugges for card swap, i have a 9800gt aswell. left to
+right is bay 1-4 i showed the riser and dimm count already on the motherboard and riser"
+(seq 71) + chat photo x4 (seq 72): two donor cards on the bench.
+
+| Claim | Resolution | Receipt |
+|---|---|---|
+| GPU 6-pin intent (H1 vs H2) | **H1 CONFIRMED** — unplugged on purpose for the card swap | operator words (seq 71) |
+| Bay numbering | **LEFT TO RIGHT = BAY 1-4** — supersedes the entry-1 MEDIUM etched-digit read (misread/partial; correction logged). Red-sticker sled = rightmost = **BAY 4** | operator words (seq 71) |
+| Bay map (volumes) | unchanged: Bay 1 = Lion SSD Base, Bay 3 = MX500 clone, Bay 4 = Install ESD (red sticker on the ESD spare sled), Bay 2 = unreceipted | workflow.json + words |
+| Riser/DIMM count | operator asserts already shown "on the motherboard and riser" — no legible riser photo persisted to my records (chat-only photos seq 62/70 carry no readable count); RECEIPTED total = 10 GB (workflow.json machine line). Per-riser breakdown stays open at LOW priority, non-blocking; do not invent | words (seq 71) + machine line |
+| Donor cards | LEFT: EVGA e-GeForce 9800 GT (fire shroud, 2x DVI). RIGHT: **ATI Radeon, blue PCB, radial blue fan + ATI logo, single-slot-class bracket, 6-pin-class power on top edge — HD 4870-class cooler family**; exact SKU / Mac-vs-PC firmware / 1-vs-2 6-pin NOT readable → G0 still owes the model sticker | photo (seq 72, HIGH present / MEDIUM class) |
+
+### Reading
+The swap card is the ATI Radeon (AMD, as approved); the 9800 GT is a second donor. Era check
+(S4, cited-class): 10.7 Lion natively drives HD 4870-class and 9800 GT; the GTX 285 was the
+Option-boot picker card (boot screens proven), and a PC-ROM Radeon/9800 GT means the
+pre-approved condition "Mac-EFI **or no boot screens**" applies — future Option-boots would
+need Startup Disk instead until a boot-screen card goes back in. Inverse stays: GTX 285 +
+reseated 6-pins + VGA = proven 1080p state.
+
+### G0 status (docs/amd-swap-wave.md)
+PARTIAL: cards on scene + class receipted; still owed for G0 close: exact Radeon model
+(sticker, e.g. HD 4870 512MB/1GB), Mac vs PC edition, and its power connector count (1x vs
+2x 6-pin) — the machine's two booster cables already on site cover the 2x case.
+
+### Updated photo requests
+1. AMD card model sticker / exact SKU + power connectors (G0 blocker — words work too).
+2. WD Green drive manifest: count + full models + target bays.
+3. Riser/DIMM per-riser breakdown (LOW, non-blocking).

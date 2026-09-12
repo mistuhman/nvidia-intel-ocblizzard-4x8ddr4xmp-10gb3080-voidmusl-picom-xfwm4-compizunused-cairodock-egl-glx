@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 70,
+  "lastSeq": 73,
   "entries": [
     {
       "seq": 1,
@@ -1443,6 +1443,52 @@
         }
       ],
       "sha256": "f88e6dc3d53413f06cc38d44647f32b068ec061185e05012b1a5b06ddf9a9822"
+    },
+    {
+      "seq": 71,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "unplugges for card swap, i have a 9800gt aswell. left to right is bay 1-4 i showed the riser and dimm count already on the motherboard and riser (with 4 identical photos: two graphics cards on a desk - EVGA e-GeForce 9800 GT left, blue ATI Radeon right)",
+      "demands": [
+        "H1 confirmed for 6-pin unplug",
+        "9800 GT availability logged",
+        "bay numbering receipt left-to-right 1-4",
+        "riser/dimm assertion reconciled against persisted receipts"
+      ],
+      "sha256": "97b0c076731cbf95bad45b64b860f72a2f7352aa7cdca8002d02cade169a27a0"
+    },
+    {
+      "seq": 72,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-donor-cards-2026-09-12c",
+      "tool": "operator chat attachment x4 identical (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "LEFT card = EVGA e-GeForce 9800 GT: black shroud with orange fire graphic, printed e-GeForce 9800 GT + EVGA text, dual-slot style shroud, bracket with 2x DVI; green PCB edge; e-GeForce fan hub label",
+          "evidence": "chat photo read; text legible on shroud",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "RIGHT card = ATI Radeon on blue PCB: circular blue radial fan with red ATI RADEON logo hub, blue finned heatsink below fan, silver finned VRM heatsink at lower edge near power connector, bracket cluster of 2x DVI (+ third small connector class unreadable), white 6-pin-class PCIe power receptacle on the top PCB edge; cooler family and layout read as Radeon HD 4870-class (single-slot blower era)",
+          "evidence": "chat photo read; exact SKU text not readable in this frame",
+          "confidence": "HIGH (card present/model class MEDIUM)"
+        },
+        {
+          "claim": "Cards photographed side by side on a fabric surface near a white mouse and a silver MacBook-class lid - bench staging, not installed",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "056d1de6d374750308f466d7240bd84f817d20b74bf0eba8d0ad4bfb2c4432b8"
+    },
+    {
+      "seq": 73,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12e corrections: entry-1 MEDIUM etched-digit read (3,4 left / 1 near red sticker) SUPERSEDED by operator words left-to-right = bay 1-4 (red sticker = bay 4 rightmost); my perception was misread/partial - operator receipts outrank MEDIUM perception reads. 6-pin intent CLOSED as H1 deliberate swap-prep. Claim 2 riser count: operator asserts shown; no legible persisted photo in my records; receipted total 10GB (workflow machine line); per-riser open LOW non-blocking.",
+      "sha256": "32dfdca6adfe11a77c0f74368e78ce98392ae91ebc42e5f2a88710bbb725820d"
     }
   ],
   "stacks": [
@@ -1487,7 +1533,10 @@
         67,
         68,
         69,
-        70
+        70,
+        71,
+        72,
+        73
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
