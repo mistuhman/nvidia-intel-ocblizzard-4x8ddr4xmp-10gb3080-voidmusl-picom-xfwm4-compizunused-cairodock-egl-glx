@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 56,
+  "lastSeq": 59,
   "entries": [
     {
       "seq": 1,
@@ -1203,6 +1203,53 @@
       "value": "operator G-20 zone map: fan tray 2x140 LEFT, dual-CPU compartment, RAM cage RIGHT of CPUs, GTX285 above RAM (backplate visible, fan toward drive bays, bracket rear/right, 3 free PCI rails, dangling booster), 4 bays ABOVE GPU L-R, DVD top-left one optical bay, PSU top-right own compartment, 140 rear cross-hatch exhaust, full I/O",
       "source": "operator verbatim 2026-09-12",
       "sha256": "3235b699907812b4dc81e25bc8a0fa018fec8cb1e1c374c6bf0f679f3b586204"
+    },
+    {
+      "seq": 57,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "vision-check.png",
+      "tool": "generate_image + read_file vision",
+      "claims": [
+        {
+          "claim": "Self-generated calibration card renders: large solid RED SQUARE top-left, solid BLUE CIRCLE top-right, solid YELLOW UP-TRIANGLE bottom-left, solid GREEN 5-POINT STAR bottom-right, white background",
+          "evidence": "read_file returned the rendered PNG and the model described all four shapes, colors and positions correctly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Rendered text reads ARENA VISION CHECK 2026-09-12 in black sans-serif on one centered line, exact requested date",
+          "evidence": "text is crisp and legible in the returned image and matches the prompt string",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "5563e2dfc85e3ccfe0cbbc3b02c1d99133cdc3122c7755f428e4aa0f05a0f262"
+    },
+    {
+      "seq": 58,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "image-search/mac-pro-3-1-early-2008-interior-memory-r-1.jpg",
+      "tool": "image_search + read_file vision",
+      "claims": [
+        {
+          "claim": "Web photo legible: TWO blue PCB Mac Pro memory riser boards lying side-by-side on white packing foam, stacked component rows visible on each card, solder pads along edges",
+          "evidence": "read_file returned the photograph and the model identified the two riser cards and their layout",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Photo is small/low-resolution (~130px thumbnail) but component identity is readable",
+          "evidence": "fine silkscreen text not resolvable at this size; shape and color identification reliable",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "2c6c5ddf43fb25b48b2f0a6bc0378e40971dc63d0836ae25abc7786275df48b5"
+    },
+    {
+      "seq": 59,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba: vision-verify artifacts archived - vision-check.png now receipts/vision-check/testcard-2026-09-12.png and image-search/mac-pro-3-1-early-2008-interior-memory-r-1.jpg now receipts/vision-check/macpro-web-photo.jpg (seq 57/58 target paths are the original tool-call paths).",
+      "sha256": "ecad5dc3ff2809fa319af86d1adc91b901983ec3ca9a63c27f7b5b420f128cea"
     }
   ],
   "stacks": [
