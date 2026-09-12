@@ -1,28 +1,36 @@
-LION-SSD | RESELECT1 RELEASED 2026-09-11 | one action: Startup Disk Lion SSD Base + Restart
+LION-SSD | RESTART1 RELEASED 2026-09-11 | one action: Apple menu Restart + report
 
 STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
 
-SDBOOT1 RECEIPT READ BY THE AGENT:
-2026-09-11 photo + operator words: worked, but didnt. installation was
-prohibited. prohib sign after a while, then the apple loading screen.
-End state: booted to leopard.
-- direct boot (Startup Disk, no picker) fails identically to picker boot
-- the picker class is CLOSED; boot.efi-phase failure on the ESD is CONFIRMED
-- efi-boot-device still points at the ESD until this inverse runs
+RESELECT1 RECEIPT READ BY THE AGENT (PARTIAL):
+2026-09-11 operator words: system preferences will let me select it, but wont
+let me restart it from there, itll just close the app and give me a
+notification saying it halted.
+- the pane selects Lion SSD Base; the pane Restart fails
+- UNKNOWN: bless half stuck (reboot call failed) vs bless itself failed
+- exact notification text unquoted; selection persistence unreported
 
-RELEASED — DO THIS ONE THING (RESELECT1, the promised SDBOOT1 inverse):
-1. On Snow Leopard: Apple menu > System Preferences > Startup Disk.
-2. Click the lock, enter the admin password.
-3. Select Lion SSD Base, click Restart, confirm Restart.
-4. Expected: straight to the Snow Leopard login with NO prohibitory.
-5. Report the boot in chat (words or photo).
+INTERPRETATION:
+The pane Restart is two halves and this receipt does not separate them. A
+manual Apple-menu Restart bypasses the pane entirely and separates them: no
+prohibitory means the selection had stuck; the known prohibitory detour means
+it did not. Either way the Mac ends at the Snow Leopard login (fallthrough
+proven 3 times).
 
-GATE: no prohibitory + SL login = clean state restored, and the forensics
-wave (read-only mach_kernel + boot.efi check on the ESD) ships next. If the
-prohibitory still appears, report that instead and do nothing further.
+RELEASED — DO THIS ONE THING (RESTART1):
+1. On Snow Leopard: Apple menu > Restart, confirm Restart.
+2. Watch the screen from the chime: prohibitory, or straight through?
+3. Report in chat: prohibitory vs straight-through, end state, and the EXACT
+   wording of any notification or dialog if one appears again.
+
+GATE: straight-to-SL with no prohibitory = selection had stuck, clean state
+restored, forensics wave ships next. Prohibitory detour then SL = selection
+did not stick, next method becomes re-bless forensics (still non-destructive).
+Contingency (never observed): screen hangs with no fallthrough -> hold power
+to force off, power on holding Option, boot Lion SSD Base, report.
 
 STILL FORBIDDEN:
 - no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
@@ -31,5 +39,5 @@ STILL FORBIDDEN:
 - no further reboot until the next method ships after this receipt is read
 
 Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo,
-SDBOOT1 photo + booted to leopard.
+SDBOOT1 photo + booted to leopard, RESELECT1 partial (pane restart halted).
 burned: text=ok query=ok

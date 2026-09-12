@@ -188,3 +188,26 @@ with no prohibitory. Queued after: **FORENSIC1** — read-only verification of
 (still UNMEASURED; the leading forensics target). No Repair, remirror, date
 fix, or destination selection.
 
+## 2026-09-11 — RESELECT1 partial + RESTART1 release (session 01a09141)
+
+Operator ran the released RESELECT1 and reported verbatim: "system preferences
+will let me select it, but wont let me restart it from there, itll just close
+the app and give me a notification saying it halted".
+
+Verdict: PARTIAL. The pane's Restart does two halves (bless --setBoot, then
+reboot) and this receipt does not separate them: either the bless half stuck
+and only the reboot call failed, or the bless itself failed and
+efi-boot-device still points at the ESD. The exact notification text was not
+quoted, and pane-selection persistence (quit/reopen) was not reported, so both
+classes stay live. No conclusion is drawn about either volume's bootability —
+this implicates the pane's restart mechanism only.
+
+Released next: **RESTART1** — Apple menu > Restart (manual, bypasses the
+pane), receipt is prohibitory vs straight-through + end state + exact wording
+of any notification. No prohibitory = selection had stuck (clean state,
+FORENSIC1 ships next); prohibitory detour then SL = selection did not stick
+(next method becomes re-bless/re-select forensics, still non-destructive).
+Worst case is the twice-proven prohibitory detour to the SL login; the
+never-observed hang contingency (force off, Option-boot Lion SSD Base) rides
+along unchanged.
+

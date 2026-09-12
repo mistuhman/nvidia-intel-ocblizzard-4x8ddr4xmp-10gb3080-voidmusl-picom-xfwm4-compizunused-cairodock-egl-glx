@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "SDBOOT1 receipt read 2026-09-11: direct-boot photo shows the prohibitory held a while, then Apple loading, end state booted to leopard - identical to the picker path, so the picker class is CLOSED and boot.efi-phase failure on the ESD is CONFIRMED. Released (session 01a09141): RESELECT1 is the single next action and the promised SDBOOT1 inverse - System Preferences > Startup Disk > select Lion SSD Base > Restart, receipt is a straight-to-SL boot with no prohibitory. Queued after: FORENSIC1 read-only mach_kernel + boot.efi verification. No Repair, remirror, date fix, or destination selection.",
+  "nextAction": "RESELECT1 partial 2026-09-11: the Startup Disk pane selects Lion SSD Base but its Restart fails (app closes, notification says it halted); whether the bless half stuck or only the reboot half failed is UNKNOWN. Released (session 01a09141): RESTART1 is the single next action - Apple menu > Restart (manual, bypasses the pane), report prohibitory vs straight-through, end state, and the exact wording of any notification. No prohibitory = selection had stuck; prohibitory detour = selection did not stick; either way ends at SL. No Repair, remirror, date fix, or destination selection.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -189,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: SDBOOT1 photo read - ESD direct boot draws the prohibitory then falls through to Snow Leopard (operator end state: booted to leopard). Picker exonerated; the blessed volume-root boot.efi cannot load the kernel. RESELECT1 released to restore efi-boot-device to Lion SSD Base. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo stand; bless unchanged.",
+  "status": "2026-09-11: RESELECT1 partial - pane Restart fails after selecting Lion SSD Base (halted notification, exact text unquoted). RESTART1 released (manual Apple-menu Restart) to separate bless-stuck from bless-failed and to complete the inverse. SDBOOT1 stands: picker closed, ESD boot.efi-phase failure confirmed. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1/SDBOOT1 photos stand.",
   "relay": {
     "page": "lion.html",
     "files": [
