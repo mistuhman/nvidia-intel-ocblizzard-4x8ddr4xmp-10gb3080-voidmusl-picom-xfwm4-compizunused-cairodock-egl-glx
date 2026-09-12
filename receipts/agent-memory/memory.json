@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 66,
+  "lastSeq": 68,
   "entries": [
     {
       "seq": 1,
@@ -1375,6 +1375,22 @@
       "status": "UNRESOLVED",
       "owner": "agent",
       "sha256": "ac9808eb117eb5559ffceb436d5ced57315e0fb05d2e52f83301cf5a8b234d7f"
+    },
+    {
+      "seq": 67,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "amdSwapWave",
+      "value": "docs/amd-swap-wave.md authored 2026-09-12 session 01a097ba: APPROVED-with-conditions swap (Mac-EFI boot screens or none; keep GTX 285 until new card POSTs+displays; Dell-real-EDID digital identity dodges the 1440p poison); gate ladder G0 label-photo+measurement-table+standing-claims -> G1 swap -> G2 digital cable -> G3 first power-on (garbage screens = Mac-EFI condition violated, stop) -> G4 digital 1080p verify then higher modes allowed (digital removes VGA ceiling), blind = new class metered, delete-retry WITH ls verification -> G5 About/GPU reads + inventory entry -> G6 HDD+RAID separate wave, wipe target named first; inverse documented; one change per power-on",
+      "source": "docs/lion-workflow.json nextAction+status verbatim; docs/amd-swap-wave.md; imaging-contract; measurement-fundamentals",
+      "sha256": "432a9a85924a019b2dacee9811277a1e7745cf3a08ef4a849be497dcf7d02206"
+    },
+    {
+      "seq": 68,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "QUEUED (not done) 2026-09-12 session 01a097ba: wire UPLOADS CROSSREF BLOCK into tools/mac-guide-art.ts emitPrompt + selftest assertion - deferred because plates are paused on 4 uncovered uploads-gate claims and the change would churn 15+ committed prompt receipts; ship it at the start of the next mac-guide render session (verify-before-render stays a manual contract step until then).",
+      "sha256": "ea03ced2c153f9558c62efbcaa7e837f9a24fa727abb29d156f153ceae11a345"
     }
   ],
   "stacks": [
@@ -1415,7 +1431,9 @@
         63,
         64,
         65,
-        66
+        66,
+        67,
+        68
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
