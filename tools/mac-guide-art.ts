@@ -69,15 +69,15 @@ const LEX_RULES: { code: string; re: RegExp; label: string }[] = [
 ];
 
 const STYLE_TOKENS = [
-  'black-line', 'gray-50', 'gray-20', 'white-paper', 'black-fill-10',
+  'black-line', 'ghost-40', 'white-paper',
   'helvetica', 'lego', 'ghost', 'transparent', 'arrow', 'uniform sidepanel', 'japanese compactness',
-  'accurate hardware',
+  'accurate hardware', 'black and white',
 ];
 const NEGATIVE_CONSTRAINTS = [
   'no-color', 'no-amoled', 'no-neon-glow-bloom', 'no-watermark', 'no-photoreal-human', 'no-brand-logo-watermark',
   'no-blurry-icons', 'no-extra-drives', 'no-macbook', 'no-rack-server',
   'no-invented-port-counts', 'no-raid-5-in-disk-utility', 'no-apfs-on-10-7',
-  'no-paragraph-in-image', 'no-text-walls', 'no-color-fill',
+  'no-paragraph-in-image', 'no-text-walls', 'no-color-fill', 'no-gray-fill', 'no-shading',
 ];
 
 function loadJson<T>(path: string): T {

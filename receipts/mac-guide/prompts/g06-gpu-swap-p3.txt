@@ -106,10 +106,10 @@ no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-l
 
 NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading.
 
-PASS-0 CORRECTIONS:
+PASS-3 CORRECTIONS:
 - Black white line art only
 - Ghost transparent lift out and install in
 - Accurate GPU shapes as per photo-1
 - Helvetica uniform sidepanel
 Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.
-PASS: 0
+PASS: 3

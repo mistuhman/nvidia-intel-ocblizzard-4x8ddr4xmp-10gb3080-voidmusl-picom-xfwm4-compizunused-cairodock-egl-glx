@@ -1,36 +1,36 @@
-PLATE g06-gpu-swap — STEP 6 — GPU SWAP AMD
-PURPOSE: Remove GTX 285 double-wide black blower from Slot1 x16 and install blue AMD ATI card digital cable keep old until POST no force screw ghost.
-VIEW: orthographic PCIe area side view Mac Pro 3,1 accurate to photo-1 black and white line art uniform sidepanel
+PLATE g01-overview — STEP 1 — INVENTORY BAY MAP
+PURPOSE: Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording.
+VIEW: orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, black and white line art Helvetica uniform sidepanel left Japanese compactness
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
-    SHORT LABEL (only text allowed in image): STEP 6
-    MEANING (visual, not text): Uniform sidepanel step6.
-- gtx-in [gpu] at x=24 y=8 w=18 h=16
-    SHORT LABEL (only text allowed in image): GTX285 IN
-    MEANING (visual, not text): GTX 285 input solid in Slot1 x16 double-wide black blower EVGA label two 6-pin rear as in photo-1 latch locked.
-- gtx-ghost [gpu] at x=42 y=8 w=18 h=16
-    SHORT LABEL (only text allowed in image): GTX285 OUT
-    MEANING (visual, not text): Ghost transparent dashed 40% GTX 285 lifted 20mm out slot arrow up output latch released as LEGO.
-- amd-in [gpu] at x=62 y=8 w=18 h=16
-    SHORT LABEL (only text allowed in image): AMD IN
-    MEANING (visual, not text): Blue shroud AMD ATI Radeon HD 4890 style output solid in Slot1 x16 after swap single fan center ATI logo bracket silver ghost before install.
-- cable [cable] at x=24 y=28 w=18 h=12
-    SHORT LABEL (only text allowed in image): DIGITAL CABLE
-    MEANING (visual, not text): Digital cable DVI HDMI DP not VGA converter input VGA ghost crossed out output digital solid arrow passive DVI->HDMI single-link 1080p ceiling.
-- keep [panel] at x=44 y=28 w=18 h=12
-    SHORT LABEL (only text allowed in image): KEEP OLD
-    MEANING (visual, not text): Keep GTX 285 until AMD POSTs and displays store safe checkmark no force lower bracket screw ghost.
-- slotmap [panel] at x=64 y=28 w=16 h=12
-    SHORT LABEL (only text allowed in image): SLOT MAP
-    MEANING (visual, not text): Slot map uniform: Slot1 X16 GPU Slot2 X16 empty Slot3 X4 empty Slot4 X4 empty 300W combined max Helvetica.
+    SHORT LABEL (only text allowed in image): STEP 1
+    MEANING (visual, not text): Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.
+- chassis-accurate [chassis] at x=24 y=6 w=48 h=86
+    SHORT LABEL (only text allowed in image): MAC PRO 3,1
+    MEANING (visual, not text): Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear.
+- bay-labels-accurate [panel] at x=24 y=10 w=10 h=40
+    SHORT LABEL (only text allowed in image): BAY 1-4
+    MEANING (visual, not text): Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.
+- desk-hdd-photo [hdd] at x=72 y=12 w=14 h=10
+    SHORT LABEL (only text allowed in image): WD GREEN
+    MEANING (visual, not text): WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.
+- desk-timecapsule [panel] at x=88 y=12 w=10 h=10
+    SHORT LABEL (only text allowed in image): TIMECAPSULE
+    MEANING (visual, not text): Apple Time Capsule white on desk right as in photo-1 with Apple logo.
+- ghost-sled [bay] at x=24 y=54 w=10 h=10
+    SHORT LABEL (only text allowed in image): GHOST OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.
+- arrow-pull [cable] at x=36 y=56 w=8 h=6
+    SHORT LABEL (only text allowed in image): PULL
+    MEANING (visual, not text): Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.
 - sidepanel [panel] at x=2 y=14 w=18 h=76
-    SHORT LABEL (only text allowed in image): GPU SWAP
-    MEANING (visual, not text): Uniform sidepanel wording: 1 Release latch Slot1 IN solid, 2 Lift GTX285 OUT ghost 20mm arrow up, 3 Install AMD blue card IN solid ghost before, 4 Digital cable not VGA ghost crossed to solid, 5 Keep old until POST, 6 No force lower screw.
+    SHORT LABEL (only text allowed in image): INVENTORY LIST
+    MEANING (visual, not text): Uniform sidepanel left every plate compact Japanese wording Helvetica: 1 Identify optical 2 empty metal covers cutouts, 2 Identify 4 HDD bays silver blanks red sticker Bay4, 3 Note GTX285 2x6-pin dangling, 4 Check WD Green on desk left, 5 Bay1 bottom Bay4 top upright.
 - footer [footer] at x=2 y=92 w=96 h=5
-    SHORT LABEL (only text allowed in image): STEP6 GPU SWAP
-    MEANING (visual, not text): Footer step6 GPU swap fixes display timing.
+    SHORT LABEL (only text allowed in image): STEP1 INVENTORY
+    MEANING (visual, not text): Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.
 
 STYLE CONTRACT (authoritative, from docs/macpro-storage-style.md):
 # Mac Pro + OMEN chassis guide — BLACK AND WHITE efficient style contract v3
@@ -106,10 +106,13 @@ no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-l
 
 NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading.
 
-PASS-0 CORRECTIONS:
-- Black white line art only
-- Ghost transparent lift out and install in
-- Accurate GPU shapes as per photo-1
-- Helvetica uniform sidepanel
+PASS-3 CORRECTIONS:
+- Black and white line art only no color no gray fill
+- Helvetica font all labels 4 words 24 chars max
+- Uniform sidepanel same every plate same camera as photo-1
+- Input solid output ghost 40% dashed partially out arrow
+- HDD placement accurate Bay1 bottom Bay4 top upright sled front to rear
+- Red sticker on Bay4 blank as in photo
+- Optical covers rectangular cutouts as in photo
 Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.
-PASS: 0
+PASS: 3
