@@ -235,3 +235,22 @@ running cleanly on this Mac after a cause-3 end). Fallthrough to SL is proven
 3 times; the never-observed hang contingency rides along (force off again,
 power on holding Option, boot Lion SSD Base).
 
+## 2026-09-11 — Skype blocker identified + restart executed (session 01a09141)
+
+Operator reported verbatim: "skype hung up, restarted now". The restart
+blockage is IDENTIFIED: a hung Skype canceled logout, which explains the
+RESTART1 failure; it plausibly explains the Startup Disk pane halted notice
+too, since the pane Restart also routes through logout — consistent, not
+proven (exact halted text still unquoted). The wedged-session class is
+downgraded but not formally closed.
+
+A restart is now executed, but two facts are unreported: the METHOD (Apple
+menu Retry after Skype cleared vs the released COLDBOOT1 power-button path)
+and the BOOT OBSERVATION (prohibitory vs straight-through, end state). No new
+physical action is released: the owed receipt is that observation. No
+prohibitory = the Lion SSD Base selection had stuck (clean state, FORENSIC1
+ships next); prohibitory detour then SL = efi-boot-device still ESD (next
+method becomes re-bless forensics, still non-destructive). The operator is
+explicitly NOT asked to reboot again — the observation of the boot that just
+happened is the receipt.
+

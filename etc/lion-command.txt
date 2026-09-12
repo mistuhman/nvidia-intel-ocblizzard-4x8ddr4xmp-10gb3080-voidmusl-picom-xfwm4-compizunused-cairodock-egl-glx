@@ -1,37 +1,26 @@
-LION-SSD | COLDBOOT1 RELEASED 2026-09-11 | one action: power-button cold boot + report
+LION-SSD | BOOT OBSERVATION OWED 2026-09-11 | report only, no physical action
 
 STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
 
-RESTART1 RECEIPT READ BY THE AGENT (FAILED):
-2026-09-11 operator words: cant restart whatsoever.
-- Startup Disk pane Restart: halted. Apple menu Restart: fails.
-- exact Apple-menu symptom unquoted; blocking cause unknown
-- no software restart path currently works; the session may be wedged
+RECEIPT READ BY THE AGENT:
+2026-09-11 operator words: skype hung up, restarted now.
+- the restart blockage is IDENTIFIED: a hung Skype canceled logout
+- this plausibly explains the pane halted notice too (same logout path)
+- a restart is executed; do NOT reboot again for this receipt
 
-INTERPRETATION:
-Software cannot block the power button. A cold boot bypasses every restart
-path at once and still separates the live question: no prohibitory means the
-Lion SSD Base selection had stuck; the known detour means efi-boot-device is
-still the ESD. Either way the Mac ends at the Snow Leopard login (proven 3x).
+OWED — REPORT THE BOOT THAT JUST HAPPENED (words or photo):
+1. Prohibitory, or straight through from the chime?
+2. End state (expected: Snow Leopard login either way).
+3. Which restart worked: Apple menu Retry after Skype cleared, or the
+   power-button cold boot?
 
-RELEASED — DO THIS ONE THING (COLDBOOT1):
-1. Save work and close open apps (unsaved work is the only loss exposure).
-2. Hold the power button until the Mac powers fully off.
-3. LEAVE THE POWER CORD PLUGGED IN (dead battery: AC keeps the clock; a
-   pulled cord resets it to 2001). Wait 10 seconds. Press power once.
-4. Watch the screen from the chime: prohibitory, or straight through?
-5. Report in chat: prohibitory vs straight-through, end state, and what
-   Apple-menu Restart had done exactly (silent nothing, a dialog naming an
-   app, or the halted notice again).
-
-GATE: straight-to-SL with no prohibitory = selection had stuck, clean state
-restored, forensics wave ships next. Prohibitory detour then SL = selection
-did not stick, next method becomes re-bless forensics (still non-destructive).
-Contingency (never observed): screen hangs with no fallthrough -> hold power
-to force off, power on holding Option, boot Lion SSD Base, report.
+GATE: straight-to-SL with no prohibitory = the Lion SSD Base selection had
+stuck, clean state restored, forensics wave ships next. Prohibitory detour
+then SL = efi-boot-device still ESD, next method becomes re-bless forensics
+(still non-destructive).
 
 STILL FORBIDDEN:
 - no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
@@ -40,5 +29,6 @@ STILL FORBIDDEN:
 - no further reboot until the next method ships after this receipt is read
 
 Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo,
-SDBOOT1 photo + booted to leopard, RESELECT1 partial, RESTART1 failed.
+SDBOOT1 photo + booted to leopard, RESELECT1 partial, RESTART1 failed,
+Skype blocker + restart executed.
 burned: text=ok query=ok

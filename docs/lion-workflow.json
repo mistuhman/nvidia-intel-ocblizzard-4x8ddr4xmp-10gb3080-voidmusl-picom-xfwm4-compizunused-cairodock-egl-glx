@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "RESTART1 failed 2026-09-11: operator reports cant restart whatsoever - both the Startup Disk pane Restart (halted) and Apple menu Restart fail; exact Apple-menu symptom unquoted. Released (session 01a09141): COLDBOOT1 is the single next action - save and close open apps, hold the power button until the Mac powers off, leave the cord plugged in, wait 10 seconds, press power, watch the boot and report prohibitory vs straight-through plus end state. No prohibitory = the Lion SSD Base selection had stuck; prohibitory detour = efi-boot-device still ESD. No Repair, remirror, date fix, or destination selection.",
+  "nextAction": "COLDBOOT1 update 2026-09-11: operator reports skype hung up, restarted now - the restart blockage is EXPLAINED (a hung Skype canceled logout; plausibly also the pane halted notice) and a restart is executed. No new physical action is released: the owed receipt is the boot observation (prohibitory vs straight-through, end state, and whether Apple-menu Restart or the power button was used). No prohibitory = Lion SSD Base selection had stuck; prohibitory detour = efi-boot-device still ESD. No Repair, remirror, date fix, or destination selection.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -189,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: all software restart paths blocked (pane halted, Apple menu fails) - cause unknown, exact symptom unquoted. COLDBOOT1 released (power-button cold boot, cord stays in to protect the clock). SDBOOT1 stands: picker closed, ESD boot.efi-phase failure confirmed. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1/SDBOOT1 photos stand.",
+  "status": "2026-09-11: restart blockage identified as hung Skype; operator restarted (method unreported). Awaiting boot observation to separate bless-stuck from bless-failed. SDBOOT1 stands: picker closed, ESD boot.efi-phase failure confirmed. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1/SDBOOT1 photos stand.",
   "relay": {
     "page": "lion.html",
     "files": [

@@ -40,6 +40,8 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - RELEASED 2026-09-11 (session 01a09141): **RESTART1** — Apple menu > Restart (manual, bypasses the pane), report prohibitory vs straight-through + end state + exact wording of any notification. No prohibitory = selection had stuck; prohibitory detour = selection did not stick. Either way ends at SL (fallthrough proven 3×).
 - RECEIVED 2026-09-11: **RESTART1 failed** — operator verbatim: "cant restart whatsoever". Both software restart paths blocked (pane halted + Apple-menu Restart fails); exact Apple-menu symptom unquoted.
 - RELEASED 2026-09-11 (session 01a09141): **COLDBOOT1** — save/close apps, hold power to force off, cord stays in (dead CR2032: AC preserves the clock), wait 10 s, power on, report prohibitory vs straight-through + end state. Hardware path, unblockable by software.
+- RECEIVED 2026-09-11: restart blockage IDENTIFIED — operator verbatim: "skype hung up, restarted now". A hung Skype canceled logout (plausibly also the pane halted notice). Restart executed; method (Apple menu vs power button) unreported.
+- HOLDING 2026-09-11 (session 01a09141): no new physical action — owed receipt is the boot observation (prohibitory vs straight-through, end state, restart path used). Routes bless-stuck (FORENSIC1 next) vs bless-failed (re-bless forensics next).
 
 ## Live links (Arctic Fox)
 
