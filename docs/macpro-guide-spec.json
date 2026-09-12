@@ -1,6 +1,6 @@
 {
   "schema": "mac-guide-spec.v1",
-  "version": "v6d-gpu-horizontal-fix-2026-09-12",
+  "version": "v6e-gpu-blower-faces-viewer-2026-09-12",
   "updated": "2026-09-12",
   "machine": "Mac Pro 3,1 Early 2008 (A1186 family, EMC 2180, MacPro3,1)",
   "refRegistry": "docs/macpro-guide-refs.json",
@@ -142,7 +142,7 @@
       "w": 46,
       "h": 13,
       "depth": "5-20",
-      "draw": "EVGA GTX 285 Mac Edition double-wide blower card, LONG AXIS HORIZONTAL LEFT-TO-RIGHT, length ~4x height, thickness double-slot occupying two PCI openings, gold PCIe x16 edge along entire BOTTOM edge inserted straight down into a single horizontal black PCI slot rail below, metal I/O bracket at RIGHT/REAR end FLUSH against rear frame rail with TWO stacked DVI-I rectangles plus screw tab and small regulatory label strip, square-framed CIRCULAR TURBINE FAN at LEFT/INBOARD end on the TOP face (fan circle visible from above, not facing viewer), smooth shroud with EVGA and GTX 285 markings between fan and bracket, TWO side-by-side 6-pin sockets recessed in the FAN-END CAP at left/inboard end (never at bracket end, never PSU-fed), factory BOOSTER CABLE (two black leads laced) originates at logic board aux connectors behind card and routes to those fan-end sockets, dangles loose as loop toward memory cage when unplugged; card sits HORIZONTALLY PARALLEL TO THE HDD ROW, ABOVE the RAM cage and BELOW the HDD row in upright layout, with THREE additional empty horizontal PCI slot rails visible behind/beside it toward rear; NEVER vertical, NEVER on a riser cable, NEVER with fan facing viewer, NEVER with backplate flat to memory cage as a vertical wall, NEVER with bracket at front/left, NEVER with fan closer to inside case facing up as a lid",
+      "draw": "EVGA GTX 285 Mac Edition double-wide blower card UPRIGHT with PCIe gold edge BOTTOM inserted straight down into a single horizontal black PCI slot rail below, card stands with BLOWER SIDE FACING VIEWER / open side RIGHT (smooth shroud with EVGA and GTX 285 markings and square-framed CIRCULAR TURBINE FAN visible from open side), BACKPLATE FACES AWAY toward logic board interior (not viewer), metal I/O bracket at RIGHT/REAR end FLUSH against rear frame rail with TWO stacked DVI-I rectangles plus screw tab and small regulatory label strip, circular turbine FAN at LEFT/FRONT end (front of case side, left side of frame) on the blower face, TWO side-by-side 6-pin sockets recessed in the FAN-END CAP at front/left end (never at bracket end, never PSU-fed), factory BOOSTER CABLE (two black leads laced) originates at logic board aux connectors behind card and routes to those fan-end sockets at front, dangles loose as loop toward memory cage when unplugged; blower exhaust points toward PSU compartment (up/rear, top-rear), card sits HORIZONTALLY PARALLEL TO THE HDD ROW, ABOVE the RAM cage and BELOW the HDD row in upright layout, with THREE additional empty horizontal PCI slot rails visible behind/beside it toward rear; NEVER vertical, NEVER on a riser cable, NEVER backplate facing viewer, NEVER fan on top as lid, NEVER bracket at front/left",
       "refs": [
         "evga-gtx285-flat",
         "evga-gtx285-angle",
