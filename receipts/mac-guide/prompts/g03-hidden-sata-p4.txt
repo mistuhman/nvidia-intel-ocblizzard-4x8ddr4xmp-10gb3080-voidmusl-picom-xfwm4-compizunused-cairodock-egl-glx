@@ -169,14 +169,14 @@ NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-
 
 CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
 
-SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g03-hidden-sata-p0.svg
+SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g03-hidden-sata-p4.svg
 HARDWARE ANCHORS: fan-assembly-solid, fan-ghost-lift, sata5-sata6-ports, cable-route-50mm, optical-bay-target -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
 RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
 
-PASS-0 CORRECTIONS:
+PASS-4 CORRECTIONS:
 - Black white line art only
 - Ghost transparent fan lifted 40mm
 - Arrow lift and route
 - Accurate port location behind fan under Bay1
 Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
-PASS: 0
+PASS: 4

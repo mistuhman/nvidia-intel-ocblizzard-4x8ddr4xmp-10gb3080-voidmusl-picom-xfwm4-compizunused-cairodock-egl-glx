@@ -1,33 +1,36 @@
-PLATE g03-hidden-sata — STEP 3 — HIDDEN SATA PORTS
-PURPOSE: Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).
-VIEW: orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel accurate
+PLATE g02-poweroff — STEP 2 — POWER OFF SAFETY
+PURPOSE: Safe shutdown, cord IN solid ghost OUT 30mm transparent, clock CR2032 2001, no force screw, GPU 6-pin unplug ghost, UPS off, uniform sidepanel.
+VIEW: orthographic rear view Mac Pro 3,1 plus side view accurate to photo-1 black and white line art Helvetica uniform sidepanel
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
-    SHORT LABEL (only text allowed in image): STEP 3
-    MEANING (visual, not text): Uniform sidepanel step3.
-- fan-in [panel] at x=24 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN IN
-    MEANING (visual, not text): Fan assembly module solid in place over logic board covering hidden SATA ports 2 screws. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- fan-ghost [panel] at x=44 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN OUT
-    MEANING (visual, not text): Ghost transparent dashed 40% fan module lifted 40mm up arrow lift up output state showing ports underneath. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- sata-ports [panel] at x=24 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): SATA5 SATA6
-    MEANING (visual, not text): Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location labelled SATA5 SATA6 black line art connector detail. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- cable-route [cable] at x=46 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): ROUTE 50MM
-    MEANING (visual, not text): SATA data cable solid from port along chassis edge to lower optical bay 50mm service loop zero tension arrow route ghost before routing. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- optical-target [bay] at x=24 y=54 w=20 h=18
-    SHORT LABEL (only text allowed in image): OPTICAL BAY
-    MEANING (visual, not text): Lower optical bay empty target for SSD metal cover PATA Molex power accurate as photo-1 top optical. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
+    SHORT LABEL (only text allowed in image): STEP 2
+    MEANING (visual, not text): Uniform sidepanel step2 same position as step1.
+- power-in [panel] at x=24 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): POWER IN
+    MEANING (visual, not text): Power cord IN solid black line plugged into rear IEC socket input state solid.
+- power-ghost [cable] at x=44 y=8 w=20 h=20
+    SHORT LABEL (only text allowed in image): POWER OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% power cord partially out 30mm with arrow pull out output state LEGO style.
+- clock [panel] at x=24 y=32 w=20 h=20
+    SHORT LABEL (only text allowed in image): CR2032 2001
+    MEANING (visual, not text): CR2032 coin battery bottom left board clock resets to 2001 on power loss icon clock arrow to 2001 Helvetica.
+- screw [panel] at x=46 y=32 w=20 h=20
+    SHORT LABEL (only text allowed in image): NO FORCE
+    MEANING (visual, not text): Lower PCI bracket screw close-up captive preload turns but stays ghost transparent showing screw not rising no force cross icon.
+- gpu-power [cable] at x=24 y=56 w=20 h=20
+    SHORT LABEL (only text allowed in image): GPU 6-PIN
+    MEANING (visual, not text): GTX 285 two 6-pin power leads input solid connected then ghost transparent unplugged dangling as in photo-1 arrow unplug accurate.
+- ups [panel] at x=46 y=56 w=20 h=20
+    SHORT LABEL (only text allowed in image): UPS OFF
+    MEANING (visual, not text): CyberPower 1500VA UPS front panel power button off black and white line art accurate.
 - sidepanel [panel] at x=2 y=14 w=18 h=76
-    SHORT LABEL (only text allowed in image): HIDDEN SATA
-    MEANING (visual, not text): Uniform sidepanel wording: 1 Remove 2 screws fan module IN solid, 2 Lift ghost OUT 40mm arrow shows ports, 3 Identify SATA5 SATA6 behind under Bay1, 4 Route 9-18in cable to optical lower bay 50mm loop. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).
+    SHORT LABEL (only text allowed in image): SAFETY STEPS
+    MEANING (visual, not text): Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep.
 - footer [footer] at x=2 y=92 w=96 h=5
-    SHORT LABEL (only text allowed in image): STEP3 SATA
-    MEANING (visual, not text): Footer step3 hidden ports free 4 bays.
+    SHORT LABEL (only text allowed in image): STEP2 SAFETY
+    MEANING (visual, not text): Footer step2 safety zero power.
 
 STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
 # Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
@@ -165,18 +168,16 @@ no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-count
 no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill
 no-gray-fill no-shading no-gradient no-japanese-text
 
-NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text, no-coordinate-text, no-style-spec-text.
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text.
 
-CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
-
-SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g03-hidden-sata-p0.svg
-HARDWARE ANCHORS: fan-assembly-solid, fan-ghost-lift, sata5-sata6-ports, cable-route-50mm, optical-bay-target -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
+SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g02-poweroff-p4.svg
+HARDWARE ANCHORS: iec-socket-rear, power-cord-pull, cr2032-lower-left, captive-screw-lower-pci, gpu-cables-unplugged -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
 RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
 
-PASS-0 CORRECTIONS:
+PASS-4 CORRECTIONS:
 - Black white line art only
-- Ghost transparent fan lifted 40mm
-- Arrow lift and route
-- Accurate port location behind fan under Bay1
+- Input solid output ghost 40% dashed
+- Helvetica
+- Uniform sidepanel same camera
 Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
-PASS: 0
+PASS: 4

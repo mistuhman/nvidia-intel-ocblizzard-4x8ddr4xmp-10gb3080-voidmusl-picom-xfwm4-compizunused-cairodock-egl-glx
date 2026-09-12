@@ -1,33 +1,36 @@
-PLATE g03-hidden-sata — STEP 3 — HIDDEN SATA PORTS
-PURPOSE: Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).
-VIEW: orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel accurate
+PLATE g05-hdd-install — STEP 5 — INSTALL 4x 1TB HDD
+PURPOSE: Install four WD Green 1TB into sleds Bay1-4 accurate placement Bay1 bottom Bay4 top upright sled slide front to rear ghost 20mm out to fully seated. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).
+VIEW: orthographic front view drive cage 4 bays vertical Bay1 bottom Bay4 top accurate to photo-1 black and white line art
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
-    SHORT LABEL (only text allowed in image): STEP 3
-    MEANING (visual, not text): Uniform sidepanel step3.
-- fan-in [panel] at x=24 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN IN
-    MEANING (visual, not text): Fan assembly module solid in place over logic board covering hidden SATA ports 2 screws. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- fan-ghost [panel] at x=44 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN OUT
-    MEANING (visual, not text): Ghost transparent dashed 40% fan module lifted 40mm up arrow lift up output state showing ports underneath. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- sata-ports [panel] at x=24 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): SATA5 SATA6
-    MEANING (visual, not text): Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location labelled SATA5 SATA6 black line art connector detail. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- cable-route [cable] at x=46 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): ROUTE 50MM
-    MEANING (visual, not text): SATA data cable solid from port along chassis edge to lower optical bay 50mm service loop zero tension arrow route ghost before routing. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- optical-target [bay] at x=24 y=54 w=20 h=18
-    SHORT LABEL (only text allowed in image): OPTICAL BAY
-    MEANING (visual, not text): Lower optical bay empty target for SSD metal cover PATA Molex power accurate as photo-1 top optical. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
+    SHORT LABEL (only text allowed in image): STEP 5
+    MEANING (visual, not text): Uniform sidepanel step5.
+- sled-detail [panel] at x=24 y=8 w=16 h=12
+    SHORT LABEL (only text allowed in image): SLED M3x5
+    MEANING (visual, not text): Individual sled accurate as photo-1 with handle lever front captive thumbscrew 4x M3x5 side screws PCB down flat burr-free plate bare steel spring tabs bent locating lip accurate.
+- bay1-in [bay] at x=42 y=8 w=16 h=12
+    SHORT LABEL (only text allowed in image): BAY1 EMPTY
+    MEANING (visual, not text): Bay1 bottom empty input solid silver blank with screw as in photo-1.
+- bay1-out [hdd] at x=60 y=8 w=16 h=12
+    SHORT LABEL (only text allowed in image): BAY1 1TB
+    MEANING (visual, not text): Bay1 bottom output solid with WD Green 1TB on sled fully seated connector rear ghost transparent partially out 20mm arrow PUSH IN front to rear.
+- bay2-4 [hdd] at x=24 y=26 w=52 h=32
+    SHORT LABEL (only text allowed in image): BAY2 BAY3 BAY4
+    MEANING (visual, not text): Bay2 Bay3 Bay4 similarly installed each WD Green 1TB accurate label white green sleds slide horizontally front to rear input empty ghost output solid seated arrows PUSH IN Bay4 top red sticker removed.
+- intellipark [panel] at x=24 y=62 w=18 h=14
+    SHORT LABEL (only text allowed in image): INTELLIPARK 8S
+    MEANING (visual, not text): Warning panel black border WD Green parks heads after 8s idle may drop RAID fix wdidle3 idle3-tools DOS boot.
+- raid-limit [panel] at x=44 y=62 w=18 h=14
+    SHORT LABEL (only text allowed in image): NO RAID5
+    MEANING (visual, not text): AppleRAID stripe mirror concat only no RAID5 RAID5 needs HBA plus MaxConnect breakout.
 - sidepanel [panel] at x=2 y=14 w=18 h=76
-    SHORT LABEL (only text allowed in image): HIDDEN SATA
-    MEANING (visual, not text): Uniform sidepanel wording: 1 Remove 2 screws fan module IN solid, 2 Lift ghost OUT 40mm arrow shows ports, 3 Identify SATA5 SATA6 behind under Bay1, 4 Route 9-18in cable to optical lower bay 50mm loop. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).
+    SHORT LABEL (only text allowed in image): HDD INSTALL
+    MEANING (visual, not text): Uniform sidepanel wording: 1 Sled prep M3x5 4 screws PCB down, 2 Bay1 bottom first ghost 20mm OUT to fully seated IN arrow PUSH, 3 Bay2 Bay3 Bay4 same ghost slide, 4 IntelliPark 8s warning, 5 AppleRAID no RAID5. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).
 - footer [footer] at x=2 y=92 w=96 h=5
-    SHORT LABEL (only text allowed in image): STEP3 SATA
-    MEANING (visual, not text): Footer step3 hidden ports free 4 bays.
+    SHORT LABEL (only text allowed in image): STEP5 4x1TB
+    MEANING (visual, not text): Footer step5 4x1TB bays accurate Bay1 bottom Bay4 top.
 
 STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
 # Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
@@ -169,14 +172,14 @@ NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-
 
 CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
 
-SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g03-hidden-sata-p0.svg
-HARDWARE ANCHORS: fan-assembly-solid, fan-ghost-lift, sata5-sata6-ports, cable-route-50mm, optical-bay-target -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
+SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g05-hdd-install-p4.svg
+HARDWARE ANCHORS: sled-chassis-bays, drive-install-pull, screw-right-end -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
 RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
 
-PASS-0 CORRECTIONS:
-- Black white line art only
-- Ghost transparent fan lifted 40mm
-- Arrow lift and route
-- Accurate port location behind fan under Bay1
+PASS-4 CORRECTIONS:
+- Black white line art only accurate HDD placement
+- Ghost transparent partially out 20mm to fully seated PUSH IN
+- Helvetica uniform sidepanel
+- Sleds accurate with handles spring tabs
 Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
-PASS: 0
+PASS: 4

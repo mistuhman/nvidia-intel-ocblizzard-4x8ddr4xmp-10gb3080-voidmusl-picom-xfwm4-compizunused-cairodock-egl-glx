@@ -1,33 +1,39 @@
-PLATE g03-hidden-sata — STEP 3 — HIDDEN SATA PORTS
-PURPOSE: Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).
-VIEW: orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel accurate
+PLATE g08-boot-verify — STEP 8 — BOOT LION VERIFY
+PURPOSE: Boot Lion SSD in optical, fix clock 2001 sudo date, lock 1080p not 1440p ban, About GPU, Disk Utility 4x HDD OK, OMEN board accurate to photo-2. [startup-disk-bless]
+VIEW: orthographic desktop verification windows plus OMEN board accurate to photo-2 black and white line art uniform sidepanel
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
-    SHORT LABEL (only text allowed in image): STEP 3
-    MEANING (visual, not text): Uniform sidepanel step3.
-- fan-in [panel] at x=24 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN IN
-    MEANING (visual, not text): Fan assembly module solid in place over logic board covering hidden SATA ports 2 screws. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- fan-ghost [panel] at x=44 y=8 w=20 h=20
-    SHORT LABEL (only text allowed in image): FAN OUT
-    MEANING (visual, not text): Ghost transparent dashed 40% fan module lifted 40mm up arrow lift up output state showing ports underneath. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- sata-ports [panel] at x=24 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): SATA5 SATA6
-    MEANING (visual, not text): Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location labelled SATA5 SATA6 black line art connector detail. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- cable-route [cable] at x=46 y=32 w=20 h=18
-    SHORT LABEL (only text allowed in image): ROUTE 50MM
-    MEANING (visual, not text): SATA data cable solid from port along chassis edge to lower optical bay 50mm service loop zero tension arrow route ghost before routing. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
-- optical-target [bay] at x=24 y=54 w=20 h=18
-    SHORT LABEL (only text allowed in image): OPTICAL BAY
-    MEANING (visual, not text): Lower optical bay empty target for SSD metal cover PATA Molex power accurate as photo-1 top optical. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]
+    SHORT LABEL (only text allowed in image): STEP 8
+    MEANING (visual, not text): Uniform sidepanel step8. [startup-disk-bless]
+- boot [panel] at x=24 y=8 w=18 h=14
+    SHORT LABEL (only text allowed in image): BOOT LION
+    MEANING (visual, not text): Power on Option if needed boot Lion SSD Base now in optical bay login verified solid ghost showing boot chime. [startup-disk-bless]
+- clock [panel] at x=42 y=8 w=18 h=14
+    SHORT LABEL (only text allowed in image): CLOCK FIX
+    MEANING (visual, not text): Clock shows 2001 due CR2032 dead Terminal sudo date MMDDhhmmYY fix not 2015 input 2001 ghost output correct date solid. [startup-disk-bless]
+- display [panel] at x=62 y=8 w=18 h=14
+    SHORT LABEL (only text allowed in image): 1080P LOCK
+    MEANING (visual, not text): Displays pref Scaled 1080p selected solid 1440p crossed out ghost blind warning no auto-revert. [startup-disk-bless]
+- about [panel] at x=24 y=26 w=18 h=14
+    SHORT LABEL (only text allowed in image): ABOUT GPU
+    MEANING (visual, not text): About This Mac window Early 2008 Processor Memory Graphics ATI Radeon or GTX 285 Software Mac OS X Lion 10.7.5 solid. [startup-disk-bless]
+- drives [panel] at x=42 y=26 w=18 h=14
+    SHORT LABEL (only text allowed in image): 4x HDD OK
+    MEANING (visual, not text): Disk Utility shows 4x Green Bay1-4 plus Lion SSD in optical all online verified checkmarks Bay1 bottom Bay4 top accurate. [startup-disk-bless]
+- omen-board-accurate [panel] at x=62 y=26 w=18 h=20
+    SHORT LABEL (only text allowed in image): OMEN BOARD
+    MEANING (visual, not text): OMEN ATX board accurate to photo-2: board mounted in case Micro ATX LGA1700 socket center EMPTY paste residue gray ILM lever metal frame, 4 DIMM slots right of socket black vertical, NVMe M.2 blue label below CPU, PCIe x16 silver below that, rear I/O left honeycomb vent pattern 5 PCIe slot covers, CR2032 coin bottom left near PCIe slots, OMEN AIO pump block black OMEN logo dangling front bottom on case floor hoses black thick 2x120 fans vertical rad mount right side black as in photo-2, front panel headers bottom, 24-pin ATX right edge middle 8-pin CPU top left, input board empty ghost output installed solid. [startup-disk-bless]
+- next [panel] at x=24 y=44 w=18 h=12
+    SHORT LABEL (only text allowed in image): NEXT RAID
+    MEANING (visual, not text): Next RAID format wipe target must be named Bay1 NEVER erase uniform sidepanel next action. [startup-disk-bless]
 - sidepanel [panel] at x=2 y=14 w=18 h=76
-    SHORT LABEL (only text allowed in image): HIDDEN SATA
-    MEANING (visual, not text): Uniform sidepanel wording: 1 Remove 2 screws fan module IN solid, 2 Lift ghost OUT 40mm arrow shows ports, 3 Identify SATA5 SATA6 behind under Bay1, 4 Route 9-18in cable to optical lower bay 50mm loop. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).
+    SHORT LABEL (only text allowed in image): BOOT VERIFY
+    MEANING (visual, not text): Uniform sidepanel wording: 1 Boot Lion SSD in optical IN solid ghost boot chime, 2 Clock 2001 ghost to correct date solid arrow fix, 3 Lock 1080p solid 1440p ghost crossed ban, 4 About GPU chipset solid, 5 Disk Utility 4xHDD OK plus SSD solid, 6 OMEN board accurate to photo-2 empty socket paste residue NVMe blue pump dangling bottom 2x120 fans vertical right, 7 Next RAID needs wipe target named. [startup-disk-bless]
 - footer [footer] at x=2 y=92 w=96 h=5
-    SHORT LABEL (only text allowed in image): STEP3 SATA
-    MEANING (visual, not text): Footer step3 hidden ports free 4 bays.
+    SHORT LABEL (only text allowed in image): STEP8 LION BOOTS
+    MEANING (visual, not text): Footer step8 Lion boots 4 bays free display 1080p clock fixed. [startup-disk-bless]
 
 STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
 # Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
@@ -169,14 +175,15 @@ NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-
 
 CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
 
-SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g03-hidden-sata-p0.svg
-HARDWARE ANCHORS: fan-assembly-solid, fan-ghost-lift, sata5-sata6-ports, cable-route-50mm, optical-bay-target -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
+SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g08-boot-verify-p4.svg
+HARDWARE ANCHORS: about-mac-screen, startup-disk-bless -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
 RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
 
-PASS-0 CORRECTIONS:
-- Black white line art only
-- Ghost transparent fan lifted 40mm
-- Arrow lift and route
-- Accurate port location behind fan under Bay1
+PASS-4 CORRECTIONS:
+- Black white line art only Helvetica no color
+- Ghost 2001 to correct date
+- Ghost 1440p crossed to 1080p solid
+- OMEN board accurate to photo-2 empty socket paste residue blue NVMe pump dangling bottom 2x120 fans vertical right
+- Uniform sidepanel same angle manual compactness
 Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
-PASS: 0
+PASS: 4

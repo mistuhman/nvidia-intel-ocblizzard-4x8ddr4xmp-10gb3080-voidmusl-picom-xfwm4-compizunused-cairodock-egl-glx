@@ -85,6 +85,8 @@ const NEGATIVE_CONSTRAINTS = [
   'no-invented-port-counts', 'no-raid-5-in-disk-utility', 'no-apfs-on-10-7',
   'no-paragraph-in-image', 'no-text-walls', 'no-color-fill', 'no-gray-fill', 'no-shading',
   'no-japanese-text',
+  'no-coordinate-text',
+  'no-style-spec-text',
 ];
 
 // HARDWARE_ANCHORS: canonical Mac Pro 3,1 geometry that EVERY schematic must place.
@@ -384,6 +386,8 @@ function emitPrompt(scene: Scene, style: string, plateId: string, pass: number):
   lines.push(style.trim());
   lines.push('');
   lines.push(`NEGATIVE CONSTRAINTS: ${NEGATIVE_CONSTRAINTS.join(', ')}.`);
+  lines.push('');
+  lines.push('CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.');
   // schematic anchoring (fundamental: trace the schematic, do not hallucinate)
   const schematicFile = `${SCHEMATICDIR}/${plateId}-p${pass}.svg`;
   const anchor = HARDWARE_ANCHORS[plateId];

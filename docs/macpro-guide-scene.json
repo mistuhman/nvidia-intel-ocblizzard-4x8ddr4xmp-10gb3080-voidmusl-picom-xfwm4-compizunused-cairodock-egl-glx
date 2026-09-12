@@ -22,7 +22,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, black and white line art Helvetica uniform sidepanel left manual compactness",
+      "view": "orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, uniform sidepanel left, no perspective, black and white line art Helvetica manual compactness",
       "nodes": [
         {
           "id": "step",
@@ -45,7 +45,7 @@
           "w": 48,
           "h": 86,
           "text": "MAC PRO 3,1",
-          "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear. Anchors: logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu (board end in to GPU end out), optical-left-cutouts + optical-right-plain, hdd-bay-row-x4 + hdd-screw-right-end + red-outline-Bay4, memory-shroud-lower-left + pcb-windows-x2-lower-right + honeycomb-right-edge, wd-green-desk-left + timecapsule-desk-right, psu-top + captive-screw.",
+          "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear. Anchors: logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu (board end in to GPU end out), optical-left-cutouts + optical-right-plain, hdd-bay-row-x4 + hdd-screw-right-end + red-outline-Bay4, memory-shroud-lower-left + pcb-windows-x2-lower-right + honeycomb-right-edge, wd-green-desk-left + timecapsule-desk-right, psu-top + captive-screw. CORRECTED: fans = single blower module top edge behind Bay1 (not scattered), lower bay = horizontal 4-sled row with right-end screws and weathered Bay1, memory cage shroud solid lower-left, PCB windows lower-right two outline-only with caps per photo (no invented GPU RAM), honeycomb right edge, PSU top.",
           "facts": [
             "G-01",
             "G-02",
@@ -155,7 +155,9 @@
         "PASS-5 COLOR FIX: absolutely zero color ink anywhere - sticker is a small EMPTY SQUARE OUTLINE (never fill it, never write the color name), PCBs and capacitors are black outlines on white",
         "Ghost sled slides out the FRONT face of the bay row (toward viewer, same edge as the blank plates), 30mm, dashed 40%, arrow PULL 30MM - not out the rear",
         "Keep pass-4 composition: optical covers (left with two cutouts), horizontal blank row with weathered leftmost, GTX285 horizontal center-right with two dangling 6-pin loops, memory shroud lower-left, cap windows lower-right outlines only, honeycomb right edge, WD Green desk left, Time Capsule desk right",
-        "English only, Helvetica caps, uniform sidepanel, footer PLATE G01 / MAC PRO 3,1 EARLY 2008 / PASS 5"
+        "English only, Helvetica caps, uniform sidepanel, footer PLATE G01 / MAC PRO 3,1 EARLY 2008 / PASS 5",
+        "PASS-8 FIXES per operator critique: remove invented GPU RAM - PCB windows are drive backplane + memory riser PCBs outline only, no VRAM hallucination; correct fans to single module top behind Bay1 covering logic board; correct lower bay/ram to photo positions (memory shroud lower-left, honeycomb right, sleds horizontal Bay1 left -> Bay4 right); GPU orientation keeps ok (horizontal double-wide center-right). Every trait filtered every image.",
+        "Keep schematic anchors tracing, PULL 30MM front ghost, Bay4 empty square outline only, board end in -> GPU end out, helmet consistent orthographic side view like g01 main comprehensive view."
       ]
     },
     {
@@ -166,7 +168,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic rear view Mac Pro 3,1 plus side view accurate to photo-1 black and white line art Helvetica uniform sidepanel",
+      "view": "orthographic side view Mac Pro 3,1 uniform sidepanel left, same camera as g01-overview - main comprehensive view; inset close-up tertiary perspective only for IEC socket and captive screw detail (small inset box), not primary",
       "nodes": [
         {
           "id": "step",
@@ -267,7 +269,7 @@
           "w": 18,
           "h": 76,
           "text": "SAFETY STEPS",
-          "detail": "Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep.",
+          "detail": "Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep. Perspective rule: main plate orthographic side view consistent (x=2 y=14 w=18 h=76); perspective/isometric use only inside close-up inset boxes for tertiary points of reference.",
           "facts": [
             "G-09",
             "G-10",
@@ -292,7 +294,9 @@
         "Black white line art only",
         "Input solid output ghost 40% dashed",
         "Helvetica",
-        "Uniform sidepanel same camera"
+        "Uniform sidepanel same camera",
+        "PASS-5 FIXES per operator critique: main comprehensive view orthographic side view same camera as g01 (no isometric primary); perspective only in small inset close-ups for IEC socket / captive screw tertiary detail. Every trait filtered every image.",
+        "Keep safety elements: POWER IN solid -> POWER OUT ghost 30mm, CR2032 2001 clock, NO FORCE captive screw cross, GPU 2x6-pin board->GPU loop, IEC socket rear, honeycomb, uniform sidepanel y=14 h=76."
       ]
     },
     {

@@ -200,9 +200,176 @@
           "schematicHash": "b06352c945c7803fc604e804fb86a52f8585fe2ab28cadf569f6941c7128b5fa",
           "promptFile": "receipts/mac-guide/prompts/g01-overview-p6.txt",
           "promptHash": "920c8f10f76ad2fb01db267b18e6c6a08f8c57909f6be840100f0b625cb42786"
+        },
+        {
+          "pass": 7,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p7.txt",
+          "promptHash": "5bd2ce9d9111ea4ba79472999f4419805301ff323169aefc4f0f3cd801af529e",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p7.svg",
+          "schematicHash": "cc580c43e3c8b503a683d380db6baef9b403489e0058c6a2b26ef1b4db3cabb7",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p7.png",
+              "sha256": "ab52682836a598e28822794eaec97b7d3c4b4a17aefbd6a565dde44dafbb49a1",
+              "bytes": 831995,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-G-002",
+              "severity": "WARN",
+              "node": "chassis-accurate",
+              "note": "label DOUBLE-WIDE BLACK BLOWER GTX285 GPU is 5w 33c > budget 4w/24c - shorten to GTX285 GPU or BLOWER GPU"
+            },
+            {
+              "code": "G-G-003",
+              "severity": "WARN",
+              "node": "desk-hdd-photo",
+              "note": "label WESTERN DIGITAL GREEN HDD 25c >24c - shorten to WD GREEN"
+            },
+            {
+              "code": "G-RN-001",
+              "severity": "WARN",
+              "note": "aspect 1.833 !=1.500 renderer returned 1408x768 not 1536x1024"
+            },
+            {
+              "code": "G-SC-003",
+              "severity": "WARN",
+              "note": "intuitive flow: desk props WD GREEN + TIMECAPSULE merged with ghost sled - need clear ASSEMBLED solid chassis vs DISASSEMBLED desk props separate, and sidepanel uniform left x=2 y=14 w=18 h=76 missing"
+            },
+            {
+              "code": "G-HW-001",
+              "severity": "INFO",
+              "note": "trial: ghost PULL 30MM correctly shows FRONT pull dashed on right, cable board->GPU loop correct"
+            },
+            {
+              "code": "G-HW-002",
+              "severity": "ERROR",
+              "note": "operator critique: GPU RAM hallucinated nonsense - PCB windows inventing caps not per G-14/G-15. Fans misplaced - heatsink vs fan assembly misaligned. Lower bay/ram misplaced - memory shroud vs honeycomb vs sled positions off vs photo-1. GPU orientation ok keeps."
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "ERROR",
+              "note": "EACH image must filter ALL traits every time - failed single-image spot check"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 223.59,
+            "stddev": 74.71,
+            "pctDark": 0.0832,
+            "pctBright": 0.8413,
+            "edgeRatio": 0.1256,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 8,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p8.txt",
+          "promptHash": "459e82f3a81e7e88452a8657cf2ad747ff74e7fd0ce03664380e419fc0c04b09",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p8.svg",
+          "schematicHash": "50b400dad6277dd436d6206074557e2de0c7f61f23003b996ff6dfd3f7cfedc0",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p8.png",
+              "sha256": "5db2bc21fa8d2b69ec4d6dba2544ca66af79a937ddc132ae1954a82eb5b90d27",
+              "bytes": 713128,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-LIT-001",
+              "severity": "ERROR",
+              "note": "literalized sidepanel coordinates x=2 y=14 w=18 h=76 as visible text - lessons: never include structural prose in MEANING that can be copied"
+            },
+            {
+              "code": "G-LIT-002",
+              "severity": "WARN",
+              "note": "literalized ghost style spec 40% 4-2 0.5px as visible text on right edge"
+            },
+            {
+              "code": "G-HW-003",
+              "severity": "WARN",
+              "note": "finned heatsink still small not large horizontal behind GPU covering dual Xeon sockets - needs width 58% at gpuY behind GPU"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "WARN",
+              "note": "every-trait filter not applied pre-render - style spec leaked into labels"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 234.49,
+            "stddev": 61.27,
+            "pctDark": 0.0506,
+            "pctBright": 0.8991,
+            "edgeRatio": 0.1025,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 9,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p9.txt",
+          "promptHash": "f5c2e9f8a5070d9940e9c6f64dfe1c52a63f01467223a733578c6f8ca731b7f0",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p9.svg",
+          "schematicHash": "b2fd02f5c6b86ec1633db922f5d7a07d23b724c81b6e505d167a21e0a41a6d54",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p9.png",
+              "sha256": "4b5f0e186809f327fbd462812ad6c540071223d25474d1b279cfa5c365ad02eb",
+              "bytes": 753411,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-HW-004",
+              "severity": "WARN",
+              "note": "BAY2 ghost dashed incorrectly - all 4 HDD bays should be solid blanks, Bay4 outline only, Bay1 weathered, no bay ghost unless PULL action"
+            },
+            {
+              "code": "G-CABLE-001",
+              "severity": "WARN",
+              "note": "cables duplicated to 4 wires - should be exactly TWO 6-pin cables board->GPU loop"
+            },
+            {
+              "code": "G-SIDE-001",
+              "severity": "WARN",
+              "note": "left sidepanel not uniform - scattered OPTICAL COVERS label vs required uniform sidepanel x=2 y14 w=18 h76 with compact steps"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "every-trait filter partially applied - heatsink and PCB fixed, ghost overuse remains"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 229.28,
+            "stddev": 69.25,
+            "pctDark": 0.0739,
+            "pctBright": 0.8756,
+            "edgeRatio": 0.1028,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 7
+      "nextPass": 10
     },
     "g02-poweroff": {
       "passes": [
@@ -283,9 +450,94 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g02-poweroff-p4.txt",
+          "promptHash": "ebe98b96f2346dd4333c83553c0cf58e946a661b7fc433b7c38c51331327544c",
+          "schematicFile": "receipts/mac-guide/schematics/g02-poweroff-p4.svg",
+          "schematicHash": "94249471751aa10a91410a60d3757d0b6a94e34b2f8c3f02849c3ec678b2aba4",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g02-poweroff-p4.png",
+              "sha256": "e8e411b95544687e3dc0a378072a22c8f87a0bd81687cf47d29dfaa12451ae27",
+              "bytes": 777984,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-V-001",
+              "severity": "ERROR",
+              "note": "operator critique: perspective change useless. Main comprehensive view must stay orthographic side view uniform sidepanel like g01; perspective/isometric only for close-up tertiary inset for clarity, not primary plate view."
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "ERROR",
+              "note": "every-trait every-image filter required - perspective violated manual compactness consistency"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 235.87,
+            "stddev": 59.23,
+            "pctDark": 0.0463,
+            "pctBright": 0.9038,
+            "edgeRatio": 0.1379,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 5,
+          "promptFile": "receipts/mac-guide/prompts/g02-poweroff-p5.txt",
+          "promptHash": "cf11bc2e33e3eeebd61c3641e4dc5bca4e863140cc158d67e8d786e461196650",
+          "schematicFile": "receipts/mac-guide/schematics/g02-poweroff-p5.svg",
+          "schematicHash": "22fabdaa7f48e9aa685c87c085d1262f516a239096d1410399eef394126c7f0f",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g02-poweroff-p5.png",
+              "sha256": "735432532fb530ab488a9ba1407367e2a60c3ee94a0f26fbbadb750f2f0effd5",
+              "bytes": 869116,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-V-002",
+              "severity": "INFO",
+              "note": "perspective fix PASS: main orthographic side view consistent, perspective only in tertiary insets PRONGS and THREAD"
+            },
+            {
+              "code": "G-SIDE-002",
+              "severity": "WARN",
+              "note": "left side not uniform boxed sidepanel x=2 y=14 w=18 h=76 - shows scattered icons not boxed panel"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "every-trait every-image filter applied - perspective, cable, captive, CR2032, ghost all filtered"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 233.34,
+            "stddev": 61.25,
+            "pctDark": 0.0485,
+            "pctBright": 0.8871,
+            "edgeRatio": 0.1472,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 6
     },
     "g03-hidden-sata": {
       "passes": [
@@ -366,9 +618,49 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g03-hidden-sata-p4.txt",
+          "promptHash": "765a7b3bd9a64a50f50961a42e97e4f3dc7af09ae6938d4e623640dbfc63a169",
+          "schematicFile": "receipts/mac-guide/schematics/g03-hidden-sata-p4.svg",
+          "schematicHash": "92ab00837673fdfe92bb9808cf7854647a2a013826d934656a2e0ce97bfcaae5",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g03-hidden-sata-p4.png",
+              "sha256": "af5d31020f028eba4dbff1ccfbe63e7c03cb80ead24f61c4382d831909c7862e",
+              "bytes": 1627840,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-SC-003",
+              "severity": "INFO",
+              "note": "intuitive flow PASS assembled vs disassembled same camera LIFT 40mm"
+            },
+            {
+              "code": "G-HW-005",
+              "severity": "WARN",
+              "note": "logic board PCB generic not exact dual Xeon 3,1 but acceptable pending isolated MB photo"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 219.36,
+            "stddev": 64.68,
+            "pctDark": 0.0629,
+            "pctBright": 0.8629,
+            "edgeRatio": 0.1324,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g04-ssd-mount": {
       "passes": [
@@ -449,9 +741,59 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g04-ssd-mount-p4.txt",
+          "promptHash": "f5fa53ad7ec3c09266d4dc24c398a1e0ffb7bd5bf371896664006751009069e8",
+          "schematicFile": "receipts/mac-guide/schematics/g04-ssd-mount-p4.svg",
+          "schematicHash": "72de7ff4cb43627901852e9f23c347a63023cc100ba91e8a0df730ba7036df02",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g04-ssd-mount-p4.png",
+              "sha256": "b432318a0030a62097a73addacb4c6ffd81fbd819c5d906fcbaecb9119339f4e",
+              "bytes": 1867504,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-SHADE-001",
+              "severity": "ERROR",
+              "note": "gray fill shading on heatsinks/bracket/drives violates no-gray-fill no-shading white paper only black lines"
+            },
+            {
+              "code": "G-V-003",
+              "severity": "WARN",
+              "note": "isometric 3/4 primary view violates main orthographic side view - perspective only for inset close-ups"
+            },
+            {
+              "code": "G-LIT-003",
+              "severity": "WARN",
+              "note": "literalized 4w24c budget spec as visible header text"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "intuitive assembled/disassembled pair and cable routing correct per every-trait filter"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 209.11,
+            "stddev": 65.91,
+            "pctDark": 0.0642,
+            "pctBright": 0.8038,
+            "edgeRatio": 0.2171,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g05-hdd-install": {
       "passes": [
@@ -532,9 +874,54 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g05-hdd-install-p4.txt",
+          "promptHash": "b1387b3aadf7c0f4720a05e711415196c06bae0efd729f3a6bb955a161680993",
+          "schematicFile": "receipts/mac-guide/schematics/g05-hdd-install-p4.svg",
+          "schematicHash": "2101ed86d9f3790c9c4be377de578aa28e81e67c2a1ae3a75623136b4f583182",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g05-hdd-install-p4.png",
+              "sha256": "a271f93cbc80a3178a793fdeaa9c51995c9707402f15f53530b1b52ccfe0ffa2",
+              "bytes": 1130152,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-SHADE-002",
+              "severity": "ERROR",
+              "note": "gray fill on logic board/heatsink violates no-gray-fill no-shading - needs white fill outline only"
+            },
+            {
+              "code": "G-V-004",
+              "severity": "WARN",
+              "note": "isometric 3/4 primary view - should be orthographic side view"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "HDD bay sled and freed drives intuitive correct"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 215.3,
+            "stddev": 78.6,
+            "pctDark": 0.0778,
+            "pctBright": 0.793,
+            "edgeRatio": 0.21,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g06-gpu-swap": {
       "passes": [
@@ -615,9 +1002,54 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g06-gpu-swap-p4.txt",
+          "promptHash": "c16834f2c2c199e549ba27ff75cd579bc2ccdd5a20a3bd5d9fba938379b9d436",
+          "schematicFile": "receipts/mac-guide/schematics/g06-gpu-swap-p4.svg",
+          "schematicHash": "29a414f67589cb5918f58589c9c8736cd91f81d8a01b400ef23e79c0e6254435",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g06-gpu-swap-p4.png",
+              "sha256": "bc6da9bcf9d71e96b45c9b70a47dbaf4dd0e20a86cf12c6e8cbbf71b8556bae5",
+              "bytes": 834254,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-PX-006",
+              "severity": "ERROR",
+              "note": "color 0.77% blue fill on AMD card violates no-color empty outline only white fill"
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "intuitive ASSEMBLED/DISASSEMBLED and board->GPU cable direction PASS"
+            },
+            {
+              "code": "G-HW-006",
+              "severity": "WARN",
+              "note": "PCB layout plausible but bays screws not visible need right-end screw dots"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 229.02,
+            "stddev": 67.95,
+            "pctDark": 0.0633,
+            "pctBright": 0.8694,
+            "edgeRatio": 0.1349,
+            "pctColor": 0.0077,
+            "unique": 33
+          },
+          "auditVerdict": "FAIL"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g07-cable-check": {
       "passes": [
@@ -698,9 +1130,44 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g07-cable-check-p4.txt",
+          "promptHash": "ca01611a41be5e3b1dbba5c77d2fd54880f264bb18fecc6715d71a55b2879415",
+          "schematicFile": "receipts/mac-guide/schematics/g07-cable-check-p4.svg",
+          "schematicHash": "a5100a32eaf3dfdab48d7003050894f8a0f5ba56d9396cfab76fb6f7921677ce",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g07-cable-check-p4.png",
+              "sha256": "a997377d911e4957de0a14b621d04f25964e1751ee3ee7c88cefa86a22cbc57b",
+              "bytes": 1496670,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "every-trait filter applied - cable route 50mm, board->GPU loop, honeycomb, HDD bays"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 219.01,
+            "stddev": 68.03,
+            "pctDark": 0.0735,
+            "pctBright": 0.8583,
+            "edgeRatio": 0.1233,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g08-boot-verify": {
       "passes": [
@@ -781,9 +1248,44 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g08-boot-verify-p4.txt",
+          "promptHash": "a61810fda43314067327b4ce55710d20c69aa7c2f9887ae08516c79ada2d41dd",
+          "schematicFile": "receipts/mac-guide/schematics/g08-boot-verify-p4.svg",
+          "schematicHash": "03ea3e1f2016966de977758a3563a8bbd0caf615b92687e1435b46f601e7acab",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g08-boot-verify-p4.png",
+              "sha256": "6fa6f03b28e72a16565b23c78b02e4e862caf2e06c47eb7d790e430fd66f8cda",
+              "bytes": 1779577,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-SC-004",
+              "severity": "INFO",
+              "note": "every-trait filter applied - boot verify About Mac Startup Disk, bays freed, SSD"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 204,
+            "stddev": 66.62,
+            "pctDark": 0.0672,
+            "pctBright": 0.7676,
+            "edgeRatio": 0.1578,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "mockup-toolpanel": {
       "passes": [
