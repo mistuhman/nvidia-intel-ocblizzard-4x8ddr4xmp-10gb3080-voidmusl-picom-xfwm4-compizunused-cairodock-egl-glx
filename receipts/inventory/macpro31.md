@@ -142,3 +142,32 @@ PARTIAL: cards on scene + class receipted; still owed for G0 close: exact Radeon
 1. AMD card model sticker / exact SKU + power connectors (G0 blocker — words work too).
 2. WD Green drive manifest: count + full models + target bays.
 3. Riser/DIMM per-riser breakdown (LOW, non-blocking).
+
+## Entry 2026-09-12f (session 01a097ba) — dual-donor proposal: electrical verdict
+
+Operator words (seq 74): both donors are 1x 6-pin each; the Mac's two 6-pin booster leads are
+available; proposal = run Radeon + 9800 GT together in place of the GTX 285, gated on
+"performance/stats prove something".
+
+Power budget (PCIe CEM spec S4): each x16 slot 75W + its own 6-pin aux 75W = ~150W/card
+envelope on this board (one aux lead per slot, that is why two exist).
+- 9800 GT ~105-125W -> fits 1x 6-pin with margin. OK.
+- Radeon: if HD 4870 (~150W) it sits AT the envelope on a single 6-pin (OEM single-6pin
+  4870s are clocked to fit); if 4850 (~110W) fits with margin. -> SKU still owed (words OK);
+  overload symptom = shutdown/stall under 3D load, metered, revert.
+- Combined ~220-275W vs GTX 285 ~189-230W: +50W worst case on a 980W Apple PSU = trivial.
+- Mechanics: 3,1 has two x16 slots (Apple spec S4); Radeon single-slot + 9800 GT dual-slot
+  = 3 slot covers of 4. Fits.
+
+Stats verdict (honest, pre-bench): Mac Pro EFI runs NO CrossFire/SLI, so two GPUs add ZERO
+gaming FPS. The pair's real wins: more displays + a second OpenCL compute device (10.7
+drives both natively). Single-card gaming: GTX 285 >= Radeon/9800 GT, so replacing it is a
+display-chain upgrade and likely an FPS downgrade. The metered bench (G4 reads + a timed
+source-port/OpenCL run per config) will prove exactly this.
+
+Sequencing (one change per power-on): G1 Radeon alone in SLOT2 + its 6-pin -> G2 digital
+cable -> G3 power-on -> G4 display verify -> G5b SECOND change = add 9800 GT in SLOT1 + its
+6-pin, power-on, confirm both GPUs in About This Mac > Graphics/Displays -> G5c reads.
+Inverse unchanged: GTX 285 + both 6-pins + VGA = proven 1080p state.
+G0 status: power class CLOSED for both donors (1x 6-pin each, words); exact Radeon SKU +
+Mac/PC edition remain the only G0 item (drives the 4870-vs-4850 margin note).

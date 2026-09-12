@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 73,
+  "lastSeq": 76,
   "entries": [
     {
       "seq": 1,
@@ -1489,6 +1489,36 @@
       "kind": "note",
       "text": "2026-09-12e corrections: entry-1 MEDIUM etched-digit read (3,4 left / 1 near red sticker) SUPERSEDED by operator words left-to-right = bay 1-4 (red sticker = bay 4 rightmost); my perception was misread/partial - operator receipts outrank MEDIUM perception reads. 6-pin intent CLOSED as H1 deliberate swap-prep. Claim 2 riser count: operator asserts shown; no legible persisted photo in my records; receipted total 10GB (workflow machine line); per-riser open LOW non-blocking.",
       "sha256": "32dfdca6adfe11a77c0f74368e78ce98392ae91ebc42e5f2a88710bbb725820d"
+    },
+    {
+      "seq": 74,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "both the 9800gt and radeon card only have 6pin connectors, i have two 6pin connectors for the alien so i thought i could run both of those over the gtx 285? if performance/stats prove something",
+      "demands": [
+        "log 1x6pin per donor card",
+        "log two 6pin aux leads available",
+        "evaluate dual-donor-instead-of-GTX285 proposal",
+        "give metered stats verdict"
+      ],
+      "sha256": "5c450d9b93bb0ed6454b3ef19e61781ca5aeadbd642b42ab74153355b78d9d32"
+    },
+    {
+      "seq": 75,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "donorPowerClass",
+      "value": "both donor cards 1x 6-pin each per operator words (2026-09-12 session 01a097ba seq 74); Mac Pro 3,1 aux = two 6-pin booster leads, one per x16 slot = 75W aux per slot + 75W slot = ~150W per-card envelope; proposal on table: GTX 285 out, Radeon + 9800 GT in together (slots 1+2 class), one 6-pin each, conditional on metered stats",
+      "source": "operator words verbatim; docs/amd-swap-wave.md G0",
+      "sha256": "92b833f6670ca8aa036430c9fe6c5de28b3a584b82f785826fa4e4537b640123"
+    },
+    {
+      "seq": 76,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12f dual-donor verdict logged: electrically YES (two x16, one 6-pin per slot aux, per-card 150W envelope; 9800GT fits, Radeon margin depends on SKU 4850-vs-4870); stats honesty: no CrossFire/SLI on Mac EFI = zero FPS gain from pairing, wins are displays + OpenCL device; GTX 285 likely fastest single card of the three; sequence G1 Radeon-alone first then G5b add 9800GT, one change per power-on.",
+      "sha256": "40e2b1d574c485e89c4d6e226589286e4b2c6e1e0227129e33ea36a7663d7db5"
     }
   ],
   "stacks": [
