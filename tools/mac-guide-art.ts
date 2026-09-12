@@ -15,6 +15,8 @@ const FACTS = 'docs/macpro-guide-facts.json';
 const SCENE = 'docs/macpro-guide-scene.json';
 const STYLE = 'docs/macpro-guide-style-bw.md';
 const PROMPTS = 'docs/macpro-storage-prompts.jsonl';
+const REFS = 'docs/macpro-guide-refs.json';
+const SPEC = 'docs/macpro-guide-spec.json';
 const LEDGER = 'receipts/mac-guide/pass-ledger.json';
 const PROMPTDIR = 'receipts/mac-guide/prompts';
 const SCHEMATICDIR = 'receipts/mac-guide/schematics';
@@ -40,10 +42,18 @@ type Scene = {
 
 type Artifact = { file: string; sha256: string; bytes: number; w: number; h: number };
 type Finding = { code: string; severity: Severity; node?: string; note?: string; from?: string };
-type PassRecord = { pass: number; promptFile?: string; promptHash?: string; schematicFile?: string; schematicHash?: string; artifacts: Artifact[]; audit?: Record<string, number | string>; auditVerdict?: string; findings: Finding[]; patches: string[]; verdict: string };
-type Ledger = { schema: string; updated?: string; plates: Record<string, { passes: PassRecord[]; nextPass: number }> };
+type PassRecord = { pass: number; promptFile?: string; promptHash?: string; schematicFile?: string; schematicHash?: string; specVersion?: string; refIds?: string[]; refsAttached?: string[]; artifacts: Artifact[]; audit?: Record<string, number | string>; auditVerdict?: string; findings: Finding[]; patches: string[]; verdict: string };
+type Ledger = { schema: string; updated?: string; plates: Record<string, { passes: PassRecord[]; nextPass: number }>; };
+
+// v6 ref-traced imaging: every plate prompt is bound to public reference imaging + a canonical
+// machine spec. Hallucination is blocked at prompt level; refs are hash-verified and logged.
+type RefImage = { id: string; file: string; persisted?: boolean; kind?: string; subject: string; source: string; publisher?: string; doc?: string; sha256: string; details: string[] };
+type RefRegistry = { schema: string; updated?: string; imageDir?: string; images: RefImage[]; plateRefs: Record<string, string[]>; canonicalFacts?: string[] };
+type SpecPart = { id: string; u: number; v: number; w: number; h: number; depth?: string; draw: string; refs: string[] };
+type Spec = { schema: string; version: string; updated?: string; canonicalView?: { name?: string; description?: string; projection?: Record<string, string>; refs?: string[] }; lineStyle?: Record<string, string>; chassisFaceParts: SpecPart[]; inventoryProps?: Record<string, string>; invariants: string[]; driftWatchlist?: string[]; renderGate?: string[] };
 
 const PASSES = [
+  { id: 'P-1', name: 'visual-needs', consumes: 'spec+refs+scene', emits: 'blocking needs list', deducts: 'missing evidence, step label mismatch, 8-bay, vertical GPU, memory identity' },
   { id: 'P0', name: 'harvest', consumes: FACTS, emits: 'fact table + confidence', deducts: 'unsourced or LOW' },
   { id: 'P1', name: 'lex', consumes: PROMPTS, emits: 'demand list', deducts: 'unparsed clauses' },
   { id: 'P2', name: 'resolve', consumes: 'fact table + scene IR', emits: 'bound graph', deducts: 'dangling facts' },
@@ -117,6 +127,354 @@ function loadText(path: string): string {
   return readFileSync(path, 'utf8');
 }
 function sha256(buf: Buffer | string): string { return createHash('sha256').update(buf).digest('hex'); }
+
+function loadRefs(): RefRegistry { return loadJson<RefRegistry>(REFS); }
+function loadSpec(): Spec { return loadJson<Spec>(SPEC); }
+
+// Verify the ref registry: persisted files must exist and hash-match; plate maps and spec
+// references must resolve. Returns diagnostics and, when files are present, their true hashes.
+function checkRefs(refs: RefRegistry, spec: Spec, plates: Plate[]): Diag[] {
+  const d: Diag[] = [];
+  const ids = new Set<string>();
+  for (const r of refs.images) {
+    if (ids.has(r.id)) d.push({ code: 'G-X-001', severity: 'ERROR', node: r.id, message: `duplicate ref id ${r.id}` });
+    ids.add(r.id);
+    if (!r.details || r.details.length < 5) d.push({ code: 'G-X-002', severity: 'ERROR', node: r.id, message: `ref ${r.id} needs >=5 baked details, has ${r.details?.length ?? 0}` });
+    if (r.persisted === false || !r.file) {
+      if (r.persisted === false) continue; // chat-only operator photo, receipt text only
+      d.push({ code: 'G-X-003', severity: 'ERROR', node: r.id, message: `ref ${r.id} has no file and is not marked persisted:false (chat-only)` });
+      continue;
+    }
+    if (!existsSync(r.file)) { d.push({ code: 'G-X-004', severity: 'ERROR', node: r.id, message: `ref ${r.id} file missing: ${r.file}` }); continue; }
+    const buf = readFileSync(r.file);
+    const hash = sha256(buf);
+    if (!r.sha256) d.push({ code: 'G-X-005', severity: 'ERROR', node: r.id, message: `ref ${r.id} no sha256 recorded` });
+    else if (hash !== r.sha256) d.push({ code: 'G-X-006', severity: 'ERROR', node: r.id, message: `ref ${r.id} hash drift: file ${hash.slice(0, 12)} != registry ${r.sha256.slice(0, 12)}` });
+  }
+  for (const p of plates) {
+    const list = refs.plateRefs[p.id];
+    if (!list || list.length === 0) d.push({ code: 'G-X-007', severity: 'ERROR', plate: p.id, message: `plate ${p.id} has no plateRefs` });
+    else for (const id of list) if (!ids.has(id)) d.push({ code: 'G-X-008', severity: 'ERROR', plate: p.id, message: `plate ${p.id} refs unknown ref ${id}` });
+  }
+  for (const id of Object.keys(refs.plateRefs ?? {})) if (!plates.some((p) => p.id === id)) d.push({ code: 'G-X-009', severity: 'WARN', node: id, message: `plateRefs lists ${id} but scene has no such plate` });
+  const partIds = new Set(spec.chassisFaceParts.map((x) => x.id));
+  if (partIds.size < 10) d.push({ code: 'G-X-010', severity: 'ERROR', message: `spec parts catalog thin: ${partIds.size}` });
+  for (const part of spec.chassisFaceParts) {
+    if (!part.draw || part.draw.length < 20) d.push({ code: 'G-X-011', severity: 'ERROR', node: part.id, message: `part ${part.id} lacks baked draw detail` });
+    for (const id of part.refs ?? []) if (!ids.has(id)) d.push({ code: 'G-X-012', severity: 'ERROR', node: part.id, message: `part ${part.id} cites unknown ref ${id}` });
+  }
+  if ((spec.invariants ?? []).length < 10) d.push({ code: 'G-X-013', severity: 'ERROR', message: `spec invariants ${spec.invariants?.length ?? 0} < 10` });
+  if (!spec.version) d.push({ code: 'G-X-014', severity: 'ERROR', message: 'spec has no version' });
+  // every run: every part a plate is allowed to draw must have >=1 persisted ref
+  // attached to that plate's plateRefs; <2 is a single-source warning; plates need >=3.
+  const byId = new Map(refs.images.map((r) => [r.id, r]));
+  for (const p of plates) {
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) { d.push({ code: 'G-X-015', severity: 'ERROR', plate: p.id, node: partId, message: `plate ${p.id} allowlists unknown catalog part ${partId}` }); continue; }
+      const strong = part.refs.filter((id) => mapped.includes(id) && byId.get(id)?.file);
+      if (strong.length === 0) d.push({ code: 'G-X-015', severity: 'ERROR', plate: p.id, node: partId, message: `part ${partId} has no persisted evidence ref attached to ${p.id}; run HARVEST/PERCEIVE agents (node tools/mac-guide-art.ts agents --plate=${p.id})` });
+      else if (strong.length < 2) d.push({ code: 'G-X-016', severity: 'WARN', plate: p.id, node: partId, message: `part ${partId} single-source on ${p.id}: ${strong.join(',')}` });
+    }
+    const persistedMapped = mapped.filter((id) => byId.get(id)?.file).length;
+    if (persistedMapped < 3) d.push({ code: 'G-X-017', severity: 'WARN', plate: p.id, message: `plate ${p.id} has only ${persistedMapped} persisted refs attached (<3)` });
+  }
+  for (const part of spec.chassisFaceParts) {
+    const totalStrong = part.refs.filter((id) => byId.get(id)?.file).length;
+    if (totalStrong < 2) d.push({ code: 'G-X-018', severity: 'WARN', node: part.id, message: `part ${part.id} has ${totalStrong} persisted ref(s) registry-wide (<2)` });
+  }
+  return d;
+}
+
+// The canonical block is emitted BYTE-IDENTICAL into every plate prompt. Selftest asserts this
+// so consistency rules cannot silently drift between plates or passes.
+function canonBlock(refs: RefRegistry, spec: Spec): string {
+  const L: string[] = [];
+  L.push('=== CANON BLOCK START (identical on every plate, do not paraphrase) ===');
+  L.push(`SPEC VERSION: ${spec.version}`);
+  L.push(`CANONICAL CAMERA: ${spec.canonicalView?.name}`);
+  L.push(`${spec.canonicalView?.description}`);
+  L.push(`PROJECTION: ${Object.entries(spec.canonicalView?.projection ?? {}).map(([k, v]) => `${k}=${v}`).join('; ')}`);
+  L.push('LINE LANGUAGE: ' + Object.entries(spec.lineStyle ?? {}).map(([k, v]) => `${k}: ${v}`).join(' | '));
+  L.push('CONSISTENCY INVARIANTS:');
+  for (const inv of spec.invariants) L.push(`- ${inv}`);
+  L.push('DRIFT WATCHLIST (each item here is a failed class, never reproduce):');
+  for (const w of spec.driftWatchlist ?? []) L.push(`- ${w}`);
+  L.push('=== CANON BLOCK END ===');
+  return L.join('\n');
+}
+
+function refBlock(refs: RefRegistry, spec: Spec, plateId: string): string {
+  const wanted = refs.plateRefs[plateId] ?? [];
+  const L: string[] = [];
+  L.push('=== REFERENCE TRACING START (highest authority after the operator photo) ===');
+  L.push('Visual reference files are supplied to the generator. Trace chassis proportions, viewpoint, part shapes, counts and line language from them. Their detail digests follow; do not invent parts the refs do not show.');
+  for (const id of wanted) {
+    const r = refs.images.find((x) => x.id === id);
+    if (!r) continue;
+    L.push('');
+    L.push(`REF ${r.id} [${r.kind ?? 'ref'}] file=${r.file || 'CHAT-ONLY, NOT ON DISK'} doc=${r.doc ?? '-'} source=${r.source}`);
+    L.push(`SUBJECT: ${r.subject}`);
+    if (r.persisted === false || !r.file) L.push('NOTE: this reference is an operator chat photograph not persisted to sandbox storage; it is described here as a durable perception receipt and MUST be re-supplied as an image reference when available.');
+    for (const det of r.details) L.push(`  - ${det}`);
+  }
+  L.push('');
+  L.push('CATALOG PARTS THIS PLATE MAY DRAW (id | face u/v/w/h | exact depiction):');
+  const allowed = platePartAllowlist(plateId);
+  for (const part of spec.chassisFaceParts) {
+    if (allowed.includes(part.id)) L.push(`- ${part.id} | u=${part.u} v=${part.v} w=${part.w} h=${part.h} depth=${part.depth ?? '-'} | ${part.draw} [refs: ${part.refs.join(',')}]`);
+  }
+  L.push('Anything not in this catalog, in the scene IR inventory, or in the refs is an INVENTION and must not appear.');
+  L.push('=== REFERENCE TRACING END ===');
+  return L.join('\n');
+}
+
+// ONE-IMAGE PERCEPTION AXES (operator directive 2026-09-12): one public image must yield
+// MANY deductions, not one. Every PERCEIVE agent works this exact checklist and logs each
+// axis into the ref details before a ref is allowed to anchor a render.
+const PERCEPTION_AXES: { id: string; axis: string }[] = [
+  { id: 'V1', axis: 'viewpoint/camera: which face(s), perspective angle, case orientation (upright/on-side), scale cue' },
+  { id: 'V2', axis: 'identity confirmation: exact machine/part model, document number, revision, publisher' },
+  { id: 'V3', axis: 'counts: every repeated feature counted (bays, cutouts, slots, DIMMs, clips, screws, ports, cables)' },
+  { id: 'V4', axis: 'orientation/facing: bracket vs fan ends, connector direction, which frame edge things meet' },
+  { id: 'V5', axis: 'fasteners: captive screws, thumbscrews, rail tabs, ejectors, finger holes - position and count' },
+  { id: 'V6', axis: 'connectors and cables: origin -> destination, pin/socket shape, dress path, laced vs loose' },
+  { id: 'V7', axis: 'material/finish/line language: stipple mesh, smooth aluminum, finned heatsink, ghost vs solid' },
+  { id: 'V8', axis: 'labels/legible text: exact strings, numbering (A/B, 1-4, slot numbers), caution glyphs' },
+  { id: 'V9', axis: 'adjacent/occluded parts: what sits next to/behind/hides the subject, compartment zones' },
+  { id: 'V10', axis: 'implied unseen faces: symmetry, the opposite end inferred, what the back must look like' },
+  { id: 'V11', axis: 'motion/interactions: pull/lift/press direction, hand grips, arrows and numbered badges' },
+  { id: 'V12', axis: 'negative facts: what is explicitly NOT present (fights hallucinated extras)' },
+  { id: 'V13', axis: 'contradictions vs operator photo/refs/spec: any mismatch, resolved operator > receipt > ref' },
+  { id: 'V14', axis: 'at least five non-obvious deductions beyond the literal subject; weak axes queue more HARVEST queries' },
+];
+
+// Deterministic HARVEST query generator: every catalog part must earn public imaging before
+// it can anchor a plate. Keywords come from the part id and its baked draw text.
+function harvestQueriesForPart(part: SpecPart): string[] {
+  const base = 'Mac Pro Early 2008 3,1 A1186';
+  const keys: Record<string, string[]> = {
+    'frame-handle-feet': ['outer case aluminum handle frame side panel removed'],
+    'front-mesh-face': ['front face mesh grille optical slot ports product'],
+    'optical-left-dualcutout': ['interior optical drive carrier cutout screws case on side'],
+    'optical-right-plain': ['interior optical drive bay blank carrier'],
+    'hdd-row-4-sleds': ['hard drive sled four bays faceplate insert'],
+    'front-fan-assembly': ['front fan assembly blower module hidden SATA'],
+    'logic-board-tray': ['logic board Xeon heatsink capacitors interior'],
+    'gpu-gtx285-blower': ['GTX 285 Mac Edition blower card bracket fan', 'EVGA 01G-P3-1080'],
+    'gpu-power-cables': ['GTX 285 booster cable logic board aux connectors'],
+    'memory-shroud': ['memory cage shroud cover lower compartment'],
+    'riser-window-2-banks': ['memory riser card FB-DIMM cage two banks installed'],
+    'riser-plates-A-B-out': ['memory riser card remove finger holes pull panel sticker'],
+    'latch-lever': ['rear locking latch lever side panel'],
+    'rear-io-plane': ['rear panel ports PCI covers power socket line drawing'],
+    'honeycomb-edge': ['rear honeycomb vent interior frame'],
+  };
+  return (keys[part.id] ?? [part.id.replace(/-/g, ' ')]).map((q) => `${base} ${q}`);
+}
+
+
+// VISUAL-NEEDS BLOCKING AGENT (operator directive 2026-09-12d): clarifies what visual evidence is missing that would block accurate rendering.
+// This agent runs automatically on every tool run (prompt, render, lint, selftest) and blocks if bare fundamentals are not met.
+// Bare fundamentals: identical chassis, front mesh LEFT, open RIGHT, top DVD front + PSU rear plain, HDD EXACTLY 4 horizontal, GPU horizontal bracket rear/right fan left/inboard gold bottom 2x6-pin fan-end, CPU dual heatsinks under cover between fan tray and RAM, RAM 2 risers A/B finger holes both ends 4 DIMMs each, fan tray ONE tray TWO 140 blowers LIFT 40mm, rear cross-hatch 140 exhaust + full I/O.
+function visualNeeds(refs: RefRegistry, spec: Spec, scene: Scene): Diag[] {
+  const d: Diag[] = [];
+  const byId = new Map(refs.images.map(r=>[r.id,r]));
+  // step label consistency: g01 -> STEP 1, g02 -> STEP 2, etc.
+  const stepMap: Record<string,string> = {'g01-overview':'STEP 1','g02-poweroff':'STEP 2','g03-hidden-sata':'STEP 3','g04-ssd-mount':'STEP 4','g05-hdd-install':'STEP 5','g06-gpu-swap':'STEP 6','g07-cable-check':'STEP 7','g08-boot-verify':'STEP 8'};
+  for (const p of scene.plates) {
+    const expected = stepMap[p.id];
+    if (expected) {
+      const stepNode = p.nodes.find(n=>n.id==='step');
+      if (!stepNode) d.push({code:'G-VN-001', severity:'ERROR', plate:p.id, message: 'missing step node, need '+expected});
+      else if (!stepNode.text.includes(expected.split(' ')[1])) d.push({code:'G-VN-002', severity:'ERROR', plate:p.id, node:stepNode.id, message: 'step label '+stepNode.text+' != '+expected+' -> multiple pages labelled STEP 1, blocks accurate guide'});
+      // purpose must mention intuitive flow and bare fundamentals
+      if (!p.purpose.includes('INTUITIVE FLOW') && !p.purpose.includes('bare fundamentals')) {
+        d.push({code:'G-VN-003', severity:'WARN', plate:p.id, message: 'purpose lacks INTUITIVE FLOW / bare fundamentals, may cause zero direction'});
+      }
+    }
+    // check HDD count: must be EXACTLY FOUR, not 8
+    const chassis = p.nodes.find(n=>n.kind==='chassis');
+    if (chassis) {
+      const txt = (chassis.detail + ' ' + p.purpose).toLowerCase();
+      if (txt.includes('8 bays') || txt.includes('8 hdd') || txt.includes('2x4') || txt.includes('8x')) {
+        d.push({code:'G-VN-004', severity:'ERROR', plate:p.id, message: 'mentions 8 bays -> imaginary slot, need EXACTLY FOUR'});
+      }
+      if (!txt.includes('exactly four') && p.id==='g05-hdd-install') {
+        d.push({code:'G-VN-005', severity:'WARN', plate:p.id, message: 'g05 must explicitly say EXACTLY FOUR to avoid 8-bay grid hallucination'});
+      }
+    }
+    // GPU orientation blocking: must be horizontal, bracket rear/right, fan left/inboard
+    const gpuPart = spec.chassisFaceParts.find(x=>x.id==='gpu-gtx285-blower');
+    if (gpuPart) {
+      const draw = gpuPart.draw.toLowerCase();
+      if (!draw.includes('horizontal') || !draw.includes('bracket') || !draw.includes('fan')) {
+        d.push({code:'G-VN-006', severity:'ERROR', plate:p.id, node:'gpu-gtx285-blower', message: 'gpu draw lacks horizontal/bracket/fan orientation -> vertical riser artifact'});
+      }
+      if (draw.includes('faces the viewer') && !draw.includes('never vertical')) {
+        d.push({code:'G-VN-007', severity:'ERROR', plate:p.id, node:'gpu-gtx285-blower', message: "instruction 'faces the viewer' causes vertical riser artifact (backplate flat to memory cage, fan up). Need explicit NEVER vertical, NEVER riser cable, long axis HORIZONTAL LEFT-TO-RIGHT gold BOTTOM"});
+      }
+    }
+    // Memory identity blocking
+    const riserPart = spec.chassisFaceParts.find(x=>x.id==='riser-window-2-banks');
+    if (riserPart) {
+      const draw = riserPart.draw.toLowerCase();
+      if (!draw.includes('finger hole') || !draw.includes('4') || !draw.includes('fb-dimm')) {
+        d.push({code:'G-VN-008', severity:'ERROR', plate:p.id, node:'riser-window-2-banks', message: 'memory riser lacks finger holes / 4 DIMMs / FB-DIMM -> memory lost its identity'});
+      }
+    }
+    // HDD bay covers blocking
+    const hddPart = spec.chassisFaceParts.find(x=>x.id==='hdd-row-4-sleds');
+    if (hddPart) {
+      const draw = hddPart.draw.toLowerCase();
+      if (!draw.includes('raised oval') || !draw.includes('circled') || !draw.includes('exactly four')) {
+        d.push({code:'G-VN-009', severity:'WARN', plate:p.id, node:'hdd-row-4-sleds', message: 'HDD bay cover lacks raised oval / circled number / EXACTLY FOUR -> covers do not look like they should'});
+      }
+    }
+    // evidence gate: each allowed part needs >=1 persisted ref, front-mesh-face needs >=2
+    const allowed = platePartAllowlist(p.id);
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of allowed) {
+      const part = spec.chassisFaceParts.find(x=>x.id===partId);
+      if (!part) continue;
+      const strong = part.refs.filter(id=>mapped.includes(id) && byId.get(id)?.file);
+      if (strong.length===0) d.push({code:'G-VN-010', severity:'ERROR', plate:p.id, node:partId, message: 'no persisted evidence ref for '+partId+' -> would assume structure, blocking'});
+    }
+  }
+  // global: front-mesh-face needs >=2 persisted refs registry-wide
+  const front = spec.chassisFaceParts.find(x=>x.id==='front-mesh-face');
+  if (front) {
+    const total = front.refs.filter(id=>byId.get(id)?.file).length;
+    if (total<2) d.push({code:'G-VN-011', severity:'ERROR', message: 'front-mesh-face has '+total+' persisted refs (<2) -> single-source, blocks accurate front face'});
+  }
+  // style: English only, no Japanese
+  for (const p of scene.plates) {
+    const blob = JSON.stringify(p).toLowerCase();
+    if (blob.includes('日本') || blob.includes('の') || blob.includes('サイドパネル')) {
+      d.push({code:'G-VN-012', severity:'ERROR', plate:p.id, message: 'contains Japanese characters -> violates ENGLISH ONLY, causes inconsistent labels'});
+    }
+  }
+  return d;
+}
+
+function cmdVisualNeeds(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find(a=>a.startsWith('--plate='))?.split('=')[1];
+  const diags = visualNeeds(refs,spec,scene).filter(d=>!plateId || d.plate===plateId || !d.plate);
+  for (const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
+  const errs = diags.filter(d=>d.severity==='ERROR').length;
+  const warns = diags.filter(d=>d.severity==='WARN').length;
+  console.log(`VISUAL-NEEDS errors=${errs} warnings=${warns} blocking=${errs>0?'YES':'NO'}`);
+  if (errs>0) console.log('BLOCKING: fix visual needs before prompt/render; bake agent clarifies what is missing that would cause inaccurate art');
+  return errs?1:0;
+}
+
+function cmdAgents(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find((a) => a.startsWith('--plate='))?.split('=')[1];
+  const plates = scene.plates.filter((p) => !plateId || p.id === plateId);
+  const plan: { run: string; agents: Record<string, unknown>[] } = { run: 'node tools/mac-guide-art.ts agents' + (plateId ? ` --plate=${plateId}` : ''), agents: [] };
+  for (const p of plates) {
+    const mapped = refs.plateRefs[p.id] ?? [];
+    const persistedMapped = mapped.filter((id) => { const r = refs.images.find((x) => x.id === id); return !!r?.file; });
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) continue;
+      const backed = part.refs.filter((id) => persistedMapped.includes(id));
+      if (backed.length === 0) {
+        plan.agents.push({ plate: p.id, agent: `HARVEST:${partId}`, task: `find public imaging that shows: ${part.draw}`, queries: harvestQueriesForPart(part), output: 'candidate image paths under image-search/, then run PERCEIVE', gate: 'no render until >=1 persisted ref baked with ingest and mapped to this plate' });
+        plan.agents.push({ plate: p.id, agent: `PERCEIVE:${partId}`, task: 'view each candidate image and log axes V1..V14 as ref details', axes: PERCEPTION_AXES.map((x) => `${x.id} ${x.axis}`), output: 'details JSON array (>=5 items, counts and orientation mandatory)', gate: 'image without logged axes cannot be ingested' });
+      }
+    }
+    plan.agents.push({ plate: p.id, agent: 'DEDUCE', task: 'from every mapped ref extract counts, orientations, fasteners, cables, implied opposite faces; cross-apply each detail to catalog parts', command: 'node tools/mac-guide-art.ts deduce --plate=' + p.id, output: 'evidence matrix + D-n deductions', gate: 'part with zero persisted evidence on this plate is an ERROR' });
+    plan.agents.push({ plate: p.id, agent: 'RECONCILE', task: 'operator chat photo is highest authority, then target receipts, then public refs; conflicts become findings and spec patches (never the reverse)', output: 'conflict list or empty' });
+    plan.agents.push({ plate: p.id, agent: 'BAKE', task: 'hash-lock every accepted image and attach its perception details', command: 'node tools/mac-guide-art.ts ingest --id=... --file=... --kind=... --source="..." --doc="..." --subject="..." --details=details.json --plates=' + p.id, output: 'registry entry with sha256' });
+    plan.agents.push({ plate: p.id, agent: 'GATE', task: 'evidence + determinism gates before any prompt', command: 'node tools/mac-guide-art.ts refs && node tools/mac-guide-art.ts selftest', output: 'errors=0' });
+    plan.agents.push({ plate: p.id, agent: 'CRITIQUE', task: 'after render, tick every allowed catalog part present/absent and INV-01..INV-10; findings -> deduct -> patch IR/spec/refs so next prompt hash moves', command: 'node tools/mac-guide-art.ts render + findings + deduct' });
+  }
+  // always: perceive any ref thinner than the 14-axis expectation
+  for (const r of refs.images) if (r.details.length < 5) plan.agents.push({ agent: `PERCEIVE:${r.id}`, task: 'ref has <5 baked details; re-run V1..V14 perception', file: r.file || 'chat-only' });
+  console.log(JSON.stringify(plan, null, 2));
+  const gaps = plan.agents.filter((a) => String(a.agent).startsWith('HARVEST')).length;
+  console.log(`AGENTS plates=${plates.length} agents=${plan.agents.length} harvestGaps=${gaps}`);
+  return 0;
+}
+
+function cmdIngest(args: string[]): number {
+  const get = (k: string) => args.find((a) => a.startsWith(`--${k}=`))?.slice(k.length + 3);
+  const id = get('id'); const file = get('file'); const kind = get('kind') ?? 'ref'; const source = get('source') ?? '';
+  const doc = get('doc') ?? ''; const subject = get('subject') ?? ''; const detailsPath = get('details');
+  const plates = (get('plates') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  if (!id || !file || !detailsPath || !source || !subject) { console.error('usage: ingest --id=ID --file=PATH --kind=KIND --source=SRC --doc=DOC --subject=TEXT --details=details.json [--plates=g01,g06]'); return 1; }
+  if (!existsSync(file)) { console.error(`missing ${file}`); return 1; }
+  const refs = loadRefs();
+  if (refs.images.some((r) => r.id === id)) { console.error(`ref id ${id} exists`); return 1; }
+  let details: string[];
+  try { details = JSON.parse(readFileSync(detailsPath, 'utf8')); } catch (e) { console.error(`details must be a JSON array of strings: ${(e as Error).message}`); return 1; }
+  if (!Array.isArray(details) || details.length < 5 || details.some((d) => typeof d !== 'string' || d.length < 10)) { console.error('need >=5 detail strings, each >=10 chars, covering V1..V14'); return 1; }
+  const buf = readFileSync(file);
+  const entry: RefImage = { id, file, persisted: true, kind, subject, source, doc, sha256: sha256(buf), details };
+  refs.images.push(entry);
+  refs.images.sort((a, b) => a.id.localeCompare(b.id));
+  refs.updated = new Date().toISOString().slice(0, 10);
+  for (const p of plates) { (refs.plateRefs[p] ??= []); if (!refs.plateRefs[p].includes(id)) refs.plateRefs[p].push(id); }
+  writeFileSync(REFS, JSON.stringify(refs, null, 2) + '\n');
+  const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const diags = checkRefs(refs, spec, scene.plates);
+  for (const d of diags) console.log(`${d.severity}\t${d.code}\t${d.plate ?? '-'}\t${d.node ?? '-'}\t${d.message}`);
+  console.log(`INGESTED id=${id} sha256=${entry.sha256} details=${details.length} plates=${plates.join(',') || 'none'} errors=${diags.filter((d) => d.severity === 'ERROR').length}`);
+  return diags.some((d) => d.severity === 'ERROR') ? 1 : 0;
+}
+
+function cmdDeduce(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find((a) => a.startsWith('--plate='))?.split('=')[1];
+  let errors = 0;
+  for (const p of scene.plates) {
+    if (plateId && p.id !== plateId) continue;
+    console.log(`PLATE ${p.id}`);
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of platePartAllowlist(p.id)) {
+      const part = spec.chassisFaceParts.find((x) => x.id === partId);
+      if (!part) continue;
+      const evidence = part.refs.map((id) => { const r = refs.images.find((x) => x.id === id); return { id, present: mapped.includes(id), persisted: !!r?.file, kind: r?.kind ?? '-' }; });
+      const strong = evidence.filter((e) => e.present && e.persisted);
+      const verdict = strong.length === 0 ? 'ERROR no persisted evidence attached' : strong.length < 2 ? 'WARN single-source' : 'ok';
+      if (strong.length === 0) errors++;
+      console.log(`  ${verdict.padEnd(34)} ${partId}  evidence=${strong.map((e) => e.id).join(',') || '-'}`);
+    }
+    const chatOnly = mapped.filter((id) => refs.images.find((x) => x.id === id)?.persisted === false);
+    if (chatOnly.length) console.log(`  CHAT-ONLY (re-upload to attach as image): ${chatOnly.join(',')}`);
+  }
+  // one-image -> many deductions: each ref detail supports the catalog parts that cite it
+  console.log('ONE-IMAGE DEDUCTIONS');
+  let n = 0;
+  for (const r of refs.images) {
+    const supports = spec.chassisFaceParts.filter((part) => part.refs.includes(r.id));
+    if (supports.length) { n += supports.length; console.log(`  D-${String(n).padStart(2, '0')} ${r.id} anchors ${supports.length} part(s): ${supports.map((s) => s.id).join(', ')} (${r.details.length} logged perception axes)`); }
+  }
+  const diags = checkRefs(refs, spec, scene.plates);
+  for (const d of diags.filter((x) => x.severity !== 'INFO')) console.log(`${d.severity}\t${d.code}\t${d.plate ?? '-'}\t${d.node ?? '-'}\t${d.message}`);
+  console.log(`DEDUCE partEvidenceErrors=${errors} gateErrors=${diags.filter((d) => d.severity === 'ERROR').length}`);
+  return errors || diags.some((d) => d.severity === 'ERROR') ? 1 : 0;
+}
+
+// Which catalog parts each procedural plate needs; g01 gets the whole machine.
+function platePartAllowlist(plateId: string): string[] {
+  const ALL = ['frame-handle-feet', 'front-mesh-face', 'dvd-optical-bay', 'psu-compartment', 'hdd-row-4-sleds', 'front-fan-assembly', 'cpu-compartment-cover', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'memory-shroud', 'riser-window-2-banks', 'riser-plates-A-B-out', 'latch-lever', 'rear-io-plane', 'rear-140-exhaust', 'honeycomb-edge'];
+  const map: Record<string, string[]> = {
+    'g01-overview': ALL,
+    'g02-poweroff': ['frame-handle-feet', 'rear-io-plane', 'rear-140-exhaust', 'latch-lever', 'gpu-gtx285-blower', 'gpu-power-cables', 'honeycomb-edge'],
+    'g03-hidden-sata': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-fan-assembly', 'cpu-compartment-cover', 'logic-board-tray', 'dvd-optical-bay', 'psu-compartment'],
+    'g04-ssd-mount': ['frame-handle-feet', 'dvd-optical-bay', 'psu-compartment', 'hdd-row-4-sleds', 'front-fan-assembly'],
+    'g05-hdd-install': ['frame-handle-feet', 'hdd-row-4-sleds', 'front-mesh-face', 'dvd-optical-bay'],
+    'g06-gpu-swap': ['frame-handle-feet', 'logic-board-tray', 'gpu-gtx285-blower', 'gpu-power-cables', 'rear-io-plane', 'rear-140-exhaust', 'latch-lever'],
+    'g07-cable-check': ['frame-handle-feet', 'gpu-gtx285-blower', 'gpu-power-cables', 'logic-board-tray', 'rear-io-plane', 'honeycomb-edge'],
+    'g08-boot-verify': ['frame-handle-feet', 'front-mesh-face', 'rear-140-exhaust'],
+  };
+  return map[plateId] ?? ALL;
+}
 function words(s: string): string[] { return s.split(/\\s+/).filter(Boolean); }
 function realWords(s: string): string[] { return words(s).filter((t) => /[a-z0-9]/i.test(t)); }
 
@@ -366,10 +724,14 @@ function emitSchematicSvg(scene: Scene, plateId: string, pass: number): { text: 
   return { text, file, hash: sha256(text) };
 }
 
-function emitPrompt(scene: Scene, style: string, plateId: string, pass: number): { text: string; file: string; hash: string } {
+function emitPrompt(scene: Scene, style: string, plateId: string, pass: number, refs?: RefRegistry, spec?: Spec): { text: string; file: string; hash: string } {
   const plate = scene.plates.find((p) => p.id === plateId);
   if (!plate) { console.error(`unknown plate ${plateId}`); process.exit(1); }
+  const useRefs = refs ?? loadRefs();
+  const useSpec = spec ?? loadSpec();
   const lines: string[] = [];
+  lines.push(canonBlock(useRefs, useSpec));
+  lines.push('');
   lines.push(`PLATE ${plate.id} — ${plate.title}`);
   lines.push(`PURPOSE: ${plate.purpose}`);
   lines.push(`VIEW: ${plate.view}`);
@@ -392,9 +754,11 @@ function emitPrompt(scene: Scene, style: string, plateId: string, pass: number):
   const schematicFile = `${SCHEMATICDIR}/${plateId}-p${pass}.svg`;
   const anchor = HARDWARE_ANCHORS[plateId];
   lines.push('');
-  lines.push(`SCHEMATIC ANCHOR (must trace exactly, no invention): ${schematicFile}`);
+  lines.push(`SCHEMATIC ANCHOR (orthographic open-face blueprint; the render applies the CANONICAL CAMERA projection to it): ${schematicFile}`);
   if (anchor) lines.push(`HARDWARE ANCHORS: ${anchor.required.join(', ')} -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.`);
-  lines.push(`RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.`);
+  lines.push(`RENDER RULE: Trace the schematic and the supplied reference files. Copy every anchor position, orientation, proportion, part count and screw count exactly. Do not swap orientation, do not add or omit drives, do not fill color. The chassis outline MUST match the other plates of this manual byte-for-byte in shape.`);
+  lines.push('');
+  lines.push(refBlock(useRefs, useSpec, plateId));
   if (plate.renderNotes?.length) {
     lines.push('');
     lines.push(`PASS-${pass} CORRECTIONS:`);
@@ -466,10 +830,26 @@ function cmdIr(args: string[]): void {
   const scene=loadJson<Scene>(SCENE); const plateId=args.find(a=>a.startsWith('--plate='))?.split('=')[1];
   for(const p of scene.plates){ if(plateId&&p.id!==plateId) continue; console.log(`plate ${p.id}: ${p.title} [${p.canvas.w}x${p.canvas.h}] nodes=${p.nodes.length}`); for(const n of p.nodes) console.log(`  ${n.id}\t${n.kind}\t${n.text}`); }
 }
+function cmdRefs(args: string[]): number {
+  const refs=loadRefs(); const spec=loadSpec(); const scene=loadJson<Scene>(SCENE);
+  const diags=checkRefs(refs,spec,scene.plates);
+  if(args.includes('--json')){ console.log(JSON.stringify(refs,null,2)); return diags.some(d=>d.severity==='ERROR')?1:0; }
+  for(const r of refs.images){
+    let line=`${r.persisted===false?'CHAT-ONLY':'REF     '}\t${r.id}\t${r.file || '(no file)'}`;
+    if(r.file && existsSync(r.file)){ const hash=sha256(readFileSync(r.file)); line += `\t${hash===r.sha256?'hash=OK':'HASH-DRIFT'}`; line += `\t${r.doc ?? ''}`; }
+    console.log(line);
+  }
+  for(const p of scene.plates) console.log(`PLATE-REFS\t${p.id}\t${(refs.plateRefs[p.id]??[]).join(',')}`);
+  for(const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
+  const errs=diags.filter(d=>d.severity==='ERROR').length;
+  console.log(`REFS spec=${spec.version} refs=${refs.images.length} parts=${spec.chassisFaceParts.length} invariants=${spec.invariants.length} errors=${errs}`);
+  return errs?1:0;
+}
 function cmdLint(args: string[]): number {
   const facts=loadJson<FactsFile>(FACTS); const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
-  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags,...schematicCheck(scene)];
-  for(const p of scene.plates) diags.push(...stylecheck(emitPrompt(scene,style,p.id,0).text));
+  const refs=loadRefs(); const spec=loadSpec();
+  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags,...schematicCheck(scene),...checkRefs(refs,spec,scene.plates),...visualNeeds(refs,spec,scene)];
+  for(const p of scene.plates) diags.push(...stylecheck(emitPrompt(scene,style,p.id,0,refs,spec).text));
   if(args.includes('--json')) console.log(JSON.stringify(diags,null,2)); else for(const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
   const errs=diags.filter(d=>d.severity==='ERROR').length; const warns=diags.filter(d=>d.severity==='WARN').length;
   console.log(`LINT errors=${errs} warnings=${warns} diagnostics=${diags.length}`); return errs?1:0;
@@ -480,18 +860,30 @@ function cmdLayout(args: string[]): number {
 }
 function cmdPrompt(args: string[]): void {
   const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
+  const refs=loadRefs(); const spec=loadSpec();
+  // AUTOMATIC AGENT LOOP ON EVERY TOOL RUN (directive 2026-09-12): visual-needs + refs + deduce
+  const vnDiags = visualNeeds(refs,spec,scene);
+  if (vnDiags.some(d=>d.severity==='ERROR')) { for (const d of vnDiags) console.error(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.message}`); console.error('VISUAL-NEEDS BLOCKING: fix before prompt'); process.exit(1); }
+  const refDiags=checkRefs(refs,spec,scene.plates);
+  if(refDiags.some(d=>d.severity==='ERROR')){ for(const d of refDiags) console.error(`${d.severity}\t${d.code}\t${d.message}`); console.error('ref registry not clean; run `node tools/mac-guide-art.ts refs`'); process.exit(1); }
   const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1] ?? scene.plates[0].id;
   const pass=Number(args.find(a=>a.startsWith('--pass='))?.split('=')[1] ?? '1');
   // schematic must exist first (deterministic blueprint) - emit it now if missing
   const schematic = emitSchematicSvg(scene, plate, pass);
-  const out=emitPrompt(scene,style,plate,pass);
+  const out=emitPrompt(scene,style,plate,pass,refs,spec);
+  const plateRefIds = refs.plateRefs[plate] ?? [];
+  const attachedArg=args.find(a=>a.startsWith('--attached='))?.split('=')[1];
+  const attached = attachedArg ? attachedArg.split(',').map(s=>s.trim()).filter(Boolean) : plateRefIds.filter(id => { const r=refs.images.find(x=>x.id===id); return !!r?.file && existsSync(r.file); });
   const ledger=loadLedger(); const entry=plateEntry(ledger,plate);
-  const rec: PassRecord={ pass, promptFile:out.file, promptHash:out.hash, schematicFile:schematic.file, schematicHash:schematic.hash, artifacts:[], findings:[], patches:[], verdict:'PROMPT-EMITTED' };
+  const rec: PassRecord={ pass, promptFile:out.file, promptHash:out.hash, schematicFile:schematic.file, schematicHash:schematic.hash, specVersion:spec.version, refIds:plateRefIds, refsAttached:attached, artifacts:[], findings:[], patches:[], verdict:'PROMPT-EMITTED' };
   const existing=entry.passes.findIndex(p=>p.pass===pass);
   if(existing>=0) entry.passes[existing]={ ...entry.passes[existing], ...rec, findings:entry.passes[existing].findings, artifacts:entry.passes[existing].artifacts };
   else entry.passes.push(rec);
   entry.nextPass=Math.max(entry.nextPass,pass+1); saveLedger(ledger);
   console.log(`SCHEMATIC_FILE=${schematic.file}`); console.log(`SCHEMATIC_SHA256=${schematic.hash}`);
+  console.log(`SPEC_VERSION=${spec.version}`); console.log(`REF_IDS=${plateRefIds.join(',')}`);
+  const missing = plateRefIds.filter(id => { const r=refs.images.find(x=>x.id===id); return r && (r.persisted===false || !r.file); });
+  if(missing.length) console.log(`REFS_CHAT_ONLY_NOT_ATTACHABLE=${missing.join(',')} (re-upload before render)`);
   console.log(out.text); console.log(`PROMPT_FILE=${out.file}`); console.log(`PROMPT_SHA256=${out.hash}`);
 }
 function cmdSchematic(args: string[]): number {
@@ -550,16 +942,40 @@ function cmdStatus(): void {
 function cmdSelftest(): number {
   const checks: { name:string; ok:boolean; detail:string }[]=[];
   const facts=loadJson<FactsFile>(FACTS); const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
+  const refs=loadRefs(); const spec=loadSpec();
+  const refDiags=checkRefs(refs,spec,scene.plates);
   checks.push({ name:'facts-parse', ok:facts.facts.length>=10, detail:`facts=${facts.facts.length}` });
   checks.push({ name:'facts-sourced', ok:facts.facts.every(f=>(f.source?.ref??f.source?.url??'')!==''), detail:'sourced' });
   checks.push({ name:'eight-plates', ok:scene.plates.length===8, detail:`plates=${scene.plates.length}` });
   checks.push({ name:'harvest-clean', ok:harvest(facts,scene).filter(d=>d.severity==='ERROR').length===0, detail:'harvest' });
   checks.push({ name:'typecheck-clean', ok:typecheck(scene).filter(d=>d.severity==='ERROR').length===0, detail:'typecheck' });
   checks.push({ name:'layout-clean', ok:layout(scene).diags.filter(d=>d.severity==='ERROR').length===0, detail:'layout' });
-  for(const p of scene.plates){ const pr=emitPrompt(scene,style,p.id,0).text; const s=stylecheck(pr); checks.push({ name:`style-${p.id}`, ok:s.length===0, detail:`missing=${s.length}` }); }
-  const a=emitPrompt(scene,style,scene.plates[0].id,1); const b=emitPrompt(scene,style,scene.plates[0].id,1); checks.push({ name:'deterministic', ok:a.hash===b.hash, detail:a.hash.slice(0,12) });
+  checks.push({ name:'refs-clean', ok:refDiags.filter(d=>d.severity==='ERROR').length===0, detail:`refErrors=${refDiags.filter(d=>d.severity==='ERROR').length}` });
+  checks.push({ name:'spec-version', ok:!!spec.version, detail:spec.version ?? 'missing' });
+  checks.push({ name:'spec-invariants-10', ok:spec.invariants.length===10, detail:`invariants=${spec.invariants.length}` });
+  checks.push({ name:'every-plate-has-refs', ok:scene.plates.every(p=>(refs.plateRefs[p.id]??[]).length>=3), detail:'min 3 refs/plate' });
+  for(const p of scene.plates){ const pr=emitPrompt(scene,style,p.id,0,refs,spec).text; const s=stylecheck(pr); checks.push({ name:`style-${p.id}`, ok:s.length===0, detail:`missing=${s.length}` }); }
+  const a=emitPrompt(scene,style,scene.plates[0].id,1,refs,spec); const b=emitPrompt(scene,style,scene.plates[0].id,1,refs,spec); checks.push({ name:'deterministic', ok:a.hash===b.hash, detail:a.hash.slice(0,12) });
   const sc1=emitSchematicSvg(scene, scene.plates[0].id, 1); const sc2=emitSchematicSvg(scene, scene.plates[0].id, 1); checks.push({ name:'schematic-deterministic', ok:sc1.hash===sc2.hash, detail:sc1.hash.slice(0,12) });
   checks.push({ name:'schematic-anchors', ok:schematicCheck(scene).filter(d=>d.severity==='ERROR').length===0, detail:'schematic' });
+  // the canon block must be byte-identical across every plate - this enforces consistency
+  const canon = canonBlock(refs,spec);
+  const canonOk = scene.plates.every(p=>emitPrompt(scene,style,p.id,0,refs,spec).text.includes(canon));
+  checks.push({ name:'canon-block-identical', ok:canonOk, detail:`bytes=${canon.length}` });
+  // every plate prompt must carry its ref tracing block with the mapped refs
+  const traceOk = scene.plates.every(p=>{ const t=emitPrompt(scene,style,p.id,0,refs,spec).text; return (refs.plateRefs[p.id]??[]).every(id=>t.includes(`REF ${id} `)); });
+  checks.push({ name:'ref-block-per-plate', ok:traceOk, detail:'all plateRefs traced' });
+  // perception axes V1..V14 exist and every persisted ref logs at least 5 detail deductions
+  checks.push({ name:'perception-axes-14', ok:PERCEPTION_AXES.length===14, detail:`axes=${PERCEPTION_AXES.length}` });
+  checks.push({ name:'ref-detail-depth', ok:refs.images.every(r=>r.persisted===false || r.details.length>=5), detail:refs.images.filter(r=>r.persisted!==false).map(r=>`${r.id}:${r.details.length}`).join(',') });
+  // g01 evidence matrix: every allowed part has persisted evidence
+  const g01Errors = checkRefs(refs,spec,scene.plates).filter(d=>d.severity==='ERROR');
+  checks.push({ name:'evidence-gate-clean', ok:g01Errors.length===0, detail:`errors=${g01Errors.length}` });
+  const vn = visualNeeds(refs,spec,scene);
+  checks.push({ name:'visual-needs-blocking', ok:vn.filter(d=>d.severity==='ERROR').length===0, detail:`errors=${vn.filter(d=>d.severity==='ERROR').length} warns=${vn.filter(d=>d.severity==='WARN').length}` });
+  // agent plan covers all plates deterministically
+  const plan = (() => { let out=''; const log=console.log; console.log=(...a:unknown[])=>{out+=a.join(' ')+'\n';}; try { cmdAgents([]); } finally { console.log=log; } return JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)); })();
+  checks.push({ name:'agent-plan', ok:plan.agents.length>20 && plan.agents.some((a:Record<string,unknown>)=>a.agent==='DEDUCE'), detail:`agents=${plan.agents.length} harvestGaps=${plan.harvestGaps}` });
   for(const c of checks) console.log(`${c.ok?'PASS':'FAIL'}\t${c.name}\t${c.detail}`);
   const failed=checks.filter(c=>!c.ok).length; console.log(`SELFTEST checks=${checks.length} failed=${failed}`); return failed?1:0;
 }
@@ -569,6 +985,10 @@ function main(): void {
   const [cmd,...rest]=process.argv.slice(2);
   switch(cmd){
     case 'passes': cmdPasses(); break;
+    case 'refs': process.exit(cmdRefs(rest)); break;
+    case 'agents': process.exit(cmdAgents(rest)); break;
+    case 'ingest': process.exit(cmdIngest(rest)); break;
+    case 'deduce': process.exit(cmdDeduce(rest)); break;
     case 'facts': cmdFacts(rest); break;
     case 'ir': cmdIr(rest); break;
     case 'lint': process.exit(cmdLint(rest)); break;
@@ -580,8 +1000,9 @@ function main(): void {
     case 'findings': process.exit(cmdFindings(rest)); break;
     case 'deduct': process.exit(cmdDeduct(rest)); break;
     case 'status': cmdStatus(); break;
+    case 'visual-needs': process.exit(cmdVisualNeeds(rest)); break;
     case 'selftest': process.exit(cmdSelftest()); break;
-    default: console.log('usage: node tools/mac-guide-art.ts <passes|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
+    default: console.log('usage: node tools/mac-guide-art.ts <passes|refs|agents|ingest|deduce|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
   }
 }
 main();

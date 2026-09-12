@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 48,
+  "lastSeq": 56,
   "entries": [
     {
       "seq": 1,
@@ -1054,6 +1054,155 @@
         "keep docs/macpro-guide-bw-g01-overview-p7.png 1408x768 PASS 0.00 as baseline"
       ],
       "sha256": "42b6433f645a29a361814827fdcf126043a4f9f4550d6de4fbf9dd9f2acdf8c8"
+    },
+    {
+      "seq": 49,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "this little infograph on the back of the mac panel perfectly represents my vision. and it has an accurate angled representation of the exact 3,1 mac pro. in the agentic workflow for images, make sure it is cross referencing every single damn detail down to the nanometer and using publicly available imaging (like im sure some pro 3,1 instruction images are) to get the best of the best. aswell as consistency, each time you generate the images they drop off in quality and consistency. same exact strict and draconian ruleset applied across all images, bake, track and log all details, detail them out to me, and i tell you where you failed and that way you know exactly what im talking about. no unnecessary complications in naming though",
+      "demands": [
+        "adopt panel infographic as vision+canonical angled 3,1 view",
+        "cross reference every detail with public Apple imaging",
+        "same draconian ruleset all images",
+        "bake track log all details",
+        "detail them to operator for critique loop",
+        "simple names"
+      ],
+      "sha256": "a2f0289ce47a903b5d49dedf822fe0b579cdf9b8f98b1c960d59333774eca3b5"
+    },
+    {
+      "seq": 50,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:mac-panel-memory-infograph-2026-09-12",
+      "tool": "read_file vision (operator photo)",
+      "claims": [
+        {
+          "claim": "printed black-on-silver access-panel label; three-quarter angled Mac Pro case-on-side shell; memory riser plates A(upper) and B(lower) pulled straight out of open face with vertical DIMM rows",
+          "evidence": "operator photo viewed in chat this session",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "two solid black FILLED block arrows point outward showing straight pull; uniform thin outline-only line weight; dot stipple only on front mesh; no shading or gray fill",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "IMPORTANT text in EN FR DE ES JA, English reads To install memory see the users guide; foreign text is reference only, our guides stay English-only",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "front mesh face left of shell with two horizontal optical slot bars and vertical port glyph strip; one-piece handle cutout frames the top; rounded feet frame corners",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "the attachment is NOT persisted to sandbox disk (/home/user/uploads absent); recorded chat-only as ref panel-sticker and must be re-uploaded to pass as image reference",
+          "evidence": "ls /home/user/uploads failed this session",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "759763b74fdbe6411f17b5eba26627884b2354ff187876068f6cc7a67ade9c1a"
+    },
+    {
+      "seq": 51,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-refs/ (7 files)",
+      "tool": "image_search+read_file vision",
+      "claims": [
+        {
+          "claim": "Apple official Early 2008 art collected: DIY memory sheet 073-1180 Rev A, PCIe/Graphics sheet 073-1248 Rev A (three-quarter case art + numbered badges), user-guide rear-port stipple line drawing, iFixit interior establishing photo (2 dual-cutout optical + 1 plain carriers, 4 HDD faces, 2 riser banks), riser 820-2178-04 photo (2 finger holes, 3 clips/DIMM, ejectors), front/rear product composite, sled insert photo with circled bay number",
+          "evidence": "docs/macpro-guide-refs.json details arrays, sha256 verified by tools/mac-guide-art.ts refs",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "interior counts invariant: 2 optical carriers, 4 HDD sleds, 2 risers x 4 FB-DIMM, one blower module strip, latch lever right edge, GPU horizontal double-wide with 2 board-fed 6-pin cables",
+          "evidence": "apple-interior-photo + panel-sticker cross-read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "676dbc7494f12d9e4db6041f8157b292b3b2e6e2e8a13806c17728b3a2629f63"
+    },
+    {
+      "seq": 52,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "mac-guide-spec",
+      "value": "v6-ref-traced-2026-09-12: docs/macpro-guide-spec.json (15 catalog parts, 10 invariants, panel-sticker camera) + docs/macpro-guide-refs.json (8 refs, 7 hash-verified files, 1 chat-only); tool emits byte-identical canon block every plate",
+      "source": "operator directive 2026-09-12 seq49",
+      "sha256": "b0c514c3c301c23e65348354aeeea2b150583f83abefc5e9369621872aed3de8"
+    },
+    {
+      "seq": 53,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 49,
+      "summary": "Baked ref registry + canonical spec into the guide compiler: refs hash-verified, every plate prompt carries a byte-identical canon block and its ref detail digests, ledger logs spec version and attached refs; exemplar g01 p4 rendered for critique",
+      "actions": [
+        "docs/macpro-guide-refs.json",
+        "docs/macpro-guide-spec.json",
+        "docs/macpro-guide-refs/",
+        "tools/mac-guide-art.ts refs command+checks",
+        "g01 p4 exemplar"
+      ],
+      "sha256": "1101da786e81e3611754b5f87525b16bbec7471e7a71f174438db87135acb739"
+    },
+    {
+      "seq": 54,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "continue from last prompt. read each word verbatim and interpret it once more. here is the side view of it open, first photo. 2x140mm fan encasings on the left, between that and the ram is the dual cpus and its heatsinks covered by the metal compartment. to the cpus right is the ram, above that is the backplate of the gtx 285 alien. behind that is 3 more pcie slots and a dangling power connector for the gtx from the case. above the gpus blower fan is the drive bay, four drives left to right. on the top two compartments, from left to right, is the encased dvd drive with one cd/dvd bay. and to the right or behind the dvd drive is the power supply, also secured in another compartment. on the rear, there is a lower 140mm exhaust. make sure to include the i/o in full detail too",
+      "demands": [
+        "upright open-side interior zone layout",
+        "dual 140 fan tray left",
+        "dual CPU compartment",
+        "ram right of CPU",
+        "GPU above RAM backplate + 3 PCIe behind + dangling booster",
+        "four drive bays above GPU",
+        "encased DVD one bay top-left",
+        "PSU compartment top-right/behind",
+        "lower rear 140 exhaust",
+        "full rear I/O detail"
+      ],
+      "sha256": "eb52a0121b01daedb009ca884daeac0b7081d2bda0facde9dbc60ecca605a28e"
+    },
+    {
+      "seq": 55,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-rear-panel-2026-09-12 (3 identical frames)",
+      "tool": "read_file vision (operator photo, chat-only)",
+      "claims": [
+        {
+          "claim": "upright rear panel: round-hole mesh, left latch column with padlock icon/T-slide/finger pocket, PCI frame = 3 blank slotted covers + GTX285 double-wide finned exhaust bracket + bracket plate with TWO DVI-I side by side and regulatory label",
+          "evidence": "operator photo three identical attachments this session",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "lower-left circular exhaust is diagonal cross-hatch X-lattice ~140mm, not dot stipple; lower-right cluster 2 USB top, FW800/FW400+USB, 2 TOSLINK, 2 audio, 2 stacked RJ45; IEC socket above PCI frame",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "attachment not persisted to sandbox disk; /home/user/uploads absent; recorded as op-rear-io-photo chat-only ref and must be re-uploaded to attach",
+          "evidence": "filesystem scan",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "9d0bec3145b40f09e8e0de71f3c0b18a3ef39167435a97aba30681c897580ad8"
+    },
+    {
+      "seq": 56,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "g01-layout-v6c",
+      "value": "operator G-20 zone map: fan tray 2x140 LEFT, dual-CPU compartment, RAM cage RIGHT of CPUs, GTX285 above RAM (backplate visible, fan toward drive bays, bracket rear/right, 3 free PCI rails, dangling booster), 4 bays ABOVE GPU L-R, DVD top-left one optical bay, PSU top-right own compartment, 140 rear cross-hatch exhaust, full I/O",
+      "source": "operator verbatim 2026-09-12",
+      "sha256": "3235b699907812b4dc81e25bc8a0fa018fec8cb1e1c374c6bf0f679f3b586204"
     }
   ],
   "stacks": [
