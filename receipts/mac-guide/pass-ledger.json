@@ -825,9 +825,65 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 15,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p15.txt",
+          "promptHash": "40af5e2c9e1402e79750686af7ee382dcfc7d7599e65b5dc754e691def8ff1cd",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p15.svg",
+          "schematicHash": "1a509de506b38a932b610e9f5596fcea7756a6f8ef4fb71e522abc55f1f58f2d",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-memory-cage-boards",
+            "ifixit-fan-removed-interior"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p15e.png",
+              "sha256": "6981e9aa5c0816ed3b6ad8adb1ad40550510782a7e306c5cfa961f54a2140507",
+              "bytes": 1119345,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 215.93,
+            "stddev": 80.35,
+            "pctDark": 0.0965,
+            "pctBright": 0.8021,
+            "edgeRatio": 0.2131,
+            "pctColor": 0.0005,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 15
+      "nextPass": 16
     },
     "g02-poweroff": {
       "passes": [
@@ -1157,9 +1213,52 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g05-hdd-install-p4.txt",
+          "promptHash": "b70b27c878e2d31d98bbadff1f1291c825519593ea3f1f97078881149417bb3b",
+          "schematicFile": "receipts/mac-guide/schematics/g05-hdd-install-p4.svg",
+          "schematicHash": "2101ed86d9f3790c9c4be377de578aa28e81e67c2a1ae3a75623136b4f583182",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "ifixit-sled-insert-photo",
+            "apple-interior-photo",
+            "panel-sticker",
+            "apple-product-views",
+            "apple-diy-gpu-sheet"
+          ],
+          "refsAttached": [
+            "ifixit-sled-insert-photo",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-diy-gpu-sheet"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g05-hdd-install-p4.png",
+              "sha256": "1352d8397b918bbe7e20bee85e69447a2cc98a0768c9faf5cd758efdcf978f1d",
+              "bytes": 1181671,
+              "w": 1195,
+              "h": 896
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 217.44,
+            "stddev": 75.09,
+            "pctDark": 0.0819,
+            "pctBright": 0.808,
+            "edgeRatio": 0.1988,
+            "pctColor": 0.0007,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g06-gpu-swap": {
       "passes": [

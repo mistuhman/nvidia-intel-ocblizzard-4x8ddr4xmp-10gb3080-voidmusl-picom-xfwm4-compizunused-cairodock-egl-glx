@@ -1,6 +1,6 @@
 {
   "schema": "mac-guide-spec.v1",
-  "version": "v6c-operator-layout-2026-09-12",
+  "version": "v6d-gpu-horizontal-fix-2026-09-12",
   "updated": "2026-09-12",
   "machine": "Mac Pro 3,1 Early 2008 (A1186 family, EMC 2180, MacPro3,1)",
   "refRegistry": "docs/macpro-guide-refs.json",
@@ -43,7 +43,8 @@
       "refs": [
         "panel-sticker",
         "apple-product-views",
-        "apple-diy-gpu-sheet"
+        "apple-diy-gpu-sheet",
+        "apple-interior-photo"
       ]
     },
     {
@@ -56,7 +57,10 @@
       "draw": "left-side visible front plane covered in uniform round-hole stipple; TWO long horizontal rounded optical slot bezels stacked around v 18-30; slim vertical recessed I/O column at v 48-78 with circular power button, audio hole, two stacked USB rectangles, FW800 and FW400 ports",
       "refs": [
         "apple-product-views",
-        "panel-sticker"
+        "panel-sticker",
+        "apple-diy-gpu-sheet",
+        "apple-interior-photo",
+        "ifixit-fan-removed-interior"
       ]
     },
     {
@@ -69,7 +73,8 @@
       "draw": "top-FRONT compartment: the ENCASED DVD/CD drive in ONE 5.25 bay, smooth aluminum carrier face with two small rounded latch cutouts and screw dots; the second optical position is an EMPTY matching bay (Lion SSD relocation target); both positions share the front optical carrier plate",
       "refs": [
         "apple-interior-photo",
-        "ifixit-fan-removed-interior"
+        "ifixit-fan-removed-interior",
+        "apple-product-views"
       ]
     },
     {
@@ -82,7 +87,8 @@
       "draw": "top-REAR compartment to the right of/behind the DVD bay: the POWER SUPPLY secured inside its own smooth aluminum compartment, plain large faceplate, no cutouts, separated from the optical bay by a frame rail; never draw drive slots here",
       "refs": [
         "apple-interior-photo",
-        "ifixit-fan-removed-interior"
+        "ifixit-fan-removed-interior",
+        "apple-product-views"
       ]
     },
     {
@@ -92,11 +98,12 @@
       "w": 62,
       "h": 11,
       "depth": "15-45",
-      "draw": "exactly FOUR identical silver sled faceplates in an even horizontal row with narrow black gaps; each has a raised oval/feature near top, small screws and a circled bay number at lower-right (1 leftmost/lower when on side through 4 rightmost/upper); captive front thumbscrew; with sleds removed the bay shows open rail frame and backplane PCBs with small gray latch tabs",
+      "draw": "EXACTLY FOUR identical silver sled faceplates in a SINGLE even HORIZONTAL ROW with narrow black gaps, NOT 8 bays, NOT vertical stack, NOT 2x4 grid; each faceplate is a brushed aluminum rectangle with a raised oval/feature near top center, small Phillips screw at right end, circled bay number at lower-right corner (1 leftmost/lower when on side through 4 rightmost/upper, 4 has empty square outline), captive front thumbscrew at bottom edge; with sleds removed the bay shows open rail frame and backplane PCBs with small gray latch tabs; sleds slide straight in-out on rails front-to-rear 30mm with PUSH IN / PULL arrows",
       "refs": [
         "apple-interior-photo",
         "ifixit-sled-insert-photo",
-        "ifixit-fan-removed-interior"
+        "ifixit-fan-removed-interior",
+        "apple-product-views"
       ]
     },
     {
@@ -106,11 +113,12 @@
       "w": 30,
       "h": 52,
       "depth": "45-75",
-      "draw": "FRONT FAN TRAY (lower-left in case-on-side view): ONE removable silver tray holding TWO large ~140mm-class squirrel-cage BLOWER ENCASINGS side by side over two copper CPU heat-exchanger plates; smooth lid with recessed pull, vents along its lip; lifts STRAIGHT OUT as one piece to expose the dual CPUs and hidden SATA ports; never draw as two separate loose fans",
+      "draw": "FRONT FAN TRAY (lower-left in case-on-side view, front-left in upright): ONE removable silver tray holding TWO large ~140mm-class squirrel-cage BLOWER ENCASINGS side by side (two equal round housings, not one little fan, not many small fans) over two copper CPU heat-exchanger plates; smooth lid with recessed pull, vents along its lip; lifts STRAIGHT OUT as one piece toward open side (right) with solid black block LIFT arrow and 40mm distance chip to expose dual CPUs and hidden SATA ports; ghost 40% dashed shows lifted state",
       "refs": [
         "ifixit-front-fan-lift",
         "ifixit-fan-removed-interior",
-        "apple-interior-photo"
+        "apple-interior-photo",
+        "apple-product-views"
       ]
     },
     {
@@ -134,13 +142,15 @@
       "w": 46,
       "h": 13,
       "depth": "5-20",
-      "draw": "EVGA GTX 285 Mac Edition double-wide horizontal blower lying across the PCI rails ABOVE the RAM cage in upright layout; from the open side the card BACKPLATE/smooth underside faces the viewer, the square-framed CIRCULAR TURBINE FAN sits toward the drive-bay side, and the metal bracket (two stacked DVI-I rectangles plus screw tab) is FLUSH AT THE REAR/RIGHT FRAME RAIL; gold edge enters the rail below; TWO side-by-side 6-pin sockets at the fan-end cap with the factory BOOSTER CABLE dangling loose from the case/board connector (board end in) until plugged; THREE MORE EMPTY PCIe slot rails remain visible behind the card toward the rear",
+      "draw": "EVGA GTX 285 Mac Edition double-wide blower card, LONG AXIS HORIZONTAL LEFT-TO-RIGHT, length ~4x height, thickness double-slot occupying two PCI openings, gold PCIe x16 edge along entire BOTTOM edge inserted straight down into a single horizontal black PCI slot rail below, metal I/O bracket at RIGHT/REAR end FLUSH against rear frame rail with TWO stacked DVI-I rectangles plus screw tab and small regulatory label strip, square-framed CIRCULAR TURBINE FAN at LEFT/INBOARD end on the TOP face (fan circle visible from above, not facing viewer), smooth shroud with EVGA and GTX 285 markings between fan and bracket, TWO side-by-side 6-pin sockets recessed in the FAN-END CAP at left/inboard end (never at bracket end, never PSU-fed), factory BOOSTER CABLE (two black leads laced) originates at logic board aux connectors behind card and routes to those fan-end sockets, dangles loose as loop toward memory cage when unplugged; card sits HORIZONTALLY PARALLEL TO THE HDD ROW, ABOVE the RAM cage and BELOW the HDD row in upright layout, with THREE additional empty horizontal PCI slot rails visible behind/beside it toward rear; NEVER vertical, NEVER on a riser cable, NEVER with fan facing viewer, NEVER with backplate flat to memory cage as a vertical wall, NEVER with bracket at front/left, NEVER with fan closer to inside case facing up as a lid",
       "refs": [
         "evga-gtx285-flat",
         "evga-gtx285-angle",
         "ifixit-gpu-booster-cable",
         "ifixit-fan-removed-interior",
-        "op-rear-io-photo"
+        "op-rear-io-photo",
+        "apple-interior-photo",
+        "apple-product-views"
       ]
     },
     {
@@ -164,7 +174,7 @@
       "w": 28,
       "h": 44,
       "depth": "10-30",
-      "draw": "smooth metal compartment edge/cover shared between the dual-CPU compartment and the RAM cage, vertical latch rail at its right edge; removed state exposes the two riser windows",
+      "draw": "smooth metal compartment edge/cover shared between dual-CPU compartment and RAM cage, vertical latch rail at its right edge; covers the two riser windows when installed, removed state exposes the two riser windows; never draw as mesh",
       "refs": [
         "apple-interior-photo",
         "ifixit-fan-removed-interior",
@@ -178,7 +188,7 @@
       "w": 40,
       "h": 30,
       "depth": "20-45",
-      "draw": "rectangular framed window with TWO removable riser boards stacked in separate rounded cutouts; each board is blue with a large round FINGER HOLE at BOTH ends, FOUR vertical FB-DIMMs with finned heatsinks held by three spring clips each, ejector levers at board ends, purple cylindrical caps and inductor rows behind slots visible on an unpopulated board; riser A is the top bank, riser B the bottom; an empty bay shows only PCB, caps and slots",
+      "draw": "rectangular framed window with TWO removable riser boards stacked vertically in separate rounded cutouts (upper and lower), each board is blue PCB with a large round FINGER HOLE at BOTH ends (four holes total), FOUR vertical FB-DIMMs per board (8 total) with thick black finned heatsinks held by THREE silver spring clips each plus black plastic ejector levers at both board ends, purple cylindrical caps and inductor rows behind slots visible on an unpopulated board; riser A is top bank with bold A label at outer corner, riser B bottom with B; an empty bay shows only PCB, caps and slots; risers pull straight out perpendicular with solid black block PULL arrows, ghost 40% dashed shows pulled state; NEVER draw as ordinary DIMM slots on motherboard, NEVER as flat RAM sticks without riser carrier",
       "refs": [
         "apple-interior-photo",
         "apple-riser-fbdimm-photo",
@@ -212,7 +222,8 @@
       "refs": [
         "apple-interior-photo",
         "apple-rear-ports-lineart",
-        "ifixit-fan-removed-interior"
+        "ifixit-fan-removed-interior",
+        "apple-product-views"
       ]
     },
     {
@@ -240,7 +251,8 @@
       "draw": "narrow honeycomb/dot perforation strip along the inner rear frame edge",
       "refs": [
         "apple-interior-photo",
-        "ifixit-fan-removed-interior"
+        "ifixit-fan-removed-interior",
+        "apple-product-views"
       ]
     },
     {
@@ -250,7 +262,7 @@
       "w": 26,
       "h": 30,
       "depth": "40-75",
-      "draw": "DUAL CPU ZONE between the front fan tray and the RAM cage: two Xeon heatsinks under a smooth metal compartment cover; with the tray lifted, two copper heat-exchanger plates with brass posts show; open state shows two large horizontally-laid BLACK FINNED heatsinks, a smaller light finned northbridge block, silver PRAM coin cell and cap rows",
+      "draw": "DUAL CPU ZONE between front fan tray and RAM cage: two Xeon heatsinks under smooth metal compartment cover; with tray lifted, two copper heat-exchanger plates with brass posts show; open state shows two large horizontally-laid BLACK FINNED heatsinks with parallel fin lines covering dual Xeon sockets (Harpertown), smaller light finned northbridge block, silver PRAM coin cell near slot bank, cap rows; heatsinks lie horizontally, not vertical",
       "refs": [
         "ifixit-front-fan-lift",
         "ifixit-fan-removed-interior",

@@ -1,0 +1,392 @@
+=== CANON BLOCK START (identical on every plate, do not paraphrase) ===
+SPEC VERSION: v6d-gpu-horizontal-fix-2026-09-12
+CANONICAL CAMERA: panel-sticker three-quarter case-on-side
+The ONLY allowed camera for chassis plates, copied from the operator's panel sticker: the tower lies on its side/back, front mesh face toward the LEFT side of frame with the two horizontal optical slot bars and vertical port glyph strip visible, open side facing toward the RIGHT/viewer, rendered in three-quarter perspective as if seen from above and slightly in front. Removed carriers exit straight out of the open face toward the right with a solid black block arrow.
+PROJECTION: facePlane=open-face plane coordinates u (0 left to 100 right) x v (0 top to 100 bottom) as measured from apple-interior-photo; depth=z=0 at open face, z=100 deepest interior; screenOffset=interior depth recedes toward upper-left: screen_x = u - 0.28*z, screen_y = v - 0.16*z, applied inside the chassis rectangle of the schematic; notes=the deterministic SVG schematic is the orthographic open-face anchor (u/v only); the AI render applies this documented projection, never free perspective
+LINE LANGUAGE: primary: black #000000 1.5px uniform outline, closed shapes, round-ish line joins like the Apple DIY art | secondary: 0.75px for internal detail (screw dots, rail lines, port internals, fin lines) | ghost: #000000 at 40% opacity, dashed 4-2, 0.5px; used ONLY for previous/next state and detached removed parts | arrow: SOLID BLACK FILLED BLOCK ARROW with triangular head, copied verbatim from panel-sticker; one arrow per motion; never thin line arrows | stipple: fine even dot stipple renders aluminum perforation mesh (front face and rear panel); the lower-rear 140mm exhaust grille is a DIAGONAL CROSS-HATCH X-lattice, never stipple; neither is shading | background: pure white #FFFFFF, no paper texture, no border around the scene (the schematic frame is not rendered) | fills: NONE. no gray fill, no black solid except arrow heads, caution glyphs and the GPU blower shroud silhouette; aluminum reads as white enclosed by outlines | hands: when an action needs a hand (DIY-sheet style), draw outline-only hand, no skin tone, no shading | font: Helvetica Neue / Helvetica only; labels ALL CAPS bold for part names; sentence case for step wording inside the side panel; numbers same face bold
+CONSISTENCY INVARIANTS:
+- INV-01 identical camera: every chassis plate uses the panel-sticker three-quarter case-on-side view with the same vanishing direction and same chassis screen size; only the highlighted action and ghost states change
+- INV-02 identical chassis: same outline, handle, feet, front mesh placement, optical bars and port column on every plate; trace chassis from refs every pass, never redraw from memory
+- INV-03 part counts never change: 2 optical positions (1 encased DVD + 1 empty), 4 HDD bays/sleds, 1 front fan TRAY holding TWO ~140mm blower encasings, 1 dual-CPU metal compartment (2 Xeon heatsinks), 1 PSU compartment, 2 risers x 4 FB-DIMM slots (2 finger holes per board), PCI opening with 3 blank covers + double-wide GTX285 with 3 remaining empty slot rails, 2 booster leads with dangling case connector, 1 lower-rear 140mm cross-hatch exhaust, 1 latch, 1 IEC socket, rear cluster 3 USB + FW800 + FW400 + 2 TOSLINK + 2 audio + 2 GbE
+- INV-04 orientation never flips: front mesh left, open side right; GPU bracket end (stacked DVI rectangles) FLUSH against the rear/right frame rail with the turbine fan end pointing inboard/LEFT; booster sockets are at the fan-end cap, cables run board-header (origin) -> fan-end cap sockets (destination); sleds slide straight in-out on rails; risers pull straight out
+- INV-05 uniform language: 1.5px primary / 0.75px secondary / 40% dashed 4-2 ghost / solid filled block arrows / dot stipple only for mesh; no color, gray fill, shading, gradient, glow, watermark or photoreal humans on any plate
+- INV-06 uniform furniture: STEP box and side panel occupy the same screen rect on every plate, same footer rule and footer text style, same 1536x1024 canvas; g01 inventory rail does not move between passes
+- INV-07 labels: Helvetica only, English only, ALL CAPS short labels max 4 words / 24 chars; no coordinates, no spec values, no sentences inside the artwork; sentence-case action text lives only inside the side panel
+- INV-08 every hardware item in a plate must exist in chassisFaceParts (or inventoryProps); anything not catalogued is an invention and fails the plate
+- INV-09 assembled/disassembled pairing: every removable-part plate shows the seated state solid and the detached state ghost-40 with one filled block arrow and a distance chip; both states share the exact same part outline
+- INV-10 prompt provenance: each prompt carries spec version, ref IDs, schematic hash and the ref detail digest; the render receipt records which refs were attached, so quality/consistency drift is traceable to a hash and not a vibe
+DRIFT WATCHLIST (each item here is a failed class, never reproduce):
+- fan tray drawn as one little fan or fans left out (must be one tray with two ~140 blower encasings)
+- PSU drawn outside its top-rear compartment or drives placed in it (it sits behind/right of the DVD bay, plain face)
+- DVD bay shown with two drives (operator has ONE encased DVD, one empty optical position)
+- GPU drawn vertical or with fan and bracket swapped (must be horizontal, bracket rear/right, fan front)
+- motherboard omitted or replaced with generic chips (must show finned Xeon heatsink, cap rows, northbridge per apple-interior-photo)
+- memory risers drawn as ordinary DIMM slots (they are two removable cards with finger holes, clips and vertical FB-DIMMs)
+- fan assembly drawn as multiple small fans (it is one blower module strip)
+- drive cages drawn with wrong screw counts or five bays (exactly four sleds, right/end screw features and circled numbers)
+- GPU power cables routed from PSU or into the wrong card edge (board aux headers -> GPU top edge)
+- each render restyling the case (the chassis outline must be identical plate to plate)
+- random extra drives, MacBooks, rack servers, invented ports, Japanese/foreign lettering, paragraphs of in-image text
+=== CANON BLOCK END ===
+
+PLATE g01-overview — STEP 1 — INVENTORY BAY MAP
+PURPOSE: STEP 1 INVENTORY - bare fundamentals: Mac Pro 3,1 tower three-quarter case-on-side, front mesh LEFT with two optical slots and I/O column, open side RIGHT, top compartments DVD (front, one slot encased) and PSU (rear, plain), below that HDD row EXACTLY 4 sleds horizontal, below that GPU horizontal (bracket rear/right flush, fan inboard/left, gold edge bottom, 2x6-pin at fan end), below GPU dual-CPU heatsinks under metal cover and RAM cage with 2 risers x 4 DIMMs (finger holes both ends), front-left fan tray with TWO 140mm blowers LIFT 40mm, rear cross-hatch 140 exhaust and full I/O cluster; inventory icons bottom
+VIEW: v6d panel-sticker three-quarter case-on-side camera (tower lies on side/back, front mesh face LEFT with two horizontal optical slot bars and vertical port glyph strip visible, open side facing RIGHT/viewer, three-quarter perspective from above and slightly front), identical chassis size and vanishing direction on every plate, uniform sidepanel left, black and white line art Helvetica, 1536x1024 fixed
+CANVAS: 1536 x 1024 px (fixed, do not crop)
+
+ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
+- step [panel] at x=2 y=2 w=18 h=8
+    SHORT LABEL (only text allowed in image): STEP 1
+    MEANING (visual, not text): Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.
+- chassis-accurate [chassis] at x=24 y=6 w=48 h=86
+    SHORT LABEL (only text allowed in image): MAC PRO 3,1
+    MEANING (visual, not text): BARE FUNDAMENTALS CHASSIS: outer aluminum frame one-piece handle top, feet bottom, rounded corners; front-mesh-face LEFT with round-hole stipple, TWO horizontal optical slot bezels stacked v18-30 and vertical I/O column with power button, audio, 2xUSB, FW800/FW400; TOP compartments: dvd-optical-bay FRONT (encased DVD one bay with slot, second optical position EMPTY for Lion SSD, smooth carrier with two latch cutouts and screw dots) and psu-compartment REAR (plain face, no cutouts, behind/right of DVD, separated by frame rail); MIDDLE: hdd-row-4-sleds EXACTLY FOUR silver faceplates in SINGLE horizontal row with narrow black gaps, raised oval near top center, small screw at right end, circled number lower-right (1 leftmost through 4 rightmost, 4 has empty square outline), captive thumbscrew, sleds slide front-to-rear 30mm; BELOW HDD: gpu-gtx285-blower LONG AXIS HORIZONTAL LEFT-TO-RIGHT, double-wide, gold edge BOTTOM inserted into horizontal PCI rail, bracket RIGHT/REAR flush with TWO stacked DVI, fan LEFT/INBOARD circular on TOP face, 2x6-pin sockets at fan-end cap, THREE empty PCI rails behind toward rear, booster cable two black leads board->fan-end dangling loop; BELOW GPU: cpu-compartment-cover DUAL CPU ZONE between fan tray and RAM, two black finned heatsinks horizontal, northbridge block, coin cell, cap rows, metal cover; memory-shroud edge between CPU and RAM; riser-window-2-banks TWO riser boards stacked vertical in rounded cutouts, each blue with finger holes BOTH ends, FOUR vertical FB-DIMMs with finned heatsinks and 3 clips each, ejector levers, purple caps, A top B bottom; riser-plates-A-B-out ghost 40% dashed pulled straight out right with A/B labels and solid black block arrows outward; front-fan-assembly ONE tray with TWO 140mm blower encasings side by side front-left, LIFT 40mm arrow; latch-lever silver at right/rear edge; rear-io-plane full detail mesh, latch column padlock/T-latch/finger pocket, PCI opening 3 blank covers plus GPU double-wide fin bracket and dual-DVI, cross-hatch 140 exhaust lower-left, port cluster 2 USB top, FW800/FW400/USB next, 2 TOSLINK, 2 audio, 2 stacked GbE, IEC top; honeycomb-edge inner rear frame; rear-140-exhaust large circular diagonal cross-hatch X-lattice. NEVER vertical GPU, NEVER riser cable, NEVER 8-bay grid, NEVER ordinary DIMM slots without riser, NEVER two separate fans. All counts invariant.
+- bay-labels-accurate [panel] at x=24 y=10 w=10 h=40
+    SHORT LABEL (only text allowed in image): BAY 1-4
+    MEANING (visual, not text): Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.
+- desk-hdd-photo [hdd] at x=72 y=12 w=14 h=10
+    SHORT LABEL (only text allowed in image): WD GREEN
+    MEANING (visual, not text): WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.
+- desk-timecapsule [panel] at x=88 y=12 w=10 h=10
+    SHORT LABEL (only text allowed in image): TIMECAPSULE
+    MEANING (visual, not text): Apple Time Capsule white on desk right as in photo-1 with Apple logo.
+- ghost-sled [bay] at x=24 y=54 w=10 h=10
+    SHORT LABEL (only text allowed in image): GHOST OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.
+- arrow-pull [cable] at x=36 y=56 w=8 h=6
+    SHORT LABEL (only text allowed in image): PULL
+    MEANING (visual, not text): Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.
+- sidepanel [panel] at x=2 y=14 w=18 h=76
+    SHORT LABEL (only text allowed in image): INVENTORY LIST
+    MEANING (visual, not text): Uniform sidepanel left every plate compact manual wording Helvetica: 1 Identify front mesh LEFT and open side RIGHT, 2 Top DVD encased one bay plus empty optical, PSU plain rear, 3 HDD row EXACTLY 4 sleds horizontal Bay1 bottom/leftmost to Bay4 top/rightmost with red outline Bay4, PULL 30mm ghost, 4 GPU horizontal bracket rear/right flush fan inboard/left gold edge bottom 2x6-pin at fan end dangling loop, 5 CPU dual heatsinks under metal cover between fan tray and RAM, 6 RAM 2 risers A top B bottom finger holes both ends 4 DIMMs each PULL straight out with block arrows, 7 Fan tray ONE tray TWO 140 blowers LIFT 40mm ghost. Intuitive flow: solid assembled then ghost 40% dashed disassembled with distance chip and block arrow. No imaginary slots.
+- footer [footer] at x=2 y=92 w=96 h=5
+    SHORT LABEL (only text allowed in image): STEP1 INVENTORY
+    MEANING (visual, not text): Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.
+
+STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
+# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v6
+
+v6 (operator directive 2026-09-12, panel-sticker message): **REF-TRACED IMAGING.** The memory
+instruction infographic on the back of the Mac panel is the vision: an accurate THREE-QUARTER
+ANGLED Mac Pro 3,1 lying on its side, removed carriers ghosted straight out with solid black
+filled block arrows. Every plate MUST cross-reference public Apple/reference imaging
+(`docs/macpro-guide-refs.json`, images in `docs/macpro-guide-refs/`) down to the smallest
+observable detail, under ONE identical draconian ruleset: canonical camera, line weights,
+counts, furniture and labels never drift plate to plate. All details are baked in
+`docs/macpro-guide-spec.json` (15 catalog parts, INV-01..INV-10), hash-checked by
+`node tools/mac-guide-art.ts refs`, and the tool injects a BYTE-IDENTICAL canon block plus each
+plate's ref detail digest into every prompt; ledger logs spec version + attached refs. The
+operator critiques each render; findings become P10 deductions that patch IR/spec/refs so the
+next prompt hash changes. Names stay simple, no token ceremony.
+
+Operator directive 2026-09-12 rev1: **NO actual Japanese lettering.** English only, Helvetica,
+uniform consistent formatting, short comprehensive guiding words. Japanese compactness is
+carried forward as MANUAL COMPACTNESS (layout density only, never a language).
+
+Operator rev2 2026-09-12 (seq 27): **none of them pass**, progressive hallucination,
+fundamentals of schematicization before visualization must change, reproduce at same quality
+via TypeScript tool, keen user feedback, intuitive placed+detached flow, specific inaccuracies:
+GPU orientation, motherboard not displayed, RAM cages, fans, PCB layout, GPU cable direction
+(board end in → GPU end out), last image random assembly, second image only worthwhile
+(drive cages + upper DVD + PSU correct), cages/screws wrong. Awaiting isolated parts photos.
+
+V5 fundamental: **SCHEMATIC BEFORE VISUALIZATION.** No AI render without a deterministic SVG
+blueprint that anchors every hardware element. The TypeScript tool is the single source of
+truth and must reproduce the same geometry at the same quality every invocation. The schematic
+is versioned, hashed, and traced — hallucination is blocked at the prompt level.
+
+## Language + type
+- Rendered-image language: **ENGLISH ONLY**. No kana, no kanji, no romaji dummies.
+- `helvetica` Helvetica Neue / Helvetica; 75 Bold Condensed for labels, 55 Roman for detail.
+- Labels: **short comprehensive guiding words**, max 4 words / 24 chars, ALL CAPS, black on white.
+- Numbers Helvetica Bold. No other font anywhere, no serif, no mono, no script.
+
+## Palette
+- `black-line` #000000 100% line: 1.5px stroke primary edges, 0.75px secondary.
+- `ghost-40` #000000 at 40% opacity, dashed 4-2, 0.5px stroke: previous/next state, partially out.
+- `white-paper` #FFFFFF background. No texture, no gradient.
+- No color. No gray fill. No shading. Black lines on white only.
+
+## Geometry — LEGO + manual compactness
+- Uniform side panel EVERY plate: left x=2 y=14 w=18 h=76 (percent grid), same camera,
+  same framing, same scale across all plates.
+- INPUT solid black 100% -> OUTPUT ghost 40% dashed, with a motion arrow + distance
+  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: SOLID BLACK FILLED BLOCK ARROW with triangular
+  head copied verbatim from the panel sticker (v6; not a thin line arrow), Helvetica label beside.
+- v6 camera: the CHASSIS is always drawn in the panel-sticker THREE-QUARTER case-on-side view
+  (projection baked in docs/macpro-guide-spec.json canonicalView); the deterministic SVG
+  schematic stays orthographic as the face-plane anchor the render projects from. Never free
+  perspective, never a different camera angle between plates.
+- Grid 8px module. Canvas 1536x1024 fixed per plate.
+- Footer: single black rule + step name.
+- Schematic guides: faint 8px grid at 6% opacity, anchor dots for every hardware element.
+
+## Schematic layer (anti-hallucination gate)
+- Before any `prompt` is emitted, the tool writes `receipts/mac-guide/schematics/{plate}-p{pass}.svg`
+  - deterministic SVG blueprint: white-paper rect, sidepanel box, every node as a black-line rect,
+    every hardware anchor as a nested sub-rect/circle (HDD bays x4 with right-end screw dot + Bay4 outline,
+    optical cutouts (left 2x rect), GPU horizontal double-wide center-right with cable path board→GPU,
+    memory shroud, PCB windows x2, honeycomb dots, PSU top).
+  - ghost parts are 40% dashed 0.5px; solid parts 1.5px.
+  - the SVG hash is stored in the ledger (`schematicFile` / `schematicHash`) and the prompt contains
+    `SCHEMATIC ANCHOR: receipts/...svg` + `RENDER RULE: trace the schematic, no invention`.
+- No prompt without a schematic. No schematic without anchors. `schematic --plate=ID --pass=N`
+  is deterministic: same IR → same SVG hash (see selftest `schematic-deterministic`).
+- Hardware anchors per plate are declared in `tools/mac-guide-art.ts:HARDWARE_ANCHORS`. The prompt
+  repeats them as `HARDWARE ANCHORS: a, b, c -- place each at its schematic coordinate`.
+- Reproducibility: the TypeScript tool is the only generator. Re-running `prompt` or `schematic`
+  at same pass reproduces identical file + hash. No hand-authored prompts, no random seeds.
+
+## Tool-panel mockup spec (this contract's own design console)
+The mockup plate renders the style system AS a photo-editor console so every knob is visible
+and its value is storable:
+- Left tool rail: move, marquee, lasso, crop, eyedropper, wand, brush, eraser, pen, type,
+  zoom, hand — simple black line icons, one word labels.
+- Right inspector column: sliders with tick track + value chip. Canonical stored knobs:
+  LINE 1.5PX | EDGE 0.75PX | GHOST 40% | DASH 4-2 | GRID 8PX | LABEL 24CH | OPACITY 100% |
+  PAPER 100% | PULL 30MM | LIFT 20MM | ANGLE 0 | CANVAS 1536X1024.
+- Toggles: ASSEMBLED / DISASSEMBLED pair (see conflict rule). Checkboxes: NO COLOR,
+  NO SHADING, ENGLISH ONLY.
+- Histogram + layers strip black line art. Every value shown is a real contract value above.
+- Schematic toggle: SHOW ANCHORS / SHOW GRID previews the blueprint under the render.
+
+## Intuitive flow — assembled/disassembled pairs (MANDATORY when removable)
+Operator rev2: designs lacked intuitive flow showing what things look like when placed AND
+when detached. Every operation that exposes hidden geometry MUST be a pair on one plate:
+- ASSEMBLED: chassis closed state, solid parts. Hides what it hides (RAM cage hides CPU sockets,
+  GPU shroud hides slot latch, fan hides spare SATA).
+- DISASSEMBLED: same camera, blocking part ghost 40% dashed lifted out with remove-order
+  arrows and numbered remove steps (WHAT to disassemble, HOW far, WHICH screws).
+- The pair shares one plate, same scale, same grid, state word (ASSEMBLED / DISASSEMBLED) is the label.
+- Applies to: g03 fan→SATA, g04 SSD→optical, g05 HDD sled→bay, g06 GPU→slot + power cables.
+  g01 overview is reference (single state) but must still schematic-anchor every part so later plates trace.
+
+## Iconography — copied exactly from operator photos
+Primary reference: operator photo 2026-09-12 (Mac Pro 3,1 side open, case on its side; chat attachment - durable perception receipt agent-memory seq 7+28 — 6 duplicate frames this turn are same image, not yet isolated parts; awaiting isolated parts photos):
+- Two optical covers top: LEFT cover wide with TWO rectangular cutouts (screw in each);
+  RIGHT cover plain large. (In the classic front view these are the stacked optical slots.)
+- Four HDD blanks in a row (upright: vertical column Bay1 bottom -> Bay4 top). Leftmost/
+  first blanks show realistic weathering scratches; small screw at right end of each blank.
+  Each blank is an aluminum sled with front captive thumbscrew, rear connector, rails.
+- RED SQUARE (outline only) on the rightmost blank (Bay4) — small empty square outline, never fill.
+- Large smooth silver memory-cage shroud lower-left (upright: front-left below the bays).
+  Inside are TWO FB-DIMM riser cards, each 4 slots (8 total), DIMMs vertical.
+- Logic board strip top with connectors; big black finned heatsinks horizontal behind GPU
+  covering dual Xeon sockets (Harpertown), northbridge heatsink. Board PCB is deep blue with
+  cylindrical caps but rendered as black outline only in BW style.
+- GTX 285 double-wide black blower, curved shroud, horizontal center-right in slot 1,
+  bracket at rear, fan at front, power sockets on top edge. TWO 6-pin PCIe power cables
+  ORIGINATE FROM LOGIC BOARD AUX HEADERS (board end in) and plug into GPU top edge
+  (GPU end out). In overview photo both are UNPLUGGED and dangling in a loop at center-left
+  toward the memory cage — correct direction is board→GPU, not PSU→GPU.
+- Lower-right: two rectangular windows in silver cage showing PCBs with cylindrical
+  electrolytic caps (outline only, no blue/purple fill).
+- Honeycomb perforated vent strip along right edge; silver latch handle top-right.
+- PSU top (under top panel) smooth silver with vent, above the bays (correct in "second" image).
+- Desk props when in frame: bare 3.5in HDD stack incl. WD Green (white label, green band)
+  left; white Apple Time Capsule with Apple logo right.
+- Copy positions, orientations and proportions exactly; no invented parts, no swapped
+  orientation, no extra drives.
+- OMEN ATX board reference (photo-2, unchanged from v3): LGA1700 empty socket + paste,
+  4 DIMM right of socket, NVMe below CPU, x16 below, honeycomb rear I/O, CR2032 lower left,
+  pump block dangling front-bottom, 2x120 rad right, 24-pin right edge, 8-pin top left.
+
+## Composition
+1. Same camera per plate type across all 8 steps.
+2. Left side panel: STEP number black outline box + compact action list, English.
+3. Input solid, output ghost 40% dashed, arrow vector with distance chip.
+4. Bays: Bay1 bottom, Bay4 top upright; sled slides front-to-rear on rails.
+5. No text overlap, no leader crossing, arrow never crosses a label.
+6. Aspect 1536x1024 fixed.
+7. Schematic underlay is the ground truth; the render traces it 1:1.
+
+## Tokens for compile check
+black-line ghost-40 white-paper helvetica manual compactness lego ghost transparent arrow
+uniform sidepanel english accurate hardware black and white short guiding words schematic anchor trace
+
+`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`,
+`no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`,
+`no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`,
+`no-paragraph-in-image`, `no-text-walls`, `no-color-fill`, `no-gray-fill`, `no-shading`,
+`no-gradient`, `no-japanese-text`
+
+## Negative constraints
+no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-logo-watermark
+no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-counts
+no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill
+no-gray-fill no-shading no-gradient no-japanese-text
+
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text, no-coordinate-text, no-style-spec-text.
+
+CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
+
+SCHEMATIC ANCHOR (orthographic open-face blueprint; the render applies the CANONICAL CAMERA projection to it): receipts/mac-guide/schematics/g01-overview-p15.svg
+HARDWARE ANCHORS: optical-left-cutouts, optical-right-plain, hdd-bay-row-x4, hdd-screw-right-end, red-outline-Bay4, memory-shroud-lower-left, logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu, pcb-windows-x2-lower-right, honeycomb-right-edge, wd-green-desk-left, timecapsule-desk-right -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
+RENDER RULE: Trace the schematic and the supplied reference files. Copy every anchor position, orientation, proportion, part count and screw count exactly. Do not swap orientation, do not add or omit drives, do not fill color. The chassis outline MUST match the other plates of this manual byte-for-byte in shape.
+
+=== REFERENCE TRACING START (highest authority after the operator photo) ===
+Visual reference files are supplied to the generator. Trace chassis proportions, viewpoint, part shapes, counts and line language from them. Their detail digests follow; do not invent parts the refs do not show.
+
+REF panel-sticker [operator-photo-chat-only] file=CHAT-ONLY, NOT ON DISK doc= source=operator chat attachment 2026-09-12 (arena attachment; not written to sandbox disk - /home/user/uploads absent). Re-upload required to pass as image reference.
+SUBJECT: Memory instruction infographic printed on the inside/back of the removable Mac Pro 3,1 access panel - OPERATOR'S PRIMARY STYLE+VIEW REFERENCE ('perfectly represents my vision')
+NOTE: this reference is an operator chat photograph not persisted to sandbox storage; it is described here as a durable perception receipt and MUST be re-supplied as an image reference when available.
+  - brushed silver aluminum panel background, black ink only, photographed at an angle with glare (glare is photo artifact, never art)
+  - artwork left half: the Mac Pro tower shell shown lying on its back/open side, THREE-QUARTER PERSPECTIVE (~20-30 degree angled view from above and front), not flat orthographic
+  - tower outline includes the signature one-piece top handle cutout and rounded stand/foot shapes at both frame ends
+  - front mesh face is visible on the left of the shell with perforation stippling and the two long horizontal optical-slot trim bars one above the other, plus a vertical column of small port/button glyphs below them
+  - memory compartment at the open face: TWO flat rectangular riser carrier plates drawn pulled straight OUT, perpendicular from the logic board plane, each plate carrying a row of upright DIMM outlines (3 to 4 per plate) with clips
+  - UPPER carrier plate has a bold letter 'A' at its outer right corner; LOWER carrier plate has a bold letter 'B' at its outer right corner
+  - the in-cage seated positions of both plates are drawn inside the shell; pulled-out plates are solid outline slightly offset, no heavy ghosting style but clearly detached
+  - TWO solid black filled block arrows with triangular heads point horizontally outward from the open face, one per plate, showing straight pull direction
+  - right half text block, top to bottom: 'IMPORTANT' in bold; English 'To install memory, see the user's guide.'; French 'Pour installer de la memoire, consultez le guide de l utilisateur.'; German 'Anleitungen zum Installieren von Speicher finden Sie im Benutzerhandbuch' (line cropped at right edge); Spanish 'Para instalar memoria, consulte la guia del usuario.'; fifth line is the Japanese translation of the same sentence (described only, NOT reproduced anywhere in our English-only guide art)
+  - the five-language IMPORTANT text is recorded for fidelity to the reference but guide plates render ENGLISH ONLY per contract; the sticker's black-line + filled-block-arrow + three-quarter shell language is what gets copied, not its foreign text
+  - line weights are uniform and thin, outline-only, no shading, no gray fill, no gradients - stippling used for the mesh grille only
+  - composition is spacious: one chassis, one action, generous whitespace; the text occupies its own clean column and never overlaps the art
+  - viewpoint target for the guide: same angled shell on its side; removed parts exit straight toward the viewer/open side with a single bold arrow; removed/next-state part may be dashed at 40% per contract but the solid arrow language is identical
+
+REF apple-interior-photo [ifixit-factory-photo] file=docs/macpro-guide-refs/apple-interior-photo.jpg doc=iFixit 25939 source=iFixit guide 25939 'Memory Cage with Rear Fan (Early 2008) Replacement' step 1 image 1
+SUBJECT: Mac Pro (Early 2008) interior with side panel removed, case on its side (Memory Cage with Rear Fan guide establishing shot)
+  - case lying on its side, open face filling frame; rounded top handle spans upper edge, stand foot lower edge
+  - TOP ZONE (case-on-side): left optical carrier is a wide smooth aluminum plate with TWO small rounded-rectangle cutouts side by side, each cutout has one tiny dark screw dot at its lower edge; right optical carrier is one large plain smooth plate
+  - MIDDLE ZONE: four identical silver HDD blank/sled faceplates in a horizontal row separated by narrow black gaps, each with a small raised/oval feature near top edge and tiny screws
+  - CENTER-RIGHT ZONE: logic board visible - blue PCB, dense cylindrical electrolytic caps with light tops, a large black finned processor heatsink lying horizontally, smaller heatsinks, a small BLACK RECTANGULAR MODULE highlighted by a yellow rectangle in the source annotation (annotation not part of hardware)
+  - LOWER-LEFT ZONE: one large smooth silver memory-cage shroud/cover with rounded corner, fully blank (it hides riser A/B until removed)
+  - LOWER-RIGHT ZONE: rectangular windowed cage exposing TWO memory riser banks stacked one above the other; each bank shows white/heatsinked FB-DIMMs in vertical clips flanked by green PCB and purple/lavender cylindrical caps at the board edges
+  - RIGHT EDGE: silver locking latch lever angled outward mid-height; honeycomb/dot vent perforations along inner frame edges
+  - all zones are separated by clean aluminum frame rails; no cables visible across the open face in factory state
+  - counts that must never drift in guide art: optical carriers = 2 (left dual-cutout, right plain); HDD faces = exactly 4; riser banks visible = 2; cutouts on left optical carrier = 2 each with screw dot
+
+REF apple-product-views [product-photo-composite] file=docs/macpro-guide-refs/apple-product-views.jpg doc=MA970LL/A / A1186 / EMC 2180 source=apple.techable.com Mac Pro 2008 Eight Core 2.8 GHz MA970LL/A A1186 EMC 2180 page
+SUBJECT: Mac Pro Early 2008 A1186 marketing composite: front three-quarter view, access panel, and rear panel
+  - FRONT: full-height perforated aluminum mesh face with dense round hole pattern across the entire front plane
+  - two long horizontal optical slot bezels stacked in the upper third, rounded ends, spanning most of the face width
+  - center I/O strip below the slots: circular power button at top, headphone/optical audio hole, two stacked USB ports, one FireWire 800 and one FireWire 400 port, all in a slim recessed vertical column
+  - the one-piece aluminum carry handle forms a wide rectangular loop across the full top with open grip gap beneath
+  - the bottom stand is a wide curved aluminum foot with open cutouts; front corners of the body are softly rounded where the handle hoop and foot meet
+  - ACCESS PANEL (top-right in composite): flat aluminum door with a large centered faint Apple logo and a small square latch/handle cutout near one edge; bottom corners have notched standoffs that hook into the frame
+  - REAR (small inset): mesh lower face, circular speaker grille, IEC socket top, five horizontal PCI slot covers, I/O cluster bottom-right exactly matching apple-rear-ports-lineart
+  - body side profile is a simple tall rounded rectangle with slight taper; there are NO front-facing drive doors - HDD bays are internal, invisible from the front
+
+REF apple-rear-ports-lineart [apple-user-guide-lineart] file=docs/macpro-guide-refs/apple-rear-ports-lineart.jpg doc=Mac Pro User Guide (Early 2008) source=Apple Mac Pro (Early 2008) User Guide rear-panel illustration (same art used for 2006-2008 Mac Pro guides)
+SUBJECT: Official Apple user-guide line drawing: Mac Pro rear panel left and right port layouts with leader labels
+  - two rear three-quarter views of the tower side by side on pure white, black outline + dot stipple, no fill
+  - mesh grille rendered as uniform fine dot stipple; solid aluminum panels stay white
+  - top of rear face: square IEC power socket with the small square locking latch directly above/beside it
+  - upper-middle: five horizontal slatted PCI expansion slot covers in a framed rectangular block
+  - left of PCI block a long vertical slim grille/vent column
+  - lower-left: large CIRCULAR perforated speaker/fan grille drawn as a packed dot circle
+  - lower-right I/O cluster: two stacked RJ-45 Gigabit Ethernet jacks, FireWire 800 (9-pin) and FireWire 400 (6-pin) ports, three USB 2.0 ports, optical digital audio in and out (mini-TOSLINK circles), analog audio line-in and line-out paired jacks
+  - labels are set in a plain sans-serif face with thin straight leader lines ending at each port; leader lines never cross each other
+  - this is the authoritative stipple-and-leader style for any port/back-panel plate
+
+REF apple-riser-fbdimm-photo [ifixit-factory-photo] file=docs/macpro-guide-refs/apple-riser-fbdimm-photo.jpg doc=iFixit 25937 source=iFixit guide 25937 'Memory (FB-DIMMs) and Memory Riser Cards (Early 2008) Replacement' step 7
+SUBJECT: Mac Pro 3,1 memory riser card 820-2178-04 with FB-DIMMs installed, showing ejectors, finger holes and heatsink clips
+  - blue riser PCB with large gold card-edge connector along the full bottom edge
+  - TWO large round finger holes, one at each end of the riser board (these are what the DIY sheet means by 'holding the riser by the two finger holes')
+  - silkscreen on board reads 'APPLE 820-2178-04' with copyright 2007; a white asset sticker and a pink 'S659' tag appear in the source photo (do not draw tags in guide art)
+  - FOUR FB-DIMM slots; populated DIMMs carry thick black finned heatsinks with a thin green PCB edge visible
+  - each FB-DIMM is retained by THREE silver metal spring clips spanning the heatsink plus black plastic ejector levers at both board ends
+  - two rows of purple/lavender cylindrical capacitors run across the board behind the slots, plus smaller silver caps
+  - ghosted second riser behind shows the second bank of slots - the two risers are mechanically identical
+  - yellow source arrows point at ejectors and clips (annotations, not hardware)
+  - DIMMs mount VERTICALLY to the riser; the riser itself mounts horizontally into the cage when the case is on its side
+
+REF ifixit-sled-insert-photo [ifixit-photo] file=docs/macpro-guide-refs/ifixit-sled-insert-photo.jpg doc=iFixit 65551 source=iFixit guide 65551 'Hard Drive Sled Adapter for Mac Pro First Generation' step 4
+SUBJECT: HDD sled being inserted into the drive bay row, hand supporting the aluminum faceplate
+  - sled faceplate is a plain brushed aluminum rectangle with a SMALL CIRCLED NUMBER ('1') at its lower-right corner - bays are numbered on the sleds/frame
+  - behind the faceplate the black plastic/metal drive carrier is visible with the 3.5 inch drive mounted, connector end facing inward
+  - the bay opening exposes green PCB (drive backplane) at the inner top edge and silver guide rails
+  - adjacent bays to the right show empty vertical rail slots with the same circled numbers 1/2/3 running down a label strip (upright orientation)
+  - motion is straight IN toward the backplane on rails, supported from underneath - never tilted, no screws turned to insert, the captive thumbscrew secures it afterward
+  - the faceplate sits nearly flush with the four-bay aluminum row when seated; above it the optical carrier screw dots are visible
+
+REF evga-gtx285-flat [product-photo] file=docs/macpro-guide-refs/evga-gtx285-flat.webp doc=01G-P3-1080-TR source=Newegg product N82E16814130500 official product image
+SUBJECT: EVGA GeForce GTX 285 Mac Edition 01G-P3-1080-TR flat top view - authoritative card shape, bracket and fan orientation
+  - long double-slot blower card split into TWO shroud zones: left ~2/3 smooth dark shroud carrying EVGA wordmark top-left, small NVIDIA logo + GEFORCE GTX 285 lettering center, 'Mac Edition' small text upper-right of center; right ~1/3 a square-framed recess containing the CIRCULAR TURBINE FAN with radial blades and a round EVGA center cap
+  - the metal I/O BRACKET is at the FAR LEFT end in this view: a thin vertical silver plate with stacked DVI port cutouts and a small circular port, plus the screw tab at its bottom
+  - gold PCIe x16 edge contacts run along the whole bottom edge, segmented with the standard notch pattern; a short gold tail extends at bracket-side bottom
+  - shroud surface has subtle curved sweep highlights (rendered as outline only in BW); the fan circle is the ONLY circular feature on the card face
+  - card length dominates: roughly 4.3:1 length-to-height ratio; the fan zone is a near-square ~1/3 of total length
+  - INSTALLED ORIENTATION DEDUCTION: in the case-on-side canon view the bracket end is at the REAR frame rail (RIGHT of the open face) and the fan end points inboard/LEFT; the p8 render inverted this and is wrong
+
+REF evga-gtx285-angle [product-photo] file=docs/macpro-guide-refs/evga-gtx285-angle.jpg doc=01G-P3-1080-TR source=HotHardware EVGA GeForce GTX 285 Mac Edition press gallery (item 9961)
+SUBJECT: EVGA GTX 285 Mac Edition three-quarter end view showing power sockets, exhaust fins, bracket depth
+  - TWO side-by-side 6-pin (3x2 square hole) AUX POWER SOCKETS are recessed in the END CAP at the FAN end of the card - on the top-facing edge near the fan, not at the bracket end
+  - the end cap beside the fan also has two small vent openings and a tiny red/white lead detail
+  - the long card side is a wall of diagonal EXHAUST FIN slots (blower pushes air toward the bracket/rear)
+  - the metal bracket is a deep L-plate with two stacked port windows and screw tab; PCB gold edge peeks under the shroud
+  - double-slot thickness visible: shroud + bracket occupy two expansion openings
+  - DEDUCTION: booster/aux cables route from logic board headers ALONG the board to the fan-end cap sockets, i.e. they enter the card at its inboard/front end, not the rear bracket
+
+REF ifixit-gpu-booster-cable [ifixit-photo] file=docs/macpro-guide-refs/ifixit-gpu-booster-cable.jpg doc=iFixit 14161 source=iFixit guide 14161 'Mac Pro Graphic Card for Mac Pro (2006 2007 2008) Replacement' step 5 'Card with Booster Cable'
+SUBJECT: iFixit Mac Pro 2006-2008 graphic card guide: card bay context, the bundled black booster cable bundle and blue logic board aux connectors (step 5 callout)
+  - open case on its side; optical carriers across the top edge match apple-interior-photo; the long blue logic board with the black finned heatsink and black PCIe slot rails runs across the middle
+  - magnified callout shows the factory black BOOSTER CABLE bundle: twin black leads laced together lying across the blue PCB near white plastic guides, joining black rectangular aux power connectors on the board
+  - silkscreen numbering (R2A1, NS, C5243, 8247C, connector silkscreens J6C1-style) confirms the cable origin is the LOGIC BOARD, never the PSU - matches G-17 board end in
+  - PCI slots are long black horizontal rails parallel to the board; the card drops vertically onto them when the case is upright and lies across them when on its side
+  - red plastic pull tabs / release levers sit on the slot bank - a small card-retention detail at the bracket-side rail
+  - DEDUCTION: in guide art both booster leads should visibly originate at small board connector outlines behind the card and run to the fan-end cap; no cables cross toward the front mesh
+
+REF ifixit-memory-cage-boards [ifixit-photo] file=docs/macpro-guide-refs/ifixit-memory-cage-boards.jpg doc=iFixit 25939 source=iFixit guide 25939 Memory Cage with Rear Fan (Early 2008) step 10
+SUBJECT: Close view of two blue memory cage/riser boards in frame, finger holes at both ends, populated upper/bare lower
+  - close straight view into the lower compartment memory cage frame (case on side): TWO long rounded-corner BLUE boards stacked in separate rectangular aluminum windows, each board with a large round finger hole at BOTH ends (four holes total visible)
+  - the UPPER blue board is populated: three large purple cylindrical capacitors on the left, rows of tan inductors and black IC blocks across the center and right, a gray coil block marked 1R0, silkscreen reference designators; the LOWER board is nearly bare blue with a few tiny white silkscreen dots (its components face the other side or it is the paired plane)
+  - the boards are captive in a silver cage frame with rounded cutout corners; the frame is bolted to the chassis by silver Phillips screws on the dark rear panel above (two yellow arrows point to those screws)
+  - top edge of frame reveals a SATA 3.0 Gb/s spec label and dark gray plastic drive/backplane pieces with silver captive screws
+  - right edge shows honeycomb perforation and metal latch hardware
+  - deduction V4/V9: the riser finger holes are at the board ends flush with the cage cutouts, which is what the panel-sticker plates A and B expose when pulled straight out; the A/B plates carry these blue boards plus the vertical FB-DIMMs seen in apple-riser-fbdimm-photo
+  - deduction V12: no DIMMs are installed on these visible faces in this photo (DIMMs seat on the opposite face), so guide art must combine this cage/hole geometry with the heatsinked FB-DIMMs from apple-riser-fbdimm-photo rather than copying either alone
+
+REF ifixit-fan-removed-interior [ifixit-photo] file=docs/macpro-guide-refs/ifixit-fan-removed-interior.jpg doc=iFixit 25936 source=iFixit guide 25936 Front Fan Assembly step 13 (interior with fan removed)
+SUBJECT: Full interior factory photo fan removed: empty left recess, optical carriers, open bays, logic board, 3 PCI rails, PRAM cell, 2 riser bays top populated bottom empty
+  - straight-on open-face factory photo, case on side, with the front fan assembly REMOVED: the entire left half of the interior is one large empty smooth gray rectangular panel recess (source yellow oval highlights it), confirming the fan module covers that whole zone
+  - top: two optical carriers - LEFT carrier is split as a dual plate carrying TWO small rounded-rectangle cutouts side by side each with two screw dots top and bottom; RIGHT carrier is one large plain plate - exactly four corner screw dots frame the carriers
+  - middle: the four HDD sled faceplates in a row are ABSENT in this photo (bay frame open showing the drive backplane PCBs and small gray plastic latch tabs along the rails), proving the sled faces are separate captive parts from the frame
+  - center: logic board with a small WHITE finned heatsink block upper-left of center, three long horizontal black PCIe slot rails across the middle-right, a silver coin cell (PRAM battery) near the slot bank, rows of cylindrical silver caps, and a small black module on the board
+  - lower-right: framed memory cage window with TWO riser bays stacked; the TOP riser in this unit holds FB-DIMMs with silver heatsinks and clips, the BOTTOM riser bay is EMPTY showing only green/blue PCB, purple cylindrical caps and connector slots - confirming two identical removable boards, each with a round finger hole visible at the outer end
+  - right frame edge: vertical metal rear-I/O rail with screws and a honeycomb perforated strip; no GPU installed so the PCI rails read clearly as three parallel horizontal black slots
+  - lower-left: a large smooth blank shroud panel with rounded bottom corner and a vertical latch/rail at its right edge (memory/PSU zone cover)
+  - deduction V3 counts confirmed: 2 optical carriers (2 cutouts on left), 4 HDD bay openings, 3 visible PCI slot rails, 2 riser bays, 1 PRAM coin cell, 1 empty fan bay; V12 negatives: no GPU, no sleds, no fan module present in this state
+  - deduction V9: GPU plates occupy the PCI rail zone center-right when installed; fan tray occupies the large left recess; risers occupy lower-right - zone adjacency locks their relative placement in every render
+
+REF op-rear-io-photo [operator-photo-chat-only] file=CHAT-ONLY, NOT ON DISK doc= source=operator chat attachment 2026-09-12 (not on sandbox disk; re-upload to attach as image reference)
+SUBJECT: Operator photo (3 identical attachments, chat-only): upright REAR panel of the actual Mac Pro 3,1 with GTX 285 installed
+NOTE: this reference is an operator chat photograph not persisted to sandbox storage; it is described here as a durable perception receipt and MUST be re-supplied as an image reference when available.
+  - V1 upright straight rear view of the powered machine, cables present (one beige USB plug in a top USB port, blue ethernet cable coiled at left, white cable lower left); art renders ports empty
+  - V3/V8 full rear I/O inventory: full-height round-hole aluminum mesh; left vertical latch column with padlock icon at top, horizontal sliding T-latch, rounded finger pocket below
+  - PCI framed opening upper-right: THREE blank horizontal slotted slot covers (rounded-end plates, twin rails each), then the GTX 285 double-wide zone = one dense vertical-fin exhaust bracket plus the metal I/O bracket holding TWO DVI-I connectors side by side (mixed pin-grid and blade cross), captive screws each end, small silver regulatory label strip under the bracket
+  - lower-left large circular exhaust with DIAGONAL CROSS-HATCH X-lattice wire grille (operator: lower 140mm exhaust); fan blade glints visible low inside; this grille is an X-lattice, not dot stipple
+  - lower-right I/O cluster: top row two USB-A rectangles; second row FireWire 800 (9-pin squircle) and one USB-A/FW400-class port; two square optical digital TOSLINK in/out with tiny in/out labels; two 3.5mm analog audio jacks; bottom two stacked RJ-45 Gigabit Ethernet jacks; tiny USB trident/FW/audio glyphs printed between ports
+  - V9 the GPU bracket sits in the lower two of the five PCI openings; three blank covers remain above it, confirming one double-wide card plus three free slots toward the top of the opening
+  - V12 negatives: no IEC power socket visible in this frame (it sits above the PCI frame per Apple rear line art), no antenna, no second card, no ports on the fan grille
+
+CATALOG PARTS THIS PLATE MAY DRAW (id | face u/v/w/h | exact depiction):
+- frame-handle-feet | u=0 v=0 w=100 h=100 depth=0-100 | outer aluminum frame: one-piece rectangular handle loop across the full top edge with open grip slot, matching curved stand/foot cutouts at both lower corners, softly rounded body corners [refs: panel-sticker,apple-product-views,apple-diy-gpu-sheet,apple-interior-photo]
+- front-mesh-face | u=0 v=8 w=22 h=84 depth=60-100 | left-side visible front plane covered in uniform round-hole stipple; TWO long horizontal rounded optical slot bezels stacked around v 18-30; slim vertical recessed I/O column at v 48-78 with circular power button, audio hole, two stacked USB rectangles, FW800 and FW400 ports [refs: apple-product-views,panel-sticker,apple-diy-gpu-sheet,apple-interior-photo,ifixit-fan-removed-interior]
+- dvd-optical-bay | u=10 v=7 w=34 h=13 depth=10-25 | top-FRONT compartment: the ENCASED DVD/CD drive in ONE 5.25 bay, smooth aluminum carrier face with two small rounded latch cutouts and screw dots; the second optical position is an EMPTY matching bay (Lion SSD relocation target); both positions share the front optical carrier plate [refs: apple-interior-photo,ifixit-fan-removed-interior,apple-product-views]
+- psu-compartment | u=45 v=7 w=26 h=13 depth=10-25 | top-REAR compartment to the right of/behind the DVD bay: the POWER SUPPLY secured inside its own smooth aluminum compartment, plain large faceplate, no cutouts, separated from the optical bay by a frame rail; never draw drive slots here [refs: apple-interior-photo,ifixit-fan-removed-interior,apple-product-views]
+- hdd-row-4-sleds | u=10 v=23 w=62 h=11 depth=15-45 | EXACTLY FOUR identical silver sled faceplates in a SINGLE even HORIZONTAL ROW with narrow black gaps, NOT 8 bays, NOT vertical stack, NOT 2x4 grid; each faceplate is a brushed aluminum rectangle with a raised oval/feature near top center, small Phillips screw at right end, circled bay number at lower-right corner (1 leftmost/lower when on side through 4 rightmost/upper, 4 has empty square outline), captive front thumbscrew at bottom edge; with sleds removed the bay shows open rail frame and backplane PCBs with small gray latch tabs; sleds slide straight in-out on rails front-to-rear 30mm with PUSH IN / PULL arrows [refs: apple-interior-photo,ifixit-sled-insert-photo,ifixit-fan-removed-interior,apple-product-views]
+- front-fan-assembly | u=8 v=40 w=30 h=52 depth=45-75 | FRONT FAN TRAY (lower-left in case-on-side view, front-left in upright): ONE removable silver tray holding TWO large ~140mm-class squirrel-cage BLOWER ENCASINGS side by side (two equal round housings, not one little fan, not many small fans) over two copper CPU heat-exchanger plates; smooth lid with recessed pull, vents along its lip; lifts STRAIGHT OUT as one piece toward open side (right) with solid black block LIFT arrow and 40mm distance chip to expose dual CPUs and hidden SATA ports; ghost 40% dashed shows lifted state [refs: ifixit-front-fan-lift,ifixit-fan-removed-interior,apple-interior-photo,apple-product-views]
+- logic-board-tray | u=30 v=38 w=54 h=40 depth=25-70 | blue PCB rendered outline-only with rows of small cylindrical electrolytic cap circles, one large horizontally-laid BLACK FINNED processor heatsink with parallel fin lines covering dual Xeon sockets, a smaller light finned northbridge block, silver PRAM coin cell near the slot bank, three long horizontal black PCIe slot rails center-right, port/connector blocks along edges [refs: apple-interior-photo,ifixit-fan-removed-interior,ifixit-gpu-booster-cable]
+- gpu-gtx285-blower | u=38 v=46 w=46 h=13 depth=5-20 | EVGA GTX 285 Mac Edition double-wide blower card, LONG AXIS HORIZONTAL LEFT-TO-RIGHT, length ~4x height, thickness double-slot occupying two PCI openings, gold PCIe x16 edge along entire BOTTOM edge inserted straight down into a single horizontal black PCI slot rail below, metal I/O bracket at RIGHT/REAR end FLUSH against rear frame rail with TWO stacked DVI-I rectangles plus screw tab and small regulatory label strip, square-framed CIRCULAR TURBINE FAN at LEFT/INBOARD end on the TOP face (fan circle visible from above, not facing viewer), smooth shroud with EVGA and GTX 285 markings between fan and bracket, TWO side-by-side 6-pin sockets recessed in the FAN-END CAP at left/inboard end (never at bracket end, never PSU-fed), factory BOOSTER CABLE (two black leads laced) originates at logic board aux connectors behind card and routes to those fan-end sockets, dangles loose as loop toward memory cage when unplugged; card sits HORIZONTALLY PARALLEL TO THE HDD ROW, ABOVE the RAM cage and BELOW the HDD row in upright layout, with THREE additional empty horizontal PCI slot rails visible behind/beside it toward rear; NEVER vertical, NEVER on a riser cable, NEVER with fan facing viewer, NEVER with backplate flat to memory cage as a vertical wall, NEVER with bracket at front/left, NEVER with fan closer to inside case facing up as a lid [refs: evga-gtx285-flat,evga-gtx285-angle,ifixit-gpu-booster-cable,ifixit-fan-removed-interior,op-rear-io-photo,apple-interior-photo,apple-product-views]
+- gpu-power-cables | u=22 v=42 w=28 h=9 depth=0-15 | factory booster bundle = TWO black leads laced together: board end IN at logic board aux connector outlines behind the card, routed along the board to TWO side-by-side 6-pin sockets recessed in the GPU FAN-END CAP (inboard/left end of card), never at the bracket end, never from the PSU; when unplugged they dangle as a looped pair toward the memory cage center-left [refs: ifixit-gpu-booster-cable,evga-gtx285-angle,apple-interior-photo]
+- memory-shroud | u=8 v=50 w=28 h=44 depth=10-30 | smooth metal compartment edge/cover shared between dual-CPU compartment and RAM cage, vertical latch rail at its right edge; covers the two riser windows when installed, removed state exposes the two riser windows; never draw as mesh [refs: apple-interior-photo,ifixit-fan-removed-interior,panel-sticker]
+- riser-window-2-banks | u=42 v=64 w=40 h=30 depth=20-45 | rectangular framed window with TWO removable riser boards stacked vertically in separate rounded cutouts (upper and lower), each board is blue PCB with a large round FINGER HOLE at BOTH ends (four holes total), FOUR vertical FB-DIMMs per board (8 total) with thick black finned heatsinks held by THREE silver spring clips each plus black plastic ejector levers at both board ends, purple cylindrical caps and inductor rows behind slots visible on an unpopulated board; riser A is top bank with bold A label at outer corner, riser B bottom with B; an empty bay shows only PCB, caps and slots; risers pull straight out perpendicular with solid black block PULL arrows, ghost 40% dashed shows pulled state; NEVER draw as ordinary DIMM slots on motherboard, NEVER as flat RAM sticks without riser carrier [refs: apple-interior-photo,apple-riser-fbdimm-photo,ifixit-fan-removed-interior,ifixit-memory-cage-boards,panel-sticker]
+- riser-plates-A-B-out | u=72 v=60 w=22 h=34 depth=-25 (outside open face) | the two blue riser boards drawn pulled straight out of the cage windows, ghost 40 percent dashed, each with round finger holes at both ends and a row of upright FB-DIMM outlines, bold A on upper board outer corner and B on lower, each with a solid black block arrow pointing outward - verbatim panel-sticker composition [refs: panel-sticker,apple-riser-fbdimm-photo,ifixit-memory-cage-boards]
+- latch-lever | u=88 v=38 w=9 h=14 depth=0-10 | silver locking latch lever protruding from the right/rear frame edge mid-height, hinged at frame [refs: apple-interior-photo,apple-rear-ports-lineart,ifixit-fan-removed-interior,apple-product-views]
+- rear-io-plane | u=80 v=12 w=20 h=80 depth=70-100 | REAR FACE full detail (upright; meets the right frame edge in case-on-side): round-hole mesh; left latch column (padlock icon, horizontal sliding T-latch, rounded finger pocket); upper framed PCI opening = THREE blank horizontal slotted covers, then the GPU double-wide zone (dense vertical-fin exhaust bracket plus bracket plate with TWO DVI-I connectors side by side, captive screws, small regulatory label strip); lower-left LARGE CIRCULAR exhaust grille in DIAGONAL CROSS-HATCH X-LATTICE (140mm rear exhaust, never stipple); lower-right port cluster: two USB-A top row, FireWire 800 plus FireWire 400 and a third USB on the next rows, two square optical TOSLINK in/out, two 3.5mm audio jacks, TWO stacked RJ-45 GbE at bottom; square IEC socket with locking latch at the top [refs: apple-rear-ports-lineart,op-rear-io-photo,apple-product-views,evga-gtx285-flat]
+- honeycomb-edge | u=96 v=10 w=4 h=80 depth=0-60 | narrow honeycomb/dot perforation strip along the inner rear frame edge [refs: apple-interior-photo,ifixit-fan-removed-interior,apple-product-views]
+- cpu-compartment-cover | u=30 v=52 w=26 h=30 depth=40-75 | DUAL CPU ZONE between front fan tray and RAM cage: two Xeon heatsinks under smooth metal compartment cover; with tray lifted, two copper heat-exchanger plates with brass posts show; open state shows two large horizontally-laid BLACK FINNED heatsinks with parallel fin lines covering dual Xeon sockets (Harpertown), smaller light finned northbridge block, silver PRAM coin cell near slot bank, cap rows; heatsinks lie horizontally, not vertical [refs: ifixit-front-fan-lift,ifixit-fan-removed-interior,apple-interior-photo]
+- rear-140-exhaust | u=80 v=55 w=18 h=22 depth=90-100 | lower-rear 140mm exhaust: large circular opening with DIAGONAL CROSS-HATCH X-lattice wire grille, dark interior; lower-left of the upright rear panel below the PCI opening [refs: op-rear-io-photo,apple-rear-ports-lineart,apple-product-views]
+Anything not in this catalog, in the scene IR inventory, or in the refs is an INVENTION and must not appear.
+=== REFERENCE TRACING END ===
+
+PASS-15 CORRECTIONS:
+- BARE FUNDAMENTALS: every plate starts from same chassis box (handle top, feet bottom, front mesh LEFT with 2 optical slots + I/O column, open side RIGHT), same zones (top DVD front + PSU rear plain, HDD row EXACTLY 4 horizontal, GPU horizontal bracket rear/right fan left/inboard gold bottom, CPU dual heatsinks under cover between fan tray and RAM, RAM 2 risers A/B finger holes both ends 4 DIMMs each, fan tray ONE tray TWO 140 blowers LIFT 40mm, rear cross-hatch 140 exhaust + full I/O). Build comes by intuition, not corrections.
+- GPU HORIZONTAL FIX v6d: instruction that caused vertical/riser artifact was 'BACKPLATE/smooth underside faces the viewer' - generator interpreted as vertical wall facing viewer with backplate flat to memory cage and fan up as lid. FIX: long axis HORIZONTAL LEFT-TO-RIGHT, gold edge BOTTOM inserted into horizontal PCI rail, bracket RIGHT/REAR flush with TWO stacked DVI, fan LEFT/INBOARD circular on TOP face (visible from above, not facing viewer), smooth shroud between, 2x6-pin at FAN-END CAP left, booster board->fan-end dangling loop, parallel to HDD row, above RAM below HDD, THREE empty rails behind, NEVER vertical, NEVER riser cable, NEVER fan facing viewer, NEVER backplate flat to memory cage as vertical wall.
+- HDD BAY COVERS FIX: EXACTLY FOUR, single horizontal row, brushed aluminum rectangle with raised oval near top center, small screw at right end, circled number lower-right (1 leftmost through 4 rightmost, 4 empty square outline), captive thumbscrew, narrow black gaps, PULL 30mm ghost, open rail frame with backplane PCBs and gray latch tabs when removed; NEVER 8-bay grid, NEVER vertical stack, NEVER 2x4.
+- MEMORY IDENTITY FIX: riser-window-2-banks TWO boards stacked vertical in rounded cutouts, blue PCB, finger holes BOTH ends (four total), FOUR vertical FB-DIMMs per board (8 total) with finned heatsinks, 3 spring clips each, ejector levers, purple caps, inductor rows, A top B bottom with bold labels at outer corners, PULL straight out with solid black block arrows, ghost 40% dashed; NEVER ordinary DIMM slots on motherboard, NEVER flat RAM without riser carrier, NEVER missing finger holes.
+- P14 WINNING RECIPE (do not re-derive): edit p12 (upright furniture) -> repaint GPU with a FULL-CARD proof crop that includes BOTH ends; required order left->right is booster plug, ONE turbine, plain shroud, exhaust slit band, dual-DVI bracket flush at the right/rear rail. Cropping out the bracket end makes the generator mirror the card - always attach both endcaps in the proof image.
+- P14 residual watch-items: booster lead must hang in a loose loop from the case into the card LEFT end face (not drape over the CPU tray, not arc over the shroud top); the 3 free PCIe retention rails sit ABOVE-BEHIND the GPU near the rear rail, not beside the card midpoint.
+Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
+PASS: 15

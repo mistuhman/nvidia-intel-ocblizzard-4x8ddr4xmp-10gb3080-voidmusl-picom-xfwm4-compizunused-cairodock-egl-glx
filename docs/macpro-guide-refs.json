@@ -1,6 +1,6 @@
 {
   "schema": "mac-guide-refs.v1",
-  "updated": "2026-09-12-v6c",
+  "updated": "2026-09-12-v6d",
   "session": "01a09486",
   "rule": "Operator directive 2026-09-12: every guide image must cross-reference public Apple/reference imaging down to the smallest observable detail; the same strict ruleset applies to every plate; details are baked, tracked, logged and audited before any render. Chat-only operator photos (not persisted to sandbox disk) are recorded in refs.chatOnly with full perception receipts and MUST be re-uploaded before they can be passed as image references.",
   "naming": "simple descriptive kebab names, no token ceremony",
@@ -346,18 +346,21 @@
       "apple-diy-memory-cover",
       "apple-product-views",
       "ifixit-front-fan-lift",
-      "ifixit-fan-removed-interior"
+      "ifixit-fan-removed-interior",
+      "apple-diy-gpu-sheet"
     ],
     "g04-ssd-mount": [
       "apple-interior-photo",
       "ifixit-sled-insert-photo",
-      "apple-product-views"
+      "apple-product-views",
+      "apple-diy-gpu-sheet"
     ],
     "g05-hdd-install": [
       "ifixit-sled-insert-photo",
       "apple-interior-photo",
       "panel-sticker",
-      "apple-product-views"
+      "apple-product-views",
+      "apple-diy-gpu-sheet"
     ],
     "g06-gpu-swap": [
       "apple-diy-gpu-sheet",
@@ -382,7 +385,9 @@
     "g08-boot-verify": [
       "apple-product-views",
       "panel-sticker",
-      "apple-rear-ports-lineart"
+      "apple-rear-ports-lineart",
+      "apple-interior-photo",
+      "apple-diy-gpu-sheet"
     ]
   },
   "canonicalFacts": [
