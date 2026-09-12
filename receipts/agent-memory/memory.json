@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 59,
+  "lastSeq": 60,
   "entries": [
     {
       "seq": 1,
@@ -1250,6 +1250,25 @@
       "kind": "note",
       "text": "2026-09-12 session 01a097ba: vision-verify artifacts archived - vision-check.png now receipts/vision-check/testcard-2026-09-12.png and image-search/mac-pro-3-1-early-2008-interior-memory-r-1.jpg now receipts/vision-check/macpro-web-photo.jpg (seq 57/58 target paths are the original tool-call paths).",
       "sha256": "ecad5dc3ff2809fa319af86d1adc91b901983ec3ca9a63c27f7b5b420f128cea"
+    },
+    {
+      "seq": 60,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "test-all side effects",
+      "sides": [
+        {
+          "claim": "claim: node tools/test-all.ts is worktree-clean",
+          "source": "ran by README start protocol"
+        },
+        {
+          "claim": "reality: lint re-emits receipts/mac-guide prompts+schematics from current spec v6e over older committed receipts, dirtying 10 files",
+          "source": "git diff after test-all 2026-09-12; emitPrompt writeFileSync tools/mac-guide-art.ts:772"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "agent",
+      "sha256": "5f6cfcf9285acc485c60a4cb40c835845633d037b9f554eeff5b9fa4a6f3afae"
     }
   ],
   "stacks": [
