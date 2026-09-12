@@ -4,160 +4,1141 @@
   "session": "01a093b6",
   "styleContract": "docs/macpro-guide-style-bw.md",
   "factsLedger": "docs/macpro-guide-facts.json",
-  "textBudget": { "maxWords": 4, "maxChars": 24, "reasonFact": "G-13" },
-  "machine": { "id": "macpro31", "model": "Mac Pro 3,1 Early 2008 + OMEN ATX accurate to operator photos 2026-09-12" },
+  "textBudget": {
+    "maxWords": 4,
+    "maxChars": 24,
+    "reasonFact": "G-13"
+  },
+  "machine": {
+    "id": "macpro31",
+    "model": "Mac Pro 3,1 Early 2008 + OMEN ATX accurate to operator photos 2026-09-12"
+  },
   "plates": [
     {
       "id": "g01-overview",
-      "title": "STEP 1 — INVENTORY BAY MAP",
-      "purpose": "Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording.",
-      "canvas": { "w": 1536, "h": 1024 },
-      "view": "orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, black and white line art Helvetica uniform sidepanel left Japanese compactness",
+      "title": "STEP 1 \u2014 INVENTORY BAY MAP",
+      "purpose": "Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording. Board cable end in, GPU end out.",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
+      "view": "orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, uniform sidepanel left, no perspective, black and white line art Helvetica manual compactness",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 1", "detail": "Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.", "facts": ["G-01"] },
-        { "id": "chassis-accurate", "kind": "chassis", "x": 24, "y": 6, "w": 48, "h": 86, "text": "MAC PRO 3,1", "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear.", "facts": ["G-01","G-02","G-06"] },
-        { "id": "bay-labels-accurate", "kind": "panel", "x": 24, "y": 10, "w": 10, "h": 40, "text": "BAY 1-4", "detail": "Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.", "facts": ["G-02"] },
-        { "id": "desk-hdd-photo", "kind": "hdd", "x": 72, "y": 12, "w": 14, "h": 10, "text": "WD GREEN", "detail": "WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.", "facts": ["G-08"] },
-        { "id": "desk-timecapsule", "kind": "panel", "x": 88, "y": 12, "w": 10, "h": 10, "text": "TIMECAPSULE", "detail": "Apple Time Capsule white on desk right as in photo-1 with Apple logo.", "facts": ["G-01"] },
-        { "id": "ghost-sled", "kind": "bay", "x": 24, "y": 54, "w": 10, "h": 10, "text": "GHOST OUT", "detail": "Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.", "facts": ["G-02"] },
-        { "id": "arrow-pull", "kind": "cable", "x": 36, "y": 56, "w": 8, "h": 6, "text": "PULL", "detail": "Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.", "facts": ["G-02"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "INVENTORY LIST", "detail": "Uniform sidepanel left every plate compact Japanese wording Helvetica: 1 Identify optical 2 empty metal covers cutouts, 2 Identify 4 HDD bays silver blanks red sticker Bay4, 3 Note GTX285 2x6-pin dangling, 4 Check WD Green on desk left, 5 Bay1 bottom Bay4 top upright.", "facts": ["G-01","G-02","G-06"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP1 INVENTORY", "detail": "Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.", "facts": ["G-01"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 1",
+          "detail": "Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.",
+          "facts": [
+            "G-01"
+          ]
+        },
+        {
+          "id": "chassis-accurate",
+          "kind": "chassis",
+          "x": 24,
+          "y": 6,
+          "w": 48,
+          "h": 86,
+          "text": "MAC PRO 3,1",
+          "detail": "Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear. Anchors: logic-board-strip-top, heatsink-fins-behind-gpu, gpu-horizontal-blower, gpu-cables-board-to-gpu (board end in to GPU end out), optical-left-cutouts + optical-right-plain, hdd-bay-row-x4 + hdd-screw-right-end + red-outline-Bay4, memory-shroud-lower-left + pcb-windows-x2-lower-right + honeycomb-right-edge, wd-green-desk-left + timecapsule-desk-right, psu-top + captive-screw. CORRECTED: fans = single blower module top edge behind Bay1 (not scattered), lower bay = horizontal 4-sled row with right-end screws and weathered Bay1, memory cage shroud solid lower-left, PCB windows lower-right two outline-only with caps per photo (no invented GPU RAM), honeycomb right edge, PSU top.",
+          "facts": [
+            "G-01",
+            "G-02",
+            "G-06",
+            "G-14",
+            "G-15",
+            "G-16",
+            "G-17",
+            "G-18"
+          ]
+        },
+        {
+          "id": "bay-labels-accurate",
+          "kind": "panel",
+          "x": 24,
+          "y": 10,
+          "w": 10,
+          "h": 40,
+          "text": "BAY 1-4",
+          "detail": "Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "desk-hdd-photo",
+          "kind": "hdd",
+          "x": 72,
+          "y": 12,
+          "w": 14,
+          "h": 10,
+          "text": "WD GREEN",
+          "detail": "WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.",
+          "facts": [
+            "G-08"
+          ]
+        },
+        {
+          "id": "desk-timecapsule",
+          "kind": "panel",
+          "x": 88,
+          "y": 12,
+          "w": 10,
+          "h": 10,
+          "text": "TIMECAPSULE",
+          "detail": "Apple Time Capsule white on desk right as in photo-1 with Apple logo.",
+          "facts": [
+            "G-01"
+          ]
+        },
+        {
+          "id": "ghost-sled",
+          "kind": "bay",
+          "x": 24,
+          "y": 54,
+          "w": 10,
+          "h": 10,
+          "text": "GHOST OUT",
+          "detail": "Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "arrow-pull",
+          "kind": "cable",
+          "x": 36,
+          "y": 56,
+          "w": 8,
+          "h": 6,
+          "text": "PULL",
+          "detail": "Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "INVENTORY LIST",
+          "detail": "Uniform sidepanel left every plate compact manual wording Helvetica: 1 Identify optical 2 empty metal covers cutouts, 2 Identify 4 HDD bays silver blanks red sticker Bay4, 3 Note GTX285 2x6-pin dangling, 4 Check WD Green on desk left, 5 Bay1 bottom Bay4 top upright.",
+          "facts": [
+            "G-01",
+            "G-02",
+            "G-06"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP1 INVENTORY",
+          "detail": "Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.",
+          "facts": [
+            "G-01"
+          ]
+        }
       ],
-      "renderNotes": ["Black and white line art only no color no gray fill", "Helvetica font all labels 4 words 24 chars max", "Uniform sidepanel same every plate same camera as photo-1", "Input solid output ghost 40% dashed partially out arrow", "HDD placement accurate Bay1 bottom Bay4 top upright sled front to rear", "Red sticker on Bay4 blank as in photo", "Optical covers rectangular cutouts as in photo"]
+      "renderNotes": [
+        "PASS-5 COLOR FIX: absolutely zero color ink anywhere - sticker is a small EMPTY SQUARE OUTLINE (never fill it, never write the color name), PCBs and capacitors are black outlines on white",
+        "Ghost sled slides out the FRONT face of the bay row (toward viewer, same edge as the blank plates), 30mm, dashed 40%, arrow PULL 30MM - not out the rear",
+        "Keep pass-4 composition: optical covers (left with two cutouts), horizontal blank row with weathered leftmost, GTX285 horizontal center-right with two dangling 6-pin loops, memory shroud lower-left, cap windows lower-right outlines only, honeycomb right edge, WD Green desk left, Time Capsule desk right",
+        "English only, Helvetica caps, uniform sidepanel, footer PLATE G01 / MAC PRO 3,1 EARLY 2008 / PASS 5",
+        "PASS-8 FIXES per operator critique: remove invented GPU RAM - PCB windows are drive backplane + memory riser PCBs outline only, no VRAM hallucination; correct fans to single module top behind Bay1 covering logic board; correct lower bay/ram to photo positions (memory shroud lower-left, honeycomb right, sleds horizontal Bay1 left -> Bay4 right); GPU orientation keeps ok (horizontal double-wide center-right). Every trait filtered every image.",
+        "Keep schematic anchors tracing, PULL 30MM front ghost, Bay4 empty square outline only, board end in -> GPU end out, helmet consistent orthographic side view like g01 main comprehensive view."
+      ]
     },
     {
       "id": "g02-poweroff",
-      "title": "STEP 2 — POWER OFF SAFETY",
+      "title": "STEP 2 \u2014 POWER OFF SAFETY",
       "purpose": "Safe shutdown, cord IN solid ghost OUT 30mm transparent, clock CR2032 2001, no force screw, GPU 6-pin unplug ghost, UPS off, uniform sidepanel.",
-      "canvas": { "w": 1536, "h": 1024 },
-      "view": "orthographic rear view Mac Pro 3,1 plus side view accurate to photo-1 black and white line art Helvetica uniform sidepanel",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
+      "view": "orthographic side view Mac Pro 3,1 uniform sidepanel left, same camera as g01-overview - main comprehensive view; inset close-up tertiary perspective only for IEC socket and captive screw detail (small inset box), not primary",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 2", "detail": "Uniform sidepanel step2 same position as step1.", "facts": ["G-10"] },
-        { "id": "power-in", "kind": "panel", "x": 24, "y": 8, "w": 20, "h": 20, "text": "POWER IN", "detail": "Power cord IN solid black line plugged into rear IEC socket input state solid.", "facts": ["G-10"] },
-        { "id": "power-ghost", "kind": "cable", "x": 44, "y": 8, "w": 20, "h": 20, "text": "POWER OUT", "detail": "Ghost transparent dashed 40% power cord partially out 30mm with arrow pull out output state LEGO style.", "facts": ["G-10"] },
-        { "id": "clock", "kind": "panel", "x": 24, "y": 32, "w": 20, "h": 20, "text": "CR2032 2001", "detail": "CR2032 coin battery bottom left board clock resets to 2001 on power loss icon clock arrow to 2001 Helvetica.", "facts": ["G-09"] },
-        { "id": "screw", "kind": "panel", "x": 46, "y": 32, "w": 20, "h": 20, "text": "NO FORCE", "detail": "Lower PCI bracket screw close-up captive preload turns but stays ghost transparent showing screw not rising no force cross icon.", "facts": ["G-10"] },
-        { "id": "gpu-power", "kind": "cable", "x": 24, "y": 56, "w": 20, "h": 20, "text": "GPU 6-PIN", "detail": "GTX 285 two 6-pin power leads input solid connected then ghost transparent unplugged dangling as in photo-1 arrow unplug accurate.", "facts": ["G-06"] },
-        { "id": "ups", "kind": "panel", "x": 46, "y": 56, "w": 20, "h": 20, "text": "UPS OFF", "detail": "CyberPower 1500VA UPS front panel power button off black and white line art accurate.", "facts": ["G-01"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "SAFETY STEPS", "detail": "Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep.", "facts": ["G-09","G-10","G-06"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP2 SAFETY", "detail": "Footer step2 safety zero power.", "facts": ["G-10"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 2",
+          "detail": "Uniform sidepanel step2 same position as step1.",
+          "facts": [
+            "G-10"
+          ]
+        },
+        {
+          "id": "power-in",
+          "kind": "panel",
+          "x": 24,
+          "y": 8,
+          "w": 20,
+          "h": 20,
+          "text": "POWER IN",
+          "detail": "Power cord IN solid black line plugged into rear IEC socket input state solid.",
+          "facts": [
+            "G-10"
+          ]
+        },
+        {
+          "id": "power-ghost",
+          "kind": "cable",
+          "x": 44,
+          "y": 8,
+          "w": 20,
+          "h": 20,
+          "text": "POWER OUT",
+          "detail": "Ghost transparent dashed 40% power cord partially out 30mm with arrow pull out output state LEGO style.",
+          "facts": [
+            "G-10"
+          ]
+        },
+        {
+          "id": "clock",
+          "kind": "panel",
+          "x": 24,
+          "y": 32,
+          "w": 20,
+          "h": 20,
+          "text": "CR2032 2001",
+          "detail": "CR2032 coin battery bottom left board clock resets to 2001 on power loss icon clock arrow to 2001 Helvetica.",
+          "facts": [
+            "G-09"
+          ]
+        },
+        {
+          "id": "screw",
+          "kind": "panel",
+          "x": 46,
+          "y": 32,
+          "w": 20,
+          "h": 20,
+          "text": "NO FORCE",
+          "detail": "Lower PCI bracket screw close-up captive preload turns but stays ghost transparent showing screw not rising no force cross icon.",
+          "facts": [
+            "G-10"
+          ]
+        },
+        {
+          "id": "gpu-power",
+          "kind": "cable",
+          "x": 24,
+          "y": 56,
+          "w": 20,
+          "h": 20,
+          "text": "GPU 6-PIN",
+          "detail": "GTX 285 two 6-pin power leads input solid connected then ghost transparent unplugged dangling as in photo-1 arrow unplug accurate.",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "ups",
+          "kind": "panel",
+          "x": 46,
+          "y": 56,
+          "w": 20,
+          "h": 20,
+          "text": "UPS OFF",
+          "detail": "CyberPower 1500VA UPS front panel power button off black and white line art accurate.",
+          "facts": [
+            "G-01"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "SAFETY STEPS",
+          "detail": "Uniform sidepanel wording: 1 Shutdown Lion force-off idle safe journal, 2 Cord IN solid ghost OUT 30mm arrow, 3 Clock 2001 CR2032 fix sudo date MMDDhhmmYY not 2015, 4 No force lower bracket screw captive, 5 Unplug GPU 2x6-pin keep. Perspective rule: main plate orthographic side view consistent (x=2 y=14 w=18 h=76); perspective/isometric use only inside close-up inset boxes for tertiary points of reference.",
+          "facts": [
+            "G-09",
+            "G-10",
+            "G-06"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP2 SAFETY",
+          "detail": "Footer step2 safety zero power.",
+          "facts": [
+            "G-10"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only", "Input solid output ghost 40% dashed", "Helvetica", "Uniform sidepanel same camera"]
+      "renderNotes": [
+        "Black white line art only",
+        "Input solid output ghost 40% dashed",
+        "Helvetica",
+        "Uniform sidepanel same camera",
+        "PASS-5 FIXES per operator critique: main comprehensive view orthographic side view same camera as g01 (no isometric primary); perspective only in small inset close-ups for IEC socket / captive screw tertiary detail. Every trait filtered every image.",
+        "Keep safety elements: POWER IN solid -> POWER OUT ghost 30mm, CR2032 2001 clock, NO FORCE captive screw cross, GPU 2x6-pin board->GPU loop, IEC socket rear, honeycomb, uniform sidepanel y=14 h=76."
+      ]
     },
     {
       "id": "g03-hidden-sata",
-      "title": "STEP 3 — HIDDEN SATA PORTS",
-      "purpose": "Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "title": "STEP 3 \u2014 HIDDEN SATA PORTS",
+      "purpose": "Remove fan ghost, reveal SATA5 SATA6 behind fan under Bay1, route cable to optical lower bay 50mm loop ghost route. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel accurate",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 3", "detail": "Uniform sidepanel step3.", "facts": ["G-03"] },
-        { "id": "fan-in", "kind": "panel", "x": 24, "y": 8, "w": 20, "h": 20, "text": "FAN IN", "detail": "Fan assembly module solid in place over logic board covering hidden SATA ports 2 screws.", "facts": ["G-03"] },
-        { "id": "fan-ghost", "kind": "panel", "x": 44, "y": 8, "w": 20, "h": 20, "text": "FAN OUT", "detail": "Ghost transparent dashed 40% fan module lifted 40mm up arrow lift up output state showing ports underneath.", "facts": ["G-03"] },
-        { "id": "sata-ports", "kind": "panel", "x": 24, "y": 32, "w": 20, "h": 18, "text": "SATA5 SATA6", "detail": "Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location labelled SATA5 SATA6 black line art connector detail.", "facts": ["G-03"] },
-        { "id": "cable-route", "kind": "cable", "x": 46, "y": 32, "w": 20, "h": 18, "text": "ROUTE 50MM", "detail": "SATA data cable solid from port along chassis edge to lower optical bay 50mm service loop zero tension arrow route ghost before routing.", "facts": ["G-03","G-05"] },
-        { "id": "optical-target", "kind": "bay", "x": 24, "y": 54, "w": 20, "h": 18, "text": "OPTICAL BAY", "detail": "Lower optical bay empty target for SSD metal cover PATA Molex power accurate as photo-1 top optical.", "facts": ["G-04","G-05"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "HIDDEN SATA", "detail": "Uniform sidepanel wording: 1 Remove 2 screws fan module IN solid, 2 Lift ghost OUT 40mm arrow shows ports, 3 Identify SATA5 SATA6 behind under Bay1, 4 Route 9-18in cable to optical lower bay 50mm loop.", "facts": ["G-03","G-05"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP3 SATA", "detail": "Footer step3 hidden ports free 4 bays.", "facts": ["G-03"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 3",
+          "detail": "Uniform sidepanel step3.",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "fan-in",
+          "kind": "panel",
+          "x": 24,
+          "y": 8,
+          "w": 20,
+          "h": 20,
+          "text": "FAN IN",
+          "detail": "Fan assembly module solid in place over logic board covering hidden SATA ports 2 screws. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "fan-ghost",
+          "kind": "panel",
+          "x": 44,
+          "y": 8,
+          "w": 20,
+          "h": 20,
+          "text": "FAN OUT",
+          "detail": "Ghost transparent dashed 40% fan module lifted 40mm up arrow lift up output state showing ports underneath. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "sata-ports",
+          "kind": "panel",
+          "x": 24,
+          "y": 32,
+          "w": 20,
+          "h": 18,
+          "text": "SATA5 SATA6",
+          "detail": "Two SATA II 3Gb/s ports on logic board upper left behind fan under Bay1 accurate location labelled SATA5 SATA6 black line art connector detail. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "cable-route",
+          "kind": "cable",
+          "x": 46,
+          "y": 32,
+          "w": 20,
+          "h": 18,
+          "text": "ROUTE 50MM",
+          "detail": "SATA data cable solid from port along chassis edge to lower optical bay 50mm service loop zero tension arrow route ghost before routing. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]",
+          "facts": [
+            "G-03",
+            "G-05"
+          ]
+        },
+        {
+          "id": "optical-target",
+          "kind": "bay",
+          "x": 24,
+          "y": 54,
+          "w": 20,
+          "h": 18,
+          "text": "OPTICAL BAY",
+          "detail": "Lower optical bay empty target for SSD metal cover PATA Molex power accurate as photo-1 top optical. [fan-assembly-solid] [fan-ghost-lift] [sata5-sata6-ports] [cable-route-50mm] [optical-bay-target]",
+          "facts": [
+            "G-04",
+            "G-05"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "HIDDEN SATA",
+          "detail": "Uniform sidepanel wording: 1 Remove 2 screws fan module IN solid, 2 Lift ghost OUT 40mm arrow shows ports, 3 Identify SATA5 SATA6 behind under Bay1, 4 Route 9-18in cable to optical lower bay 50mm loop. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).",
+          "facts": [
+            "G-03",
+            "G-05"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP3 SATA",
+          "detail": "Footer step3 hidden ports free 4 bays.",
+          "facts": [
+            "G-03"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only", "Ghost transparent fan lifted 40mm", "Arrow lift and route", "Accurate port location behind fan under Bay1"]
+      "renderNotes": [
+        "Black white line art only",
+        "Ghost transparent fan lifted 40mm",
+        "Arrow lift and route",
+        "Accurate port location behind fan under Bay1"
+      ]
     },
     {
       "id": "g04-ssd-mount",
-      "title": "STEP 4 — SSD TO OPTICAL BAY",
-      "purpose": "Mount Lion SSD in lower optical bay with 2.5->5.25 bracket and Molex power free Bay1-4 input empty output SSD installed ghost.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "title": "STEP 4 \u2014 SSD TO OPTICAL BAY",
+      "purpose": "Mount Lion SSD in lower optical bay with 2.5->5.25 bracket and Molex power free Bay1-4 input empty output SSD installed ghost. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic optical bay close-up front view accurate to photo-1 optical covers black and white line art Helvetica uniform sidepanel",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 4", "detail": "Uniform sidepanel step4.", "facts": ["G-05"] },
-        { "id": "bracket-in", "kind": "panel", "x": 24, "y": 8, "w": 18, "h": 16, "text": "BRACKET IN", "detail": "2.5 to 5.25 adapter bracket input solid empty in lower optical bay M3x5 short screws as in photo-1 optical.", "facts": ["G-05"] },
-        { "id": "ssd-out", "kind": "ssd", "x": 42, "y": 8, "w": 18, "h": 16, "text": "SSD INSTALLED", "detail": "Crucial MX500 SSD installed in bracket in lower optical bay output solid label visible ghost transparent before install.", "facts": ["G-05","G-13"] },
-        { "id": "molex", "kind": "cable", "x": 24, "y": 28, "w": 18, "h": 14, "text": "MOLEX ADAPTER", "detail": "Molex 4-pin white to SATA power adapter needed because optical is PATA Molex input Molex solid output ghost SATA power connected arrow.", "facts": ["G-04"] },
-        { "id": "sata-data", "kind": "cable", "x": 42, "y": 28, "w": 18, "h": 14, "text": "SATA DATA", "detail": "SATA data cable from hidden SATA5 to SSD straight ends latched 50mm loop arrow connect.", "facts": ["G-03","G-05"] },
-        { "id": "free-bays", "kind": "bay", "x": 24, "y": 46, "w": 36, "h": 24, "text": "4 BAYS FREE", "detail": "Four drive bays empty free sleds empty accurate silver blanks with screws red sticker Bay4 as in photo-1 ghost transparent showing bays empty after SSD move Bay1 bottom Bay4 top upright.", "facts": ["G-02"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "SSD RELOCATE", "detail": "Uniform sidepanel wording: 1 Bracket M3x5 in lower optical IN solid, 2 Molex->SATA power adapter ghost OUT connected arrow, 3 SATA data hidden port 50mm loop, 4 SSD now in optical bootable solid, 5 Bay1-4 free silver blanks.", "facts": ["G-04","G-05","G-02"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP4 SSD FREE", "detail": "Footer step4 SSD relocated 4 bays free.", "facts": ["G-05"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 4",
+          "detail": "Uniform sidepanel step4.",
+          "facts": [
+            "G-05"
+          ]
+        },
+        {
+          "id": "bracket-in",
+          "kind": "panel",
+          "x": 24,
+          "y": 8,
+          "w": 18,
+          "h": 16,
+          "text": "BRACKET IN",
+          "detail": "2.5 to 5.25 adapter bracket input solid empty in lower optical bay M3x5 short screws as in photo-1 optical.",
+          "facts": [
+            "G-05"
+          ]
+        },
+        {
+          "id": "ssd-out",
+          "kind": "ssd",
+          "x": 42,
+          "y": 8,
+          "w": 18,
+          "h": 16,
+          "text": "SSD INSTALLED",
+          "detail": "Crucial MX500 SSD installed in bracket in lower optical bay output solid label visible ghost transparent before install.",
+          "facts": [
+            "G-05",
+            "G-13"
+          ]
+        },
+        {
+          "id": "molex",
+          "kind": "cable",
+          "x": 24,
+          "y": 28,
+          "w": 18,
+          "h": 14,
+          "text": "MOLEX ADAPTER",
+          "detail": "Molex 4-pin white to SATA power adapter needed because optical is PATA Molex input Molex solid output ghost SATA power connected arrow.",
+          "facts": [
+            "G-04"
+          ]
+        },
+        {
+          "id": "sata-data",
+          "kind": "cable",
+          "x": 42,
+          "y": 28,
+          "w": 18,
+          "h": 14,
+          "text": "SATA DATA",
+          "detail": "SATA data cable from hidden SATA5 to SSD straight ends latched 50mm loop arrow connect.",
+          "facts": [
+            "G-03",
+            "G-05"
+          ]
+        },
+        {
+          "id": "free-bays",
+          "kind": "bay",
+          "x": 24,
+          "y": 46,
+          "w": 36,
+          "h": 24,
+          "text": "4 BAYS FREE",
+          "detail": "Four drive bays empty free sleds empty accurate silver blanks with screws red sticker Bay4 as in photo-1 ghost transparent showing bays empty after SSD move Bay1 bottom Bay4 top upright.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "SSD RELOCATE",
+          "detail": "Uniform sidepanel wording: 1 Bracket M3x5 in lower optical IN solid, 2 Molex->SATA power adapter ghost OUT connected arrow, 3 SATA data hidden port 50mm loop, 4 SSD now in optical bootable solid, 5 Bay1-4 free silver blanks. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).",
+          "facts": [
+            "G-04",
+            "G-05",
+            "G-02"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP4 SSD FREE",
+          "detail": "Footer step4 SSD relocated 4 bays free.",
+          "facts": [
+            "G-05"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only", "Ghost before after", "HDD bays empty accurate silver blanks red sticker", "Helvetica uniform sidepanel"]
+      "renderNotes": [
+        "Black white line art only",
+        "Ghost before after",
+        "HDD bays empty accurate silver blanks red sticker",
+        "Helvetica uniform sidepanel"
+      ]
     },
     {
       "id": "g05-hdd-install",
-      "title": "STEP 5 — INSTALL 4x 1TB HDD",
-      "purpose": "Install four WD Green 1TB into sleds Bay1-4 accurate placement Bay1 bottom Bay4 top upright sled slide front to rear ghost 20mm out to fully seated.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "title": "STEP 5 \u2014 INSTALL 4x 1TB HDD",
+      "purpose": "Install four WD Green 1TB into sleds Bay1-4 accurate placement Bay1 bottom Bay4 top upright sled slide front to rear ghost 20mm out to fully seated. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic front view drive cage 4 bays vertical Bay1 bottom Bay4 top accurate to photo-1 black and white line art",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 5", "detail": "Uniform sidepanel step5.", "facts": ["G-02"] },
-        { "id": "sled-detail", "kind": "panel", "x": 24, "y": 8, "w": 16, "h": 12, "text": "SLED M3x5", "detail": "Individual sled accurate as photo-1 with handle lever front captive thumbscrew 4x M3x5 side screws PCB down flat burr-free plate bare steel spring tabs bent locating lip accurate.", "facts": ["G-02"] },
-        { "id": "bay1-in", "kind": "bay", "x": 42, "y": 8, "w": 16, "h": 12, "text": "BAY1 EMPTY", "detail": "Bay1 bottom empty input solid silver blank with screw as in photo-1.", "facts": ["G-02"] },
-        { "id": "bay1-out", "kind": "hdd", "x": 60, "y": 8, "w": 16, "h": 12, "text": "BAY1 1TB", "detail": "Bay1 bottom output solid with WD Green 1TB on sled fully seated connector rear ghost transparent partially out 20mm arrow PUSH IN front to rear.", "facts": ["G-02","G-08"] },
-        { "id": "bay2-4", "kind": "hdd", "x": 24, "y": 26, "w": 52, "h": 32, "text": "BAY2 BAY3 BAY4", "detail": "Bay2 Bay3 Bay4 similarly installed each WD Green 1TB accurate label white green sleds slide horizontally front to rear input empty ghost output solid seated arrows PUSH IN Bay4 top red sticker removed.", "facts": ["G-02","G-08"] },
-        { "id": "intellipark", "kind": "panel", "x": 24, "y": 62, "w": 18, "h": 14, "text": "INTELLIPARK 8S", "detail": "Warning panel black border WD Green parks heads after 8s idle may drop RAID fix wdidle3 idle3-tools DOS boot.", "facts": ["G-08"] },
-        { "id": "raid-limit", "kind": "panel", "x": 44, "y": 62, "w": 18, "h": 14, "text": "NO RAID5", "detail": "AppleRAID stripe mirror concat only no RAID5 RAID5 needs HBA plus MaxConnect breakout.", "facts": ["G-12"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "HDD INSTALL", "detail": "Uniform sidepanel wording: 1 Sled prep M3x5 4 screws PCB down, 2 Bay1 bottom first ghost 20mm OUT to fully seated IN arrow PUSH, 3 Bay2 Bay3 Bay4 same ghost slide, 4 IntelliPark 8s warning, 5 AppleRAID no RAID5.", "facts": ["G-02","G-08","G-12"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP5 4x1TB", "detail": "Footer step5 4x1TB bays accurate Bay1 bottom Bay4 top.", "facts": ["G-02","G-08"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 5",
+          "detail": "Uniform sidepanel step5.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "sled-detail",
+          "kind": "panel",
+          "x": 24,
+          "y": 8,
+          "w": 16,
+          "h": 12,
+          "text": "SLED M3x5",
+          "detail": "Individual sled accurate as photo-1 with handle lever front captive thumbscrew 4x M3x5 side screws PCB down flat burr-free plate bare steel spring tabs bent locating lip accurate.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "bay1-in",
+          "kind": "bay",
+          "x": 42,
+          "y": 8,
+          "w": 16,
+          "h": 12,
+          "text": "BAY1 EMPTY",
+          "detail": "Bay1 bottom empty input solid silver blank with screw as in photo-1.",
+          "facts": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "bay1-out",
+          "kind": "hdd",
+          "x": 60,
+          "y": 8,
+          "w": 16,
+          "h": 12,
+          "text": "BAY1 1TB",
+          "detail": "Bay1 bottom output solid with WD Green 1TB on sled fully seated connector rear ghost transparent partially out 20mm arrow PUSH IN front to rear.",
+          "facts": [
+            "G-02",
+            "G-08"
+          ]
+        },
+        {
+          "id": "bay2-4",
+          "kind": "hdd",
+          "x": 24,
+          "y": 26,
+          "w": 52,
+          "h": 32,
+          "text": "BAY2 BAY3 BAY4",
+          "detail": "Bay2 Bay3 Bay4 similarly installed each WD Green 1TB accurate label white green sleds slide horizontally front to rear input empty ghost output solid seated arrows PUSH IN Bay4 top red sticker removed.",
+          "facts": [
+            "G-02",
+            "G-08"
+          ]
+        },
+        {
+          "id": "intellipark",
+          "kind": "panel",
+          "x": 24,
+          "y": 62,
+          "w": 18,
+          "h": 14,
+          "text": "INTELLIPARK 8S",
+          "detail": "Warning panel black border WD Green parks heads after 8s idle may drop RAID fix wdidle3 idle3-tools DOS boot.",
+          "facts": [
+            "G-08"
+          ]
+        },
+        {
+          "id": "raid-limit",
+          "kind": "panel",
+          "x": 44,
+          "y": 62,
+          "w": 18,
+          "h": 14,
+          "text": "NO RAID5",
+          "detail": "AppleRAID stripe mirror concat only no RAID5 RAID5 needs HBA plus MaxConnect breakout.",
+          "facts": [
+            "G-12"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "HDD INSTALL",
+          "detail": "Uniform sidepanel wording: 1 Sled prep M3x5 4 screws PCB down, 2 Bay1 bottom first ghost 20mm OUT to fully seated IN arrow PUSH, 3 Bay2 Bay3 Bay4 same ghost slide, 4 IntelliPark 8s warning, 5 AppleRAID no RAID5. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).",
+          "facts": [
+            "G-02",
+            "G-08",
+            "G-12"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP5 4x1TB",
+          "detail": "Footer step5 4x1TB bays accurate Bay1 bottom Bay4 top.",
+          "facts": [
+            "G-02",
+            "G-08"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only accurate HDD placement", "Ghost transparent partially out 20mm to fully seated PUSH IN", "Helvetica uniform sidepanel", "Sleds accurate with handles spring tabs"]
+      "renderNotes": [
+        "Black white line art only accurate HDD placement",
+        "Ghost transparent partially out 20mm to fully seated PUSH IN",
+        "Helvetica uniform sidepanel",
+        "Sleds accurate with handles spring tabs"
+      ]
     },
     {
       "id": "g06-gpu-swap",
-      "title": "STEP 6 — GPU SWAP AMD",
-      "purpose": "Remove GTX 285 double-wide black blower from Slot1 x16 and install blue AMD ATI card digital cable keep old until POST no force screw ghost.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "title": "STEP 6 \u2014 GPU SWAP AMD",
+      "purpose": "Remove GTX 285 double-wide black blower from Slot1 x16 and install blue AMD ATI card digital cable keep old until POST no force screw ghost. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic PCIe area side view Mac Pro 3,1 accurate to photo-1 black and white line art uniform sidepanel",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 6", "detail": "Uniform sidepanel step6.", "facts": ["G-06","G-07"] },
-        { "id": "gtx-in", "kind": "gpu", "x": 24, "y": 8, "w": 18, "h": 16, "text": "GTX285 IN", "detail": "GTX 285 input solid in Slot1 x16 double-wide black blower EVGA label two 6-pin rear as in photo-1 latch locked.", "facts": ["G-06"] },
-        { "id": "gtx-ghost", "kind": "gpu", "x": 42, "y": 8, "w": 18, "h": 16, "text": "GTX285 OUT", "detail": "Ghost transparent dashed 40% GTX 285 lifted 20mm out slot arrow up output latch released as LEGO.", "facts": ["G-06"] },
-        { "id": "amd-in", "kind": "gpu", "x": 62, "y": 8, "w": 18, "h": 16, "text": "AMD IN", "detail": "Blue shroud AMD ATI Radeon HD 4890 style output solid in Slot1 x16 after swap single fan center ATI logo bracket silver ghost before install.", "facts": ["G-07"] },
-        { "id": "cable", "kind": "cable", "x": 24, "y": 28, "w": 18, "h": 12, "text": "DIGITAL CABLE", "detail": "Digital cable DVI HDMI DP not VGA converter input VGA ghost crossed out output digital solid arrow passive DVI->HDMI single-link 1080p ceiling.", "facts": ["G-07","G-11"] },
-        { "id": "keep", "kind": "panel", "x": 44, "y": 28, "w": 18, "h": 12, "text": "KEEP OLD", "detail": "Keep GTX 285 until AMD POSTs and displays store safe checkmark no force lower bracket screw ghost.", "facts": ["G-06","G-10"] },
-        { "id": "slotmap", "kind": "panel", "x": 64, "y": 28, "w": 16, "h": 12, "text": "SLOT MAP", "detail": "Slot map uniform: Slot1 X16 GPU Slot2 X16 empty Slot3 X4 empty Slot4 X4 empty 300W combined max Helvetica.", "facts": ["G-01"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "GPU SWAP", "detail": "Uniform sidepanel wording: 1 Release latch Slot1 IN solid, 2 Lift GTX285 OUT ghost 20mm arrow up, 3 Install AMD blue card IN solid ghost before, 4 Digital cable not VGA ghost crossed to solid, 5 Keep old until POST, 6 No force lower screw.", "facts": ["G-06","G-07","G-10","G-11"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP6 GPU SWAP", "detail": "Footer step6 GPU swap fixes display timing.", "facts": ["G-07"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 6",
+          "detail": "Uniform sidepanel step6.",
+          "facts": [
+            "G-06",
+            "G-07"
+          ]
+        },
+        {
+          "id": "gtx-in",
+          "kind": "gpu",
+          "x": 24,
+          "y": 8,
+          "w": 18,
+          "h": 16,
+          "text": "GTX285 IN",
+          "detail": "GTX 285 input solid in Slot1 x16 double-wide black blower EVGA label two 6-pin rear as in photo-1 latch locked.",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "gtx-ghost",
+          "kind": "gpu",
+          "x": 42,
+          "y": 8,
+          "w": 18,
+          "h": 16,
+          "text": "GTX285 OUT",
+          "detail": "Ghost transparent dashed 40% GTX 285 lifted 20mm out slot arrow up output latch released as LEGO.",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "amd-in",
+          "kind": "gpu",
+          "x": 62,
+          "y": 8,
+          "w": 18,
+          "h": 16,
+          "text": "AMD IN",
+          "detail": "Blue shroud AMD ATI Radeon HD 4890 style output solid in Slot1 x16 after swap single fan center ATI logo bracket silver ghost before install.",
+          "facts": [
+            "G-07"
+          ]
+        },
+        {
+          "id": "cable",
+          "kind": "cable",
+          "x": 24,
+          "y": 28,
+          "w": 18,
+          "h": 12,
+          "text": "DIGITAL CABLE",
+          "detail": "Digital cable DVI HDMI DP not VGA converter input VGA ghost crossed out output digital solid arrow passive DVI->HDMI single-link 1080p ceiling.",
+          "facts": [
+            "G-07",
+            "G-11"
+          ]
+        },
+        {
+          "id": "keep",
+          "kind": "panel",
+          "x": 44,
+          "y": 28,
+          "w": 18,
+          "h": 12,
+          "text": "KEEP OLD",
+          "detail": "Keep GTX 285 until AMD POSTs and displays store safe checkmark no force lower bracket screw ghost.",
+          "facts": [
+            "G-06",
+            "G-10"
+          ]
+        },
+        {
+          "id": "slotmap",
+          "kind": "panel",
+          "x": 64,
+          "y": 28,
+          "w": 16,
+          "h": 12,
+          "text": "SLOT MAP",
+          "detail": "Slot map uniform: Slot1 X16 GPU Slot2 X16 empty Slot3 X4 empty Slot4 X4 empty 300W combined max Helvetica.",
+          "facts": [
+            "G-01"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "GPU SWAP",
+          "detail": "Uniform sidepanel wording: 1 Release latch Slot1 IN solid, 2 Lift GTX285 OUT ghost 20mm arrow up, 3 Install AMD blue card IN solid ghost before, 4 Digital cable not VGA ghost crossed to solid, 5 Keep old until POST, 6 No force lower screw. Shows ASSEMBLED solid then DISASSEMBLED ghost lifted (remove order: 1 latch, 2 lift, 3 clear).",
+          "facts": [
+            "G-06",
+            "G-07",
+            "G-10",
+            "G-11"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP6 GPU SWAP",
+          "detail": "Footer step6 GPU swap fixes display timing.",
+          "facts": [
+            "G-07"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only", "Ghost transparent lift out and install in", "Accurate GPU shapes as per photo-1", "Helvetica uniform sidepanel"]
+      "renderNotes": [
+        "Black white line art only",
+        "Ghost transparent lift out and install in",
+        "Accurate GPU shapes as per photo-1",
+        "Helvetica uniform sidepanel"
+      ]
     },
     {
       "id": "g07-cable-check",
-      "title": "STEP 7 — CABLE VERIFY CLOSE",
+      "title": "STEP 7 \u2014 CABLE VERIFY CLOSE",
       "purpose": "Verify GPU power loose ghost to seated solid, SATA power backplane Molex SSD, SATA data hidden bays latched 50mm loop, fan back 2 screws, close case ghost open to closed.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic side view Mac Pro interior before close accurate to photo-1 black and white line art uniform sidepanel",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 7", "detail": "Uniform sidepanel step7.", "facts": ["G-06"] },
-        { "id": "gpu-pwr-loose", "kind": "cable", "x": 24, "y": 8, "w": 18, "h": 14, "text": "GPU PWR LOOSE", "detail": "GPU power input loose ghost dangling two 6-pin unplugged as in photo-1.", "facts": ["G-06"] },
-        { "id": "gpu-pwr-in", "kind": "cable", "x": 42, "y": 8, "w": 18, "h": 14, "text": "GPU PWR IN", "detail": "GPU power output solid both 6-pin latched arrow PUSH IN.", "facts": ["G-06"] },
-        { "id": "sata-pwr", "kind": "cable", "x": 62, "y": 8, "w": 18, "h": 14, "text": "SATA PWR OK", "detail": "Four HDD sleds power via backplane solid SSD Molex->SATA power solid.", "facts": ["G-04","G-05"] },
-        { "id": "sata-data", "kind": "cable", "x": 24, "y": 26, "w": 18, "h": 14, "text": "SATA DATA OK", "detail": "Hidden SATA data to optical SSD plus four bay SATA all latched 50mm loop no tension.", "facts": ["G-03","G-05"] },
-        { "id": "fan-out", "kind": "panel", "x": 42, "y": 26, "w": 18, "h": 14, "text": "FAN OUT", "detail": "Fan assembly out ghost transparent lifted.", "facts": ["G-03"] },
-        { "id": "fan-back", "kind": "panel", "x": 62, "y": 26, "w": 18, "h": 14, "text": "FAN BACK", "detail": "Fan assembly back solid 2 screws no cable pinch arrow down.", "facts": ["G-03"] },
-        { "id": "close", "kind": "panel", "x": 24, "y": 44, "w": 18, "h": 14, "text": "CLOSE CASE", "detail": "Side panel on rear latch locked carriers locked no tools left inside ghost showing panel partially open to closed arrow close.", "facts": ["G-10"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "VERIFY CLOSE", "detail": "Uniform sidepanel wording: 1 GPU 2x6-pin IN solid from LOOSE ghost arrow PUSH, 2 SATA power backplane plus Molex SSD OK, 3 SATA data hidden plus bays latched 50mm loop, 4 Fan OUT ghost to BACK solid 2 screws arrow down, 5 Close side panel ghost open to closed.", "facts": ["G-03","G-04","G-05","G-06","G-10"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP7 VERIFY", "detail": "Footer step7 verify all cables.", "facts": ["G-10"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 7",
+          "detail": "Uniform sidepanel step7. [honeycomb-vent right edge]",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "gpu-pwr-loose",
+          "kind": "cable",
+          "x": 24,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "GPU PWR LOOSE",
+          "detail": "GPU power input loose ghost dangling two 6-pin unplugged as in photo-1. [honeycomb-vent right edge]",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "gpu-pwr-in",
+          "kind": "cable",
+          "x": 42,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "GPU PWR IN",
+          "detail": "GPU power output solid both 6-pin latched arrow PUSH IN. [honeycomb-vent right edge]",
+          "facts": [
+            "G-06"
+          ]
+        },
+        {
+          "id": "sata-pwr",
+          "kind": "cable",
+          "x": 62,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "SATA PWR OK",
+          "detail": "Four HDD sleds power via backplane solid SSD Molex->SATA power solid. [honeycomb-vent right edge]",
+          "facts": [
+            "G-04",
+            "G-05"
+          ]
+        },
+        {
+          "id": "sata-data",
+          "kind": "cable",
+          "x": 24,
+          "y": 26,
+          "w": 18,
+          "h": 14,
+          "text": "SATA DATA OK",
+          "detail": "Hidden SATA data to optical SSD plus four bay SATA all latched 50mm loop no tension. [honeycomb-vent right edge]",
+          "facts": [
+            "G-03",
+            "G-05"
+          ]
+        },
+        {
+          "id": "fan-out",
+          "kind": "panel",
+          "x": 42,
+          "y": 26,
+          "w": 18,
+          "h": 14,
+          "text": "FAN OUT",
+          "detail": "Fan assembly out ghost transparent lifted. [honeycomb-vent right edge]",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "fan-back",
+          "kind": "panel",
+          "x": 62,
+          "y": 26,
+          "w": 18,
+          "h": 14,
+          "text": "FAN BACK",
+          "detail": "Fan assembly back solid 2 screws no cable pinch arrow down. [honeycomb-vent right edge]",
+          "facts": [
+            "G-03"
+          ]
+        },
+        {
+          "id": "close",
+          "kind": "panel",
+          "x": 24,
+          "y": 44,
+          "w": 18,
+          "h": 14,
+          "text": "CLOSE CASE",
+          "detail": "Side panel on rear latch locked carriers locked no tools left inside ghost showing panel partially open to closed arrow close. [honeycomb-vent right edge]",
+          "facts": [
+            "G-10"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "VERIFY CLOSE",
+          "detail": "Uniform sidepanel wording: 1 GPU 2x6-pin IN solid from LOOSE ghost arrow PUSH, 2 SATA power backplane plus Molex SSD OK, 3 SATA data hidden plus bays latched 50mm loop, 4 Fan OUT ghost to BACK solid 2 screws arrow down, 5 Close side panel ghost open to closed. [honeycomb-vent right edge]",
+          "facts": [
+            "G-03",
+            "G-04",
+            "G-05",
+            "G-06",
+            "G-10"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP7 VERIFY",
+          "detail": "Footer step7 verify all cables. [honeycomb-vent right edge]",
+          "facts": [
+            "G-10"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only", "Ghost loose to seated", "Uniform sidepanel", "Helvetica"]
+      "renderNotes": [
+        "Black white line art only",
+        "Ghost loose to seated",
+        "Uniform sidepanel",
+        "Helvetica"
+      ]
     },
     {
       "id": "g08-boot-verify",
-      "title": "STEP 8 — BOOT LION VERIFY",
-      "purpose": "Boot Lion SSD in optical, fix clock 2001 sudo date, lock 1080p not 1440p ban, About GPU, Disk Utility 4x HDD OK, OMEN board accurate to photo-2.",
-      "canvas": { "w": 1536, "h": 1024 },
+      "title": "STEP 8 \u2014 BOOT LION VERIFY",
+      "purpose": "Boot Lion SSD in optical, fix clock 2001 sudo date, lock 1080p not 1440p ban, About GPU, Disk Utility 4x HDD OK, OMEN board accurate to photo-2. [startup-disk-bless]",
+      "canvas": {
+        "w": 1536,
+        "h": 1024
+      },
       "view": "orthographic desktop verification windows plus OMEN board accurate to photo-2 black and white line art uniform sidepanel",
       "nodes": [
-        { "id": "step", "kind": "panel", "x": 2, "y": 2, "w": 18, "h": 8, "text": "STEP 8", "detail": "Uniform sidepanel step8.", "facts": ["G-13"] },
-        { "id": "boot", "kind": "panel", "x": 24, "y": 8, "w": 18, "h": 14, "text": "BOOT LION", "detail": "Power on Option if needed boot Lion SSD Base now in optical bay login verified solid ghost showing boot chime.", "facts": ["G-13"] },
-        { "id": "clock", "kind": "panel", "x": 42, "y": 8, "w": 18, "h": 14, "text": "CLOCK FIX", "detail": "Clock shows 2001 due CR2032 dead Terminal sudo date MMDDhhmmYY fix not 2015 input 2001 ghost output correct date solid.", "facts": ["G-09"] },
-        { "id": "display", "kind": "panel", "x": 62, "y": 8, "w": 18, "h": 14, "text": "1080P LOCK", "detail": "Displays pref Scaled 1080p selected solid 1440p crossed out ghost blind warning no auto-revert.", "facts": ["G-11"] },
-        { "id": "about", "kind": "panel", "x": 24, "y": 26, "w": 18, "h": 14, "text": "ABOUT GPU", "detail": "About This Mac window Early 2008 Processor Memory Graphics ATI Radeon or GTX 285 Software Mac OS X Lion 10.7.5 solid.", "facts": ["G-06","G-07"] },
-        { "id": "drives", "kind": "panel", "x": 42, "y": 26, "w": 18, "h": 14, "text": "4x HDD OK", "detail": "Disk Utility shows 4x Green Bay1-4 plus Lion SSD in optical all online verified checkmarks Bay1 bottom Bay4 top accurate.", "facts": ["G-02","G-08"] },
-        { "id": "omen-board-accurate", "kind": "panel", "x": 62, "y": 26, "w": 18, "h": 20, "text": "OMEN BOARD", "detail": "OMEN ATX board accurate to photo-2: board mounted in case Micro ATX LGA1700 socket center EMPTY paste residue gray ILM lever metal frame, 4 DIMM slots right of socket black vertical, NVMe M.2 blue label below CPU, PCIe x16 silver below that, rear I/O left honeycomb vent pattern 5 PCIe slot covers, CR2032 coin bottom left near PCIe slots, OMEN AIO pump block black OMEN logo dangling front bottom on case floor hoses black thick 2x120 fans vertical rad mount right side black as in photo-2, front panel headers bottom, 24-pin ATX right edge middle 8-pin CPU top left, input board empty ghost output installed solid.", "facts": ["G-01"] },
-        { "id": "next", "kind": "panel", "x": 24, "y": 44, "w": 18, "h": 12, "text": "NEXT RAID", "detail": "Next RAID format wipe target must be named Bay1 NEVER erase uniform sidepanel next action.", "facts": ["G-12","G-13"] },
-        { "id": "sidepanel", "kind": "panel", "x": 2, "y": 14, "w": 18, "h": 76, "text": "BOOT VERIFY", "detail": "Uniform sidepanel wording: 1 Boot Lion SSD in optical IN solid ghost boot chime, 2 Clock 2001 ghost to correct date solid arrow fix, 3 Lock 1080p solid 1440p ghost crossed ban, 4 About GPU chipset solid, 5 Disk Utility 4xHDD OK plus SSD solid, 6 OMEN board accurate to photo-2 empty socket paste residue NVMe blue pump dangling bottom 2x120 fans vertical right, 7 Next RAID needs wipe target named.", "facts": ["G-09","G-11","G-13","G-02"] },
-        { "id": "footer", "kind": "footer", "x": 2, "y": 92, "w": 96, "h": 5, "text": "STEP8 LION BOOTS", "detail": "Footer step8 Lion boots 4 bays free display 1080p clock fixed.", "facts": ["G-13"] }
+        {
+          "id": "step",
+          "kind": "panel",
+          "x": 2,
+          "y": 2,
+          "w": 18,
+          "h": 8,
+          "text": "STEP 8",
+          "detail": "Uniform sidepanel step8. [startup-disk-bless]",
+          "facts": [
+            "G-13"
+          ]
+        },
+        {
+          "id": "boot",
+          "kind": "panel",
+          "x": 24,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "BOOT LION",
+          "detail": "Power on Option if needed boot Lion SSD Base now in optical bay login verified solid ghost showing boot chime. [startup-disk-bless]",
+          "facts": [
+            "G-13"
+          ]
+        },
+        {
+          "id": "clock",
+          "kind": "panel",
+          "x": 42,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "CLOCK FIX",
+          "detail": "Clock shows 2001 due CR2032 dead Terminal sudo date MMDDhhmmYY fix not 2015 input 2001 ghost output correct date solid. [startup-disk-bless]",
+          "facts": [
+            "G-09"
+          ]
+        },
+        {
+          "id": "display",
+          "kind": "panel",
+          "x": 62,
+          "y": 8,
+          "w": 18,
+          "h": 14,
+          "text": "1080P LOCK",
+          "detail": "Displays pref Scaled 1080p selected solid 1440p crossed out ghost blind warning no auto-revert. [startup-disk-bless]",
+          "facts": [
+            "G-11"
+          ]
+        },
+        {
+          "id": "about",
+          "kind": "panel",
+          "x": 24,
+          "y": 26,
+          "w": 18,
+          "h": 14,
+          "text": "ABOUT GPU",
+          "detail": "About This Mac window Early 2008 Processor Memory Graphics ATI Radeon or GTX 285 Software Mac OS X Lion 10.7.5 solid. [startup-disk-bless]",
+          "facts": [
+            "G-06",
+            "G-07"
+          ]
+        },
+        {
+          "id": "drives",
+          "kind": "panel",
+          "x": 42,
+          "y": 26,
+          "w": 18,
+          "h": 14,
+          "text": "4x HDD OK",
+          "detail": "Disk Utility shows 4x Green Bay1-4 plus Lion SSD in optical all online verified checkmarks Bay1 bottom Bay4 top accurate. [startup-disk-bless]",
+          "facts": [
+            "G-02",
+            "G-08"
+          ]
+        },
+        {
+          "id": "omen-board-accurate",
+          "kind": "panel",
+          "x": 62,
+          "y": 26,
+          "w": 18,
+          "h": 20,
+          "text": "OMEN BOARD",
+          "detail": "OMEN ATX board accurate to photo-2: board mounted in case Micro ATX LGA1700 socket center EMPTY paste residue gray ILM lever metal frame, 4 DIMM slots right of socket black vertical, NVMe M.2 blue label below CPU, PCIe x16 silver below that, rear I/O left honeycomb vent pattern 5 PCIe slot covers, CR2032 coin bottom left near PCIe slots, OMEN AIO pump block black OMEN logo dangling front bottom on case floor hoses black thick 2x120 fans vertical rad mount right side black as in photo-2, front panel headers bottom, 24-pin ATX right edge middle 8-pin CPU top left, input board empty ghost output installed solid. [startup-disk-bless]",
+          "facts": [
+            "G-01"
+          ]
+        },
+        {
+          "id": "next",
+          "kind": "panel",
+          "x": 24,
+          "y": 44,
+          "w": 18,
+          "h": 12,
+          "text": "NEXT RAID",
+          "detail": "Next RAID format wipe target must be named Bay1 NEVER erase uniform sidepanel next action. [startup-disk-bless]",
+          "facts": [
+            "G-12",
+            "G-13"
+          ]
+        },
+        {
+          "id": "sidepanel",
+          "kind": "panel",
+          "x": 2,
+          "y": 14,
+          "w": 18,
+          "h": 76,
+          "text": "BOOT VERIFY",
+          "detail": "Uniform sidepanel wording: 1 Boot Lion SSD in optical IN solid ghost boot chime, 2 Clock 2001 ghost to correct date solid arrow fix, 3 Lock 1080p solid 1440p ghost crossed ban, 4 About GPU chipset solid, 5 Disk Utility 4xHDD OK plus SSD solid, 6 OMEN board accurate to photo-2 empty socket paste residue NVMe blue pump dangling bottom 2x120 fans vertical right, 7 Next RAID needs wipe target named. [startup-disk-bless]",
+          "facts": [
+            "G-09",
+            "G-11",
+            "G-13",
+            "G-02"
+          ]
+        },
+        {
+          "id": "footer",
+          "kind": "footer",
+          "x": 2,
+          "y": 92,
+          "w": 96,
+          "h": 5,
+          "text": "STEP8 LION BOOTS",
+          "detail": "Footer step8 Lion boots 4 bays free display 1080p clock fixed. [startup-disk-bless]",
+          "facts": [
+            "G-13"
+          ]
+        }
       ],
-      "renderNotes": ["Black white line art only Helvetica no color", "Ghost 2001 to correct date", "Ghost 1440p crossed to 1080p solid", "OMEN board accurate to photo-2 empty socket paste residue blue NVMe pump dangling bottom 2x120 fans vertical right", "Uniform sidepanel same angle Japanese compactness"]
+      "renderNotes": [
+        "Black white line art only Helvetica no color",
+        "Ghost 2001 to correct date",
+        "Ghost 1440p crossed to 1080p solid",
+        "OMEN board accurate to photo-2 empty socket paste residue blue NVMe pump dangling bottom 2x120 fans vertical right",
+        "Uniform sidepanel same angle manual compactness"
+      ]
     }
   ]
 }

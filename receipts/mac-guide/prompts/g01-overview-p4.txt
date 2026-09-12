@@ -1,0 +1,141 @@
+PLATE g01-overview — STEP 1 — INVENTORY BAY MAP
+PURPOSE: Accurate to photo-1: Mac Pro on side 2 optical empty metal covers rectangular cutouts, 4 HDD bays silver blanks red sticker rightmost, GTX 285 black blower 2x6-pin dangling, memory cage left, WD Green on desk left, Time Capsule white right, uniform sidepanel wording.
+VIEW: orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, black and white line art Helvetica uniform sidepanel left manual compactness
+CANVAS: 1536 x 1024 px (fixed, do not crop)
+
+ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
+- step [panel] at x=2 y=2 w=18 h=8
+    SHORT LABEL (only text allowed in image): STEP 1
+    MEANING (visual, not text): Uniform sidepanel step number 1 top left Helvetica Bold black outline box consistent every plate.
+- chassis-accurate [chassis] at x=24 y=6 w=48 h=86
+    SHORT LABEL (only text allowed in image): MAC PRO 3,1
+    MEANING (visual, not text): Mac Pro 3,1 tower accurate to photo-1: case on side side panel off, top 2 optical bays empty metal covers each with rectangular cutout bottom screw top and bottom as in photo, middle row 4 HDD bays horizontal left to right each silver metal blank plate small screw right red square sticker on rightmost Bay4 blank as in photo, lower left large metal memory cage cover, lower right windows show blue PCB purple caps and drive backplane with 4 slots, right side PCIe GTX 285 black double-wide blower EVGA label two 6-pin power rear dangling black cables as in photo, no force lower bracket screw captive, memory risers hidden, fan assembly top, honeycomb rear.
+- bay-labels-accurate [panel] at x=24 y=10 w=10 h=40
+    SHORT LABEL (only text allowed in image): BAY 1-4
+    MEANING (visual, not text): Bay labels accurate: when upright Bay1 bottom Bay4 top, when on side as photo leftmost Bay1 bottommost upright, rightmost Bay4 topmost, each bay blank silver plate with screw, red sticker Bay4 as in photo, Helvetica leader lines.
+- desk-hdd-photo [hdd] at x=72 y=12 w=14 h=10
+    SHORT LABEL (only text allowed in image): WD GREEN
+    MEANING (visual, not text): WD Caviar Green 1TB on desk left as in photo-1 white label green stripe 3.5in on table, input solid accurate.
+- desk-timecapsule [panel] at x=88 y=12 w=10 h=10
+    SHORT LABEL (only text allowed in image): TIMECAPSULE
+    MEANING (visual, not text): Apple Time Capsule white on desk right as in photo-1 with Apple logo.
+- ghost-sled [bay] at x=24 y=54 w=10 h=10
+    SHORT LABEL (only text allowed in image): GHOST OUT
+    MEANING (visual, not text): Ghost transparent dashed 40% showing sled partially out front 30mm front to rear slide action arrow PULL front, LEGO input output, accurate sled handle lever front captive thumbscrew.
+- arrow-pull [cable] at x=36 y=56 w=8 h=6
+    SHORT LABEL (only text allowed in image): PULL
+    MEANING (visual, not text): Black arrow line triangle head indicating sled pull out front direction, Helvetica label PULL beside.
+- sidepanel [panel] at x=2 y=14 w=18 h=76
+    SHORT LABEL (only text allowed in image): INVENTORY LIST
+    MEANING (visual, not text): Uniform sidepanel left every plate compact manual wording Helvetica: 1 Identify optical 2 empty metal covers cutouts, 2 Identify 4 HDD bays silver blanks red sticker Bay4, 3 Note GTX285 2x6-pin dangling, 4 Check WD Green on desk left, 5 Bay1 bottom Bay4 top upright.
+- footer [footer] at x=2 y=92 w=96 h=5
+    SHORT LABEL (only text allowed in image): STEP1 INVENTORY
+    MEANING (visual, not text): Footer black line step1 inventory bay map Mac Pro 3,1 Early 2008 accurate to photo-1.
+
+STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
+# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v4
+
+Operator directive 2026-09-12: **NO actual Japanese lettering.** English only, Helvetica,
+uniform consistent formatting, short comprehensive guiding words. Japanese compactness is
+carried forward as MANUAL COMPACTNESS (layout density only, never a language).
+Operator chat 2026-09-12 + photo (chat attachment; perception receipt agent-memory seq 7): machine is **Mac Pro 3,1 Early 2008**.
+Style is BLACK AND WHITE efficient line art ONLY. LEGO instruction manual. No color, no fill.
+
+## Language + type
+- Rendered-image language: **ENGLISH ONLY**. No kana, no kanji, no romaji dummies.
+- `helvetica` Helvetica Neue / Helvetica; 75 Bold Condensed for labels, 55 Roman for detail.
+- Labels: **short comprehensive guiding words**, max 4 words / 24 chars, ALL CAPS, black on white.
+- Numbers Helvetica Bold. No other font anywhere, no serif, no mono, no script.
+
+## Palette
+- `black-line` #000000 100% line: 1.5px stroke primary edges, 0.75px secondary.
+- `ghost-40` #000000 at 40% opacity, dashed 4-2, 0.5px stroke: previous/next state, partially out.
+- `white-paper` #FFFFFF background. No texture, no gradient.
+- No color. No gray fill. No shading. Black lines on white only.
+
+## Geometry — LEGO + manual compactness
+- Uniform side panel EVERY plate: left x=2 y=14 w=18 h=76 (percent grid), same camera,
+  same framing, same scale across all plates.
+- INPUT solid black 100% -> OUTPUT ghost 40% dashed, with a motion arrow + distance
+  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: black line, triangle head, Helvetica label beside.
+- Orthographic straight views, never perspective-distorted.
+- Grid 8px module. Canvas 1536x1024 fixed per plate.
+- Footer: single black rule + step name.
+
+## Tool-panel mockup spec (this contract's own design console)
+The mockup plate renders the style system AS a photo-editor console so every knob is visible
+and its value is storable:
+- Left tool rail: move, marquee, lasso, crop, eyedropper, wand, brush, eraser, pen, type,
+  zoom, hand — simple black line icons, one word labels.
+- Right inspector column: sliders with tick track + value chip. Canonical stored knobs:
+  LINE 1.5PX | EDGE 0.75PX | GHOST 40% | DASH 4-2 | GRID 8PX | LABEL 24CH | OPACITY 100% |
+  PAPER 100% | PULL 30MM | LIFT 20MM | ANGLE 0 | CANVAS 1536X1024.
+- Toggles: ASSEMBLED / DISASSEMBLED pair (see conflict rule). Checkboxes: NO COLOR,
+  NO SHADING, ENGLISH ONLY.
+- Histogram + layers strip black line art. Every value shown is a real contract value above.
+
+## Conflict rule — assembled/disassembled pairs
+When two sights cannot be present at once (example: the RAM cage hides the mobo CPU sockets;
+the GPU shroud hides the slot latch), do NOT invent a cutaway: render the view BOTH ways —
+- ASSEMBLED: chassis closed state, solid parts.
+- DISASSEMBLED: same camera, blocking part ghost 40% dashed lifted out with remove-order
+  arrows and numbered remove steps (WHAT to disassemble, HOW far, WHICH screws).
+- The pair shares one plate; the state word (ASSEMBLED / DISASSEMBLED) is the label.
+
+## Iconography — copied exactly from operator photos
+Primary reference: operator photo 2026-09-12 (Mac Pro 3,1 side open, case on its side; chat attachment - durable perception receipt agent-memory seq 7):
+- Two optical covers top: LEFT cover wide with TWO rectangular cutouts (screw in each);
+  RIGHT cover plain large. (In the classic front view these are the stacked optical slots.)
+- Four HDD blanks in a row (upright: vertical column Bay1 bottom -> Bay4 top). Leftmost/
+  first blanks show realistic weathering scratches; small screw at right end of each blank.
+- RED SQUARE STICKER on the rightmost blank (Bay4).
+- Large smooth silver memory-cage shroud lower-left (upright: front-left below the bays).
+- Logic board strip top with connectors; big black finned heatsink horizontal behind GPU.
+- GTX 285 double-wide black blower, curved shroud, horizontal center-right; TWO 6-pin PCIe
+  power cables UNPLUGGED, dangling in a loop at center-left toward the memory cage.
+- Lower-right: two rectangular windows in silver cage showing BLUE PCBs with cylindrical
+  electrolytic caps (slate/violet tops).
+- Honeycomb perforated vent strip along right edge; silver latch handle top-right.
+- Desk props when in frame: bare 3.5in HDD stack incl. WD Green (white label, green band)
+  left; white Apple Time Capsule with Apple logo right.
+- Copy positions, orientations and proportions exactly; no invented parts, no swapped
+  orientation, no extra drives.
+- OMEN ATX board reference (photo-2, unchanged from v3): LGA1700 empty socket + paste,
+  4 DIMM right of socket, NVMe below CPU, x16 below, honeycomb rear I/O, CR2032 lower left,
+  pump block dangling front-bottom, 2x120 rad right, 24-pin right edge, 8-pin top left.
+
+## Composition
+1. Same camera per plate type across all 8 steps.
+2. Left side panel: STEP number black outline box + compact action list, English.
+3. Input solid, output ghost 40% dashed, arrow vector.
+4. Bays: Bay1 bottom, Bay4 top upright; sled slides front-to-rear.
+5. No text overlap, no leader crossing, arrow never crosses a label.
+6. Aspect 1536x1024 fixed.
+
+## Tokens for compile check
+black-line ghost-40 white-paper helvetica manual compactness lego ghost transparent arrow
+uniform sidepanel english accurate hardware black and white short guiding words
+
+`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`,
+`no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`,
+`no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`,
+`no-paragraph-in-image`, `no-text-walls`, `no-color-fill`, `no-gray-fill`, `no-shading`,
+`no-gradient`, `no-japanese-text`
+
+## Negative constraints
+no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-logo-watermark
+no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-counts
+no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill
+no-gray-fill no-shading no-gradient no-japanese-text
+
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text.
+
+PASS-4 CORRECTIONS:
+- ENGLISH ONLY - no Japanese lettering anywhere, all sidepanel + labels English Helvetica caps
+- Uniform sidepanel x=2 y=14 w=18 h=76, action list numbered compact English guiding words
+- Copy operator photo exactly: left optical cover has TWO rectangular cutouts with screws; right cover plain; four HDD blanks horizontal row, leftmost weathered-scratched, small screw right end each, RED square sticker on rightmost Bay4 blank
+- Memory-cage shroud large smooth lower-left; logic board strip top; GTX 285 double-wide curved blower center-right horizontal; TWO 6-pin PCIe cables UNPLUGGED dangling loop center-left toward memory cage; blue-PCB cap windows lower-right; honeycomb vent strip right edge; WD Green HDD desk left, white Time Capsule desk right
+- Ghost 40% dashed sled partially out front 30mm with PULL arrow (input solid output ghost)
+- Conflict rule: memory cage shroud occludes risers/sockets in this view - draw shroud closed (assembled state); disassembled pair ships on its own plate
+Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
+PASS: 4

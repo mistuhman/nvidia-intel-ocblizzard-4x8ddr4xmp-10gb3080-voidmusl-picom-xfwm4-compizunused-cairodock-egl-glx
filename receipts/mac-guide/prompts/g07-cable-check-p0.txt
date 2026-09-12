@@ -6,113 +6,183 @@ CANVAS: 1536 x 1024 px (fixed, do not crop)
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
 - step [panel] at x=2 y=2 w=18 h=8
     SHORT LABEL (only text allowed in image): STEP 7
-    MEANING (visual, not text): Uniform sidepanel step7.
+    MEANING (visual, not text): Uniform sidepanel step7. [honeycomb-vent right edge]
 - gpu-pwr-loose [cable] at x=24 y=8 w=18 h=14
     SHORT LABEL (only text allowed in image): GPU PWR LOOSE
-    MEANING (visual, not text): GPU power input loose ghost dangling two 6-pin unplugged as in photo-1.
+    MEANING (visual, not text): GPU power input loose ghost dangling two 6-pin unplugged as in photo-1. [honeycomb-vent right edge]
 - gpu-pwr-in [cable] at x=42 y=8 w=18 h=14
     SHORT LABEL (only text allowed in image): GPU PWR IN
-    MEANING (visual, not text): GPU power output solid both 6-pin latched arrow PUSH IN.
+    MEANING (visual, not text): GPU power output solid both 6-pin latched arrow PUSH IN. [honeycomb-vent right edge]
 - sata-pwr [cable] at x=62 y=8 w=18 h=14
     SHORT LABEL (only text allowed in image): SATA PWR OK
-    MEANING (visual, not text): Four HDD sleds power via backplane solid SSD Molex->SATA power solid.
+    MEANING (visual, not text): Four HDD sleds power via backplane solid SSD Molex->SATA power solid. [honeycomb-vent right edge]
 - sata-data [cable] at x=24 y=26 w=18 h=14
     SHORT LABEL (only text allowed in image): SATA DATA OK
-    MEANING (visual, not text): Hidden SATA data to optical SSD plus four bay SATA all latched 50mm loop no tension.
+    MEANING (visual, not text): Hidden SATA data to optical SSD plus four bay SATA all latched 50mm loop no tension. [honeycomb-vent right edge]
 - fan-out [panel] at x=42 y=26 w=18 h=14
     SHORT LABEL (only text allowed in image): FAN OUT
-    MEANING (visual, not text): Fan assembly out ghost transparent lifted.
+    MEANING (visual, not text): Fan assembly out ghost transparent lifted. [honeycomb-vent right edge]
 - fan-back [panel] at x=62 y=26 w=18 h=14
     SHORT LABEL (only text allowed in image): FAN BACK
-    MEANING (visual, not text): Fan assembly back solid 2 screws no cable pinch arrow down.
+    MEANING (visual, not text): Fan assembly back solid 2 screws no cable pinch arrow down. [honeycomb-vent right edge]
 - close [panel] at x=24 y=44 w=18 h=14
     SHORT LABEL (only text allowed in image): CLOSE CASE
-    MEANING (visual, not text): Side panel on rear latch locked carriers locked no tools left inside ghost showing panel partially open to closed arrow close.
+    MEANING (visual, not text): Side panel on rear latch locked carriers locked no tools left inside ghost showing panel partially open to closed arrow close. [honeycomb-vent right edge]
 - sidepanel [panel] at x=2 y=14 w=18 h=76
     SHORT LABEL (only text allowed in image): VERIFY CLOSE
-    MEANING (visual, not text): Uniform sidepanel wording: 1 GPU 2x6-pin IN solid from LOOSE ghost arrow PUSH, 2 SATA power backplane plus Molex SSD OK, 3 SATA data hidden plus bays latched 50mm loop, 4 Fan OUT ghost to BACK solid 2 screws arrow down, 5 Close side panel ghost open to closed.
+    MEANING (visual, not text): Uniform sidepanel wording: 1 GPU 2x6-pin IN solid from LOOSE ghost arrow PUSH, 2 SATA power backplane plus Molex SSD OK, 3 SATA data hidden plus bays latched 50mm loop, 4 Fan OUT ghost to BACK solid 2 screws arrow down, 5 Close side panel ghost open to closed. [honeycomb-vent right edge]
 - footer [footer] at x=2 y=92 w=96 h=5
     SHORT LABEL (only text allowed in image): STEP7 VERIFY
-    MEANING (visual, not text): Footer step7 verify all cables.
+    MEANING (visual, not text): Footer step7 verify all cables. [honeycomb-vent right edge]
 
-STYLE CONTRACT (authoritative, from docs/macpro-storage-style.md):
-# Mac Pro + OMEN chassis guide — BLACK AND WHITE efficient style contract v3
+STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
+# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
 
-Operator directive 2026-09-12 corrected twice: NO Quake Live color, NO AMOLED, NO neon, NO color fill.
-Style is BLACK AND WHITE efficient line art ONLY, Japanese compactness, Helvetica font, LEGO instruction manual.
+Operator directive 2026-09-12 rev1: **NO actual Japanese lettering.** English only, Helvetica,
+uniform consistent formatting, short comprehensive guiding words. Japanese compactness is
+carried forward as MANUAL COMPACTNESS (layout density only, never a language).
+
+Operator rev2 2026-09-12 (seq 27): **none of them pass**, progressive hallucination,
+fundamentals of schematicization before visualization must change, reproduce at same quality
+via TypeScript tool, keen user feedback, intuitive placed+detached flow, specific inaccuracies:
+GPU orientation, motherboard not displayed, RAM cages, fans, PCB layout, GPU cable direction
+(board end in → GPU end out), last image random assembly, second image only worthwhile
+(drive cages + upper DVD + PSU correct), cages/screws wrong. Awaiting isolated parts photos.
+
+V5 fundamental: **SCHEMATIC BEFORE VISUALIZATION.** No AI render without a deterministic SVG
+blueprint that anchors every hardware element. The TypeScript tool is the single source of
+truth and must reproduce the same geometry at the same quality every invocation. The schematic
+is versioned, hashed, and traced — hallucination is blocked at the prompt level.
+
+## Language + type
+- Rendered-image language: **ENGLISH ONLY**. No kana, no kanji, no romaji dummies.
+- `helvetica` Helvetica Neue / Helvetica; 75 Bold Condensed for labels, 55 Roman for detail.
+- Labels: **short comprehensive guiding words**, max 4 words / 24 chars, ALL CAPS, black on white.
+- Numbers Helvetica Bold. No other font anywhere, no serif, no mono, no script.
 
 ## Palette
-- `black-line` #000000 100% line, 1.5px stroke primary edges, 0.75px secondary
-- `ghost-40` #000000 at 40% opacity dashed 4-2 stroke 0.5px for previous state transparent partially out
-- `white-paper` #FFFFFF paper background, no texture, no gradient
-- No color. No gray fill. No amber, no cyan, no blue. Black lines on white only. Ghost is black at 40% dashed.
+- `black-line` #000000 100% line: 1.5px stroke primary edges, 0.75px secondary.
+- `ghost-40` #000000 at 40% opacity, dashed 4-2, 0.5px stroke: previous/next state, partially out.
+- `white-paper` #FFFFFF background. No texture, no gradient.
+- No color. No gray fill. No shading. Black lines on white only.
 
-## Typography
-- `helvetica` Helvetica Neue / Helvetica, 75 Bold Condensed for labels, 55 Roman for detail
-- In-image label budget: 4 words / 24 chars max, ALL CAPS, Helvetica Bold, black on white, 8px module
-- No other font. Numbers Helvetica Bold.
-- Uniform sidepanel every plate same position left 2,14,18,76 wording compact Japanese manual density
+## Geometry — LEGO + manual compactness
+- Uniform side panel EVERY plate: left x=2 y=14 w=18 h=76 (percent grid), same camera,
+  same framing, same scale across all plates.
+- INPUT solid black 100% -> OUTPUT ghost 40% dashed, with a motion arrow + distance
+  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: black line, triangle head, Helvetica label beside.
+- Orthographic straight views, never perspective-distorted.
+- Grid 8px module. Canvas 1536x1024 fixed per plate.
+- Footer: single black rule + step name.
+- Schematic guides: faint 8px grid at 6% opacity, anchor dots for every hardware element.
 
-## Geometry — LEGO + Japanese compactness
-- Uniform side-panel every time: same camera angle, same framing, same scale across 8 steps
-- Each movement/action recorded: INPUT solid black line 100% + OUTPUT ghost transparent 40% dashed partially out with arrow
-- Example: power cable IN solid plugged at start, END of same step ghost transparent partially out 30mm with arrow PULL
-- Orthographic straight views, not perspective distorted
-- Line weight: 1.5px primary, 0.75px secondary, 0.5px ghost dashed 4-2
-- Arrows: simple black line triangle head, Helvetica label beside
-- Grid: 8px module, compact, no wasted space
-- Aspect 1536x1024 fixed per plate
+## Schematic layer (anti-hallucination gate)
+- Before any `prompt` is emitted, the tool writes `receipts/mac-guide/schematics/{plate}-p{pass}.svg`
+  - deterministic SVG blueprint: white-paper rect, sidepanel box, every node as a black-line rect,
+    every hardware anchor as a nested sub-rect/circle (HDD bays x4 with right-end screw dot + Bay4 outline,
+    optical cutouts (left 2x rect), GPU horizontal double-wide center-right with cable path board→GPU,
+    memory shroud, PCB windows x2, honeycomb dots, PSU top).
+  - ghost parts are 40% dashed 0.5px; solid parts 1.5px.
+  - the SVG hash is stored in the ledger (`schematicFile` / `schematicHash`) and the prompt contains
+    `SCHEMATIC ANCHOR: receipts/...svg` + `RENDER RULE: trace the schematic, no invention`.
+- No prompt without a schematic. No schematic without anchors. `schematic --plate=ID --pass=N`
+  is deterministic: same IR → same SVG hash (see selftest `schematic-deterministic`).
+- Hardware anchors per plate are declared in `tools/mac-guide-art.ts:HARDWARE_ANCHORS`. The prompt
+  repeats them as `HARDWARE ANCHORS: a, b, c -- place each at its schematic coordinate`.
+- Reproducibility: the TypeScript tool is the only generator. Re-running `prompt` or `schematic`
+  at same pass reproduces identical file + hash. No hand-authored prompts, no random seeds.
 
-## Iconography — incredibly accurate from operator photos 2026-09-12
+## Tool-panel mockup spec (this contract's own design console)
+The mockup plate renders the style system AS a photo-editor console so every knob is visible
+and its value is storable:
+- Left tool rail: move, marquee, lasso, crop, eyedropper, wand, brush, eraser, pen, type,
+  zoom, hand — simple black line icons, one word labels.
+- Right inspector column: sliders with tick track + value chip. Canonical stored knobs:
+  LINE 1.5PX | EDGE 0.75PX | GHOST 40% | DASH 4-2 | GRID 8PX | LABEL 24CH | OPACITY 100% |
+  PAPER 100% | PULL 30MM | LIFT 20MM | ANGLE 0 | CANVAS 1536X1024.
+- Toggles: ASSEMBLED / DISASSEMBLED pair (see conflict rule). Checkboxes: NO COLOR,
+  NO SHADING, ENGLISH ONLY.
+- Histogram + layers strip black line art. Every value shown is a real contract value above.
+- Schematic toggle: SHOW ANCHORS / SHOW GRID previews the blueprint under the render.
 
-Mac Pro 3,1 Early 2008 photo reference (image-1):
-- Aluminium cheese-grater tower, side panel OFF, left side internal
-- Top: 2 optical bays 5.25in empty with metal covers, each cover has rectangular cutout bottom with screw hole top and bottom, as in photo
-- Middle: 4 HDD bays in horizontal row when case on side (vertical Bay1 bottom Bay4 top when upright), each bay has silver metal blank plate with small screw right side, red square sticker on rightmost Bay4 blank as in photo, as in photo
-- Sleds: individual sleds with handle lever front and captive thumbscrew, sled slides horizontally front to rear, connector faces rear, PCB down, M3x5 screws 4 per drive side+bottom, sled lip bent locating lip + bare steel spring tabs as in photo
-- Lower: large metal memory cage cover left, lower right drive cage windows show memory risers purple caps? Actually lower right shows blue PCB with capacitors purple, and blue drive backplane with 4 bays
-- PCIe: GTX 285 double-wide black blower EVGA label visible, two 6-pin power connectors rear dangling black cables as in photo, no GPU bracket force, lower bracket screw captive
-- Background desk: WD Green HDD white label green stripe, 3.5in on table left as in photo, Apple Time Capsule white right
-- Accurate to photo, no invented parts
+## Intuitive flow — assembled/disassembled pairs (MANDATORY when removable)
+Operator rev2: designs lacked intuitive flow showing what things look like when placed AND
+when detached. Every operation that exposes hidden geometry MUST be a pair on one plate:
+- ASSEMBLED: chassis closed state, solid parts. Hides what it hides (RAM cage hides CPU sockets,
+  GPU shroud hides slot latch, fan hides spare SATA).
+- DISASSEMBLED: same camera, blocking part ghost 40% dashed lifted out with remove-order
+  arrows and numbered remove steps (WHAT to disassemble, HOW far, WHICH screws).
+- The pair shares one plate, same scale, same grid, state word (ASSEMBLED / DISASSEMBLED) is the label.
+- Applies to: g03 fan→SATA, g04 SSD→optical, g05 HDD sled→bay, g06 GPU→slot + power cables.
+  g01 overview is reference (single state) but must still schematic-anchor every part so later plates trace.
 
-OMEN ATX board photo reference (image-2):
-- Board mounted in case, Micro ATX, LGA1700 socket center with ILM lever, socket EMPTY with paste residue gray as in photo, ILM metal frame, 4 DIMM slots right of socket black, vertical
-- NVMe M.2 blue label below CPU socket as in photo, PCIe x16 silver slot below NVMe, chipset heatsink black below that
-- Rear I/O shield left side honeycomb vent pattern, 5 PCIe slot covers horizontal, CR2032 coin battery bottom left near PCIe slots as in photo
-- OMEN AIO pump block black with OMEN logo dangling on hoses front bottom on case floor as in photo, hoses black thick, 2x120 fans vertical rad mount right side of case, black, 4 screws per fan
-- Front panel headers bottom edge, 24-pin ATX right edge middle, 8-pin CPU top left
-- Honeycomb pattern left side case vent, as in photo
-- No CPU installed in photo, show empty socket, accurate
+## Iconography — copied exactly from operator photos
+Primary reference: operator photo 2026-09-12 (Mac Pro 3,1 side open, case on its side; chat attachment - durable perception receipt agent-memory seq 7+28 — 6 duplicate frames this turn are same image, not yet isolated parts; awaiting isolated parts photos):
+- Two optical covers top: LEFT cover wide with TWO rectangular cutouts (screw in each);
+  RIGHT cover plain large. (In the classic front view these are the stacked optical slots.)
+- Four HDD blanks in a row (upright: vertical column Bay1 bottom -> Bay4 top). Leftmost/
+  first blanks show realistic weathering scratches; small screw at right end of each blank.
+  Each blank is an aluminum sled with front captive thumbscrew, rear connector, rails.
+- RED SQUARE (outline only) on the rightmost blank (Bay4) — small empty square outline, never fill.
+- Large smooth silver memory-cage shroud lower-left (upright: front-left below the bays).
+  Inside are TWO FB-DIMM riser cards, each 4 slots (8 total), DIMMs vertical.
+- Logic board strip top with connectors; big black finned heatsinks horizontal behind GPU
+  covering dual Xeon sockets (Harpertown), northbridge heatsink. Board PCB is deep blue with
+  cylindrical caps but rendered as black outline only in BW style.
+- GTX 285 double-wide black blower, curved shroud, horizontal center-right in slot 1,
+  bracket at rear, fan at front, power sockets on top edge. TWO 6-pin PCIe power cables
+  ORIGINATE FROM LOGIC BOARD AUX HEADERS (board end in) and plug into GPU top edge
+  (GPU end out). In overview photo both are UNPLUGGED and dangling in a loop at center-left
+  toward the memory cage — correct direction is board→GPU, not PSU→GPU.
+- Lower-right: two rectangular windows in silver cage showing PCBs with cylindrical
+  electrolytic caps (outline only, no blue/purple fill).
+- Honeycomb perforated vent strip along right edge; silver latch handle top-right.
+- PSU top (under top panel) smooth silver with vent, above the bays (correct in "second" image).
+- Desk props when in frame: bare 3.5in HDD stack incl. WD Green (white label, green band)
+  left; white Apple Time Capsule with Apple logo right.
+- Copy positions, orientations and proportions exactly; no invented parts, no swapped
+  orientation, no extra drives.
+- OMEN ATX board reference (photo-2, unchanged from v3): LGA1700 empty socket + paste,
+  4 DIMM right of socket, NVMe below CPU, x16 below, honeycomb rear I/O, CR2032 lower left,
+  pump block dangling front-bottom, 2x120 rad right, 24-pin right edge, 8-pin top left.
 
-Other hardware:
-- HDD: WD Caviar Green 1TB WD10EACS white label green stripe as in photo, 3.5in
-- SSD: Crucial MX500 1TB 2.5in silver label blue as in photo
-- AMD card: blue shroud ATI Radeon HD 4890 single center fan as on desk earlier
-- UPS CyberPower 1500VA black tower
-
-## Composition — uniform sidepanel flow
-1. Every plate SAME camera per type: Mac Pro side open straight side view or OMEN case straight side view consistent
-2. Left side: STEP number black outline box, TITLE, uniform sidepanel list of actions Helvetica compact wording
-3. Input solid, output ghost 40% dashed, arrow vector
-4. Drives in correct bay: Bay1 bottom Bay4 top upright, sled fully seated vs partially out 20mm ghost
-5. No text overlaps, no leader crosses, arrow does not cross label
-6. Footer step name black line
+## Composition
+1. Same camera per plate type across all 8 steps.
+2. Left side panel: STEP number black outline box + compact action list, English.
+3. Input solid, output ghost 40% dashed, arrow vector with distance chip.
+4. Bays: Bay1 bottom, Bay4 top upright; sled slides front-to-rear on rails.
+5. No text overlap, no leader crossing, arrow never crosses a label.
+6. Aspect 1536x1024 fixed.
+7. Schematic underlay is the ground truth; the render traces it 1:1.
 
 ## Tokens for compile check
-black-line ghost-40 white-paper helvetica lego ghost transparent arrow uniform sidepanel japanese compactness accurate hardware black and white
+black-line ghost-40 white-paper helvetica manual compactness lego ghost transparent arrow
+uniform sidepanel english accurate hardware black and white short guiding words schematic anchor trace
 
-`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`, `no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`, `no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`, `no-paragraph-in-image`, `no-text-walls`, `no-color-fill`, `no-gray-fill`, `no-shading`, `no-gradient`
-
+`no-color`, `no-amoled`, `no-neon-glow-bloom`, `no-watermark`, `no-photoreal-human`,
+`no-brand-logo-watermark`, `no-blurry-icons`, `no-extra-drives`, `no-macbook`,
+`no-rack-server`, `no-invented-port-counts`, `no-raid-5-in-disk-utility`, `no-apfs-on-10-7`,
+`no-paragraph-in-image`, `no-text-walls`, `no-color-fill`, `no-gray-fill`, `no-shading`,
+`no-gradient`, `no-japanese-text`
 
 ## Negative constraints
-no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-logo-watermark no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-counts no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill no-gray-fill no-shading no-gradient
+no-color no-amoled no-neon-glow-bloom no-watermark no-photoreal-human no-brand-logo-watermark
+no-blurry-icons no-extra-drives no-macbook no-rack-server no-invented-port-counts
+no-raid-5-in-disk-utility no-apfs-on-10-7 no-paragraph-in-image no-text-walls no-color-fill
+no-gray-fill no-shading no-gradient no-japanese-text
 
-NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading.
+NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-photoreal-human, no-brand-logo-watermark, no-blurry-icons, no-extra-drives, no-macbook, no-rack-server, no-invented-port-counts, no-raid-5-in-disk-utility, no-apfs-on-10-7, no-paragraph-in-image, no-text-walls, no-color-fill, no-gray-fill, no-shading, no-japanese-text, no-coordinate-text, no-style-spec-text.
+
+CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
+
+SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g07-cable-check-p0.svg
+HARDWARE ANCHORS: sata-cable-loop, power-cable-dress, honeycomb-vent -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
+RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
 
 PASS-0 CORRECTIONS:
 - Black white line art only
 - Ghost loose to seated
 - Uniform sidepanel
 - Helvetica
-Render text sparingly: only SHORT LABEL strings, silver-white heavy condensed caps, 4 words max.
+Language: ENGLISH ONLY, Helvetica. No Japanese lettering. Render text sparingly: only SHORT LABEL strings, black Helvetica Bold caps on white, 4 words / 24 chars max.
 PASS: 0

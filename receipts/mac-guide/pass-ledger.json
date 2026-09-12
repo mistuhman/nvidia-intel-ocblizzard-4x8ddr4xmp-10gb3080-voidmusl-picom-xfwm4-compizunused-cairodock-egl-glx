@@ -80,9 +80,196 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p4.txt",
+          "promptHash": "341630eb67f46e558be21602daedd6437e7ff938db6254a718d68eb9b1ac1e2a",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p4.png",
+              "sha256": "390b25a04a3581627d768d63a57b1fe9b41c51bdf3c2a38e4f9e594e2fc650f9",
+              "bytes": 787433,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P4-01",
+              "severity": "ERROR",
+              "note": "sticker filled RED - color violation, measured 1.33% chroma G-PX-006; prompt word RED primed the fill"
+            },
+            {
+              "code": "F-P4-02",
+              "severity": "ERROR",
+              "note": "drive-cage PCBs filled BLUE - color violation, same class"
+            },
+            {
+              "code": "F-P4-03",
+              "severity": "WARN",
+              "note": "ghost sled exits rear-right past honeycomb; sleds slide out the FRONT face in the photo"
+            },
+            {
+              "code": "F-P4-04",
+              "severity": "INFO",
+              "note": "optical covers, scratched blank, GTX285 orientation, 2x 6-pin loop, cap windows, honeycomb, WD Green, Time Capsule, English sidepanel all track photo"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 230.25,
+            "stddev": 65.62,
+            "pctDark": 0.0555,
+            "pctBright": 0.8765,
+            "edgeRatio": 0.1046,
+            "pctColor": 0.0133,
+            "unique": 33
+          },
+          "auditVerdict": "FAIL"
+        },
+        {
+          "pass": 5,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p5.txt",
+          "promptHash": "f0eccf71ae928332c373eda07db0309cfcf3ef4b05388ebec0338f4dd9cd3795",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p5.png",
+              "sha256": "5de7e98a719884535d975e87bdb25b32acc8950f4415e3423075be75c50b9b18",
+              "bytes": 788227,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P5-01",
+              "severity": "WARN",
+              "note": "ghost sled floats slightly detached from bay row instead of overlapping the row edge as partially-slid"
+            },
+            {
+              "code": "F-P5-02",
+              "severity": "WARN",
+              "note": "sticker outline renders sheet-like with folded corner rather than flat square"
+            },
+            {
+              "code": "F-P5-03",
+              "severity": "INFO",
+              "note": "WD Green + Time Capsule grouped bottom-left together; photo has WD left, TC right"
+            },
+            {
+              "code": "F-P5-04",
+              "severity": "INFO",
+              "note": "color fix verified: 0.00% chroma measured, sticker + PCBs outline-only; English-only verified"
+            },
+            {
+              "code": "G-OP-FEEDBACK",
+              "severity": "ERROR",
+              "note": "operator seq27: none of them pass - GPU orientation wrong, motherboard not displayed, RAM cages inaccurate, fans inaccurate, PCB layout not actual, GPU cable direction reversed (board end in vs GPU end out), cages/screws wrong, last image random assembly, schematic-before-visualization required. Invalidates prior FIXPOINT.",
+              "from": "operator 2026-09-12 seq27"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 226.17,
+            "stddev": 72.13,
+            "pctDark": 0.0751,
+            "pctBright": 0.8584,
+            "edgeRatio": 0.124,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        },
+        {
+          "pass": 6,
+          "artifacts": [],
+          "findings": [
+            {
+              "code": "G-SC-BLOCKED",
+              "severity": "ERROR",
+              "note": "awaiting isolated parts photos before re-render; schematic blueprint ready (schematic hash b06352c) but hardware PCB/riser/fan detail cannot be locked without isolated photos",
+              "from": "agent 2026-09-12"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p6.svg",
+          "schematicHash": "b06352c945c7803fc604e804fb86a52f8585fe2ab28cadf569f6941c7128b5fa",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p6.txt",
+          "promptHash": "920c8f10f76ad2fb01db267b18e6c6a08f8c57909f6be840100f0b625cb42786"
+        },
+        {
+          "pass": 7,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p7.txt",
+          "promptHash": "dc3a86f5564af11a1413b45d12749e564feb30b1fad5d38fcd111e538510cfba",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p7.svg",
+          "schematicHash": "cc580c43e3c8b503a683d380db6baef9b403489e0058c6a2b26ef1b4db3cabb7",
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p7.png",
+              "sha256": "ab52682836a598e28822794eaec97b7d3c4b4a17aefbd6a565dde44dafbb49a1",
+              "bytes": 831995,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [
+            {
+              "code": "G-G-002",
+              "severity": "WARN",
+              "node": "chassis-accurate",
+              "note": "label DOUBLE-WIDE BLACK BLOWER GTX285 GPU is 5w 33c > budget 4w/24c - shorten to GTX285 GPU or BLOWER GPU"
+            },
+            {
+              "code": "G-G-003",
+              "severity": "WARN",
+              "node": "desk-hdd-photo",
+              "note": "label WESTERN DIGITAL GREEN HDD 25c >24c - shorten to WD GREEN"
+            },
+            {
+              "code": "G-RN-001",
+              "severity": "WARN",
+              "note": "aspect 1.833 !=1.500 renderer returned 1408x768 not 1536x1024"
+            },
+            {
+              "code": "G-SC-003",
+              "severity": "WARN",
+              "note": "intuitive flow: desk props WD GREEN + TIMECAPSULE merged with ghost sled - need clear ASSEMBLED solid chassis vs DISASSEMBLED desk props separate, and sidepanel uniform left x=2 y=14 w=18 h=76 missing"
+            },
+            {
+              "code": "G-HW-001",
+              "severity": "INFO",
+              "note": "trial: ghost PULL 30MM correctly shows FRONT pull dashed on right, cable board->GPU loop correct"
+            },
+            {
+              "code": "G-HW-002",
+              "severity": "ERROR",
+              "note": "operator critique: GPU RAM hallucinated nonsense - PCB windows inventing caps not per G-14/G-15. Fans misplaced - heatsink vs fan assembly misaligned. Lower bay/ram misplaced - memory shroud vs honeycomb vs sled positions off vs photo-1. GPU orientation ok keeps."
+            },
+            {
+              "code": "G-SC-004",
+              "severity": "ERROR",
+              "note": "EACH image must filter ALL traits every time - failed single-image spot check"
+            }
+          ],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED",
+          "audit": {
+            "mean": 223.59,
+            "stddev": 74.71,
+            "pctDark": 0.0832,
+            "pctBright": 0.8413,
+            "edgeRatio": 0.1256,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 8
     },
     "g02-poweroff": {
       "passes": [
@@ -664,6 +851,97 @@
         }
       ],
       "nextPass": 4
+    },
+    "mockup-toolpanel": {
+      "passes": [
+        {
+          "pass": 1,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-mockup-toolpanel-p1.png",
+              "sha256": "524515a9231584797672f52f4a88b894c8afd174dd4d39295e04ffb85b9a4ca0",
+              "bytes": 871819,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "M-01",
+              "severity": "WARN",
+              "note": "preview interior: four HDD blank plates drawn as vertical blocks, photo shows horizontal row when case on side"
+            },
+            {
+              "code": "M-02",
+              "severity": "INFO",
+              "note": "red sticker rendered as outline square - correct under no-color"
+            },
+            {
+              "code": "M-03",
+              "severity": "INFO",
+              "note": "all nine contract sliders carry exact stored values; language English-only verified"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 228.25,
+            "stddev": 69.72,
+            "pctDark": 0.0724,
+            "pctBright": 0.8668,
+            "edgeRatio": 0.1277,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 1
+    },
+    "mockup-conflict-pair": {
+      "passes": [
+        {
+          "pass": 1,
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-mockup-conflict-pair-p1.png",
+              "sha256": "fa406f6795c0ef14ee023e201993ce8c1d885d706776a09cf34730e7bb7e098e",
+              "bytes": 772765,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-C1",
+              "severity": "WARN",
+              "note": "structural prompt words literalized as visible labels: LEFT SIDEPANEL title box and FOOTER word rendered - prompt phrasing lesson"
+            },
+            {
+              "code": "F-C2",
+              "severity": "WARN",
+              "note": "ghost shroud overlaps chassis center instead of clearing fully up-left; bay row shows 4 blanks in assembled half vs 3-ish in right"
+            },
+            {
+              "code": "F-C3",
+              "severity": "INFO",
+              "note": "conflict rule itself proven: sockets+risers visible ONLY in disassembled half, captions SHROUD ON/CAGE OUT correct, 0.00% chroma"
+            }
+          ],
+          "patches": [],
+          "verdict": "PASS-WITH-WARN",
+          "audit": {
+            "mean": 228.69,
+            "stddev": 70.36,
+            "pctDark": 0.0725,
+            "pctBright": 0.8736,
+            "edgeRatio": 0.1181,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
+        }
+      ],
+      "nextPass": 1
     }
   }
 }
