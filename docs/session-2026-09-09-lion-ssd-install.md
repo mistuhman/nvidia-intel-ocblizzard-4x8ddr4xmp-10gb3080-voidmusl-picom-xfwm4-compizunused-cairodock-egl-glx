@@ -292,3 +292,88 @@ so every 01a09141 Commands-panel update has been invisible to the operator.
 Chat is authoritative (every wave this session executed from chat); lion.html
 left untouched since page changes cannot reach the frozen page without a new
 slug, and churning the typed URL mid-stream is refused.
+
+## 2026-09-12 — FORENSIC1 burn read + SAFEBOOT1 release (session 01a09141)
+
+Inbox went 16 to 18: the burn is a GET query summary (uuid a8f76d53)
+plus a text/plain POST (uuid 6e8ebd6a, 6661 bytes / 120 lines) with the
+full report, generated Sep 12 03:56:44 PDT. No multipart copy arrived
+(best-effort miss, tolerated); no second Repair report exists anywhere.
+Findings: mach_kernel PRESENT (15572704 bytes, Aug 23 2012, fat
+x86_64+i386, md5 d2b48eb7...); ESD is genuine Lion 10.7.5 (11G63); both
+boot.efi byte-identical (md5 d209022c...); Boot.plist and boot-args
+absent; OSInstall.mpkg/BaseSystem.dmg present; disk nodes stable;
+efi-boot-device is disk0s2 (reselect proven from the NVRAM side too).
+Bless FLIPPED 2078 to 2082 (CoreServices file): attributed to SDBOOT1's
+Startup Disk bless --setBoot. Two corrections recorded: SDBOOT1 was
+confounded (path AND bless changed at once), so picker-vs-direct is
+retired as MOOT; both bless states are metered failures, so re-bless is
+closed forever. Missing-kernel, wrong-OS, and wrong-file-bytes classes
+are DEAD. Research (3 searches: low value, hackintosh spam; Apple
+HT201262 fetched: safe mode loads required software only, runs a disk
+check, and clears the kernel cache) licensed the next experiment.
+Released: SAFEBOOT1 — picker ESD + Shift + photo, STOP at any GUI.
+
+## 2026-09-12 — SAFEBOOT1 receipt + VERIFY1 + FIRMWARE1 + model correction (session 01a09141)
+
+SAFEBOOT1 photo: Apple + spinner + near-empty PROGRESS BAR (safe-mode
+directory check — Shift provably registered). Operator verbatim:
+"holding shift, different screen, prohib still flashed". End state
+receipt: "just snow leopard safe boot desktop". Verdict: ESD fails
+pre-kernel under safe mode too (fallthrough + key carryover, the
+VERBOSE1 precedent); cache/kext class downgraded, boot.efi-to-kernel
+handoff leads. VERIFY1 (Disk Utility Verify of Bay 4, read-only):
+"appears to be ok" — directory class CLOSED; cache class near-dead
+(safe mode deletes the cache yet failed identically). FIRMWARE1 photo
+(System Profiler Hardware) CORRECTED the machine: MacPro3,1 Early 2008
+(Harpertown 2x2.8GHz, EFI64), NOT 1,1 — the 1,1 label was inherited and
+never verified; every EFI32 note is STRUCK (none drove an action).
+Boot ROM MP31.006C.B05 = Mac Pro EFI Firmware Update 1.3 FINAL
+(receipted via MacDailyNews 2008 + Apple DL95 + 2019 users still on
+B05): firmware class CLOSED, firmware writes permanently off the table.
+Reference-hash hunt FAILED (no published 11G63 mach_kernel md5; our
+d2b48eb7 unconfirmed) — file-data corruption leads, untested. A forum
+Ignore-ownership prohibitory lead was filed as M1g against the
+"Owners Enabled: No" DU pane in the FIRMWARE1 photo.
+
+## 2026-09-12 — OWNERS1 moot + PLAIN1 + installer-app breakthrough, Lion installed (session 01a09141)
+
+OWNERS1 step 1 photo: the ESD's Get Info already has Ignore ownership
+UNCHECKED — M1g VOID (premise refuted; the "Owners Enabled: No" read
+was a wrong-volume inference from a cropped DU pane — owned). PLAIN1
+(last untested boot cell, picker-plain ESD): "normal lion ssd boot" —
+boot matrix EXHAUSTED. Same turn the operator brute-forced the Install
+Mac OS X Lion app from SL (old launch failure GONE): "Ready to install"
+targeting Lion SSD Base, countdown expired, rebooted to an Apple
+screen. HOLD1/OBSERVE1-4 (hands-off watch): staged boot showed the Dell
+timing-not-supported message (D1 display fault, 2nd reproduction;
+GUI-once reclassified as D1, not an outlier); Caps Lock toggled at
+<15 min (kernel alive); install ran blind and SELF-REBOOTED at ~25 min
+(installer FINISHED, no errors). First boot: Lion login with all 5
+accounts preserved (operator: "WORKED"), then the Andromeda desktop at
+1080p. D1 EXPLAINED: Lion installer envs probe the VGA-HDMI converter
+EDID with fresh prefs and pick a bad mode; the upgraded system
+INHERITED SL's safe display prefs (immune). M1 cause moot (bypassed);
+M2/M3 COMPLETE on Bay 1. LOGIN1 verified desktop + Displays (DELL
+S2725QS, 1080p@60, Overscan checked, list topping at 2560x1440).
+
+## 2026-09-12 — RES1 display trial + RESCUE1 + PR order (session 01a09141)
+
+Operator asked "can i do 2560x1600?", reporting 4K was the only prior
+failure. RES1: uncheck Overscan, try offered 2560x1440 (agent-claimed
+auto-revert safety). Receipt: "1440 doesnt work, doesnt auto revert" —
+out-of-range with NO revert countdown (agent safety premise owned
+wrong). Model update: converter-curated offered-lists over-promise;
+1080p is the permanent VGA-chain ceiling; 1440p/1600p need a digital
+cable IF the (still unidentified) GPU qualifies. Released RESCUE1:
+force off, Shift safe-boot (framebuffer bypasses the stored pref), set
+Displays 1080p + uncheck Overscan (overwrites the bad pref), Restart
+normal, report desktop + About version + GPU chipset. Operator noted a
+prior 4K attempt "saved" through a power-off and was escaped by moving
+the VGA port; judgment: safe-mode first (rewrites the pref in place),
+port-switch is backup only; their SL per-display inheritance intuition
+is CONFIRMED (prefs are written at apply-time, which is the "saved"
+they observed). Operator ordered: "we need to create a pr anyways" —
+record commit + PR authorized over the 405 budget BY EXPLICIT ORDER.
+Outcome of RESCUE1 and close-out (Bay 1 home, new admin, Bay 4 spare)
+PENDING.

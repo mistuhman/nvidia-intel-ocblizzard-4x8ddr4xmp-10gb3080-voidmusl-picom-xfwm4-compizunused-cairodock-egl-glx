@@ -1,23 +1,23 @@
 {
-  "updated": "2026-09-11",
+  "updated": "2026-09-12",
   "session": "01a08b54",
-  "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
-  "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "Clean boot 2026-09-11: operator reports booted straight to lion ssd, no prohib - bless-stuck CONFIRMED, SDBOOT1 inverse COMPLETE, clean state restored. Released (session 01a09141): FORENSIC1 is the single next wave - Arctic Fox da.gd/lionforens (lion-forensic.zip: read-only ESD collector, sha256 0d0ee722), unzip, double-click lion-forensic.command on Snow Leopard, attach lion-forensic.txt via da.gd/lionrelay. Report answers mach_kernel present and intact, ESD OS version, bless state. Stop and report on any step error. No Repair, remirror, date fix, or destination selection.",
+  "machine": "Mac Pro 3,1 Early 2008 (CORRECTED 2026-09-12, was 1,1), 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1 (installer-app upgrade 2026-09-12), Dell S2725QS via VGA-HDMI, user admin / RevolYOUtionarys-Mac-Pro",
+  "goal": "ACHIEVED 2026-09-12 via installer-app path: Lion 10.7 installed and booting on Bay 1 Lion SSD Base (login + desktop verified). Bay 1 is home unless operator asks for Bay 3 migration. Close-out owed: RESCUE1 display fix at 1080p, About/GPU reads, new-admin + Bay 4 spare decisions.",
+  "nextAction": "RESCUE1 RELEASED 2026-09-12 (session 01a09141): Mac is blind at 2560x1440 (RES1: no auto-revert; 1440p un-drivable through the VGA-HDMI converter, 1080p is the chain ceiling). Operator: force off, power on holding Shift to visible safe mode, log in, Displays prefs 1080p + uncheck Overscan (overwrites bad stored pref), Restart normal, report desktop + About version + Graphics chipset. Port-switch is backup only. No unlisted modes, no 3rd-party resolution tools, no erase, no blind clicking.",
   "lastVerifiedBless": {
-    "when": "2026-09-11 16:10:02 PDT",
-    "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
-    "blessedFile": "/Volumes/Mac OS X Install ESD/boot.efi",
-    "blessedFileDate": "Oct 3 2012",
+    "when": "2026-09-12 03:56:44 PDT",
+    "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
+    "blessedFile": "/Volumes/Mac OS X Install ESD/System/Library/CoreServices/boot.efi",
+    "blessedFileDate": "Jul 29 2012",
     "blessedFolder": "/Volumes/Mac OS X Install ESD/System/Library/CoreServices",
-    "finderinfoFileId": 2078,
-    "reportVerdict": "ESD boot repaired. No disk was erased.",
-    "note": "Current readable report: boot volume is Lion SSD Base in Bay 1; start disk clone is disk1s2 in Bay 3; Mac OS X Install ESD is disk2s2 in Bay 4. Repair confirmed, Graphics Mode removed, nvram cleared, bless OK. Lion is not installed yet."
+    "finderinfoFileId": 2082,
+    "reportVerdict": "FORENSIC1_DONE No disk was erased.",
+    "note": "SDBOOT1 Startup Disk selection re-blessed Bay 4 2078->2082 (no second Repair in inbox). Both bless states metered failures: re-bless CLOSED forever. mach_kernel present (fat, md5 d2b48eb7), ESD is genuine 10.7.5 11G63, both boot.efi byte-identical (md5 d209022c), Boot.plist/boot-args absent, efi-boot-device=disk0s2."
   },
   "volumes": [
     {
       "name": "Lion SSD Base",
-      "role": "current Startup Disk / working Snow Leopard 10.6.8",
+      "role": "Lion 10.7 installed + booting (installer-app upgrade 2026-09-12; was SL 10.6.8 working base). Login + Andromeda desktop verified at 1080p.",
       "lastNode": "/dev/disk0s2",
       "location": "Bay 1",
       "media": "starrt disk clone",
@@ -26,7 +26,7 @@
     },
     {
       "name": "start disk clone",
-      "role": "Lion install destination (upgrade installer — do not erase)",
+      "role": "SL start-disk clone (was the recorded Lion destination; Lion landed on Bay 1 instead - migration only if operator asks)",
       "lastNode": "/dev/disk1s2",
       "location": "Bay 3 MX500 CT1000",
       "media": "Lion",
@@ -34,11 +34,11 @@
     },
     {
       "name": "Mac OS X Install ESD",
-      "role": "asr-restored Lion installer (Bay 4). Option-boot this.",
+      "role": "asr-restored Lion installer (Bay 4). ESD-boot matrix EXHAUSTED (all cells fail; cause moot, bypassed by installer app). Volume now SPARE.",
       "lastNode": "/dev/disk2s2",
       "location": "Bay 4",
       "media": "Apple_HFS_Untitled_2",
-      "erase": "already mirrored 2026-09-10; do not remirror"
+      "erase": "spare; do not remirror; erase/repurpose only on explicit operator direction (separate gated wave)"
     }
   ],
   "links": {
@@ -179,7 +179,10 @@
     "Rewrite ToDo.md",
     "Read the inbox with curl from the agent sandbox (filtered) - use fetch_page on links.logRead",
     "Rely on a multipart attach as delivery to the agent: content stays empty for file uploads",
-    "Assume a jsDelivr branch path is fresh: it caches ~12h and a ?cb= query does not bust it at the edge. Use raw.githubusercontent for anything that must be current, or a new filename."
+    "Assume a jsDelivr branch path is fresh: it caches ~12h and a ?cb= query does not bust it at the edge. Use raw.githubusercontent for anything that must be current, or a new filename.",
+    "Re-bless Bay 4 (2078 and 2082 both metered failures)",
+    "Select 1440p or higher on the VGA-HDMI chain (1080p ceiling; RES1 proved 1440p blinds with no revert)",
+    "Third-party resolution forcing tools (unlisted-mode forcing risks blind states)"
   ],
   "operatorConstraints": [
     "One physical action per message",
@@ -195,7 +198,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: straight-to-SL boot with no prohibitory proves efi-boot-device is Lion SSD Base (pane bless had stuck; Skype was the only restart blocker). FORENSIC1 released: new collector plus verified slug da.gd/lionforens. SDBOOT1 stands (picker closed, ESD boot.efi-phase failure confirmed). Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 and SDBOOT1 photos stand.",
+  "status": "2026-09-12: LION INSTALLED AND BOOTING on Bay 1 Lion SSD Base via operator installer-app run (target Lion SSD Base; staged boot OK, install finished clean, first boot to Lion login with all 5 accounts, desktop + 1080p verified). Machine CORRECTED to MacPro3,1 (EFI32 notes struck). Metered since FORENSIC1: SAFEBOOT1 (SL safe desktop), VERIFY1 (clean), FIRMWARE1 (B05 final), OWNERS1 moot, PLAIN1 (fallthrough, matrix exhausted). D1 display fault explained (fresh-pref EDID probe vs VGA-HDMI converter; inherited SL prefs immune; 1080p ceiling, 1440p/4K un-drivable). RESCUE1 released (blind at 1440p). Close-out owed: RESCUE1 receipt, About/GPU reads, admin + Bay 4 + Bay 1 home confirms.",
   "relay": {
     "page": "lion.html",
     "files": [
@@ -209,11 +212,11 @@
     "commands": "etc/lion-command.txt - the text the Commands panel renders. It now carries the safe root-level boot-log wave; a push to the session branch is visible in ~5 min via raw."
   },
   "lastOptionBootAttempt": {
-    "when": "2026-09-11, user photo/report (desktop clock displayed Fri 4:19 PM)",
-    "selected": "Mac OS X Install ESD",
-    "screen": "brief prohibitory symbol, then white-background Apple logo with loading sign, then Snow Leopard login",
-    "result": "installer GUI not reached; Mac returned to Snow Leopard; no disk erased",
-    "interpretation": "ESD boot handoff begins but fails before the Lion installer GUI; the helper text report cannot record this post-boot screen path"
+    "when": "2026-09-12, operator words (PLAIN1): normal lion ssd boot",
+    "selected": "Mac OS X Install ESD (plain picker, no keys)",
+    "screen": "not photographed; fallthrough to Lion SSD Base",
+    "result": "installer GUI not reached; ESD boot matrix EXHAUSTED (every cell fails save GUI-once)",
+    "interpretation": "Cause mooted same turn: operator installer-app run bypassed the ESD boot entirely and installed Lion on Bay 1."
   },
   "diagnostic": {
     "command": "lion-boot-log.command",
@@ -237,5 +240,5 @@
     "verdict": "No disk was erased, restored, blessed, mounted, or changed by the collector; no ESD-specific error was recorded by Snow Leopard.",
     "uuidPrefix": "9d0bfed6"
   },
-  "commandsPanel": "STALE 2026-09-11: the frozen relay page (01a08f01 blob) pulls etc/lion-command.txt from arena/01a08f01 then main, never this branch; chat is authoritative and the operator has executed every wave from chat. lion.html left untouched (page changes cannot reach the frozen page without a new slug)."
+  "commandsPanel": "STALE 2026-09-11: the frozen relay page (01a08f01 blob) pulls etc/lion-command.txt from arena/01a08f01 then main, never this branch; chat is authoritative and the operator has executed every wave from chat. lion.html left untouched (page changes cannot reach the frozen page without a new slug). RESCUE1 ships via chat 2026-09-12 (Lion installed; chat still authoritative)."
 }

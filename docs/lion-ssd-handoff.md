@@ -1,4 +1,4 @@
-# Lion SSD handoff — Mac Pro 1,1
+# Lion SSD handoff — Mac Pro 3,1 (corrected 2026-09-12; 1,1 below is history)
 
 **New chat pickup.** First message `README.md` still bootstraps the whole repo. Then run:
 
@@ -18,7 +18,7 @@ Longer receipts: `docs/session-2026-09-09-lion-ssd-install.md` (clone + first in
 
 ## Goal
 
-Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. Do not replace Bay 1 until proven.
+ACHIEVED 2026-09-12 via the installer-app path (operator brute force): Lion 10.7 installed and booting on Bay 1 `Lion SSD Base` (login with all 5 accounts + Andromeda desktop @1080p verified). Bay 1 is home unless the operator asks for a Bay 3 migration. Close-out owed: RESCUE1 (blind at 1440p), About/GPU reads, new-admin + Bay 4 spare decisions.
 
 ## Where we left off (2026-09-11 16:10 PDT)
 
@@ -46,6 +46,17 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - RELEASED 2026-09-11 (session 01a09141): **FORENSIC1** — new read-only collector `lion-forensic.command` in `lion-forensic.zip` (1721 bytes, sha256 `0d0ee722…`), Arctic Fox: `da.gd/lionforens` (da.gd truncates custom slugs to 10 chars; verified via `+` coshorten). Double-click on SL, attach `~/Desktop/lion-forensic.txt` via `da.gd/lionrelay` (generic picker, any .txt). Answers: `mach_kernel` present? intact? ESD OS version? No sudo, no writes except the report.
 - PANEL NOTE 2026-09-11: the frozen relay page pulls `etc/lion-command.txt` from `arena/01a08f01` then main — never this branch. The Commands panel is STALE for this session; chat is authoritative.
 
+- RECEIVED 2026-09-12: **FORENSIC1 burn** (text uuid `6e8ebd6a` 6661B/120 lines + query `a8f76d53`; no second Repair exists). `mach_kernel` PRESENT (fat, md5 `d2b48eb7…`); ESD genuine 10.7.5 11G63; both `boot.efi` byte-identical (md5 `d209022c…`); Boot.plist/boot-args absent; `efi-boot-device`=disk0s2; bless FLIPPED 2078→2082 (SDBOOT1 Startup Disk `bless --setBoot`). CORRECTION: SDBOOT1 was confounded (path AND bless) — picker-vs-direct retired as MOOT; both bless states metered failures → re-bless CLOSED forever.
+- RELEASED 2026-09-12: **SAFEBOOT1** (picker ESD + Shift + photo; Apple HT201262 license). RECEIVED: prohibitory flash → SL safe-boot desktop (progress bar proved Shift registered). ESD fails pre-safe-mode-divergence → cache/kext downgraded, handoff leads.
+- RECEIVED/RELEASED 2026-09-12: **VERIFY1** "appears to be ok" (directory class CLOSED; cache near-dead) → **FIRMWARE1** (Boot ROM + SMC read).
+- RECEIVED 2026-09-12: **FIRMWARE1 photo** — **MacPro3,1** Early 2008 (CORRECTION: 1,1 inherited, never verified; EFI32 notes STRUCK), Boot ROM **MP31.006C.B05** = EFI Firmware Update 1.3 FINAL (MacDailyNews 2008 + Apple DL95) → firmware CLOSED. Hash hunt FAILED (no 11G63 reference md5); Ignore-ownership lead filed as M1g.
+- RECEIVED 2026-09-12: **OWNERS1 moot** — ESD already unchecked; M1g VOID (wrong-volume inference from a cropped DU pane — owned). RELEASED: **PLAIN1** (last untested boot cell).
+- RECEIVED 2026-09-12: **PLAIN1** "normal lion ssd boot" — matrix EXHAUSTED. Same turn: operator brute-forced the **Install Mac OS X Lion app** ("Ready to install" → `Lion SSD Base`, reboot to Apple; HOLD1/OBSERVE1-4 watch, Caps Lock alive @ <15min).
+- RECEIVED 2026-09-12: staged boot → Dell timing error (**D1**, 2nd ×; GUI-once reclassified as D1) → completion self-reboot @ ~25min (installer FINISHED clean) → **Lion login, all 5 accounts (WORKED)** → desktop @1080p. D1 EXPLAINED: installer envs probe the converter EDID with fresh prefs; upgraded system INHERITED SL safe prefs (immune). M1 moot; M2/M3 COMPLETE on Bay 1.
+- RELEASED/RECEIVED 2026-09-12: **LOGIN1** verify + **RES1** (2560×1440 trial): "1440 doesnt work, doesnt auto revert" (agent safety premise owned wrong). Converter lists over-promise; 1080p = permanent chain ceiling.
+- RELEASED 2026-09-12: **RESCUE1** — force off, Shift safe-boot (framebuffer bypasses stored pref), Displays 1080p + uncheck Overscan (overwrites bad pref), Restart normal, report desktop + About + GPU. Operator port-switch = backup only; SL per-display inheritance CONFIRMED. Outcome PENDING.
+- PR ordered 2026-09-12 (operator verbatim: "we need to create a pr anyways") — record commit + PR authorized over the 405 budget BY EXPLICIT ORDER.
+
 ## Live links (Arctic Fox)
 
 | Type | Type this | Job |
@@ -70,7 +81,7 @@ Tests: `node tools/lion-mirror-sl-test.ts` (agents A syntax / B mocked 10.6 / Z 
 
 ## Do not
 
-Erase Lion SSD Base or start disk clone. Remirror Bay 4. Date to 2015/2016. `lion-installer-date-fix.command`. Power APEX. Headless injector / boot-audit double-click. Rewrite `ToDo.md`. jsDelivr HTML pages (served `text/plain`). e2b.app from the Mac.
+Erase Lion SSD Base or start disk clone. Remirror Bay 4. Date to 2015/2016. `lion-installer-date-fix.command`. Power APEX. Headless injector / boot-audit double-click. Rewrite `ToDo.md`. jsDelivr HTML pages (served `text/plain`). e2b.app from the Mac. Re-bless Bay 4 (both states failed). 1440p+/unlisted modes on the VGA-HDMI chain (1080p ceiling). Third-party resolution tools.
 
 ## Tools map
 
