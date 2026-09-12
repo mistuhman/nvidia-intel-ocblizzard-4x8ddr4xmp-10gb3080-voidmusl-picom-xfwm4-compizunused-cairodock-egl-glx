@@ -72,6 +72,7 @@
       ".github/workflows/": "CI + GPU OC lab workflows: oc-tools-ci (selftests, shellcheck, determinism, pr-budget), gpu-oc-lab (manual sweep + undervolt graph + pasteable blocks), gpu-clock-feature-matrix (core-only / memory-only / power-trim / combined / efficiency-hunt), gpu-receipt-ingest (paste dmon + Superposition, get ADVANCE/HOLD/REVERT and commit the ledger)",
       "receipts/": "gpu-oc-receipts.json: normalized metered runs (the only thing that outranks the model)",
       "uploads/": "operator photo uploads (tools/uploads.ts): hash-verified registry index.json + RECENT.md short-term memory; cross-referenced every imaging step per docs/imaging-contract.md",
+      "docs/measurement-fundamentals.md": "measurement grounding for imaging agents (2026-09-12): source ladder S1-S5, one measurement class per pass, ratio discipline vs real constraints, photo-wins; machine inventory log lives at receipts/inventory/<machine>.md",
       "tests/": "fixtures for the receipt parsers (dmon, Superposition, Geekbench)"
     }
   },

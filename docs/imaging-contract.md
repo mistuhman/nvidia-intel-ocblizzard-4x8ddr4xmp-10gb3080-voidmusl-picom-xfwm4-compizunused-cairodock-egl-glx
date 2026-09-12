@@ -11,6 +11,9 @@ P5 stylecheck -> P6 emit (deterministic prompt from scene IR, never hand-written
 render -> P8 pixel-audit -> P9 critique (findings vs numbered pass) -> P10 deduct (patch IR
 so the NEXT prompt hash moves). Fixpoint = latest pass zero ERROR. P0 harvests evidence, not
 vibes: uploads first, then hash-verified public images; every fact gets a source.
+Measurement grounding: docs/measurement-fundamentals.md - per-plate measurement
+table, source ladder S1-S5, one measurement class per pass, ratio checks at P3/P4/P8,
+photo wins on any conflict; inventory log: receipts/inventory/<machine>.md.
 
 ## Evidence first - ask for photos every time
 Before any render: enumerate the image's visual claims, run

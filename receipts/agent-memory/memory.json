@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 61,
+  "lastSeq": 64,
   "entries": [
     {
       "seq": 1,
@@ -1278,6 +1278,77 @@
       "value": "operator uploads -> node tools/uploads.ts ingest (hash, dims, claims, dated dir) -> SHORT-TERM uploads/RECENT.md last-8 window that every image agent reads BEFORE perceiving -> LONG-TERM uploads/index.json + auto agent-memory perception receipt; every emitted render prompt carries the byte-identical UPLOADS CROSSREF BLOCK (uploads refs); uploads verify before every render (mismatch refuses); uploads gate refuses render and issues numbered photo request whenever a visual claim has no persisted evidence - ask every time; chat-only photos get capped-confidence receipts + bytes re-requested; universal contract docs/imaging-contract.md",
       "source": "operator directive 2026-09-12 session 01a097ba; tools/uploads.ts selftest 13/13; MASTER.md uploads section",
       "sha256": "fb4903e2dfec6548bb8705b919b530295bc59e252f8a3aa4c1ce81377545c8ec"
+    },
+    {
+      "seq": 62,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-interior-2026-09-12",
+      "tool": "operator chat attachment x2 (identical; bytes NOT persisted: /home/user/uploads/ absent from sandbox)",
+      "claims": [
+        {
+          "claim": "Mac Pro 3,1 interior through open side: DVD/optical compartment upper-LEFT (two rectangular openings, screws visible), plain PSU compartment panel upper-RIGHT - matches G-20 canon zone-for-zone",
+          "evidence": "chat photo read; zone layout identical to operator-verbatim G-20/G-21 (DVD left + PSU plain right)",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "FOUR drive sled blanks in a row with orange latch dots, worn/scuffed bare aluminum, RED STICKER on the RIGHTMOST sled - matches g01 purpose line red-sticker-rightmost",
+          "evidence": "chat photo read; four uniform silver rectangles + red sticker upper face of rightmost",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Etched/chassis digits near sleds read 3 and 4 toward the left and 1 near the red-sticker sled; full 1-4 order not cleanly readable",
+          "evidence": "small etched digits at this resolution; bay-number mapping needs close-up",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Black dual-slot GPU with curved finned blower shroud seated in a PCIe slot, silver DVI-class bracket at right rail near honeycomb + slot covers; board silkscreen SLOT2 - X16 readable",
+          "evidence": "chat photo read; silkscreen text legible; silhouette consistent with GTX 285 Mac-class card",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "TWO black cables ending in 6-pin PCIe connectors dangle UNPLUGGED near the front-left of the GPU, drooping over the CPU compartment cover",
+          "evidence": "chat photo read; both connectors clearly unseated and hanging free",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "CPU compartment: large smooth metal cover in place (dual-CPU enclosure)",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Memory cage lower-right: riser board area shows blue PCBs with populated component rows (purple caps visible); FB-DIMM COUNT NOT READABLE",
+          "evidence": "chat photo read at angle; per-DIMM count needs top-down close-up",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Dark front-mesh intake strip at photo left edge; coiled light-blue ethernet patch cable outside the case bottom-left on desk",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Case pose: lying on its back, open side up, front of chassis at photo top; sleds appear closed but drive presence per sled is NOT determinable from this angle",
+          "evidence": "geometry of optical pair + horizontal sled row + latch dots; sled faces uniform so loaded-vs-empty is unknown",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "94f12a8eb1daec3940750ef3d92f0550ee5a93a1590968de7d6236fd5817cee5"
+    },
+    {
+      "seq": 63,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "measurementFundamentals",
+      "value": "imaging agents ground every geometry claim via docs/measurement-fundamentals.md: source ladder S1 operator photo receipt > S2 repo facts > S3 hash-verified refs > S4 cited vendor spec > S5 unmeasured=ghost never hard claim; freeze a per-plate measurement table before layout; one measurement class per pass (steady, one-knob pacing); ratios must equal real ratios +-3pct checked at P3/P4 scene math and P8 pixel-audit; photo wins on any conflict with the baked scene; unsourced dimension = ERROR finding; open gaps become numbered photo requests every time",
+      "source": "operator directive 2026-09-12; docs/measurement-fundamentals.md v1",
+      "sha256": "92bd95f9d08b878779daed56ceb86ba4e6c476fe74813be053d35ba0cc2d9bb7"
+    },
+    {
+      "seq": 64,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba: inventory log started at receipts/inventory/macpro31.md (entry 1, source seq 62 chat-only photo - bytes NOT persisted: /home/user/uploads/ absent from sandbox despite attachment notice; 2 identical copies; re-request bytes when a hash-locked ref or pixel-audit needs them). Open photo requests: sled latch faces with bay numbers + per-bay drive presence (Bay 3 = MX500 per gate #1 must be receipted), riser DIMM counts, GPU 6-pin seated state (photo shows UNPLUGGED vs 2026-09-09 booted receipt), GTX 285 identity close-up.",
+      "sha256": "72cb17a287791466c724eef2d08cfd317275d28d589e3729f7fecd11b9d92e64"
     }
   ],
   "stacks": [
@@ -1309,6 +1380,14 @@
         28
       ],
       "purpose": "photo perception chain from seq7 master photo through critiques",
+      "created": "2026-09-12"
+    },
+    {
+      "name": "macpro31-inventory-2026-09-12",
+      "seqs": [
+        62
+      ],
+      "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
     },
     {
