@@ -1,4 +1,17 @@
-# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
+# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v6
+
+v6 (operator directive 2026-09-12, panel-sticker message): **REF-TRACED IMAGING.** The memory
+instruction infographic on the back of the Mac panel is the vision: an accurate THREE-QUARTER
+ANGLED Mac Pro 3,1 lying on its side, removed carriers ghosted straight out with solid black
+filled block arrows. Every plate MUST cross-reference public Apple/reference imaging
+(`docs/macpro-guide-refs.json`, images in `docs/macpro-guide-refs/`) down to the smallest
+observable detail, under ONE identical draconian ruleset: canonical camera, line weights,
+counts, furniture and labels never drift plate to plate. All details are baked in
+`docs/macpro-guide-spec.json` (15 catalog parts, INV-01..INV-10), hash-checked by
+`node tools/mac-guide-art.ts refs`, and the tool injects a BYTE-IDENTICAL canon block plus each
+plate's ref detail digest into every prompt; ledger logs spec version + attached refs. The
+operator critiques each render; findings become P10 deductions that patch IR/spec/refs so the
+next prompt hash changes. Names stay simple, no token ceremony.
 
 Operator directive 2026-09-12 rev1: **NO actual Japanese lettering.** English only, Helvetica,
 uniform consistent formatting, short comprehensive guiding words. Japanese compactness is
@@ -32,8 +45,12 @@ is versioned, hashed, and traced — hallucination is blocked at the prompt leve
 - Uniform side panel EVERY plate: left x=2 y=14 w=18 h=76 (percent grid), same camera,
   same framing, same scale across all plates.
 - INPUT solid black 100% -> OUTPUT ghost 40% dashed, with a motion arrow + distance
-  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: black line, triangle head, Helvetica label beside.
-- Orthographic straight views, never perspective-distorted.
+  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: SOLID BLACK FILLED BLOCK ARROW with triangular
+  head copied verbatim from the panel sticker (v6; not a thin line arrow), Helvetica label beside.
+- v6 camera: the CHASSIS is always drawn in the panel-sticker THREE-QUARTER case-on-side view
+  (projection baked in docs/macpro-guide-spec.json canonicalView); the deterministic SVG
+  schematic stays orthographic as the face-plane anchor the render projects from. Never free
+  perspective, never a different camera angle between plates.
 - Grid 8px module. Canvas 1536x1024 fixed per plate.
 - Footer: single black rule + step name.
 - Schematic guides: faint 8px grid at 6% opacity, anchor dots for every hardware element.

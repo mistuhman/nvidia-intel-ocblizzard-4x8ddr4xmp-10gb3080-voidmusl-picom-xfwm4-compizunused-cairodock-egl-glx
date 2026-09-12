@@ -1,0 +1,200 @@
+{
+  "schema": "mac-guide-refs.v1",
+  "updated": "2026-09-12-v6",
+  "session": "01a09486",
+  "rule": "Operator directive 2026-09-12: every guide image must cross-reference public Apple/reference imaging down to the smallest observable detail; the same strict ruleset applies to every plate; details are baked, tracked, logged and audited before any render. Chat-only operator photos (not persisted to sandbox disk) are recorded in refs.chatOnly with full perception receipts and MUST be re-uploaded before they can be passed as image references.",
+  "naming": "simple descriptive kebab names, no token ceremony",
+  "imageDir": "docs/macpro-guide-refs",
+  "images": [
+    {
+      "id": "panel-sticker",
+      "file": "",
+      "persisted": false,
+      "kind": "operator-photo-chat-only",
+      "subject": "Memory instruction infographic printed on the inside/back of the removable Mac Pro 3,1 access panel - OPERATOR'S PRIMARY STYLE+VIEW REFERENCE ('perfectly represents my vision')",
+      "source": "operator chat attachment 2026-09-12 (arena attachment; not written to sandbox disk - /home/user/uploads absent). Re-upload required to pass as image reference.",
+      "publisher": "Apple Computer Inc. (factory-printed panel label)",
+      "doc": "",
+      "sha256": "",
+      "details": [
+        "brushed silver aluminum panel background, black ink only, photographed at an angle with glare (glare is photo artifact, never art)",
+        "artwork left half: the Mac Pro tower shell shown lying on its back/open side, THREE-QUARTER PERSPECTIVE (~20-30 degree angled view from above and front), not flat orthographic",
+        "tower outline includes the signature one-piece top handle cutout and rounded stand/foot shapes at both frame ends",
+        "front mesh face is visible on the left of the shell with perforation stippling and the two long horizontal optical-slot trim bars one above the other, plus a vertical column of small port/button glyphs below them",
+        "memory compartment at the open face: TWO flat rectangular riser carrier plates drawn pulled straight OUT, perpendicular from the logic board plane, each plate carrying a row of upright DIMM outlines (3 to 4 per plate) with clips",
+        "UPPER carrier plate has a bold letter 'A' at its outer right corner; LOWER carrier plate has a bold letter 'B' at its outer right corner",
+        "the in-cage seated positions of both plates are drawn inside the shell; pulled-out plates are solid outline slightly offset, no heavy ghosting style but clearly detached",
+        "TWO solid black filled block arrows with triangular heads point horizontally outward from the open face, one per plate, showing straight pull direction",
+        "right half text block, top to bottom: 'IMPORTANT' in bold; English 'To install memory, see the user's guide.'; French 'Pour installer de la memoire, consultez le guide de l utilisateur.'; German 'Anleitungen zum Installieren von Speicher finden Sie im Benutzerhandbuch' (line cropped at right edge); Spanish 'Para instalar memoria, consulte la guia del usuario.'; fifth line is the Japanese translation of the same sentence (described only, NOT reproduced anywhere in our English-only guide art)",
+        "the five-language IMPORTANT text is recorded for fidelity to the reference but guide plates render ENGLISH ONLY per contract; the sticker's black-line + filled-block-arrow + three-quarter shell language is what gets copied, not its foreign text",
+        "line weights are uniform and thin, outline-only, no shading, no gray fill, no gradients - stippling used for the mesh grille only",
+        "composition is spacious: one chassis, one action, generous whitespace; the text occupies its own clean column and never overlaps the art",
+        "viewpoint target for the guide: same angled shell on its side; removed parts exit straight toward the viewer/open side with a single bold arrow; removed/next-state part may be dashed at 40% per contract but the solid arrow language is identical"
+      ]
+    },
+    {
+      "id": "apple-diy-memory-cover",
+      "file": "docs/macpro-guide-refs/apple-diy-memory-cover.jpg",
+      "persisted": true,
+      "kind": "apple-official-diy-sheet",
+      "subject": "Apple 'Memory Riser Card Replacement Instructions' page 1 for Mac Pro (Early 2008)",
+      "source": "Apple 073-1180 Rev. A, via yumpu document 55991164",
+      "publisher": "Apple Inc. 2008",
+      "doc": "073-1180 Rev. A",
+      "sha256": "b7a98331e370554e19e2e1f0931aaf119e65acddc8078150ef3a79bc8bfd3df7",
+      "details": [
+        "white page, black Apple logo + 'Mac Pro' wordmark top right, thin horizontal rule under header",
+        "large two-line sans-serif title, generous leading; numbered steps left column, black numerals",
+        "Warning callouts use a round-triangle caution icon with internal exclamation mark, bold 'Warning:' lead-in",
+        "no imagery on page 1 beyond header art: typographic restraint is the style signal",
+        "footer: copyright left, document number '073-1180 Rev. A' and page number right",
+        "defines the canonical typographic voice: sentence case instructions, short numbered actions, one action per number"
+      ]
+    },
+    {
+      "id": "apple-diy-gpu-sheet",
+      "file": "docs/macpro-guide-refs/apple-diy-gpu-sheet.jpg",
+      "persisted": true,
+      "kind": "apple-official-diy-sheet",
+      "subject": "Apple 'PCIe/Graphics Card Replacement Instructions' page 1 (073-1248 Rev. A, 2009 sheet, same chassis family and art language)",
+      "source": "Apple 073-1248 Rev. A, via yumpu document 55991451",
+      "publisher": "Apple Inc. 2009",
+      "doc": "073-1248 Rev. A",
+      "sha256": "46242553a91a761313e68423c02d3914e145afaeb9b18244e101a4e09fac64ec",
+      "details": [
+        "two rounded-corner illustration panels stacked vertically, each with a light blue gradient background and thin black border",
+        "the tower is drawn in THREE-QUARTER PERSPECTIVE matching the panel sticker: top handle cutout, rounded feet, front mesh face with optical slot bars, side access panel",
+        "a skin-toned hand and forearm show the exact grip/press action (our BW contract renders hands outline-only, no skin tone)",
+        "numbered action badges: black numeral on yellow-to-red radial circle with white outer ring, placed at the action point with a curved red-yellow motion arrow",
+        "panel 1: finger presses the latch area at the rear of the side panel; power cord still plugged during static discharge step",
+        "panel 2: badge 1 at the rear latch lifting up, large curved arrow badge 2 showing the side panel swinging/lifting away",
+        "chassis proportions in this art: tall rectangular body, handle spans nearly full width at top, front face mesh suggested with fine dot stipple, optical drive faceplates as two slim horizontal rounded rectangles",
+        "the Apple logo on the removable side panel is centered and rendered at low gray (outline only in our BW contract)"
+      ]
+    },
+    {
+      "id": "apple-interior-photo",
+      "file": "docs/macpro-guide-refs/apple-interior-photo.jpg",
+      "persisted": true,
+      "kind": "ifixit-factory-photo",
+      "subject": "Mac Pro (Early 2008) interior with side panel removed, case on its side (Memory Cage with Rear Fan guide establishing shot)",
+      "source": "iFixit guide 25939 'Memory Cage with Rear Fan (Early 2008) Replacement' step 1 image 1",
+      "publisher": "iFixit (factory-condition hardware photo)",
+      "doc": "iFixit 25939",
+      "sha256": "44bdb6786fa6a26ecdb4f707708a063fca58376254f7d65e497231383e70cb28",
+      "details": [
+        "case lying on its side, open face filling frame; rounded top handle spans upper edge, stand foot lower edge",
+        "TOP ZONE (case-on-side): left optical carrier is a wide smooth aluminum plate with TWO small rounded-rectangle cutouts side by side, each cutout has one tiny dark screw dot at its lower edge; right optical carrier is one large plain smooth plate",
+        "MIDDLE ZONE: four identical silver HDD blank/sled faceplates in a horizontal row separated by narrow black gaps, each with a small raised/oval feature near top edge and tiny screws",
+        "CENTER-RIGHT ZONE: logic board visible - blue PCB, dense cylindrical electrolytic caps with light tops, a large black finned processor heatsink lying horizontally, smaller heatsinks, a small BLACK RECTANGULAR MODULE highlighted by a yellow rectangle in the source annotation (annotation not part of hardware)",
+        "LOWER-LEFT ZONE: one large smooth silver memory-cage shroud/cover with rounded corner, fully blank (it hides riser A/B until removed)",
+        "LOWER-RIGHT ZONE: rectangular windowed cage exposing TWO memory riser banks stacked one above the other; each bank shows white/heatsinked FB-DIMMs in vertical clips flanked by green PCB and purple/lavender cylindrical caps at the board edges",
+        "RIGHT EDGE: silver locking latch lever angled outward mid-height; honeycomb/dot vent perforations along inner frame edges",
+        "all zones are separated by clean aluminum frame rails; no cables visible across the open face in factory state",
+        "counts that must never drift in guide art: optical carriers = 2 (left dual-cutout, right plain); HDD faces = exactly 4; riser banks visible = 2; cutouts on left optical carrier = 2 each with screw dot"
+      ]
+    },
+    {
+      "id": "apple-rear-ports-lineart",
+      "file": "docs/macpro-guide-refs/apple-rear-ports-lineart.jpg",
+      "persisted": true,
+      "kind": "apple-user-guide-lineart",
+      "subject": "Official Apple user-guide line drawing: Mac Pro rear panel left and right port layouts with leader labels",
+      "source": "Apple Mac Pro (Early 2008) User Guide rear-panel illustration (same art used for 2006-2008 Mac Pro guides)",
+      "publisher": "Apple Inc.",
+      "doc": "Mac Pro User Guide (Early 2008)",
+      "sha256": "a1fd10173f2b6fecc82bd43639fa89f385979e1d39f2d15cc5f48b8ab9affb93",
+      "details": [
+        "two rear three-quarter views of the tower side by side on pure white, black outline + dot stipple, no fill",
+        "mesh grille rendered as uniform fine dot stipple; solid aluminum panels stay white",
+        "top of rear face: square IEC power socket with the small square locking latch directly above/beside it",
+        "upper-middle: five horizontal slatted PCI expansion slot covers in a framed rectangular block",
+        "left of PCI block a long vertical slim grille/vent column",
+        "lower-left: large CIRCULAR perforated speaker/fan grille drawn as a packed dot circle",
+        "lower-right I/O cluster: two stacked RJ-45 Gigabit Ethernet jacks, FireWire 800 (9-pin) and FireWire 400 (6-pin) ports, three USB 2.0 ports, optical digital audio in and out (mini-TOSLINK circles), analog audio line-in and line-out paired jacks",
+        "labels are set in a plain sans-serif face with thin straight leader lines ending at each port; leader lines never cross each other",
+        "this is the authoritative stipple-and-leader style for any port/back-panel plate"
+      ]
+    },
+    {
+      "id": "apple-riser-fbdimm-photo",
+      "file": "docs/macpro-guide-refs/apple-riser-fbdimm-photo.jpg",
+      "persisted": true,
+      "kind": "ifixit-factory-photo",
+      "subject": "Mac Pro 3,1 memory riser card 820-2178-04 with FB-DIMMs installed, showing ejectors, finger holes and heatsink clips",
+      "source": "iFixit guide 25937 'Memory (FB-DIMMs) and Memory Riser Cards (Early 2008) Replacement' step 7",
+      "publisher": "iFixit",
+      "doc": "iFixit 25937",
+      "sha256": "9b74e7fbf6447651a49819d3e9b6027f50dedc49e52b92c182a50cd01333c300",
+      "details": [
+        "blue riser PCB with large gold card-edge connector along the full bottom edge",
+        "TWO large round finger holes, one at each end of the riser board (these are what the DIY sheet means by 'holding the riser by the two finger holes')",
+        "silkscreen on board reads 'APPLE 820-2178-04' with copyright 2007; a white asset sticker and a pink 'S659' tag appear in the source photo (do not draw tags in guide art)",
+        "FOUR FB-DIMM slots; populated DIMMs carry thick black finned heatsinks with a thin green PCB edge visible",
+        "each FB-DIMM is retained by THREE silver metal spring clips spanning the heatsink plus black plastic ejector levers at both board ends",
+        "two rows of purple/lavender cylindrical capacitors run across the board behind the slots, plus smaller silver caps",
+        "ghosted second riser behind shows the second bank of slots - the two risers are mechanically identical",
+        "yellow source arrows point at ejectors and clips (annotations, not hardware)",
+        "DIMMs mount VERTICALLY to the riser; the riser itself mounts horizontally into the cage when the case is on its side"
+      ]
+    },
+    {
+      "id": "apple-product-views",
+      "file": "docs/macpro-guide-refs/apple-product-views.jpg",
+      "persisted": true,
+      "kind": "product-photo-composite",
+      "subject": "Mac Pro Early 2008 A1186 marketing composite: front three-quarter view, access panel, and rear panel",
+      "source": "apple.techable.com Mac Pro 2008 Eight Core 2.8 GHz MA970LL/A A1186 EMC 2180 page",
+      "publisher": "Apple marketing image via Techable",
+      "doc": "MA970LL/A / A1186 / EMC 2180",
+      "sha256": "8aeda9c0cbb99a2ba618af434975eb6585d7e34a92376554bd2dc58f52183bfc",
+      "details": [
+        "FRONT: full-height perforated aluminum mesh face with dense round hole pattern across the entire front plane",
+        "two long horizontal optical slot bezels stacked in the upper third, rounded ends, spanning most of the face width",
+        "center I/O strip below the slots: circular power button at top, headphone/optical audio hole, two stacked USB ports, one FireWire 800 and one FireWire 400 port, all in a slim recessed vertical column",
+        "the one-piece aluminum carry handle forms a wide rectangular loop across the full top with open grip gap beneath",
+        "the bottom stand is a wide curved aluminum foot with open cutouts; front corners of the body are softly rounded where the handle hoop and foot meet",
+        "ACCESS PANEL (top-right in composite): flat aluminum door with a large centered faint Apple logo and a small square latch/handle cutout near one edge; bottom corners have notched standoffs that hook into the frame",
+        "REAR (small inset): mesh lower face, circular speaker grille, IEC socket top, five horizontal PCI slot covers, I/O cluster bottom-right exactly matching apple-rear-ports-lineart",
+        "body side profile is a simple tall rounded rectangle with slight taper; there are NO front-facing drive doors - HDD bays are internal, invisible from the front"
+      ]
+    },
+    {
+      "id": "ifixit-sled-insert-photo",
+      "file": "docs/macpro-guide-refs/ifixit-sled-insert-photo.jpg",
+      "persisted": true,
+      "kind": "ifixit-photo",
+      "subject": "HDD sled being inserted into the drive bay row, hand supporting the aluminum faceplate",
+      "source": "iFixit guide 65551 'Hard Drive Sled Adapter for Mac Pro First Generation' step 4",
+      "publisher": "iFixit",
+      "doc": "iFixit 65551",
+      "sha256": "b87128530453c7f9c58f5a6b5e8d847d86dfdd5374a7504de3550a2c1e63597a",
+      "details": [
+        "sled faceplate is a plain brushed aluminum rectangle with a SMALL CIRCLED NUMBER ('1') at its lower-right corner - bays are numbered on the sleds/frame",
+        "behind the faceplate the black plastic/metal drive carrier is visible with the 3.5 inch drive mounted, connector end facing inward",
+        "the bay opening exposes green PCB (drive backplane) at the inner top edge and silver guide rails",
+        "adjacent bays to the right show empty vertical rail slots with the same circled numbers 1/2/3 running down a label strip (upright orientation)",
+        "motion is straight IN toward the backplane on rails, supported from underneath - never tilted, no screws turned to insert, the captive thumbscrew secures it afterward",
+        "the faceplate sits nearly flush with the four-bay aluminum row when seated; above it the optical carrier screw dots are visible"
+      ]
+    }
+  ],
+  "plateRefs": {
+    "g01-overview": ["panel-sticker", "apple-interior-photo", "apple-product-views", "apple-rear-ports-lineart", "apple-riser-fbdimm-photo", "ifixit-sled-insert-photo"],
+    "g02-poweroff": ["panel-sticker", "apple-diy-gpu-sheet", "apple-product-views", "apple-rear-ports-lineart"],
+    "g03-hidden-sata": ["apple-interior-photo", "panel-sticker", "apple-diy-memory-cover"],
+    "g04-ssd-mount": ["apple-interior-photo", "ifixit-sled-insert-photo", "apple-product-views"],
+    "g05-hdd-install": ["ifixit-sled-insert-photo", "apple-interior-photo", "panel-sticker"],
+    "g06-gpu-swap": ["apple-diy-gpu-sheet", "apple-interior-photo", "apple-rear-ports-lineart"],
+    "g07-cable-check": ["apple-diy-gpu-sheet", "apple-rear-ports-lineart", "apple-interior-photo"],
+    "g08-boot-verify": ["apple-product-views", "panel-sticker", "apple-rear-ports-lineart"]
+  },
+  "canonicalFacts": [
+    "machine Mac Pro 3,1 Early 2008, A1186 family, EMC 2180, MacPro3,1; two FB-DIMM risers A (top/upside-down) and B (bottom), four slots each, 8 total",
+    "case-on-side open-face zones top-to-bottom of the open face: 2 optical carriers -> 4 HDD sled faces -> board/cage zone -> memory shroud (left) + riser window (right); rear latch lever on the right frame edge",
+    "chassis drawn in the panel-sticker three-quarter view on every plate; only scale and highlighted action change between plates",
+    "counts are invariants: 2 optical carriers, 2 optical cutouts on the left carrier with screw dots, 4 HDD bays, 4 screws/rail features per sled, 2 risers x 4 DIMMs, 2 riser finger holes per board, 5 PCI slot covers, 2 GbE + FW400 + FW800 + 3 USB at the rear cluster, one IEC socket, one latch",
+    "removal language copied from the panel sticker: removed carrier slides straight out perpendicular to the board, shown detached beside its opening with one solid black block arrow; seated state drawn solid, detached state dashed at 40%",
+    "typography copied from Apple DIY sheets: Helvetica, sentence case, short numbered action steps, bold IMPORTANT/WARNING lead-ins, caution triangle icon; guide plates keep short labels only per text budget"
+  ]
+}

@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 48,
+  "lastSeq": 53,
   "entries": [
     {
       "seq": 1,
@@ -1054,6 +1054,101 @@
         "keep docs/macpro-guide-bw-g01-overview-p7.png 1408x768 PASS 0.00 as baseline"
       ],
       "sha256": "42b6433f645a29a361814827fdcf126043a4f9f4550d6de4fbf9dd9f2acdf8c8"
+    },
+    {
+      "seq": 49,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "this little infograph on the back of the mac panel perfectly represents my vision. and it has an accurate angled representation of the exact 3,1 mac pro. in the agentic workflow for images, make sure it is cross referencing every single damn detail down to the nanometer and using publicly available imaging (like im sure some pro 3,1 instruction images are) to get the best of the best. aswell as consistency, each time you generate the images they drop off in quality and consistency. same exact strict and draconian ruleset applied across all images, bake, track and log all details, detail them out to me, and i tell you where you failed and that way you know exactly what im talking about. no unnecessary complications in naming though",
+      "demands": [
+        "adopt panel infographic as vision+canonical angled 3,1 view",
+        "cross reference every detail with public Apple imaging",
+        "same draconian ruleset all images",
+        "bake track log all details",
+        "detail them to operator for critique loop",
+        "simple names"
+      ],
+      "sha256": "a2f0289ce47a903b5d49dedf822fe0b579cdf9b8f98b1c960d59333774eca3b5"
+    },
+    {
+      "seq": 50,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:mac-panel-memory-infograph-2026-09-12",
+      "tool": "read_file vision (operator photo)",
+      "claims": [
+        {
+          "claim": "printed black-on-silver access-panel label; three-quarter angled Mac Pro case-on-side shell; memory riser plates A(upper) and B(lower) pulled straight out of open face with vertical DIMM rows",
+          "evidence": "operator photo viewed in chat this session",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "two solid black FILLED block arrows point outward showing straight pull; uniform thin outline-only line weight; dot stipple only on front mesh; no shading or gray fill",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "IMPORTANT text in EN FR DE ES JA, English reads To install memory see the users guide; foreign text is reference only, our guides stay English-only",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "front mesh face left of shell with two horizontal optical slot bars and vertical port glyph strip; one-piece handle cutout frames the top; rounded feet frame corners",
+          "evidence": "operator photo",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "the attachment is NOT persisted to sandbox disk (/home/user/uploads absent); recorded chat-only as ref panel-sticker and must be re-uploaded to pass as image reference",
+          "evidence": "ls /home/user/uploads failed this session",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "759763b74fdbe6411f17b5eba26627884b2354ff187876068f6cc7a67ade9c1a"
+    },
+    {
+      "seq": 51,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "docs/macpro-guide-refs/ (7 files)",
+      "tool": "image_search+read_file vision",
+      "claims": [
+        {
+          "claim": "Apple official Early 2008 art collected: DIY memory sheet 073-1180 Rev A, PCIe/Graphics sheet 073-1248 Rev A (three-quarter case art + numbered badges), user-guide rear-port stipple line drawing, iFixit interior establishing photo (2 dual-cutout optical + 1 plain carriers, 4 HDD faces, 2 riser banks), riser 820-2178-04 photo (2 finger holes, 3 clips/DIMM, ejectors), front/rear product composite, sled insert photo with circled bay number",
+          "evidence": "docs/macpro-guide-refs.json details arrays, sha256 verified by tools/mac-guide-art.ts refs",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "interior counts invariant: 2 optical carriers, 4 HDD sleds, 2 risers x 4 FB-DIMM, one blower module strip, latch lever right edge, GPU horizontal double-wide with 2 board-fed 6-pin cables",
+          "evidence": "apple-interior-photo + panel-sticker cross-read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "676dbc7494f12d9e4db6041f8157b292b3b2e6e2e8a13806c17728b3a2629f63"
+    },
+    {
+      "seq": 52,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "mac-guide-spec",
+      "value": "v6-ref-traced-2026-09-12: docs/macpro-guide-spec.json (15 catalog parts, 10 invariants, panel-sticker camera) + docs/macpro-guide-refs.json (8 refs, 7 hash-verified files, 1 chat-only); tool emits byte-identical canon block every plate",
+      "source": "operator directive 2026-09-12 seq49",
+      "sha256": "b0c514c3c301c23e65348354aeeea2b150583f83abefc5e9369621872aed3de8"
+    },
+    {
+      "seq": 53,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 49,
+      "summary": "Baked ref registry + canonical spec into the guide compiler: refs hash-verified, every plate prompt carries a byte-identical canon block and its ref detail digests, ledger logs spec version and attached refs; exemplar g01 p4 rendered for critique",
+      "actions": [
+        "docs/macpro-guide-refs.json",
+        "docs/macpro-guide-spec.json",
+        "docs/macpro-guide-refs/",
+        "tools/mac-guide-art.ts refs command+checks",
+        "g01 p4 exemplar"
+      ],
+      "sha256": "1101da786e81e3611754b5f87525b16bbec7471e7a71f174438db87135acb739"
     }
   ],
   "stacks": [

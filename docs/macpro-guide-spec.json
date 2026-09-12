@@ -1,0 +1,78 @@
+{
+  "schema": "mac-guide-spec.v1",
+  "version": "v6-ref-traced-2026-09-12",
+  "updated": "2026-09-12",
+  "machine": "Mac Pro 3,1 Early 2008 (A1186 family, EMC 2180, MacPro3,1)",
+  "refRegistry": "docs/macpro-guide-refs.json",
+  "canonicalView": {
+    "name": "panel-sticker three-quarter case-on-side",
+    "description": "The ONLY allowed camera for chassis plates, copied from the operator's panel sticker: the tower lies on its side/back, front mesh face toward the LEFT side of frame with the two horizontal optical slot bars and vertical port glyph strip visible, open side facing toward the RIGHT/viewer, rendered in three-quarter perspective as if seen from above and slightly in front. Removed carriers exit straight out of the open face toward the right with a solid black block arrow.",
+    "projection": {
+      "facePlane": "open-face plane coordinates u (0 left to 100 right) x v (0 top to 100 bottom) as measured from apple-interior-photo",
+      "depth": "z=0 at open face, z=100 deepest interior",
+      "screenOffset": "interior depth recedes toward upper-left: screen_x = u - 0.28*z, screen_y = v - 0.16*z, applied inside the chassis rectangle of the schematic",
+      "notes": "the deterministic SVG schematic is the orthographic open-face anchor (u/v only); the AI render applies this documented projection, never free perspective"
+    },
+    "refs": ["panel-sticker", "apple-diy-gpu-sheet", "apple-interior-photo", "apple-product-views"]
+  },
+  "lineStyle": {
+    "primary": "black #000000 1.5px uniform outline, closed shapes, round-ish line joins like the Apple DIY art",
+    "secondary": "0.75px for internal detail (screw dots, rail lines, port internals, fin lines)",
+    "ghost": "#000000 at 40% opacity, dashed 4-2, 0.5px; used ONLY for previous/next state and detached removed parts",
+    "arrow": "SOLID BLACK FILLED BLOCK ARROW with triangular head, copied verbatim from panel-sticker; one arrow per motion; never thin line arrows",
+    "stipple": "fine even dot stipple permitted ONLY to render aluminum perforation mesh (front face, rear grille, circular speaker grille); never shading or gradients",
+    "background": "pure white #FFFFFF, no paper texture, no border around the scene (the schematic frame is not rendered)",
+    "fills": "NONE. no gray fill, no black solid except arrow heads, caution glyphs and the GPU blower shroud silhouette; aluminum reads as white enclosed by outlines",
+    "hands": "when an action needs a hand (DIY-sheet style), draw outline-only hand, no skin tone, no shading",
+    "font": "Helvetica Neue / Helvetica only; labels ALL CAPS bold for part names; sentence case for step wording inside the side panel; numbers same face bold"
+  },
+  "chassisFaceParts": [
+    { "id": "frame-handle-feet", "u": 0, "v": 0, "w": 100, "h": 100, "depth": "0-100", "draw": "outer aluminum frame: one-piece rectangular handle loop across the full top edge with open grip slot, matching curved stand/foot cutouts at both lower corners, softly rounded body corners", "refs": ["panel-sticker", "apple-product-views", "apple-diy-gpu-sheet"] },
+    { "id": "front-mesh-face", "u": 0, "v": 8, "w": 22, "h": 84, "depth": "60-100", "draw": "left-side visible front plane covered in uniform round-hole stipple; TWO long horizontal rounded optical slot bezels stacked around v 18-30; slim vertical recessed I/O column at v 48-78 with circular power button, audio hole, two stacked USB rectangles, FW800 and FW400 ports", "refs": ["apple-product-views", "panel-sticker"] },
+    { "id": "optical-left-dualcutout", "u": 10, "v": 7, "w": 34, "h": 13, "depth": "10-25", "draw": "wide smooth aluminum carrier plate containing TWO small rounded-rectangle cutouts side by side, each with one tiny screw dot at its lower edge", "refs": ["apple-interior-photo"] },
+    { "id": "optical-right-plain", "u": 45, "v": 7, "w": 26, "h": 13, "depth": "10-25", "draw": "one large plain smooth aluminum carrier plate, no cutouts", "refs": ["apple-interior-photo"] },
+    { "id": "hdd-row-4-sleds", "u": 10, "v": 23, "w": 62, "h": 11, "depth": "15-45", "draw": "exactly FOUR identical silver sled faceplates in an even horizontal row with narrow black gaps; each has a raised oval/feature near top, small screws and a circled bay number at lower-right (1 bottommost/leftmost when on side through 4 topmost/rightmost); captive front thumbscrew; drive and connector hidden inward on rails", "refs": ["apple-interior-photo", "ifixit-sled-insert-photo"] },
+    { "id": "front-fan-assembly", "u": 12, "v": 35, "w": 60, "h": 7, "depth": "45-75", "draw": "single large blower module strip spanning the board top edge behind bay 1; lifts upward 40mm to expose hidden SATA ports; it is ONE module, never two small fans", "refs": ["apple-interior-photo"] },
+    { "id": "logic-board-tray", "u": 30, "v": 38, "w": 54, "h": 40, "depth": "25-70", "draw": "blue PCB rendered outline-only with rows of small cylindrical electrolytic cap circles, one large horizontally-laid BLACK FINNED processor heatsink with parallel fin lines covering dual Xeon sockets, smaller northbridge heatsink, port/connector blocks along edges", "refs": ["apple-interior-photo"] },
+    { "id": "gpu-gtx285-blower", "u": 40, "v": 47, "w": 44, "h": 12, "depth": "5-20", "draw": "double-wide horizontal black blower card in slot 1: SOLID black shroud silhouette allowed, circular fan at the FRONT (right/inside? fan visible front face), bracket with DVI ports at the REAR (right frame edge), two 6-pin sockets on the card top edge; label text avoided or minimal 'GTX 285' within budget", "refs": ["apple-interior-photo", "apple-diy-gpu-sheet"] },
+    { "id": "gpu-power-cables", "u": 24, "v": 43, "w": 26, "h": 8, "depth": "0-15", "draw": "TWO black 6-pin cables: board end IN at logic board aux headers (left/origin), GPU end OUT plugging into GPU top-edge sockets (right/destination); when unplugged they dangle in a loop toward the memory cage center-left; direction is always board->GPU, never PSU->GPU", "refs": ["apple-interior-photo"] },
+    { "id": "memory-shroud", "u": 8, "v": 50, "w": 28, "h": 44, "depth": "10-30", "draw": "large smooth silver blank shroud with rounded lower corner, covers both risers when installed; lifts/pulls away to reveal the cage", "refs": ["apple-interior-photo", "panel-sticker"] },
+    { "id": "riser-window-2-banks", "u": 42, "v": 64, "w": 40, "h": 30, "depth": "20-45", "draw": "rectangular framed window showing TWO memory riser banks stacked; each riser = blue board outline with full-length gold edge connector, FOUR vertical FB-DIMMs with black finned heatsinks held by three silver spring clips each, black ejector levers at both ends, two round finger holes at board ends, rows of purple cap circles behind slots; riser A is the top/upside-down bank, riser B the bottom bank", "refs": ["apple-interior-photo", "apple-riser-fbdimm-photo", "panel-sticker"] },
+    { "id": "riser-plates-A-B-out", "u": 72, "v": 60, "w": 22, "h": 34, "depth": "-25 (outside open face)", "draw": "the two riser carriers drawn pulled straight out of the cage, ghost 40% dashed, bold 'A' on upper plate outer corner and 'B' on lower, each with a solid black block arrow pointing outward - verbatim panel-sticker composition", "refs": ["panel-sticker", "apple-riser-fbdimm-photo"] },
+    { "id": "latch-lever", "u": 88, "v": 38, "w": 9, "h": 14, "depth": "0-10", "draw": "silver locking latch lever protruding from the right/rear frame edge mid-height, hinged at frame", "refs": ["apple-interior-photo", "apple-rear-ports-lineart"] },
+    { "id": "rear-io-plane", "u": 80, "v": 12, "w": 20, "h": 80, "depth": "70-100", "draw": "rear mesh plane with square IEC socket top-center and small square locking latch beside it, five horizontal slatted PCI slot covers upper-middle, slim vertical vent column left of them, large circular stippled speaker grille lower-left, clustered jack block lower-right (2x RJ-45, FW800, FW400, 3 USB, optical in/out, audio in/out)", "refs": ["apple-rear-ports-lineart", "apple-product-views"] },
+    { "id": "honeycomb-edge", "u": 96, "v": 10, "w": 4, "h": 80, "depth": "0-60", "draw": "narrow honeycomb/dot perforation strip along the inner rear frame edge", "refs": ["apple-interior-photo"] }
+  ],
+  "inventoryProps": {
+    "g01-only": "loose desk parts appear ONLY on the g01 overview inventory: Crucial MX500 SSD, 4x WD Caviar Green 1 TB stack, GTX 285-class card, CyberPower UPS per the pass-2 composition; these props never reappear on procedural plates",
+    "rule": "props are drawn in the same outline/stipple language as the chassis; brand marks allowed only as tiny outlines, never rendered watermark-style"
+  },
+  "invariants": [
+    "INV-01 identical camera: every chassis plate uses the panel-sticker three-quarter case-on-side view with the same vanishing direction and same chassis screen size; only the highlighted action and ghost states change",
+    "INV-02 identical chassis: same outline, handle, feet, front mesh placement, optical bars and port column on every plate; trace chassis from refs every pass, never redraw from memory",
+    "INV-03 part counts never change: 2 optical carriers, 2 cutouts on the left carrier, 4 HDD bays/sleds, 2 risers x 4 FB-DIMM slots, 2 finger holes per riser, 5 PCI covers, 2 GPU power cables, 1 fan module, 1 latch, 1 IEC socket",
+    "INV-04 orientation never flips: front mesh left, open side right, GPU horizontal with bracket at rear right edge, cables run board-header (origin) -> GPU sockets (destination), sleds slide straight in-out on rails, risers pull straight out",
+    "INV-05 uniform language: 1.5px primary / 0.75px secondary / 40% dashed 4-2 ghost / solid filled block arrows / dot stipple only for mesh; no color, gray fill, shading, gradient, glow, watermark or photoreal humans on any plate",
+    "INV-06 uniform furniture: STEP box and side panel occupy the same screen rect on every plate, same footer rule and footer text style, same 1536x1024 canvas; g01 inventory rail does not move between passes",
+    "INV-07 labels: Helvetica only, English only, ALL CAPS short labels max 4 words / 24 chars; no coordinates, no spec values, no sentences inside the artwork; sentence-case action text lives only inside the side panel",
+    "INV-08 every hardware item in a plate must exist in chassisFaceParts (or inventoryProps); anything not catalogued is an invention and fails the plate",
+    "INV-09 assembled/disassembled pairing: every removable-part plate shows the seated state solid and the detached state ghost-40 with one filled block arrow and a distance chip; both states share the exact same part outline",
+    "INV-10 prompt provenance: each prompt carries spec version, ref IDs, schematic hash and the ref detail digest; the render receipt records which refs were attached, so quality/consistency drift is traceable to a hash and not a vibe"
+  ],
+  "driftWatchlist": [
+    "GPU drawn vertical or with fan and bracket swapped (must be horizontal, bracket rear/right, fan front)",
+    "motherboard omitted or replaced with generic chips (must show finned Xeon heatsink, cap rows, northbridge per apple-interior-photo)",
+    "memory risers drawn as ordinary DIMM slots (they are two removable cards with finger holes, clips and vertical FB-DIMMs)",
+    "fan assembly drawn as multiple small fans (it is one blower module strip)",
+    "drive cages drawn with wrong screw counts or five bays (exactly four sleds, right/end screw features and circled numbers)",
+    "GPU power cables routed from PSU or into the wrong card edge (board aux headers -> GPU top edge)",
+    "each render restyling the case (the chassis outline must be identical plate to plate)",
+    "random extra drives, MacBooks, rack servers, invented ports, Japanese/foreign lettering, paragraphs of in-image text"
+  ],
+  "renderGate": [
+    "all plateRefs for the plate were attached as image references to the generator (chat-only refs that could not be attached must be called out in the receipt)",
+    "schematic emitted and hash logged before prompt; prompt hash logged",
+    "after render: pixel audit via tool, then vision critique ticking every chassisFaceParts part present/absent and every INV-01..INV-10",
+    "any ERROR finding opens a P10 deduction: patch IR/spec/refs so the next prompt hash changes; fixpoint only at zero ERRORs on the latest pass"
+  ]
+}

@@ -267,9 +267,90 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 8,
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p8.txt",
+          "promptHash": "e1e9aeea233693a1d78408f61656b3d5606c26469c64d843bb59d49bb818e1b7",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p8.svg",
+          "schematicHash": "50b400dad6277dd436d6206074557e2de0c7f61f23003b996ff6dfd3f7cfedc0",
+          "specVersion": "v6-ref-traced-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-riser-fbdimm-photo",
+            "ifixit-sled-insert-photo"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g01-overview-p8.png",
+              "sha256": "54010d4a8e7bd6774b93a5ee2f291f4ab0d8997d31989b479c4011a2060acacb",
+              "bytes": 978908,
+              "w": 1264,
+              "h": 848
+            }
+          ],
+          "findings": [
+            {
+              "code": "F-P8-01",
+              "severity": "ERROR",
+              "note": "inventory rail invents MEMORY RISER and PROCESSOR loose-part icons; catalog allows only LION SSD, GTX 285, 4x1TB (INV-08)"
+            },
+            {
+              "code": "F-P8-02",
+              "severity": "ERROR",
+              "note": "riser window shows ~3 plain sticks per bank; must show 4 FB-DIMM slots per riser, finned heatsinks, 3 silver clips per DIMM, end ejectors, 2 round finger holes per board"
+            },
+            {
+              "code": "F-P8-03",
+              "severity": "ERROR",
+              "note": "GPU bracket/ports end floats inboard-left; bracket must meet rear/right frame edge, fan at front/inner end (INV-04)"
+            },
+            {
+              "code": "F-P8-04",
+              "severity": "ERROR",
+              "note": "ghost pull object is a generic blank box; must be the sled faceplate itself (circled bay number, rails) dashed 40% (INV-09)"
+            },
+            {
+              "code": "F-P8-05",
+              "severity": "WARN",
+              "note": "canvas 1264x848 vs fixed 1536x1024; aspect in tolerance, pixel size drifts"
+            },
+            {
+              "code": "F-P8-06",
+              "severity": "WARN",
+              "note": "BAY 1-4 leader labels and GHOST OUT label absent; only PULL shown"
+            },
+            {
+              "code": "F-P8-07",
+              "severity": "INFO",
+              "note": "wins: panel-sticker three-quarter camera, mesh stipple, 2 optical carriers dual-cutout+plain, exactly 4 HDD faces 1-4 with empty square on 4, blank shroud, horizontal finned Xeon heatsink + cap rows, one fan strip, latch, honeycomb, board->GPU two-cable loop, FILLED black block arrow, zero color, Helvetica English, STEP/inventory/footer furniture"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "audit": {
+            "mean": 227.47,
+            "stddev": 68.76,
+            "pctDark": 0.0657,
+            "pctBright": 0.8592,
+            "edgeRatio": 0.168,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 8
+      "nextPass": 9
     },
     "g02-poweroff": {
       "passes": [

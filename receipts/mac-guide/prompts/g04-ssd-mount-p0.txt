@@ -1,6 +1,34 @@
+=== CANON BLOCK START (identical on every plate, do not paraphrase) ===
+SPEC VERSION: v6-ref-traced-2026-09-12
+CANONICAL CAMERA: panel-sticker three-quarter case-on-side
+The ONLY allowed camera for chassis plates, copied from the operator's panel sticker: the tower lies on its side/back, front mesh face toward the LEFT side of frame with the two horizontal optical slot bars and vertical port glyph strip visible, open side facing toward the RIGHT/viewer, rendered in three-quarter perspective as if seen from above and slightly in front. Removed carriers exit straight out of the open face toward the right with a solid black block arrow.
+PROJECTION: facePlane=open-face plane coordinates u (0 left to 100 right) x v (0 top to 100 bottom) as measured from apple-interior-photo; depth=z=0 at open face, z=100 deepest interior; screenOffset=interior depth recedes toward upper-left: screen_x = u - 0.28*z, screen_y = v - 0.16*z, applied inside the chassis rectangle of the schematic; notes=the deterministic SVG schematic is the orthographic open-face anchor (u/v only); the AI render applies this documented projection, never free perspective
+LINE LANGUAGE: primary: black #000000 1.5px uniform outline, closed shapes, round-ish line joins like the Apple DIY art | secondary: 0.75px for internal detail (screw dots, rail lines, port internals, fin lines) | ghost: #000000 at 40% opacity, dashed 4-2, 0.5px; used ONLY for previous/next state and detached removed parts | arrow: SOLID BLACK FILLED BLOCK ARROW with triangular head, copied verbatim from panel-sticker; one arrow per motion; never thin line arrows | stipple: fine even dot stipple permitted ONLY to render aluminum perforation mesh (front face, rear grille, circular speaker grille); never shading or gradients | background: pure white #FFFFFF, no paper texture, no border around the scene (the schematic frame is not rendered) | fills: NONE. no gray fill, no black solid except arrow heads, caution glyphs and the GPU blower shroud silhouette; aluminum reads as white enclosed by outlines | hands: when an action needs a hand (DIY-sheet style), draw outline-only hand, no skin tone, no shading | font: Helvetica Neue / Helvetica only; labels ALL CAPS bold for part names; sentence case for step wording inside the side panel; numbers same face bold
+CONSISTENCY INVARIANTS:
+- INV-01 identical camera: every chassis plate uses the panel-sticker three-quarter case-on-side view with the same vanishing direction and same chassis screen size; only the highlighted action and ghost states change
+- INV-02 identical chassis: same outline, handle, feet, front mesh placement, optical bars and port column on every plate; trace chassis from refs every pass, never redraw from memory
+- INV-03 part counts never change: 2 optical carriers, 2 cutouts on the left carrier, 4 HDD bays/sleds, 2 risers x 4 FB-DIMM slots, 2 finger holes per riser, 5 PCI covers, 2 GPU power cables, 1 fan module, 1 latch, 1 IEC socket
+- INV-04 orientation never flips: front mesh left, open side right, GPU horizontal with bracket at rear right edge, cables run board-header (origin) -> GPU sockets (destination), sleds slide straight in-out on rails, risers pull straight out
+- INV-05 uniform language: 1.5px primary / 0.75px secondary / 40% dashed 4-2 ghost / solid filled block arrows / dot stipple only for mesh; no color, gray fill, shading, gradient, glow, watermark or photoreal humans on any plate
+- INV-06 uniform furniture: STEP box and side panel occupy the same screen rect on every plate, same footer rule and footer text style, same 1536x1024 canvas; g01 inventory rail does not move between passes
+- INV-07 labels: Helvetica only, English only, ALL CAPS short labels max 4 words / 24 chars; no coordinates, no spec values, no sentences inside the artwork; sentence-case action text lives only inside the side panel
+- INV-08 every hardware item in a plate must exist in chassisFaceParts (or inventoryProps); anything not catalogued is an invention and fails the plate
+- INV-09 assembled/disassembled pairing: every removable-part plate shows the seated state solid and the detached state ghost-40 with one filled block arrow and a distance chip; both states share the exact same part outline
+- INV-10 prompt provenance: each prompt carries spec version, ref IDs, schematic hash and the ref detail digest; the render receipt records which refs were attached, so quality/consistency drift is traceable to a hash and not a vibe
+DRIFT WATCHLIST (each item here is a failed class, never reproduce):
+- GPU drawn vertical or with fan and bracket swapped (must be horizontal, bracket rear/right, fan front)
+- motherboard omitted or replaced with generic chips (must show finned Xeon heatsink, cap rows, northbridge per apple-interior-photo)
+- memory risers drawn as ordinary DIMM slots (they are two removable cards with finger holes, clips and vertical FB-DIMMs)
+- fan assembly drawn as multiple small fans (it is one blower module strip)
+- drive cages drawn with wrong screw counts or five bays (exactly four sleds, right/end screw features and circled numbers)
+- GPU power cables routed from PSU or into the wrong card edge (board aux headers -> GPU top edge)
+- each render restyling the case (the chassis outline must be identical plate to plate)
+- random extra drives, MacBooks, rack servers, invented ports, Japanese/foreign lettering, paragraphs of in-image text
+=== CANON BLOCK END ===
+
 PLATE g04-ssd-mount — STEP 4 — SSD TO OPTICAL BAY
 PURPOSE: Mount Lion SSD in lower optical bay with 2.5->5.25 bracket and Molex power free Bay1-4 input empty output SSD installed ghost. INTUITIVE FLOW: ASSEMBLED solid + DISASSEMBLED ghost lifted with numbered remove-order arrows (what to disassemble, how far, which screws).
-VIEW: orthographic optical bay close-up front view accurate to photo-1 optical covers black and white line art Helvetica uniform sidepanel
+VIEW: v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, tighter framing on the optical carriers (left dual-cutout, right plain) with SSD bracket ghosted into the lower bay, uniform sidepanel left, black and white line art
 CANVAS: 1536 x 1024 px (fixed, do not crop)
 
 ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-left):
@@ -30,7 +58,20 @@ ELEMENTS (draw every one, exact relative positions x/y/w/h percent, origin top-l
     MEANING (visual, not text): Footer step4 SSD relocated 4 bays free.
 
 STYLE CONTRACT (authoritative, from docs/macpro-guide-style-bw.md):
-# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v5
+# Mac Pro 3,1 + OMEN chassis guide — BLACK AND WHITE efficient style contract v6
+
+v6 (operator directive 2026-09-12, panel-sticker message): **REF-TRACED IMAGING.** The memory
+instruction infographic on the back of the Mac panel is the vision: an accurate THREE-QUARTER
+ANGLED Mac Pro 3,1 lying on its side, removed carriers ghosted straight out with solid black
+filled block arrows. Every plate MUST cross-reference public Apple/reference imaging
+(`docs/macpro-guide-refs.json`, images in `docs/macpro-guide-refs/`) down to the smallest
+observable detail, under ONE identical draconian ruleset: canonical camera, line weights,
+counts, furniture and labels never drift plate to plate. All details are baked in
+`docs/macpro-guide-spec.json` (15 catalog parts, INV-01..INV-10), hash-checked by
+`node tools/mac-guide-art.ts refs`, and the tool injects a BYTE-IDENTICAL canon block plus each
+plate's ref detail digest into every prompt; ledger logs spec version + attached refs. The
+operator critiques each render; findings become P10 deductions that patch IR/spec/refs so the
+next prompt hash changes. Names stay simple, no token ceremony.
 
 Operator directive 2026-09-12 rev1: **NO actual Japanese lettering.** English only, Helvetica,
 uniform consistent formatting, short comprehensive guiding words. Japanese compactness is
@@ -64,8 +105,12 @@ is versioned, hashed, and traced — hallucination is blocked at the prompt leve
 - Uniform side panel EVERY plate: left x=2 y=14 w=18 h=76 (percent grid), same camera,
   same framing, same scale across all plates.
 - INPUT solid black 100% -> OUTPUT ghost 40% dashed, with a motion arrow + distance
-  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: black line, triangle head, Helvetica label beside.
-- Orthographic straight views, never perspective-distorted.
+  (PULL 30mm, LIFT 40mm, PUSH IN). Arrow: SOLID BLACK FILLED BLOCK ARROW with triangular
+  head copied verbatim from the panel sticker (v6; not a thin line arrow), Helvetica label beside.
+- v6 camera: the CHASSIS is always drawn in the panel-sticker THREE-QUARTER case-on-side view
+  (projection baked in docs/macpro-guide-spec.json canonicalView); the deterministic SVG
+  schematic stays orthographic as the face-plane anchor the render projects from. Never free
+  perspective, never a different camera angle between plates.
 - Grid 8px module. Canvas 1536x1024 fixed per plate.
 - Footer: single black rule + step name.
 - Schematic guides: faint 8px grid at 6% opacity, anchor dots for every hardware element.
@@ -169,9 +214,53 @@ NEGATIVE CONSTRAINTS: no-color, no-amoled, no-neon-glow-bloom, no-watermark, no-
 
 CRITICAL TEXT RULE: Only render the SHORT LABEL strings as text in the image. Never render coordinates (x=, y=, w=, h=), position numbers, style spec (1.5px, 40%, 4-2, 0.5px, #000000), schematic file paths, or the STYLE CONTRACT prose as visible text. Coordinates and style are for layout only.
 
-SCHEMATIC ANCHOR (must trace exactly, no invention): receipts/mac-guide/schematics/g04-ssd-mount-p0.svg
+SCHEMATIC ANCHOR (orthographic open-face blueprint; the render applies the CANONICAL CAMERA projection to it): receipts/mac-guide/schematics/g04-ssd-mount-p0.svg
 HARDWARE ANCHORS: ssd-2p5-bracket, optical-lower-bay, molex-to-sata-adapter, sata-cable-from-hidden-port -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.
-RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.
+RENDER RULE: Trace the schematic and the supplied reference files. Copy every anchor position, orientation, proportion, part count and screw count exactly. Do not swap orientation, do not add or omit drives, do not fill color. The chassis outline MUST match the other plates of this manual byte-for-byte in shape.
+
+=== REFERENCE TRACING START (highest authority after the operator photo) ===
+Visual reference files are supplied to the generator. Trace chassis proportions, viewpoint, part shapes, counts and line language from them. Their detail digests follow; do not invent parts the refs do not show.
+
+REF apple-interior-photo [ifixit-factory-photo] file=docs/macpro-guide-refs/apple-interior-photo.jpg doc=iFixit 25939 source=iFixit guide 25939 'Memory Cage with Rear Fan (Early 2008) Replacement' step 1 image 1
+SUBJECT: Mac Pro (Early 2008) interior with side panel removed, case on its side (Memory Cage with Rear Fan guide establishing shot)
+  - case lying on its side, open face filling frame; rounded top handle spans upper edge, stand foot lower edge
+  - TOP ZONE (case-on-side): left optical carrier is a wide smooth aluminum plate with TWO small rounded-rectangle cutouts side by side, each cutout has one tiny dark screw dot at its lower edge; right optical carrier is one large plain smooth plate
+  - MIDDLE ZONE: four identical silver HDD blank/sled faceplates in a horizontal row separated by narrow black gaps, each with a small raised/oval feature near top edge and tiny screws
+  - CENTER-RIGHT ZONE: logic board visible - blue PCB, dense cylindrical electrolytic caps with light tops, a large black finned processor heatsink lying horizontally, smaller heatsinks, a small BLACK RECTANGULAR MODULE highlighted by a yellow rectangle in the source annotation (annotation not part of hardware)
+  - LOWER-LEFT ZONE: one large smooth silver memory-cage shroud/cover with rounded corner, fully blank (it hides riser A/B until removed)
+  - LOWER-RIGHT ZONE: rectangular windowed cage exposing TWO memory riser banks stacked one above the other; each bank shows white/heatsinked FB-DIMMs in vertical clips flanked by green PCB and purple/lavender cylindrical caps at the board edges
+  - RIGHT EDGE: silver locking latch lever angled outward mid-height; honeycomb/dot vent perforations along inner frame edges
+  - all zones are separated by clean aluminum frame rails; no cables visible across the open face in factory state
+  - counts that must never drift in guide art: optical carriers = 2 (left dual-cutout, right plain); HDD faces = exactly 4; riser banks visible = 2; cutouts on left optical carrier = 2 each with screw dot
+
+REF ifixit-sled-insert-photo [ifixit-photo] file=docs/macpro-guide-refs/ifixit-sled-insert-photo.jpg doc=iFixit 65551 source=iFixit guide 65551 'Hard Drive Sled Adapter for Mac Pro First Generation' step 4
+SUBJECT: HDD sled being inserted into the drive bay row, hand supporting the aluminum faceplate
+  - sled faceplate is a plain brushed aluminum rectangle with a SMALL CIRCLED NUMBER ('1') at its lower-right corner - bays are numbered on the sleds/frame
+  - behind the faceplate the black plastic/metal drive carrier is visible with the 3.5 inch drive mounted, connector end facing inward
+  - the bay opening exposes green PCB (drive backplane) at the inner top edge and silver guide rails
+  - adjacent bays to the right show empty vertical rail slots with the same circled numbers 1/2/3 running down a label strip (upright orientation)
+  - motion is straight IN toward the backplane on rails, supported from underneath - never tilted, no screws turned to insert, the captive thumbscrew secures it afterward
+  - the faceplate sits nearly flush with the four-bay aluminum row when seated; above it the optical carrier screw dots are visible
+
+REF apple-product-views [product-photo-composite] file=docs/macpro-guide-refs/apple-product-views.jpg doc=MA970LL/A / A1186 / EMC 2180 source=apple.techable.com Mac Pro 2008 Eight Core 2.8 GHz MA970LL/A A1186 EMC 2180 page
+SUBJECT: Mac Pro Early 2008 A1186 marketing composite: front three-quarter view, access panel, and rear panel
+  - FRONT: full-height perforated aluminum mesh face with dense round hole pattern across the entire front plane
+  - two long horizontal optical slot bezels stacked in the upper third, rounded ends, spanning most of the face width
+  - center I/O strip below the slots: circular power button at top, headphone/optical audio hole, two stacked USB ports, one FireWire 800 and one FireWire 400 port, all in a slim recessed vertical column
+  - the one-piece aluminum carry handle forms a wide rectangular loop across the full top with open grip gap beneath
+  - the bottom stand is a wide curved aluminum foot with open cutouts; front corners of the body are softly rounded where the handle hoop and foot meet
+  - ACCESS PANEL (top-right in composite): flat aluminum door with a large centered faint Apple logo and a small square latch/handle cutout near one edge; bottom corners have notched standoffs that hook into the frame
+  - REAR (small inset): mesh lower face, circular speaker grille, IEC socket top, five horizontal PCI slot covers, I/O cluster bottom-right exactly matching apple-rear-ports-lineart
+  - body side profile is a simple tall rounded rectangle with slight taper; there are NO front-facing drive doors - HDD bays are internal, invisible from the front
+
+CATALOG PARTS THIS PLATE MAY DRAW (id | face u/v/w/h | exact depiction):
+- frame-handle-feet | u=0 v=0 w=100 h=100 depth=0-100 | outer aluminum frame: one-piece rectangular handle loop across the full top edge with open grip slot, matching curved stand/foot cutouts at both lower corners, softly rounded body corners [refs: panel-sticker,apple-product-views,apple-diy-gpu-sheet]
+- optical-left-dualcutout | u=10 v=7 w=34 h=13 depth=10-25 | wide smooth aluminum carrier plate containing TWO small rounded-rectangle cutouts side by side, each with one tiny screw dot at its lower edge [refs: apple-interior-photo]
+- optical-right-plain | u=45 v=7 w=26 h=13 depth=10-25 | one large plain smooth aluminum carrier plate, no cutouts [refs: apple-interior-photo]
+- hdd-row-4-sleds | u=10 v=23 w=62 h=11 depth=15-45 | exactly FOUR identical silver sled faceplates in an even horizontal row with narrow black gaps; each has a raised oval/feature near top, small screws and a circled bay number at lower-right (1 bottommost/leftmost when on side through 4 topmost/rightmost); captive front thumbscrew; drive and connector hidden inward on rails [refs: apple-interior-photo,ifixit-sled-insert-photo]
+- front-fan-assembly | u=12 v=35 w=60 h=7 depth=45-75 | single large blower module strip spanning the board top edge behind bay 1; lifts upward 40mm to expose hidden SATA ports; it is ONE module, never two small fans [refs: apple-interior-photo]
+Anything not in this catalog, in the scene IR inventory, or in the refs is an INVENTION and must not appear.
+=== REFERENCE TRACING END ===
 
 PASS-0 CORRECTIONS:
 - Black white line art only

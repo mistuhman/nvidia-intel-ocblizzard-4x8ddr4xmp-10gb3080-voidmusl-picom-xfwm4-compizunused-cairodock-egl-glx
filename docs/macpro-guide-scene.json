@@ -22,7 +22,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic side view Mac Pro 3,1 exactly as photo-1 side panel off case on side, uniform sidepanel left, no perspective, black and white line art Helvetica manual compactness",
+      "view": "v6 panel-sticker three-quarter case-on-side camera (see docs/macpro-guide-spec.json canonicalView): Mac Pro 3,1 on its side, front mesh face with two optical slot bars at LEFT, open side facing RIGHT/viewer; uniform sidepanel left; black and white line art Helvetica manual compactness",
       "nodes": [
         {
           "id": "step",
@@ -168,7 +168,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic side view Mac Pro 3,1 uniform sidepanel left, same camera as g01-overview - main comprehensive view; inset close-up tertiary perspective only for IEC socket and captive screw detail (small inset box), not primary",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, same chassis size and vanishing direction, uniform sidepanel left; small outlined inset close-up allowed for IEC socket and captive screw detail",
       "nodes": [
         {
           "id": "step",
@@ -307,7 +307,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic top-down internal behind fan assembly Mac Pro 3,1 black and white line art uniform sidepanel accurate",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, tighter framing on the single front-fan blower module ghost-lifted 40mm straight out to expose the two hidden SATA ports, uniform sidepanel left, black and white line art",
       "nodes": [
         {
           "id": "step",
@@ -432,7 +432,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic optical bay close-up front view accurate to photo-1 optical covers black and white line art Helvetica uniform sidepanel",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, tighter framing on the optical carriers (left dual-cutout, right plain) with SSD bracket ghosted into the lower bay, uniform sidepanel left, black and white line art",
       "nodes": [
         {
           "id": "step",
@@ -558,7 +558,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic front view drive cage 4 bays vertical Bay1 bottom Bay4 top accurate to photo-1 black and white line art",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, tighter framing on the four-sled row; a sled exits straight toward the open side (right) ghost-40 with filled block arrow as on the panel sticker, Bay1 leftmost/lower through Bay4 rightmost/upper, black and white line art",
       "nodes": [
         {
           "id": "step",
@@ -698,7 +698,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic PCIe area side view Mac Pro 3,1 accurate to photo-1 black and white line art uniform sidepanel",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview, tighter framing on the PCIe zone: double-wide horizontal blower card, bracket at rear right edge, board-header cables to GPU top edge, ghosted replacement card with filled block arrow, uniform sidepanel left",
       "nodes": [
         {
           "id": "step",
@@ -839,7 +839,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic side view Mac Pro interior before close accurate to photo-1 black and white line art uniform sidepanel",
+      "view": "v6 panel-sticker three-quarter case-on-side camera identical to g01-overview showing full interior with cable dress paths and honeycomb edge, uniform sidepanel left, black and white line art",
       "nodes": [
         {
           "id": "step",
@@ -993,7 +993,7 @@
         "w": 1536,
         "h": 1024
       },
-      "view": "orthographic desktop verification windows plus OMEN board accurate to photo-2 black and white line art uniform sidepanel",
+      "view": "v6 panel-sticker three-quarter case-on-side chassis identical to g01-overview on the right, same camera; outlined inset box left holds the About This Mac / Startup Disk verification screen as simple black-line UI, uniform sidepanel, black and white line art",
       "nodes": [
         {
           "id": "step",
