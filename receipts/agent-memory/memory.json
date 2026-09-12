@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 60,
+  "lastSeq": 61,
   "entries": [
     {
       "seq": 1,
@@ -1269,6 +1269,15 @@
       "status": "UNRESOLVED",
       "owner": "agent",
       "sha256": "5f6cfcf9285acc485c60a4cb40c835845633d037b9f554eeff5b9fa4a6f3afae"
+    },
+    {
+      "seq": 61,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "uploadsWorkflow",
+      "value": "operator uploads -> node tools/uploads.ts ingest (hash, dims, claims, dated dir) -> SHORT-TERM uploads/RECENT.md last-8 window that every image agent reads BEFORE perceiving -> LONG-TERM uploads/index.json + auto agent-memory perception receipt; every emitted render prompt carries the byte-identical UPLOADS CROSSREF BLOCK (uploads refs); uploads verify before every render (mismatch refuses); uploads gate refuses render and issues numbered photo request whenever a visual claim has no persisted evidence - ask every time; chat-only photos get capped-confidence receipts + bytes re-requested; universal contract docs/imaging-contract.md",
+      "source": "operator directive 2026-09-12 session 01a097ba; tools/uploads.ts selftest 13/13; MASTER.md uploads section",
+      "sha256": "fb4903e2dfec6548bb8705b919b530295bc59e252f8a3aa4c1ce81377545c8ec"
     }
   ],
   "stacks": [

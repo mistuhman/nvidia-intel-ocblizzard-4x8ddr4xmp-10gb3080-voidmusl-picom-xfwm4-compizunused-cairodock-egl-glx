@@ -61,6 +61,7 @@ Agent ↔ operator reciprocity loop: pasteable command block out → operator ru
 - Mac Pro 3,1 BW chassis guide (operator directive 2026-09-12): `node tools/mac-guide-art.ts` passes P0-P10; v6 ref-traced imaging — `refs` subcommand hash-verifies public Apple/iFixit imaging in `docs/macpro-guide-refs/` vs `docs/macpro-guide-refs.json`; `docs/macpro-guide-spec.json` bakes the panel-sticker three-quarter camera, 15 catalog parts and INV-01..INV-10; every prompt carries a byte-identical canon block and per-plate ref digests; ledger logs spec version + refs attached.
 - `tools/` DDR4 lab: `ram-oc-plan.ts` (XMP 3733 → 4000 MT/s ladder with risk bands, BIOS keying, validation suite, inverse), `ram-validate-parse.ts` (PASS/FAIL/UNPROVEN per gate), target runner `scripts/ram-validate`. Guide: `docs/oc-ddr4-4000-lab.md`.
 - `receipts/` — the metered run ledgers (`gpu-oc-receipts.json`, `ram-oc-receipts.json`); `tests/fixtures/` — parser fixtures.
+- `uploads/` — operator photo registry (directive 2026-09-12, `node tools/uploads.ts`): ingest/list/recent/refs/verify/gate; hash-verified bytes, short-term `RECENT.md` window for image agents, long-term `index.json` + agent-memory receipts; cross-referenced at every instruction-imaging step (`docs/imaging-contract.md`).
 - `etc/` — target config files and reusable `.block` text.
 - `scripts/` — target-facing installed tools.
 - `docs/` — OC recipes (`oc-plan.md`, `oc-3080-gwe-recipe.md`, `oc-cpu-bios-checklist.md`) and recovery history.
