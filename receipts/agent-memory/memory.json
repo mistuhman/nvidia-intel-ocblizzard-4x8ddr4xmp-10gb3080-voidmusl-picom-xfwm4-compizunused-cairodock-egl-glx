@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 45,
+  "lastSeq": 47,
   "entries": [
     {
       "seq": 1,
@@ -1008,9 +1008,51 @@
         "g07/08 PASS"
       ],
       "sha256": "e5d6ee7e8e6c463a58527c8cdf884c7759538b2d0b2f3d50e1e762f02bc33022"
+    },
+    {
+      "seq": 46,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "case design deviates further and further. stick with what made the first image and abandon the rest. its terrible, then create a pull request",
+      "sha256": "b685324f63e77d75db970374cb64a1d4b75ed57e7e33d7f350c1716d4e2afb53"
+    },
+    {
+      "seq": 47,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "operator directive abandon",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "case design deviates further and further from first image",
+          "evidence": "operator case design deviates further and further",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "stick with what made the first image and abandon the rest - its terrible",
+          "evidence": "operator stick with what made the first image and abandon the rest",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "demand create a pull request",
+          "evidence": "operator then create a pull request",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "81f53d01b23cbbcb5b470bc97daef7c3e298df75ba51ad8e9a68bade0b80cf04"
     }
   ],
   "stacks": [
+    {
+      "name": "abandon",
+      "seqs": [
+        46,
+        47
+      ],
+      "purpose": "abandon deviating designs, keep first image",
+      "created": "2026-09-12"
+    },
     {
       "name": "critique-p7p4",
       "seqs": [
