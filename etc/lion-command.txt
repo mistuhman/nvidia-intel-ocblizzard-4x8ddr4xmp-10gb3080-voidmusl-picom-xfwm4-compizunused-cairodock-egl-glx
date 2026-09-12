@@ -1,30 +1,31 @@
-LION-SSD | RESTART1 RELEASED 2026-09-11 | one action: Apple menu Restart + report
+LION-SSD | COLDBOOT1 RELEASED 2026-09-11 | one action: power-button cold boot + report
 
 STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
 
-RESELECT1 RECEIPT READ BY THE AGENT (PARTIAL):
-2026-09-11 operator words: system preferences will let me select it, but wont
-let me restart it from there, itll just close the app and give me a
-notification saying it halted.
-- the pane selects Lion SSD Base; the pane Restart fails
-- UNKNOWN: bless half stuck (reboot call failed) vs bless itself failed
-- exact notification text unquoted; selection persistence unreported
+RESTART1 RECEIPT READ BY THE AGENT (FAILED):
+2026-09-11 operator words: cant restart whatsoever.
+- Startup Disk pane Restart: halted. Apple menu Restart: fails.
+- exact Apple-menu symptom unquoted; blocking cause unknown
+- no software restart path currently works; the session may be wedged
 
 INTERPRETATION:
-The pane Restart is two halves and this receipt does not separate them. A
-manual Apple-menu Restart bypasses the pane entirely and separates them: no
-prohibitory means the selection had stuck; the known prohibitory detour means
-it did not. Either way the Mac ends at the Snow Leopard login (fallthrough
-proven 3 times).
+Software cannot block the power button. A cold boot bypasses every restart
+path at once and still separates the live question: no prohibitory means the
+Lion SSD Base selection had stuck; the known detour means efi-boot-device is
+still the ESD. Either way the Mac ends at the Snow Leopard login (proven 3x).
 
-RELEASED — DO THIS ONE THING (RESTART1):
-1. On Snow Leopard: Apple menu > Restart, confirm Restart.
-2. Watch the screen from the chime: prohibitory, or straight through?
-3. Report in chat: prohibitory vs straight-through, end state, and the EXACT
-   wording of any notification or dialog if one appears again.
+RELEASED — DO THIS ONE THING (COLDBOOT1):
+1. Save work and close open apps (unsaved work is the only loss exposure).
+2. Hold the power button until the Mac powers fully off.
+3. LEAVE THE POWER CORD PLUGGED IN (dead battery: AC keeps the clock; a
+   pulled cord resets it to 2001). Wait 10 seconds. Press power once.
+4. Watch the screen from the chime: prohibitory, or straight through?
+5. Report in chat: prohibitory vs straight-through, end state, and what
+   Apple-menu Restart had done exactly (silent nothing, a dialog naming an
+   app, or the halted notice again).
 
 GATE: straight-to-SL with no prohibitory = selection had stuck, clean state
 restored, forensics wave ships next. Prohibitory detour then SL = selection
@@ -39,5 +40,5 @@ STILL FORBIDDEN:
 - no further reboot until the next method ships after this receipt is read
 
 Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo,
-SDBOOT1 photo + booted to leopard, RESELECT1 partial (pane restart halted).
+SDBOOT1 photo + booted to leopard, RESELECT1 partial, RESTART1 failed.
 burned: text=ok query=ok

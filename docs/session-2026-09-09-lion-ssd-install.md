@@ -211,3 +211,27 @@ Worst case is the twice-proven prohibitory detour to the SL login; the
 never-observed hang contingency (force off, Option-boot Lion SSD Base) rides
 along unchanged.
 
+## 2026-09-11 — RESTART1 failed + COLDBOOT1 release (session 01a09141)
+
+Operator reported verbatim: "cant restart whatsoever". RESTART1 verdict:
+FAILED. Both software restart paths are now blocked — the Startup Disk pane
+Restart ("halted") and Apple menu > Restart — with the exact Apple-menu
+symptom unquoted (silent nothing vs dialog vs the halted notice again is
+UNKNOWN). Cause classes for a blocked restart (logout-canceling app/process,
+wedged session) are all live and none is asserted; the missing symptom detail
+is requested as part of the next receipt, not as a blocking question, because
+the hardware path routes in every branch.
+
+Released next: **COLDBOOT1** — save and close open apps (unsaved work is the
+only loss exposure), hold the power button until the Mac powers off, LEAVE THE
+POWER CORD PLUGGED IN (CR2032 is dead: AC present preserves the clock, cord
+out resets it to 2001), wait 10 seconds, press power, watch the boot from the
+chime. Receipt: prohibitory vs straight-through + end state + what Apple-menu
+Restart had done exactly. No prohibitory = the Lion SSD Base selection had
+stuck (clean state, FORENSIC1 ships next); prohibitory detour then SL =
+efi-boot-device still ESD (next method becomes re-bless forensics, still
+non-destructive). Journal replay risk is negligible (fsck already observed
+running cleanly on this Mac after a cause-3 end). Fallthrough to SL is proven
+3 times; the never-observed hang contingency rides along (force off again,
+power on holding Option, boot Lion SSD Base).
+

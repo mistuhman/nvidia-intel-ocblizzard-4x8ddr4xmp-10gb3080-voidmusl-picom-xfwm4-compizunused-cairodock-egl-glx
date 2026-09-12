@@ -38,6 +38,8 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - RELEASED 2026-09-11 (session 01a09141): **RESELECT1** (the promised SDBOOT1 inverse) — Startup Disk > `Lion SSD Base` > Restart, confirm a straight-to-SL boot with no prohibitory. Queued after its receipt: FORENSIC1 (read-only `mach_kernel` + boot.efi verification on the ESD from SL).
 - RECEIVED 2026-09-11: **RESELECT1 partial** — the pane selects `Lion SSD Base` but its Restart fails (operator verbatim: "system preferences will let me select it, but wont let me restart it from there, itll just close the app and give me a notification saying it halted"). Whether the bless half stuck or only the reboot half failed is UNKNOWN; exact notification text unquoted.
 - RELEASED 2026-09-11 (session 01a09141): **RESTART1** — Apple menu > Restart (manual, bypasses the pane), report prohibitory vs straight-through + end state + exact wording of any notification. No prohibitory = selection had stuck; prohibitory detour = selection did not stick. Either way ends at SL (fallthrough proven 3×).
+- RECEIVED 2026-09-11: **RESTART1 failed** — operator verbatim: "cant restart whatsoever". Both software restart paths blocked (pane halted + Apple-menu Restart fails); exact Apple-menu symptom unquoted.
+- RELEASED 2026-09-11 (session 01a09141): **COLDBOOT1** — save/close apps, hold power to force off, cord stays in (dead CR2032: AC preserves the clock), wait 10 s, power on, report prohibitory vs straight-through + end state. Hardware path, unblockable by software.
 
 ## Live links (Arctic Fox)
 
