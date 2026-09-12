@@ -1,31 +1,37 @@
-LION-SSD | gate 1 of 1 | BOOTLOG1 read; hold for the next non-destructive method
+LION-SSD | RESCUE1 RELEASED 2026-09-12 | safe-mode display rescue
 
-STATE: the current session branch carries the reproducible relay page and bundle.
-Use only these short links from the phone into Arctic Fox; never use TinyURL,
-da.gd/lmz, or da.gd/lpg for this session:
-  da.gd/lionrelay  current readable-report relay page
-  da.gd/lionzip    current three-file bundle
+STATE: Lion 10.7 is INSTALLED and BOOTING on Bay 1 Lion SSD Base
+(operator installer-app run; login + desktop verified). Mac Pro 3,1
+(corrected; was 1,1). Display chain Dell S2725QS via VGA-HDMI,
+1080p ceiling (1440p/4K un-drivable, no auto-revert).
 
-BOOTLOG1 RECEIPT READ BY THE AGENT:
-2026-09-11 16:37:58 PDT | webhook uuid 9d0bfed6 | 61946 bytes | 675 lines
-- root report: /lion-boot-log.txt; Desktop copy: /Users/admin/Desktop/lion-boot-log.txt
-- the collector was read-only; no disk was erased, restored, blessed, mounted, or changed
-- boot time after the failed attempt: 16:17:30 PDT
-- boot-args is absent; Snow Leopard recorded no ESD-specific boot error
-- Lion SSD Base = disk0s2 / Bay 1; start disk clone = disk1s2 / Bay 3; ESD = disk2s2 / Bay 4
-- ESD root boot.efi = Oct 3 2012; CoreServices boot.efi = Jul 29 2012; finderinfo 2078
+RES1 RECEIPT READ BY THE AGENT:
+2026-09-12 operator words: 1440 doesnt work, doesnt auto revert.
+- 2560x1440 blinds the Dell with NO revert countdown. 1080p stays
+  the permanent ceiling on this chain. Never pick 1440p+ or 4K.
 
-INTERPRETATION:
-The ESD handoff starts before returning to Snow Leopard, but the failure is pre-OS.
-The root text report cannot capture EFI/boot.efi screen output, and no second Repair
-is justified by this receipt.
+RELEASED — DO THIS ONE WAVE (RESCUE1, safe-mode fix, ~5 min):
+1. Hold power until the Mac shuts off (idle desktop: journal-safe).
+2. Wait 10 s, press power, IMMEDIATELY hold Shift until login
+   appears (red Safe Boot text; basic visible resolution).
+3. Log in, System Preferences > Displays: select 1080p, UNCHECK
+   Overscan, close. (This overwrites the bad stored pref.)
+4. Apple menu > Restart (normal boot). Expect Lion desktop 1080p.
+5. Same session: About This Mac version + More Info >
+   Graphics/Displays chipset line. Quote or photograph.
+6. Report here: desktop back? version? GPU?
 
-HOLD — NO MAC ACTION NOW:
-- no reboot and no second Option-boot
-- no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
-- never erase Lion SSD Base or start disk clone
-- do not select an install destination
+GATE: 1080p desktop = RESOLVED, mission close-out next.
+Safe mode also out-of-range = report; single-user pref-delete ships.
+Do NOT switch cables/ports unless safe mode fails (backup only).
 
-The next physical action will be issued only after the agent chooses a non-destructive
-boot method from this receipt. The prior readable Repair receipt was:
-burned: text=ok query=ok
+STILL FORBIDDEN:
+- no 1440p+/4K/unlisted modes, no third-party resolution tools
+- no erase of any volume (Bay 4 ESD is spare; repurpose needs its
+  own explicitly directed wave)
+- no blind clicking, no other reboot
+
+Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6,
+FORENSIC1 6e8ebd6a+a8f76d53, VERBOSE1/SDBOOT1/SAFEBOOT1 photos,
+VERIFY1 clean, FIRMWARE1 3,1/B05-final, PLAIN1 fallthrough,
+installer-app Lion install + first boot + desktop @1080p.
