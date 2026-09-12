@@ -964,9 +964,39 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g02-poweroff-p4.txt",
+          "promptHash": "17245a3d4380984ee813c3fb49940dd302dd51f6723f7007c4b800ea0907f948",
+          "schematicFile": "receipts/mac-guide/schematics/g02-poweroff-p4.svg",
+          "schematicHash": "94249471751aa10a91410a60d3757d0b6a94e34b2f8c3f02849c3ec678b2aba4",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "panel-sticker",
+            "apple-diy-gpu-sheet",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-diy-gpu-sheet",
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable"
+          ],
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g03-hidden-sata": {
       "passes": [
@@ -1047,9 +1077,56 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g03-hidden-sata-p4.txt",
+          "promptHash": "de1460d4f7bceb2e6200e74d510be31f50e6b47870e97cd73fd82d9334522943",
+          "schematicFile": "receipts/mac-guide/schematics/g03-hidden-sata-p4.svg",
+          "schematicHash": "92ab00837673fdfe92bb9808cf7854647a2a013826d934656a2e0ce97bfcaae5",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "apple-interior-photo",
+            "panel-sticker",
+            "apple-diy-memory-cover",
+            "apple-product-views",
+            "ifixit-front-fan-lift",
+            "ifixit-fan-removed-interior",
+            "apple-diy-gpu-sheet"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "apple-diy-memory-cover",
+            "apple-product-views",
+            "ifixit-front-fan-lift",
+            "ifixit-fan-removed-interior",
+            "apple-diy-gpu-sheet"
+          ],
+          "artifacts": [
+            {
+              "file": "docs/macpro-guide-bw-g03-hidden-sata-p4.png",
+              "sha256": "ff0bb9fca4a1960547a72e52c61e8eb3753a45e9587e84c623d2abd42411c06e",
+              "bytes": 1033487,
+              "w": 1408,
+              "h": 768
+            }
+          ],
+          "findings": [],
+          "patches": [],
+          "verdict": "RENDERED",
+          "audit": {
+            "mean": 220.2,
+            "stddev": 77.47,
+            "pctDark": 0.0907,
+            "pctBright": 0.8277,
+            "edgeRatio": 0.1894,
+            "pctColor": 0,
+            "unique": 33
+          },
+          "auditVerdict": "PASS"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g04-ssd-mount": {
       "passes": [
@@ -1130,9 +1207,33 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g04-ssd-mount-p4.txt",
+          "promptHash": "4005763be3b9a3cb9a9077d627ac21739ef6953b661a449c3423b5e9bf5dbb57",
+          "schematicFile": "receipts/mac-guide/schematics/g04-ssd-mount-p4.svg",
+          "schematicHash": "72de7ff4cb43627901852e9f23c347a63023cc100ba91e8a0df730ba7036df02",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "apple-interior-photo",
+            "ifixit-sled-insert-photo",
+            "apple-product-views",
+            "apple-diy-gpu-sheet"
+          ],
+          "refsAttached": [
+            "apple-interior-photo",
+            "ifixit-sled-insert-photo",
+            "apple-product-views",
+            "apple-diy-gpu-sheet"
+          ],
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g05-hdd-install": {
       "passes": [
@@ -1339,9 +1440,40 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g06-gpu-swap-p4.txt",
+          "promptHash": "009e6f3a49d746621f5962c72073a4ab6e5000d0e7c28c210d909c2ae27a7afa",
+          "schematicFile": "receipts/mac-guide/schematics/g06-gpu-swap-p4.svg",
+          "schematicHash": "29a414f67589cb5918f58589c9c8736cd91f81d8a01b400ef23e79c0e6254435",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "apple-diy-gpu-sheet",
+            "apple-interior-photo",
+            "apple-rear-ports-lineart",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-diy-gpu-sheet",
+            "apple-interior-photo",
+            "apple-rear-ports-lineart",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-fan-removed-interior"
+          ],
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g07-cable-check": {
       "passes": [
@@ -1422,9 +1554,40 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g07-cable-check-p4.txt",
+          "promptHash": "acffc4d1762f28313fa3596cb02fbe320ef451441cbe8d9b1c7e60f07e076e30",
+          "schematicFile": "receipts/mac-guide/schematics/g07-cable-check-p4.svg",
+          "schematicHash": "a5100a32eaf3dfdab48d7003050894f8a0f5ba56d9396cfab76fb6f7921677ce",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "apple-diy-gpu-sheet",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-fan-removed-interior",
+            "op-rear-io-photo"
+          ],
+          "refsAttached": [
+            "apple-diy-gpu-sheet",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "evga-gtx285-flat",
+            "evga-gtx285-angle",
+            "ifixit-gpu-booster-cable",
+            "ifixit-fan-removed-interior"
+          ],
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "g08-boot-verify": {
       "passes": [
@@ -1505,9 +1668,34 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 4,
+          "promptFile": "receipts/mac-guide/prompts/g08-boot-verify-p4.txt",
+          "promptHash": "2fef00fdbdecf6d5f6cdcea33e3e636839f1245ab6a27eff0763848567094d41",
+          "schematicFile": "receipts/mac-guide/schematics/g08-boot-verify-p4.svg",
+          "schematicHash": "03ea3e1f2016966de977758a3563a8bbd0caf615b92687e1435b46f601e7acab",
+          "specVersion": "v6d-gpu-horizontal-fix-2026-09-12",
+          "refIds": [
+            "apple-product-views",
+            "panel-sticker",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "apple-diy-gpu-sheet"
+          ],
+          "refsAttached": [
+            "apple-product-views",
+            "apple-rear-ports-lineart",
+            "apple-interior-photo",
+            "apple-diy-gpu-sheet"
+          ],
+          "artifacts": [],
+          "findings": [],
+          "patches": [],
+          "verdict": "PROMPT-EMITTED"
         }
       ],
-      "nextPass": 4
+      "nextPass": 5
     },
     "mockup-toolpanel": {
       "passes": [

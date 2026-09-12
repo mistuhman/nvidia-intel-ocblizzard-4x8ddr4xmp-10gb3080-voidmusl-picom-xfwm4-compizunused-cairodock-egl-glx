@@ -53,6 +53,7 @@ type SpecPart = { id: string; u: number; v: number; w: number; h: number; depth?
 type Spec = { schema: string; version: string; updated?: string; canonicalView?: { name?: string; description?: string; projection?: Record<string, string>; refs?: string[] }; lineStyle?: Record<string, string>; chassisFaceParts: SpecPart[]; inventoryProps?: Record<string, string>; invariants: string[]; driftWatchlist?: string[]; renderGate?: string[] };
 
 const PASSES = [
+  { id: 'P-1', name: 'visual-needs', consumes: 'spec+refs+scene', emits: 'blocking needs list', deducts: 'missing evidence, step label mismatch, 8-bay, vertical GPU, memory identity' },
   { id: 'P0', name: 'harvest', consumes: FACTS, emits: 'fact table + confidence', deducts: 'unsourced or LOW' },
   { id: 'P1', name: 'lex', consumes: PROMPTS, emits: 'demand list', deducts: 'unparsed clauses' },
   { id: 'P2', name: 'resolve', consumes: 'fact table + scene IR', emits: 'bound graph', deducts: 'dangling facts' },
@@ -271,6 +272,102 @@ function harvestQueriesForPart(part: SpecPart): string[] {
     'honeycomb-edge': ['rear honeycomb vent interior frame'],
   };
   return (keys[part.id] ?? [part.id.replace(/-/g, ' ')]).map((q) => `${base} ${q}`);
+}
+
+
+// VISUAL-NEEDS BLOCKING AGENT (operator directive 2026-09-12d): clarifies what visual evidence is missing that would block accurate rendering.
+// This agent runs automatically on every tool run (prompt, render, lint, selftest) and blocks if bare fundamentals are not met.
+// Bare fundamentals: identical chassis, front mesh LEFT, open RIGHT, top DVD front + PSU rear plain, HDD EXACTLY 4 horizontal, GPU horizontal bracket rear/right fan left/inboard gold bottom 2x6-pin fan-end, CPU dual heatsinks under cover between fan tray and RAM, RAM 2 risers A/B finger holes both ends 4 DIMMs each, fan tray ONE tray TWO 140 blowers LIFT 40mm, rear cross-hatch 140 exhaust + full I/O.
+function visualNeeds(refs: RefRegistry, spec: Spec, scene: Scene): Diag[] {
+  const d: Diag[] = [];
+  const byId = new Map(refs.images.map(r=>[r.id,r]));
+  // step label consistency: g01 -> STEP 1, g02 -> STEP 2, etc.
+  const stepMap: Record<string,string> = {'g01-overview':'STEP 1','g02-poweroff':'STEP 2','g03-hidden-sata':'STEP 3','g04-ssd-mount':'STEP 4','g05-hdd-install':'STEP 5','g06-gpu-swap':'STEP 6','g07-cable-check':'STEP 7','g08-boot-verify':'STEP 8'};
+  for (const p of scene.plates) {
+    const expected = stepMap[p.id];
+    if (expected) {
+      const stepNode = p.nodes.find(n=>n.id==='step');
+      if (!stepNode) d.push({code:'G-VN-001', severity:'ERROR', plate:p.id, message: 'missing step node, need '+expected});
+      else if (!stepNode.text.includes(expected.split(' ')[1])) d.push({code:'G-VN-002', severity:'ERROR', plate:p.id, node:stepNode.id, message: 'step label '+stepNode.text+' != '+expected+' -> multiple pages labelled STEP 1, blocks accurate guide'});
+      // purpose must mention intuitive flow and bare fundamentals
+      if (!p.purpose.includes('INTUITIVE FLOW') && !p.purpose.includes('bare fundamentals')) {
+        d.push({code:'G-VN-003', severity:'WARN', plate:p.id, message: 'purpose lacks INTUITIVE FLOW / bare fundamentals, may cause zero direction'});
+      }
+    }
+    // check HDD count: must be EXACTLY FOUR, not 8
+    const chassis = p.nodes.find(n=>n.kind==='chassis');
+    if (chassis) {
+      const txt = (chassis.detail + ' ' + p.purpose).toLowerCase();
+      if (txt.includes('8 bays') || txt.includes('8 hdd') || txt.includes('2x4') || txt.includes('8x')) {
+        d.push({code:'G-VN-004', severity:'ERROR', plate:p.id, message: 'mentions 8 bays -> imaginary slot, need EXACTLY FOUR'});
+      }
+      if (!txt.includes('exactly four') && p.id==='g05-hdd-install') {
+        d.push({code:'G-VN-005', severity:'WARN', plate:p.id, message: 'g05 must explicitly say EXACTLY FOUR to avoid 8-bay grid hallucination'});
+      }
+    }
+    // GPU orientation blocking: must be horizontal, bracket rear/right, fan left/inboard
+    const gpuPart = spec.chassisFaceParts.find(x=>x.id==='gpu-gtx285-blower');
+    if (gpuPart) {
+      const draw = gpuPart.draw.toLowerCase();
+      if (!draw.includes('horizontal') || !draw.includes('bracket') || !draw.includes('fan')) {
+        d.push({code:'G-VN-006', severity:'ERROR', plate:p.id, node:'gpu-gtx285-blower', message: 'gpu draw lacks horizontal/bracket/fan orientation -> vertical riser artifact'});
+      }
+      if (draw.includes('faces the viewer') && !draw.includes('never vertical')) {
+        d.push({code:'G-VN-007', severity:'ERROR', plate:p.id, node:'gpu-gtx285-blower', message: "instruction 'faces the viewer' causes vertical riser artifact (backplate flat to memory cage, fan up). Need explicit NEVER vertical, NEVER riser cable, long axis HORIZONTAL LEFT-TO-RIGHT gold BOTTOM"});
+      }
+    }
+    // Memory identity blocking
+    const riserPart = spec.chassisFaceParts.find(x=>x.id==='riser-window-2-banks');
+    if (riserPart) {
+      const draw = riserPart.draw.toLowerCase();
+      if (!draw.includes('finger hole') || !draw.includes('4') || !draw.includes('fb-dimm')) {
+        d.push({code:'G-VN-008', severity:'ERROR', plate:p.id, node:'riser-window-2-banks', message: 'memory riser lacks finger holes / 4 DIMMs / FB-DIMM -> memory lost its identity'});
+      }
+    }
+    // HDD bay covers blocking
+    const hddPart = spec.chassisFaceParts.find(x=>x.id==='hdd-row-4-sleds');
+    if (hddPart) {
+      const draw = hddPart.draw.toLowerCase();
+      if (!draw.includes('raised oval') || !draw.includes('circled') || !draw.includes('exactly four')) {
+        d.push({code:'G-VN-009', severity:'WARN', plate:p.id, node:'hdd-row-4-sleds', message: 'HDD bay cover lacks raised oval / circled number / EXACTLY FOUR -> covers do not look like they should'});
+      }
+    }
+    // evidence gate: each allowed part needs >=1 persisted ref, front-mesh-face needs >=2
+    const allowed = platePartAllowlist(p.id);
+    const mapped = refs.plateRefs[p.id] ?? [];
+    for (const partId of allowed) {
+      const part = spec.chassisFaceParts.find(x=>x.id===partId);
+      if (!part) continue;
+      const strong = part.refs.filter(id=>mapped.includes(id) && byId.get(id)?.file);
+      if (strong.length===0) d.push({code:'G-VN-010', severity:'ERROR', plate:p.id, node:partId, message: 'no persisted evidence ref for '+partId+' -> would assume structure, blocking'});
+    }
+  }
+  // global: front-mesh-face needs >=2 persisted refs registry-wide
+  const front = spec.chassisFaceParts.find(x=>x.id==='front-mesh-face');
+  if (front) {
+    const total = front.refs.filter(id=>byId.get(id)?.file).length;
+    if (total<2) d.push({code:'G-VN-011', severity:'ERROR', message: 'front-mesh-face has '+total+' persisted refs (<2) -> single-source, blocks accurate front face'});
+  }
+  // style: English only, no Japanese
+  for (const p of scene.plates) {
+    const blob = JSON.stringify(p).toLowerCase();
+    if (blob.includes('日本') || blob.includes('の') || blob.includes('サイドパネル')) {
+      d.push({code:'G-VN-012', severity:'ERROR', plate:p.id, message: 'contains Japanese characters -> violates ENGLISH ONLY, causes inconsistent labels'});
+    }
+  }
+  return d;
+}
+
+function cmdVisualNeeds(args: string[]): number {
+  const refs = loadRefs(); const spec = loadSpec(); const scene = loadJson<Scene>(SCENE);
+  const plateId = args.find(a=>a.startsWith('--plate='))?.split('=')[1];
+  const diags = visualNeeds(refs,spec,scene).filter(d=>!plateId || d.plate===plateId || !d.plate);
+  for (const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
+  const errs = diags.filter(d=>d.severity==='ERROR').length;
+  const warns = diags.filter(d=>d.severity==='WARN').length;
+  console.log(`VISUAL-NEEDS errors=${errs} warnings=${warns} blocking=${errs>0?'YES':'NO'}`);
+  if (errs>0) console.log('BLOCKING: fix visual needs before prompt/render; bake agent clarifies what is missing that would cause inaccurate art');
+  return errs?1:0;
 }
 
 function cmdAgents(args: string[]): number {
@@ -751,7 +848,7 @@ function cmdRefs(args: string[]): number {
 function cmdLint(args: string[]): number {
   const facts=loadJson<FactsFile>(FACTS); const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
   const refs=loadRefs(); const spec=loadSpec();
-  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags,...schematicCheck(scene),...checkRefs(refs,spec,scene.plates)];
+  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags,...schematicCheck(scene),...checkRefs(refs,spec,scene.plates),...visualNeeds(refs,spec,scene)];
   for(const p of scene.plates) diags.push(...stylecheck(emitPrompt(scene,style,p.id,0,refs,spec).text));
   if(args.includes('--json')) console.log(JSON.stringify(diags,null,2)); else for(const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
   const errs=diags.filter(d=>d.severity==='ERROR').length; const warns=diags.filter(d=>d.severity==='WARN').length;
@@ -764,6 +861,9 @@ function cmdLayout(args: string[]): number {
 function cmdPrompt(args: string[]): void {
   const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
   const refs=loadRefs(); const spec=loadSpec();
+  // AUTOMATIC AGENT LOOP ON EVERY TOOL RUN (directive 2026-09-12): visual-needs + refs + deduce
+  const vnDiags = visualNeeds(refs,spec,scene);
+  if (vnDiags.some(d=>d.severity==='ERROR')) { for (const d of vnDiags) console.error(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.message}`); console.error('VISUAL-NEEDS BLOCKING: fix before prompt'); process.exit(1); }
   const refDiags=checkRefs(refs,spec,scene.plates);
   if(refDiags.some(d=>d.severity==='ERROR')){ for(const d of refDiags) console.error(`${d.severity}\t${d.code}\t${d.message}`); console.error('ref registry not clean; run `node tools/mac-guide-art.ts refs`'); process.exit(1); }
   const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1] ?? scene.plates[0].id;
@@ -871,6 +971,8 @@ function cmdSelftest(): number {
   // g01 evidence matrix: every allowed part has persisted evidence
   const g01Errors = checkRefs(refs,spec,scene.plates).filter(d=>d.severity==='ERROR');
   checks.push({ name:'evidence-gate-clean', ok:g01Errors.length===0, detail:`errors=${g01Errors.length}` });
+  const vn = visualNeeds(refs,spec,scene);
+  checks.push({ name:'visual-needs-blocking', ok:vn.filter(d=>d.severity==='ERROR').length===0, detail:`errors=${vn.filter(d=>d.severity==='ERROR').length} warns=${vn.filter(d=>d.severity==='WARN').length}` });
   // agent plan covers all plates deterministically
   const plan = (() => { let out=''; const log=console.log; console.log=(...a:unknown[])=>{out+=a.join(' ')+'\n';}; try { cmdAgents([]); } finally { console.log=log; } return JSON.parse(out.slice(out.indexOf('{'), out.lastIndexOf('}') + 1)); })();
   checks.push({ name:'agent-plan', ok:plan.agents.length>20 && plan.agents.some((a:Record<string,unknown>)=>a.agent==='DEDUCE'), detail:`agents=${plan.agents.length} harvestGaps=${plan.harvestGaps}` });
@@ -898,6 +1000,7 @@ function main(): void {
     case 'findings': process.exit(cmdFindings(rest)); break;
     case 'deduct': process.exit(cmdDeduct(rest)); break;
     case 'status': cmdStatus(); break;
+    case 'visual-needs': process.exit(cmdVisualNeeds(rest)); break;
     case 'selftest': process.exit(cmdSelftest()); break;
     default: console.log('usage: node tools/mac-guide-art.ts <passes|refs|agents|ingest|deduce|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
   }
