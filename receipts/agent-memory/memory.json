@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 64,
+  "lastSeq": 66,
   "entries": [
     {
       "seq": 1,
@@ -1349,6 +1349,32 @@
       "kind": "note",
       "text": "2026-09-12 session 01a097ba: inventory log started at receipts/inventory/macpro31.md (entry 1, source seq 62 chat-only photo - bytes NOT persisted: /home/user/uploads/ absent from sandbox despite attachment notice; 2 identical copies; re-request bytes when a hash-locked ref or pixel-audit needs them). Open photo requests: sled latch faces with bay numbers + per-bay drive presence (Bay 3 = MX500 per gate #1 must be receipted), riser DIMM counts, GPU 6-pin seated state (photo shows UNPLUGGED vs 2026-09-09 booted receipt), GTX 285 identity close-up.",
       "sha256": "72cb17a287791466c724eef2d08cfd317275d28d589e3729f7fecd11b9d92e64"
+    },
+    {
+      "seq": 65,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba inventory entries 2+3: (2) GPU 6-pins UNPLUGGED is current state (photo seq 62 = latest physical receipt); H1 leading = deliberate unplug preparing the APPROVED AMD card swap during powered-off chassis session (lion-workflow nextAction aligns); H2 = knocked loose; discriminator = operator words; no boot claim after unplug. (3) Bay map receipted: Bay1 Lion SSD Base = LION ACHIEVED 2026-09-12 (was SL), Bay3 MX500 CT1000 start disk clone superseded, Bay4 ESD SPARE, Bay2 UNRECEIPTED; MASTER gate-12 Lion wording + README SL refs were STALE, fixed this commit via safe line-splice.",
+      "sha256": "21ac9dbba7ed00ed1d79c50ac68d9f806c162537f54db1d2715286cee1f23b93"
+    },
+    {
+      "seq": 66,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "lion-workflow volumes media fields",
+      "sides": [
+        {
+          "claim": "claim: Bay1 media=starrt disk clone, Bay3 media=Lion (as written)",
+          "source": "docs/lion-workflow.json volumes[]"
+        },
+        {
+          "claim": "reality: media fields appear transposed/typoed; roles+locations are self-consistent (Bay1=Lion SSD Base booting Lion, Bay3=SL start disk clone on MX500)",
+          "source": "inventory entry 2026-09-12c"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "agent",
+      "sha256": "ac9808eb117eb5559ffceb436d5ced57315e0fb05d2e52f83301cf5a8b234d7f"
     }
   ],
   "stacks": [
@@ -1385,7 +1411,11 @@
     {
       "name": "macpro31-inventory-2026-09-12",
       "seqs": [
-        62
+        62,
+        63,
+        64,
+        65,
+        66
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"

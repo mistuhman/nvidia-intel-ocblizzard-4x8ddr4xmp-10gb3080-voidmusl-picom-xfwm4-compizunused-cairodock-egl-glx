@@ -43,7 +43,7 @@ Live reversible overclocking campaign on the operator's physical Void Linux desk
 | Lacks | GPU, X server, ffmpeg, browser | nothing relevant |
 | Can | author, verify syntax, commit | execute, observe, judge |
 
-Second physical machine (keep-as-Mac): Mac Pro 3,1 Early 2008 (A1186 family; operator-confirmed 2026-09-12 with photo — MASTER's old "1,1" refs were stale), Snow Leopard 10.6.8 on Lion SSD Base, Arctic Fox 47.3. Lion-from-SSD goal, links, and nextAction: `docs/lion-ssd-handoff.md` / `node tools/lion-status.ts`.
+Second physical machine (keep-as-Mac): Mac Pro 3,1 Early 2008 (A1186 family; operator-confirmed 2026-09-12 with photo — MASTER's old "1,1" refs were stale), Lion 10.7 on Lion SSD Base (Bay 1; upgraded from Snow Leopard 10.6.8 via installer-app path 2026-09-12), Arctic Fox 47.3. Lion-from-SSD goal, links, and nextAction: `docs/lion-ssd-handoff.md` / `node tools/lion-status.ts`.
 
 ## Workflow
 
