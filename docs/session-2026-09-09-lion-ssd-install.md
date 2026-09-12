@@ -162,3 +162,29 @@ proceed toward install; outcome prohibitory/fallthrough = boot.efi phase
 confirmed broken, forensics (mach_kernel presence, boot.efi integrity) is next.
 Named inverse on fallthrough: re-select `Lion SSD Base` in Startup Disk.
 
+## 2026-09-11 — SDBOOT1 receipt + RESELECT1 release (session 01a09141)
+
+Operator ran the released SDBOOT1 (Startup Disk > `Mac OS X Install ESD` >
+Restart) and pasted a photo plus the words: "worked, but didnt. installation
+was prohibited. so it worked since we used the intended path, and after seeing
+this prohib sign after a while it switched to the apple loading screen, so im
+unsure if its booting to leopard or an installer". Follow-up words: "booted
+to leopard".
+
+Photo: light-gray screen, dark prohibitory glyph centered, Dell monitor, Mac
+Pro tower at right. The operator's "it worked" reading is AFFIRMED with a
+correction: the direct-boot method engaged the ESD correctly (no picker in the
+path), and the prohibitory it produced proves the failure lives in the ESD
+boot itself. Direct boot fails identically to picker boot (only the
+prohibitory duration differs: "a while" vs "brief"), so the picker/stale-entry
+class is CLOSED and a boot.efi-phase failure on the ESD volume is CONFIRMED:
+the blessed volume-root boot.efi cannot load the kernel, firmware falls
+through to Lion SSD Base.
+
+Released next: **RESELECT1** (the inverse promised in the SDBOOT1 message) —
+Startup Disk > `Lion SSD Base` > Restart, receipt is a straight-to-SL boot
+with no prohibitory. Queued after: **FORENSIC1** — read-only verification of
+`mach_kernel` presence and boot.efi integrity on the ESD from Snow Leopard
+(still UNMEASURED; the leading forensics target). No Repair, remirror, date
+fix, or destination selection.
+

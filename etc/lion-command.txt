@@ -1,41 +1,35 @@
-LION-SSD | SDBOOT1 RELEASED 2026-09-11 | one action: Startup Disk ESD + photo
+LION-SSD | RESELECT1 RELEASED 2026-09-11 | one action: Startup Disk Lion SSD Base + Restart
 
 STATE: use only these short links from the phone into Arctic Fox; never TinyURL,
 da.gd/lmz, or da.gd/lpg for this session:
   da.gd/lionrelay  current readable-report relay page
   da.gd/lionzip    current three-file bundle
 
-VERBOSE1 RECEIPT READ BY THE AGENT:
-2026-09-11 photo + operator words: boots to snow leopard in the end.
-- verbose text on screen is the Snow Leopard boot: BSD root disk0s2 (Bay 1)
-- Previous Shutdown Cause 3; 8 AppleACPICPU processor lines
-- the ESD kernel never printed: picker handoff fails pre-kernel, firmware
-  falls through to Lion SSD Base. Bless unchanged (volume-root Oct 3 2012).
+SDBOOT1 RECEIPT READ BY THE AGENT:
+2026-09-11 photo + operator words: worked, but didnt. installation was
+prohibited. prohib sign after a while, then the apple loading screen.
+End state: booted to leopard.
+- direct boot (Startup Disk, no picker) fails identically to picker boot
+- the picker class is CLOSED; boot.efi-phase failure on the ESD is CONFIRMED
+- efi-boot-device still points at the ESD until this inverse runs
 
-INTERPRETATION:
-The picker path to the ESD is refused before any kernel loads. Booting the
-same volume directly through Startup Disk bypasses the picker: if the
-installer GUI appears, the picker path was the fault; if the prohibitory
-returns, the boot.efi phase itself is confirmed broken and forensics is next.
-
-RELEASED — DO THIS ONE THING (SDBOOT1):
+RELEASED — DO THIS ONE THING (RESELECT1, the promised SDBOOT1 inverse):
 1. On Snow Leopard: Apple menu > System Preferences > Startup Disk.
 2. Click the lock, enter the admin password.
-3. Select Mac OS X Install ESD, click Restart, confirm Restart.
-4. Watch the screen; photograph whatever appears (GUI, prohibitory, login).
-5. If the installer GUI appears: STOP. Do not click Install, do not select
-   any destination. Photograph and report.
+3. Select Lion SSD Base, click Restart, confirm Restart.
+4. Expected: straight to the Snow Leopard login with NO prohibitory.
+5. Report the boot in chat (words or photo).
 
-REVERSIBLE: this writes only the NVRAM boot-device choice. If Snow Leopard
-returns instead, do nothing further: the inverse (re-select Lion SSD Base)
-ships as the next message. If the screen hangs with no fallthrough, hold the
-power button to force off, power on holding Option, boot Lion SSD Base, photo.
+GATE: no prohibitory + SL login = clean state restored, and the forensics
+wave (read-only mach_kernel + boot.efi check on the ESD) ships next. If the
+prohibitory still appears, report that instead and do nothing further.
 
 STILL FORBIDDEN:
 - no second Repair, no Bay 4 remirror, no date-fix/injector/audit files
 - never erase Lion SSD Base or start disk clone
 - do not select an install destination inside any installer
-- no further reboot until the next method ships after this photo is read
+- no further reboot until the next method ships after this receipt is read
 
-Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo.
+Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo,
+SDBOOT1 photo + booted to leopard.
 burned: text=ok query=ok

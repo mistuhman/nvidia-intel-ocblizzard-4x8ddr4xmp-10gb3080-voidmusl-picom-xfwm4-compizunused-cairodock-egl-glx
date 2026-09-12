@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 1,1 / A1186, Snow Leopard 10.6.8, Arctic Fox 47.3 mac32, user admin / hostname RevolYOUtionarys-Mac-Pro",
   "goal": "Lion 10.7 booting from Bay 3 MX500 volume start disk clone. New admin after Lion-from-SSD. Bay 1 untouched until proven.",
-  "nextAction": "VERBOSE1 receipt read 2026-09-11: the verbose photo shows BSD root disk0s2 (Snow Leopard, Bay 1) ending at the SL login, so the ESD kernel never printed and the picker ESD handoff fails pre-kernel in the firmware/boot.efi phase with fallthrough to the default. Released (session 01a09141): SDBOOT1 is the single next non-destructive method - System Preferences > Startup Disk > select Mac OS X Install ESD > Restart (direct boot bypassing the picker), photograph whatever appears, STOP at any installer GUI without clicking Install or selecting a destination. If it falls back to SL, the named inverse (re-select Lion SSD Base) ships next message. No Repair, remirror, date fix, or destination selection.",
+  "nextAction": "SDBOOT1 receipt read 2026-09-11: direct-boot photo shows the prohibitory held a while, then Apple loading, end state booted to leopard - identical to the picker path, so the picker class is CLOSED and boot.efi-phase failure on the ESD is CONFIRMED. Released (session 01a09141): RESELECT1 is the single next action and the promised SDBOOT1 inverse - System Preferences > Startup Disk > select Lion SSD Base > Restart, receipt is a straight-to-SL boot with no prohibitory. Queued after: FORENSIC1 read-only mach_kernel + boot.efi verification. No Repair, remirror, date fix, or destination selection.",
   "lastVerifiedBless": {
     "when": "2026-09-11 16:10:02 PDT",
     "log": "webhook lion-mirror.txt 4902 bytes / 124 lines, readable text/plain, uuid 2ad981cf",
@@ -189,7 +189,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-11: VERBOSE1 photo read - BSD root disk0s2, Previous Shutdown Cause 3, 8 AppleACPICPU lines; the verbose text is the Snow Leopard boot and the ESD kernel never loaded (pre-kernel picker/boot.efi failure, firmware fell through to Lion SSD Base). Operator end state: boots to Snow Leopard. SDBOOT1 released (Startup Disk direct-boot of the ESD + photo). Repair 2ad981cf and BOOTLOG1 9d0bfed6 stand; bless unchanged.",
+  "status": "2026-09-11: SDBOOT1 photo read - ESD direct boot draws the prohibitory then falls through to Snow Leopard (operator end state: booted to leopard). Picker exonerated; the blessed volume-root boot.efi cannot load the kernel. RESELECT1 released to restore efi-boot-device to Lion SSD Base. Repair 2ad981cf, BOOTLOG1 9d0bfed6, VERBOSE1 photo stand; bless unchanged.",
   "relay": {
     "page": "lion.html",
     "files": [
