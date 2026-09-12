@@ -134,3 +134,31 @@ References:
 [4] https://osxdaily.com/2011/07/08/make-a-bootable-mac-os-x-10-7-lion-installer-from-a-usb-flash-drive/ (InstallESD restore method)
 [5] https://support.apple.com/en-gb/HT201372 (Apple asr restore official method)
 
+## 2026-09-11 — VERBOSE1 receipt + SDBOOT1 release (session 01a09141)
+
+Operator ran the released VERBOSE1 (Option-picker `Mac OS X Install ESD` with
+Command-V held) and pasted a verbose-screen photo plus the words: "boots to
+snow leopard in the end".
+
+Photo transcript (key lines, top to bottom): `vm_page_bootstrap`, 8x
+`AppleACPICPU: ProcessorId=0..7` (upgraded 8-thread CPUs), Quarantine/Sandbox/
+TMSafetyNet policies, `MAC Framework successfully initialized`, PCI
+configuration, `rooting via boot-uuid from /chosen`, `BSD root: disk0s2,
+major 14, minor 2`, `launchd[1] has started up` + `Verbose boot, will log to
+/dev/console`, `fsck_hfs (version diskdev_cmds-491.6~3)` on the boot volume,
+`Previous Shutdown Cause: 3`, AirPort + `AppleIntel8254XEthernet` bring-up,
+`Ethernet (Intel8254X): Link down on en0` (expected: Wi-Fi machine).
+
+Verdict: the verbose text is the Snow Leopard boot on disk0s2 (Bay 1), ending
+at the SL login. The ESD kernel never printed a line, so the picker handoff
+fails BEFORE kernel load (firmware/boot.efi phase) and the firmware falls
+through to the default volume. Cause-3 prior shutdown is unattributed (a clean
+Restart should record 5); it routes nothing and is noted only.
+
+Released next: **SDBOOT1** — System Preferences > Startup Disk > `Mac OS X
+Install ESD` > Restart (direct boot bypassing the picker), photograph the
+result, STOP at any installer GUI. Outcome GUI = picker path was the fault,
+proceed toward install; outcome prohibitory/fallthrough = boot.efi phase
+confirmed broken, forensics (mach_kernel presence, boot.efi integrity) is next.
+Named inverse on fallthrough: re-select `Lion SSD Base` in Startup Disk.
+

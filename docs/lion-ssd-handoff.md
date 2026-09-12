@@ -32,6 +32,8 @@ Lion 10.7 booting from Bay 3 MX500 (`start disk clone`). New admin after that. D
 - BOOTLOG1 is now readable (webhook uuid `9d0bfed6`, 61946 bytes / 675 lines). It records the root report `/lion-boot-log.txt`, absent `boot-args`, the three intact volume mappings, ESD root bless/finderinfo 2078, and **no disk changes**. Snow Leopard has no ESD-specific failure entry because the failure is pre-OS; the operator's chat receipt remains brief prohibitory → Apple logo/loading → Snow Leopard login.
 - Hold with no reboot, second Repair, date-fix/injector/audit file, Bay 4 remirror, or target selection. The next action must be a separately released non-destructive boot method.
 - RELEASED 2026-09-11 (session 01a09141): **VERBOSE1** — Option-picker `Mac OS X Install ESD` with Command-V held, then photograph the stop screen. Held keys only, zero mutation. Inbox rechecked: 16 requests, nothing newer than BOOTLOG1 (`9d0bfed6`). Next method ships only after the VERBOSE1 photo is read.
+- RECEIVED 2026-09-11: **VERBOSE1 photo** — the verbose text is the Snow Leopard boot (`BSD root: disk0s2`, `Previous Shutdown Cause: 3`, 8 `AppleACPICPU` lines); operator end state is the SL login. The ESD kernel never printed: the picker handoff fails pre-kernel in the firmware/boot.efi phase and falls through to Bay 1.
+- RELEASED 2026-09-11 (session 01a09141): **SDBOOT1** — System Preferences > Startup Disk > `Mac OS X Install ESD` > Restart (direct boot bypassing the picker), photograph the result, STOP at any installer GUI without clicking Install or selecting a destination. Named inverse (re-select `Lion SSD Base`) ships next message on fallthrough. Separates a picker-path failure from a boot.efi-phase failure.
 
 ## Live links (Arctic Fox)
 
