@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-12",
-  "lastSeq": 26,
+  "lastSeq": 30,
   "entries": [
     {
       "seq": 1,
@@ -434,6 +434,125 @@
         "scene IR manual-compactness + renderNotes patches"
       ],
       "sha256": "3a53837a44a70c7b0787770f02e302fa12c4b231fd780efdf5a527c56b576d3e"
+    },
+    {
+      "seq": 27,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "to be fair none of them pass. as for memory, it just needs to be stacks and stacks of short term in chat logs that agents can disperse themselves upon consistently in groups to get comprehensive understandings. as for the images, they got increasingly worse. the fundamentals in how an image is schematicized before its visualized and made needs fundamental changes to prevent progressive hallucination. the reason its a typescript tool is so it can be reproduced at the same quality again and again. with keen user feedback consideration. these designs lack the intuitive flow, that shows you what things look like when placed and when detached. the gpu isnt in the right orientation. the motherboard isnt even displayed, the cages for the ram are innacurate, fans innacurate, motherboard doesnt use the actual pcb layout, gpu power connectors arent going in the right way, gpu end out mobo end in. the last image lacks consistency, uses random assembly methods, the second may be the only worth while one since it captures the drive cages, and the upper dvd drive and psu correctly. the other ones do not display the cages or screws correctly. i will show photos of all parts isolated",
+      "sha256": "4a8ddb60f3594045bd20fd14e994c2383198a2ed6cbb9fe28ccfc8cf4c045b2b"
+    },
+    {
+      "seq": 28,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "operator photo 2026-09-12 (repeated x6 in this turn, same as seq 7) + promised isolated parts photos pending",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "operator states none of prior images pass - invalidates prior FIXPOINT verdicts",
+          "evidence": "verbatim seq 27: to be fair none of them pass",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "operator prioritizes assembled+detached intuitive flow - must show what things look like when placed and when detached",
+          "evidence": "verbatim seq 27: shows you what things look like when placed and when detached",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "operator reports specific inaccuracies: GPU orientation wrong, motherboard not displayed, RAM cages inaccurate, fans inaccurate, PCB layout not actual, GPU power connectors reversed (gpu end out mobo end in)",
+          "evidence": "verbatim seq 27 list",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "operator ranks second image as only worthwhile - captures drive cages, upper DVD drive, PSU correctly; last image inconsistent random assembly; others cages/screws wrong",
+          "evidence": "verbatim seq 27",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "current attached 6 images are duplicates of single Mac Pro 3,1 side-open photo (charcoal background, DELL monitor top, same as seq 7), not yet the promised isolated parts",
+          "evidence": "visual inspection - all 6 frames pixel-identical to earlier photo: optical cutouts, horizontal Bay1-4 row, red sticker Bay4, GTX 285 horizontal center-right, 2x 6-pin dangling center-left, 2 blue PCB windows lower-right, honeycomb right edge, WD Green + Time Capsule desk right",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "8d932725e098d96ce67fcf7176b053c9c53b54b210f5d43812421bda6115fb45"
+    },
+    {
+      "seq": 29,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "pass verdict vs operator verdict",
+      "sides": [
+        {
+          "claim": "operator: none of them pass",
+          "source": "seq 27 verbatim 2026-09-12"
+        },
+        {
+          "claim": "ledger: g01 p5 PASS FIXPOINT RESIDUAL=0",
+          "source": "receipts/mac-guide/pass-ledger.json g01 nextPass=6 verdict PASS-WITH-WARN before operator override"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "e2155fe76b1b76da456c5b58adb51745f6f07752de3db437f00e446b823f5c58"
+    },
+    {
+      "seq": 30,
+      "date": "2026-09-12",
+      "kind": "response",
+      "to": 27,
+      "summary": "Operator rev2 addressed: decomposed 17 demands, invalidated FIXPOINT (g01 p5 now FAIL, RESIDUAL=1), rebuilt memory into stacks for group dispersal (3 stacks), rewrote art pipeline with schematic-before-visualization blueprint (deterministic SVG), updated style to v5 intuitive placed+detached mandatory, added facts G-14..G-18 for PCB/ram/fans/cable direction/cages, patched scene with anchor phrases and paired flow, awaiting isolated parts photos before re-rendering at same-quality reproducibility",
+      "actions": [
+        "tools/agent-memory.ts stacks+disperse",
+        "tools/mac-guide-art.ts schematic+anchors+hardware direction",
+        "docs/macpro-guide-style-bw.md v5 schematic+intuitive flow",
+        "docs/macpro-guide-facts.json G-14..G-18",
+        "docs/macpro-guide-scene.json anchor+pair patches",
+        "receipts/mac-guide/schematics/g01-overview-p6.svg deterministic",
+        "pass-ledger findings ERROR operator feedback + blocked await photos"
+      ],
+      "sha256": "6b8f0f089e2098b285853d0428ce285a8619d6e9d62419f77ebe46b61221879b"
+    }
+  ],
+  "stacks": [
+    {
+      "name": "hardware-photo",
+      "seqs": [
+        7,
+        20,
+        22,
+        25,
+        28
+      ],
+      "purpose": "photo perception chain from seq7 master photo through critiques",
+      "created": "2026-09-12"
+    },
+    {
+      "name": "session02",
+      "seqs": [
+        27,
+        28,
+        29
+      ],
+      "purpose": "operator rev2: none pass + accuracy demands, awaiting isolated parts photos",
+      "created": "2026-09-12"
+    },
+    {
+      "name": "style-lab",
+      "seqs": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "purpose": "9-slider contract + conflict rule",
+      "created": "2026-09-12"
     }
   ]
 }

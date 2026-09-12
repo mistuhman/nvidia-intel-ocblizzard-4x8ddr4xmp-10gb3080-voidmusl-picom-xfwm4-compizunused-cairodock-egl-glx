@@ -162,10 +162,16 @@
               "code": "F-P5-04",
               "severity": "INFO",
               "note": "color fix verified: 0.00% chroma measured, sticker + PCBs outline-only; English-only verified"
+            },
+            {
+              "code": "G-OP-FEEDBACK",
+              "severity": "ERROR",
+              "note": "operator seq27: none of them pass - GPU orientation wrong, motherboard not displayed, RAM cages inaccurate, fans inaccurate, PCB layout not actual, GPU cable direction reversed (board end in vs GPU end out), cages/screws wrong, last image random assembly, schematic-before-visualization required. Invalidates prior FIXPOINT.",
+              "from": "operator 2026-09-12 seq27"
             }
           ],
           "patches": [],
-          "verdict": "PASS-WITH-WARN",
+          "verdict": "FAIL",
           "audit": {
             "mean": 226.17,
             "stddev": 72.13,
@@ -176,9 +182,27 @@
             "unique": 33
           },
           "auditVerdict": "PASS"
+        },
+        {
+          "pass": 6,
+          "artifacts": [],
+          "findings": [
+            {
+              "code": "G-SC-BLOCKED",
+              "severity": "ERROR",
+              "note": "awaiting isolated parts photos before re-render; schematic blueprint ready (schematic hash b06352c) but hardware PCB/riser/fan detail cannot be locked without isolated photos",
+              "from": "agent 2026-09-12"
+            }
+          ],
+          "patches": [],
+          "verdict": "FAIL",
+          "schematicFile": "receipts/mac-guide/schematics/g01-overview-p6.svg",
+          "schematicHash": "b06352c945c7803fc604e804fb86a52f8585fe2ab28cadf569f6941c7128b5fa",
+          "promptFile": "receipts/mac-guide/prompts/g01-overview-p6.txt",
+          "promptHash": "920c8f10f76ad2fb01db267b18e6c6a08f8c57909f6be840100f0b625cb42786"
         }
       ],
-      "nextPass": 6
+      "nextPass": 7
     },
     "g02-poweroff": {
       "passes": [

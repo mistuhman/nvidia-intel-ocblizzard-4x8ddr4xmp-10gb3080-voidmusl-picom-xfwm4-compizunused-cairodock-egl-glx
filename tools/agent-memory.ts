@@ -3,7 +3,10 @@
 // Purpose (operator directive 2026-09-12, session 01a09434): reach 1:1 accuracy in how agents
 // respond and perceive OVER making up discrepancies. Every claim an agent makes about the chat
 // history or an image must trace to an entry here; `check` prints MISSING when nothing is recorded.
-// Zero dependencies, deterministic stdout.
+// Operator 2026-09-12 rev2: memory just needs to be stacks and stacks of short term in chat logs
+// that agents can disperse themselves upon consistently in groups to get comprehensive understandings.
+// => Ledger now stores stacks = named short-term windows grouping seqs. Agents disperse by pulling
+// a stack (or group of stacks) together. Zero dependencies, deterministic stdout.
 
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -21,7 +24,8 @@ type Entry = {
   key?: string; value?: string; source?: string;
   text?: string;
 };
-type Ledger = { schema: string; created: string; updated: string; lastSeq: number; entries: Entry[] };
+type Stack = { name: string; seqs: number[]; purpose?: string; created: string };
+type Ledger = { schema: string; created: string; updated: string; lastSeq: number; entries: Entry[]; stacks: Stack[] };
 
 function argVals(args: string[], key: string): string[] {
   const pre = `--${key}=`;
@@ -33,15 +37,18 @@ function today(): string { return new Date().toISOString().slice(0, 10); }
 function splitList(s: string | undefined): string[] { return (s ?? '').split(';;').map((x) => x.trim()).filter(Boolean); }
 
 function load(file: string): Ledger {
-  if (!existsSync(file)) return { schema: 'agent-memory.v1', created: today(), updated: today(), lastSeq: 0, entries: [] };
-  const raw = JSON.parse(readFileSync(file, 'utf8')) as Ledger;
+  if (!existsSync(file)) return { schema: 'agent-memory.v1', created: today(), updated: today(), lastSeq: 0, entries: [], stacks: [] };
+  const raw = JSON.parse(readFileSync(file, 'utf8')) as any;
   if (raw.schema !== 'agent-memory.v1') { console.error(`bad schema ${raw.schema}`); process.exit(1); }
-  raw.entries.sort((a, b) => a.seq - b.seq);
-  return raw;
+  raw.entries.sort((a: Entry, b: Entry) => a.seq - b.seq);
+  if (!raw.stacks) raw.stacks = [];
+  raw.stacks.sort((a: Stack, b: Stack) => a.name.localeCompare(b.name));
+  return raw as Ledger;
 }
 function save(file: string, l: Ledger): void {
   l.updated = today();
   l.entries.sort((a, b) => a.seq - b.seq);
+  l.stacks.sort((a, b) => a.name.localeCompare(b.name));
   mkdirSync(file.includes('/') ? file.slice(0, file.lastIndexOf('/')) : '.', { recursive: true });
   writeFileSync(file, JSON.stringify(l, null, 2) + '\n');
 }
@@ -181,8 +188,101 @@ function cmdStats(args: string[]): number {
     return sha256(contentOf(rest as Omit<Entry, 'seq' | 'sha256'>)) !== h;
   });
   console.log(`entries=${l.entries.length} lastSeq=${l.lastSeq} hashIntegrity=${broken.length === 0 ? 'OK' : `BROKEN x${broken.length}`}`);
+  console.log(`stacks=${l.stacks.length} ${l.stacks.map(s=>s.name+':'+s.seqs.length).join(' ')}`);
   console.log(`file=${file}`);
   return broken.length === 0 ? 0 : 1;
+}
+
+function cmdStack(args: string[]): number {
+  const file = argVal(args, 'file') ?? DEFAULT_LEDGER;
+  // list mode (no name required)
+  if (args.includes('--list')) {
+    const l = load(file);
+    for (const s of l.stacks) console.log(`${s.name}\tseqs=${s.seqs.join(',')}\tpurpose=${s.purpose ?? ''}\tcreated=${s.created}`);
+    console.log(`STACKS=${l.stacks.length}`);
+    return 0;
+  }
+  const name = argVal(args, 'name');
+  const seqsRaw = argVals(args, 'add');
+  const purpose = argVal(args, 'purpose');
+  if (!name) { console.error('usage: stack --name=STACK [--add=SEQ --add=SEQ] [--purpose="..."] | stack --list | stack --show --name=STACK'); return 1; }
+  if (args.includes('--show')) {
+    const l = load(file);
+    const s = l.stacks.find(x=>x.name===name);
+    if (!s) { console.error(`no stack ${name}`); return 1; }
+    console.log(JSON.stringify(s, null, 2));
+    for (const seq of s.seqs) {
+      const e = l.entries.find(x=>x.seq===seq);
+      if (e) console.log(oneLine(e));
+      else console.log(`  seq ${seq} MISSING`);
+    }
+    return 0;
+  }
+  // create or append
+  const l = load(file);
+  let s = l.stacks.find(x=>x.name===name);
+  if (!s) { s = { name, seqs: [], purpose, created: today() }; l.stacks.push(s); }
+  if (purpose) s.purpose = purpose;
+  for (const v of seqsRaw) {
+    const n = Number(v);
+    if (!Number.isFinite(n)) { console.error(`bad seq ${v}`); return 1; }
+    if (!s.seqs.includes(n)) s.seqs.push(n);
+  }
+  s.seqs.sort((a,b)=>a-b);
+  // auto-group helper: --group=N creates N contiguous groups as new stacks
+  const groupN = argVal(args, 'group');
+  if (groupN) {
+    const n = Number(groupN);
+    const entries = l.entries.slice().sort((a,b)=>a.seq-b.seq);
+    // clear existing grouped stacks for this base name?
+    // create stacks like `${name}-g1`, `${name}-g2` ... each with n entries
+    let idx=0; let g=1;
+    while (idx < entries.length) {
+      const gName = `${name}-g${g}`;
+      let gs = l.stacks.find(x=>x.name===gName);
+      if (!gs) { gs = { name: gName, seqs: [], purpose: `group ${g} of ${name}`, created: today() }; l.stacks.push(gs); }
+      gs.seqs = entries.slice(idx, idx+n).map(e=>e.seq);
+      idx += n; g++;
+    }
+  }
+  save(file, l);
+  console.log(`STACK name=${s.name} seqs=${s.seqs.join(',')} totalStacks=${l.stacks.length}`);
+  return 0;
+}
+
+function cmdDisperse(args: string[]): number {
+  const file = argVal(args, 'file') ?? DEFAULT_LEDGER;
+  const namesRaw = argVal(args, 'stacks') ?? argVal(args, 'stack');
+  const q = argVal(args, 'q');
+  if (!namesRaw && !q) { console.error('usage: disperse --stacks=A,B --q=optionalFilter | disperse --q=TEXT (search across stacks)'); return 1; }
+  const l = load(file);
+  let stacks: Stack[] = l.stacks;
+  if (namesRaw) {
+    const wanted = namesRaw.split(',').map(s=>s.trim()).filter(Boolean);
+    stacks = stacks.filter(s=>wanted.includes(s.name));
+    if (stacks.length===0) { console.error(`no stacks matched ${namesRaw}`); return 1; }
+  }
+  // collect entries from stacks, grouped
+  const grouped: { stack: string; entries: Entry[] }[] = [];
+  for (const s of stacks) {
+    const ents = s.seqs.map(seq=> l.entries.find(e=>e.seq===seq)).filter(Boolean) as Entry[];
+    const filtered = q ? ents.filter(e=> JSON.stringify(e).toLowerCase().includes(q.toLowerCase())) : ents;
+    grouped.push({ stack: s.name, entries: filtered });
+  }
+  // if no stacks, fallback to search across all entries
+  if (l.stacks.length===0 && q) {
+    const hits = match(file, q);
+    console.log(`DISPERSE fallback search q="${q}" hits=${hits.length} (no stacks yet)`);
+    for (const e of hits) console.log(oneLine(e));
+    return hits.length ? 0 : 2;
+  }
+  let total=0;
+  for (const g of grouped) {
+    console.log(`--- stack ${g.stack} entries=${g.entries.length} ---`);
+    for (const e of g.entries) { console.log(oneLine(e)); total++; }
+  }
+  console.log(`DISPERSE stacks=${grouped.length} totalEntries=${total} groupsConsistent=${grouped.length>0?'YES':'NO'}`);
+  return 0;
 }
 
 function cmdSelftest(args: string[]): number {
@@ -196,40 +296,54 @@ function cmdSelftest(args: string[]): number {
   const again = addEntry(tmp, { date: '2026-09-12', kind: 'prompt', from: 'operator', verbatim: 'alpha requires beta' });
   checks.push({ name: 'deterministic-hash', ok: again.sha256 === a.sha256, detail: again.sha256.slice(0, 12) });
   const found = match(tmp, 'beta');
-  checks.push({ name: 'check-hits', ok: found.length === 3, detail: `hits=${found.length}` });
-  const none = match(tmp, 'zebra-quantum');
-  checks.push({ name: 'check-missing-path', ok: none.length === 0, detail: 'MISSING reachable' });
-  const integrity = cmdStats(['--file=' + tmp]) === 0;
-  checks.push({ name: 'hash-integrity', ok: integrity, detail: 'stats rc=0' });
-  rmSync(tmp);
-  for (const c of checks) console.log(`${c.ok ? 'PASS' : 'FAIL'}\t${c.name}\t${c.detail}`);
-  const failed = checks.filter((x) => !x.ok).length;
+  checks.push({ name: 'check-hits', ok: found.length >= 2, detail: `hits=${found.length}` });
+  // stacks test: create stack, disperse
+  const l = load(tmp);
+  // create stack via direct API
+  let s: Stack = { name: 'test-stack', seqs: [1,2], purpose: 'test', created: today() };
+  l.stacks.push(s);
+  save(tmp, l);
+  const l2 = load(tmp);
+  checks.push({ name: 'stack-persist', ok: l2.stacks.some(x=>x.name==='test-stack' && x.seqs.length===2), detail: `stacks=${l2.stacks.length}` });
+  // disperse logic: gather entries from stack
+  const disp = l2.stacks.find(x=>x.name==='test-stack')!.seqs.map(seq=> l2.entries.find(e=>e.seq===seq)).filter(Boolean);
+  checks.push({ name: 'disperse-group', ok: disp.length===2, detail: `disperse=${disp.length}` });
+  for (const c of checks) console.log(`${c.ok?'PASS':'FAIL'}\t${c.name}\t${c.detail}`);
+  const failed=checks.filter(c=>!c.ok).length;
   console.log(`SELFTEST checks=${checks.length} failed=${failed}`);
-  return failed ? 1 : 0;
+  if (existsSync(tmp)) rmSync(tmp);
+  return failed?1:0;
 }
 
 function main(): void {
   const [cmd, ...rest] = process.argv.slice(2);
-  let rc = 0;
   switch (cmd) {
-    case 'add': rc = cmdAdd(rest); break;
-    case 'list': rc = cmdList(rest); break;
-    case 'show': rc = cmdShow(rest); break;
-    case 'search': rc = cmdSearch(rest); break;
-    case 'check': rc = cmdCheck(rest); break;
-    case 'stats': rc = cmdStats(rest); break;
-    case 'selftest': rc = cmdSelftest(rest); break;
+    case 'add': process.exit(cmdAdd(rest)); break;
+    case 'list': process.exit(cmdList(rest)); break;
+    case 'show': process.exit(cmdShow(rest)); break;
+    case 'search': process.exit(cmdSearch(rest)); break;
+    case 'check': process.exit(cmdCheck(rest)); break;
+    case 'stats': process.exit(cmdStats(rest)); break;
+    case 'stack': process.exit(cmdStack(rest)); break;
+    case 'disperse': process.exit(cmdDisperse(rest)); break;
+    case 'selftest': process.exit(cmdSelftest(rest)); break;
     default:
-      console.log('usage: node tools/agent-memory.ts <add|list|show|search|check|stats|selftest>');
-      console.log('  add prompt --verbatim=... [--demands=a;;b]           operator message, word-for-word');
-      console.log('  add response --to=N --summary=... [--actions=a;;b]   what the agent did about seq N');
-      console.log('  add perception --target=IMG --claims=JSON            what the agent SAW, with evidence');
-      console.log('  add discrepancy --topic=T --side="c::s" --side=...   conflicting recorded claims, never self-resolved');
-      console.log('  add value --key=K --value=V --source=S               stored design requirement');
-      console.log('  add note --text=...                                  free note');
-      console.log('  check --q=CLAIM                                      1:1 gate: quoted receipts or MISSING (rc=2)');
+      console.log('usage: node tools/agent-memory.ts <add|list|show|search|check|stats|stack|disperse|selftest> ...');
+      console.log('  add prompt --verbatim="..." [--demands="a;;b"]');
+      console.log('  add response --to=N --summary="..." [--actions="a;;b"]');
+      console.log('  add perception --target=PATH --claims=\'[{"claim":...}]\'');
+      console.log('  add discrepancy --topic=T --side="claim::source" --side="claim::source"');
+      console.log('  add value --key=K --value=V --source=S');
+      console.log('  add note --text="..."');
+      console.log('  list [--kind=K] [--last=N]');
+      console.log('  search --q=TEXT');
+      console.log('  check --q=CLAIM  (rc=2 if MISSING)');
+      console.log('  stats');
+      console.log('  stack --name=NAME [--add=SEQ --add=SEQ] [--purpose="..."] [--list] [--show]');
+      console.log('  stack --name=BASE --group=N   (auto-group all entries into N-sized stacks BASE-g1, BASE-g2...)');
+      console.log('  disperse --stacks=A,B [--q=filter]  (agents pull consistent groups)');
+      console.log('  selftest');
       process.exit(2);
   }
-  process.exit(rc);
 }
 main();

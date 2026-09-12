@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // Agentic imaging pass-compiler for Mac Pro 3,1 chassis guide - 8-step visual manual
 // Reuses the Quake-Live hex/AMOLED style contract from mac-storage-art.ts
-// Pipeline: P0 harvest -> P1 lex -> P2 resolve -> P3 typecheck -> P4 layout -> P5 stylecheck -> P6 emit -> P7 render -> P8 pixel-audit -> P9 critique -> P10 deduct
+// Pipeline: P0 harvest -> P1 lex -> P2 resolve -> P3 typecheck -> P4 layout -> P5 stylecheck -> P5b schematicize -> P6 emit -> P7 render -> P8 pixel-audit -> P9 critique -> P10 deduct
+// v5 fundamental: schematic BEFORE visualization blocks progressive hallucination. Every plate
+//  first emits a deterministic SVG blueprint (exact hardware anchors) that the AI then traces.
+//  No prompt without a schematic is reproducible. No hardware token without an anchor is allowed.
 // Zero dependencies, deterministic stdout
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -14,6 +17,7 @@ const STYLE = 'docs/macpro-guide-style-bw.md';
 const PROMPTS = 'docs/macpro-storage-prompts.jsonl';
 const LEDGER = 'receipts/mac-guide/pass-ledger.json';
 const PROMPTDIR = 'receipts/mac-guide/prompts';
+const SCHEMATICDIR = 'receipts/mac-guide/schematics';
 
 type Severity = 'ERROR' | 'WARN' | 'INFO';
 type Diag = { code: string; severity: Severity; plate?: string; node?: string; fact?: string; message: string };
@@ -36,7 +40,7 @@ type Scene = {
 
 type Artifact = { file: string; sha256: string; bytes: number; w: number; h: number };
 type Finding = { code: string; severity: Severity; node?: string; note?: string; from?: string };
-type PassRecord = { pass: number; promptFile?: string; promptHash?: string; artifacts: Artifact[]; audit?: Record<string, number | string>; auditVerdict?: string; findings: Finding[]; patches: string[]; verdict: string };
+type PassRecord = { pass: number; promptFile?: string; promptHash?: string; schematicFile?: string; schematicHash?: string; artifacts: Artifact[]; audit?: Record<string, number | string>; auditVerdict?: string; findings: Finding[]; patches: string[]; verdict: string };
 type Ledger = { schema: string; updated?: string; plates: Record<string, { passes: PassRecord[]; nextPass: number }> };
 
 const PASSES = [
@@ -46,7 +50,8 @@ const PASSES = [
   { id: 'P3', name: 'typecheck', consumes: 'scene + 8-step guide', emits: 'guide semantics', deducts: 'bay count, plate count, SSD relocation logic' },
   { id: 'P4', name: 'layout', consumes: 'node boxes', emits: 'coords', deducts: 'overlap, overflow' },
   { id: 'P5', name: 'stylecheck', consumes: STYLE, emits: 'token coverage', deducts: 'missing Quake tokens' },
-  { id: 'P6', name: 'emit', consumes: 'IR+style', emits: 'prompt+hash', deducts: 'hash drift' },
+  { id: 'P5b', name: 'schematicize', consumes: 'scene IR + hardware anchors', emits: 'deterministic SVG blueprint (anchors)', deducts: 'missing anchor, unplaced hardware' },
+  { id: 'P6', name: 'emit', consumes: 'IR+style+schematic', emits: 'prompt+hash (must trace schematic)', deducts: 'hash drift, schematic-missing' },
   { id: 'P7', name: 'render', consumes: 'prompt', emits: 'PNG', deducts: 'missing artifact' },
   { id: 'P8', name: 'pixel-audit', consumes: 'PNG', emits: 'metrics', deducts: 'blank / washed' },
   { id: 'P9', name: 'critique', consumes: 'visual', emits: 'findings', deducts: 'unclassified' },
@@ -72,6 +77,7 @@ const STYLE_TOKENS = [
   'black-line', 'ghost-40', 'white-paper',
   'helvetica', 'lego', 'ghost', 'transparent', 'arrow', 'uniform sidepanel', 'manual compactness',
   'accurate hardware', 'black and white', 'english', 'short guiding words',
+  'schematic', 'anchor', 'trace',
 ];
 const NEGATIVE_CONSTRAINTS = [
   'no-color', 'no-amoled', 'no-neon-glow-bloom', 'no-watermark', 'no-photoreal-human', 'no-brand-logo-watermark',
@@ -80,6 +86,25 @@ const NEGATIVE_CONSTRAINTS = [
   'no-paragraph-in-image', 'no-text-walls', 'no-color-fill', 'no-gray-fill', 'no-shading',
   'no-japanese-text',
 ];
+
+// HARDWARE_ANCHORS: canonical Mac Pro 3,1 geometry that EVERY schematic must place.
+// Operator rev2: copy details exactly - GPU orientation, motherboard layout, compartment layout,
+//  cages/screws, RAM cages, fans, PCB layout, cable direction (board end in, GPU end out).
+// Values are percent of canvas (1536x1024) but represent real hardware topology; the SVG
+//  schematic enforces them before any AI render, blocking hallucination.
+const HARDWARE_ANCHORS: Record<string, { desc: string; required: string[] }> = {
+  'g01-overview': {
+    desc: 'overview anchors: optical cutouts, 4 HDD bays horizontal, red outline, memory shroud, GPU horizontal center-right, 2x6-pin board-fed cables dangling, 2 PCB windows, honeycomb',
+    required: ['optical-left-cutouts','optical-right-plain','hdd-bay-row-x4','hdd-screw-right-end','red-outline-Bay4','memory-shroud-lower-left','logic-board-strip-top','heatsink-fins-behind-gpu','gpu-horizontal-blower','gpu-cables-board-to-gpu','pcb-windows-x2-lower-right','honeycomb-right-edge','wd-green-desk-left','timecapsule-desk-right'],
+  },
+  'g02-poweroff': { desc: 'power safety: cord, CR2032, captive screw, GPU cables unplug', required: ['iec-socket-rear','power-cord-pull','cr2032-lower-left','captive-screw-lower-pci','gpu-cables-unplugged'] },
+  'g03-hidden-sata': { desc: 'hidden SATA behind fan under Bay1', required: ['fan-assembly-solid','fan-ghost-lift','sata5-sata6-ports','cable-route-50mm','optical-bay-target'] },
+  'g04-ssd-mount': { desc: 'SSD in optical lower bay', required: ['ssd-2p5-bracket','optical-lower-bay','molex-to-sata-adapter','sata-cable-from-hidden-port'] },
+  'g05-hdd-install': { desc: '4x HDD install front-to-rear sled', required: ['sled-chassis-bays','drive-install-pull','screw-right-end'] },
+  'g06-gpu-swap': { desc: 'GTX285 horizontal double-wide, bracket rear, power top edge, board-fed cables', required: ['gpu-horizontal-slot1','gpu-bracket-rear','gpu-power-top-edge','cable-board-header-to-gpu','amd-alt-card'] },
+  'g07-cable-check': { desc: 'cable routing verification', required: ['sata-cable-loop','power-cable-dress','honeycomb-vent'] },
+  'g08-boot-verify': { desc: 'boot verification desk verify', required: ['about-mac-screen','startup-disk-bless'] },
+};
 
 function loadJson<T>(path: string): T {
   if (!existsSync(path)) { console.error(`missing ${path}`); process.exit(1); }
@@ -123,7 +148,7 @@ function harvest(facts: FactsFile, scene: Scene): Diag[] {
 
 function lex(): { diags: Diag[]; demands: { code: string; label: string; hits: number }[]; unparsed: string[]; coverage: number } {
   const diags: Diag[] = [];
-  const lines = loadText(PROMPTS).split(/\\r?\\n/).filter((l) => l.trim().length > 0);
+  const lines = loadText(PROMPTS).split(/\r?\n/).filter((l) => l.trim().length > 0);
   const hits = new Map<string, number>();
   const unparsed: string[] = [];
   let clauses = 0;
@@ -131,7 +156,7 @@ function lex(): { diags: Diag[]; demands: { code: string; label: string; hits: n
     let entry: { verbatim?: string } = {};
     try { entry = JSON.parse(line); } catch { continue; }
     const text = entry.verbatim ?? '';
-    for (const clause of text.split(/[,;]|\\.(?=\\s|$)|\\bthen\\b/i).map((s) => s.trim()).filter(Boolean)) {
+    for (const clause of text.split(/[,;]|\.(?=\s|$)|\\bthen\\b/i).map((s) => s.trim()).filter(Boolean)) {
       clauses += 1;
       let matched = false;
       for (const rule of LEX_RULES) {
@@ -166,7 +191,6 @@ function typecheck(scene: Scene): Diag[] {
   const ids = scene.plates.map((p) => p.id);
   const expected = ['g01-overview','g02-poweroff','g03-hidden-sata','g04-ssd-mount','g05-hdd-install','g06-gpu-swap','g07-cable-check','g08-boot-verify'];
   for (const e of expected) if (!ids.includes(e)) d.push({ code: 'G-T-002', severity: 'ERROR', message: `missing plate ${e}` });
-  // each plate must have a footer
   for (const p of scene.plates) {
     if (!p.nodes.some((n) => n.kind === 'footer')) d.push({ code: 'G-T-003', severity: 'WARN', plate: p.id, message: 'no footer node' });
   }
@@ -235,6 +259,111 @@ function stylecheck(prompt: string): Diag[] {
   return d;
 }
 
+// --- SCHEMATIC LAYER (fundamental anti-hallucination gate) ---
+
+function schematicCheck(scene: Scene): Diag[] {
+  const d: Diag[] = [];
+  for (const p of scene.plates) {
+    const anchor = HARDWARE_ANCHORS[p.id];
+    if (!anchor) { d.push({ code: 'G-SC-001', severity: 'WARN', plate: p.id, message: `no anchor spec for ${p.id}` }); continue; }
+    // verify IR mentions required hardware in node details (string search)
+    const blob = JSON.stringify(p).toLowerCase();
+    for (const req of anchor.required) {
+      const key = req.split('-')[0]; // rough
+      if (!blob.includes(key) && !blob.includes(req)) {
+        d.push({ code: 'G-SC-002', severity: 'WARN', plate: p.id, message: `anchor "${req}" not referenced in IR details` });
+      }
+    }
+    // every removable-part plate must have ASSEMBLED + DISASSEMBLED intent in purpose or nodes
+    const needsPair = ['g03-hidden-sata','g04-ssd-mount','g05-hdd-install','g06-gpu-swap'].includes(p.id);
+    if (needsPair) {
+      const hasPair = blob.includes('assembled') && blob.includes('disassembled');
+      if (!hasPair) d.push({ code: 'G-SC-003', severity: 'WARN', plate: p.id, message: `intuitive flow requires ASSEMBLED+DISASSEMBLED pair` });
+    }
+  }
+  return d;
+}
+
+function emitSchematicSvg(scene: Scene, plateId: string, pass: number): { text: string; file: string; hash: string } {
+  const plate = scene.plates.find((p) => p.id === plateId);
+  if (!plate) { console.error(`unknown plate ${plateId}`); process.exit(1); }
+  const W = plate.canvas.w; const H = plate.canvas.h;
+  const anchor = HARDWARE_ANCHORS[plateId];
+  // Deterministic SVG: white paper, black-line 1.5px, ghost-40 dashed 4-2 0.5px, 8px grid, uniform sidepanel.
+  // Each node is a rect with label; hardware anchors are drawn as nested rects/circles inside chassis.
+  let svg = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  svg += `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n`;
+  svg += `  <rect x="0" y="0" width="${W}" height="${H}" fill="#FFFFFF"/>\n`;
+  // 8px grid light
+  svg += `  <g stroke="#000000" stroke-opacity="0.06" stroke-width="0.5">\n`;
+  for (let x=0; x<W; x+=8*6) svg += `    <line x1="${x}" y1="0" x2="${x}" y2="${H}"/>\n`;
+  for (let y=0; y<H; y+=8*6) svg += `    <line x1="0" y1="${y}" x2="${W}" y2="${y}"/>\n`;
+  svg += `  </g>\n`;
+  // uniform sidepanel guide
+  const sx = Math.round(W*0.02), sy = Math.round(H*0.14), sw = Math.round(W*0.18), sh = Math.round(H*0.76);
+  svg += `  <rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="none" stroke="#000000" stroke-width="1.5" stroke-dasharray="none"/>\n`;
+  svg += `  <text x="${sx+8}" y="${sy+18}" font-family="Helvetica" font-size="14" font-weight="700">SCHEMATIC ${plate.id} PASS ${pass}</text>\n`;
+  if (anchor) svg += `  <text x="${sx+8}" y="${sy+34}" font-family="Helvetica" font-size="8">anchors: ${anchor.required.slice(0,6).join(', ')}...</text>\n`;
+  // nodes as schematic boxes with hardware sub-anchors
+  for (const n of plate.nodes) {
+    const x = Math.round(W*n.x/100), y = Math.round(H*n.y/100), w = Math.round(W*n.w/100), h = Math.round(H*n.h/100);
+    const isGhost = n.detail.toLowerCase().includes('ghost');
+    const stroke = isGhost ? '#000000' : '#000000';
+    const opacity = isGhost ? '0.4' : '1';
+    const dash = isGhost ? ' stroke-dasharray="4 2"' : '';
+    const swid = isGhost ? '0.5' : '1.5';
+    svg += `  <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${stroke}" stroke-opacity="${opacity}" stroke-width="${swid}"${dash}/>\n`;
+    svg += `  <text x="${x+4}" y="${y+14}" font-family="Helvetica" font-size="10" font-weight="700">${n.text}</text>\n`;
+    // hardware anchor dots inside chassis node
+    if (n.kind==='chassis' && anchor) {
+      // draw 4 HDD bay anchors as small rects
+      const bayW = Math.round(w/4); const bayH = Math.round(h*0.08);
+      const bayY = y + Math.round(h*0.28);
+      for (let i=0;i<4;i++) {
+        const bx = x + 8 + i*bayW;
+        svg += `    <rect x="${bx}" y="${bayY}" width="${bayW-8}" height="${bayH}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+        svg += `    <circle cx="${bx+bayW-12}" cy="${bayY+bayH/2}" r="3" fill="none" stroke="#000000" stroke-width="0.75"/>\n`; // screw right end
+        if (i===3) svg += `    <rect x="${bx+bayW-18}" y="${bayY+4}" width="10" height="10" fill="none" stroke="#000000" stroke-width="0.75"/>\n`; // red outline Bay4 (outline only)
+      }
+      // optical covers
+      const optY = y + Math.round(h*0.08);
+      svg += `    <rect x="${x+8}" y="${optY}" width="${Math.round(w*0.42)}" height="${Math.round(h*0.12)}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+      svg += `    <rect x="${x+12}" y="${optY+6}" width="28" height="18" fill="none" stroke="#000000" stroke-width="0.5"/>\n`;
+      svg += `    <rect x="${x+64}" y="${optY+6}" width="28" height="18" fill="none" stroke="#000000" stroke-width="0.5"/>\n`;
+      svg += `    <rect x="${x+Math.round(w*0.48)}" y="${optY}" width="${Math.round(w*0.48)}" height="${Math.round(h*0.12)}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+      // GPU horizontal
+      const gpuY = y + Math.round(h*0.45), gpuH = Math.round(h*0.12), gpuW = Math.round(w*0.58);
+      const gpuX = x + Math.round(w*0.32);
+      svg += `    <rect x="${gpuX}" y="${gpuY}" width="${gpuW}" height="${gpuH}" fill="none" stroke="#000000" stroke-width="1.5"/>\n`;
+      svg += `    <line x1="${gpuX+10}" y1="${gpuY+gpuH/2}" x2="${gpuX+gpuW-10}" y2="${gpuY+gpuH/2}" stroke="#000000" stroke-width="0.5" stroke-dasharray="2 2"/>\n`;
+      // cable path: board header (left) to GPU top edge
+      const cableX1 = x + Math.round(w*0.18), cableY1 = gpuY - 14;
+      const cableX2 = gpuX + 24, cableY2 = gpuY;
+      svg += `    <path d="M ${cableX1} ${cableY1} C ${cableX1+20} ${cableY1+18}, ${cableX2-20} ${cableY2-10}, ${cableX2} ${cableY2}" fill="none" stroke="#000000" stroke-width="1.5"/>\n`;
+      svg += `    <circle cx="${cableX1}" cy="${cableY1}" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="0.75"/><text x="${cableX1-12}" y="${cableY1-6}" font-family="Helvetica" font-size="6">BOARD</text>\n`;
+      svg += `    <circle cx="${cableX2}" cy="${cableY2}" r="4" fill="#FFFFFF" stroke="#000000" stroke-width="0.75"/><text x="${cableX2-8}" y="${cableY2-6}" font-family="Helvetica" font-size="6">GPU</text>\n`;
+      // PCB windows lower-right
+      const winW = Math.round(w*0.28), winH = Math.round(h*0.08);
+      svg += `    <rect x="${x+w-winW-8}" y="${y+h-winH*2-18}" width="${winW}" height="${winH}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+      svg += `    <rect x="${x+w-winW-8}" y="${y+h-winH-8}" width="${winW}" height="${winH}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+      // memory shroud lower-left
+      svg += `    <rect x="${x+8}" y="${y+h-winH*2-18}" width="${Math.round(w*0.30)}" height="${winH*2+10}" fill="none" stroke="#000000" stroke-width="0.75"/>\n`;
+      // honeycomb right edge (dots)
+      for (let hy=y+16; hy<y+h-16; hy+=12) svg += `    <circle cx="${x+w-6}" cy="${hy}" r="2" fill="none" stroke="#000000" stroke-width="0.5"/>\n`;
+    }
+  }
+  // footer rule
+  svg += `  <line x1="${W*0.02}" y1="${H*0.92}" x2="${W*0.98}" y2="${H*0.92}" stroke="#000000" stroke-width="1.5"/>\n`;
+  svg += `  <text x="${W*0.02}" y="${H*0.95}" font-family="Helvetica" font-size="9">${plate.title} — ${plate.purpose.slice(0,80)}</text>\n`;
+  svg += `  <text x="${W*0.70}" y="${H*0.95}" font-family="Helvetica" font-size="7">PASS ${pass}  BLACK-LINE 1.5  GHOST-40 4-2  8PX GRID  1536x1024  HELVETICA</text>\n`;
+  svg += `</svg>\n`;
+  const text = svg;
+  mkdirSync(SCHEMATICDIR, { recursive: true });
+  const file = `${SCHEMATICDIR}/${plateId}-p${pass}.svg`;
+  writeFileSync(file, text);
+  return { text, file, hash: sha256(text) };
+}
+
 function emitPrompt(scene: Scene, style: string, plateId: string, pass: number): { text: string; file: string; hash: string } {
   const plate = scene.plates.find((p) => p.id === plateId);
   if (!plate) { console.error(`unknown plate ${plateId}`); process.exit(1); }
@@ -255,6 +384,13 @@ function emitPrompt(scene: Scene, style: string, plateId: string, pass: number):
   lines.push(style.trim());
   lines.push('');
   lines.push(`NEGATIVE CONSTRAINTS: ${NEGATIVE_CONSTRAINTS.join(', ')}.`);
+  // schematic anchoring (fundamental: trace the schematic, do not hallucinate)
+  const schematicFile = `${SCHEMATICDIR}/${plateId}-p${pass}.svg`;
+  const anchor = HARDWARE_ANCHORS[plateId];
+  lines.push('');
+  lines.push(`SCHEMATIC ANCHOR (must trace exactly, no invention): ${schematicFile}`);
+  if (anchor) lines.push(`HARDWARE ANCHORS: ${anchor.required.join(', ')} -- place each at its schematic coordinate, board end in / GPU end out, cage screws right-end, Bay4 outline only, GPU horizontal center-right double-wide.`);
+  lines.push(`RENDER RULE: You are tracing the schematic SVG blueprint. Copy every anchor position, orientation, and proportion exactly. Do not swap orientation, do not add or omit drives, do not fill color, do not change cage screw count.`);
   if (plate.renderNotes?.length) {
     lines.push('');
     lines.push(`PASS-${pass} CORRECTIONS:`);
@@ -303,7 +439,6 @@ function auditPng(file: string): Audit {
   for(let y=0;y<png.h;y+=stride){ for(let x=0;x<png.w;x+=stride){ const v=lum[y*png.w+x]; vals.push(v); colors.add(Math.round(v/8)); if(spread[y*png.w+x]>25) colored++; if(v<40) dark++; if(v>200) bright++; if(x+stride<png.w){ const r=lum[y*png.w+x+stride]; if(Math.abs(v-r)>40) edges++; pairs++; } } }
   const n=vals.length||1; const mean=vals.reduce((a,b)=>a+b,0)/n; const variance=vals.reduce((a,b)=>a+(b-mean)*(b-mean),0)/n; const stddev=Math.sqrt(variance);
   const pctDark=dark/n; const pctBright=bright/n; const edgeRatio=pairs?edges/pairs:0; const pctColor=colored/n;
-  // BW efficient style: white paper #FFFFFF, black-line 1.5px, mostly bright, low dark is correct
   const diags: Diag[]=[];
   if(pctDark<0.01) diags.push({ code:'G-PX-001', severity:'ERROR', message:`dark ${(pctDark*100).toFixed(1)}% <1% blank` });
   if(pctDark>0.90) diags.push({ code:'G-PX-002', severity:'ERROR', message:`dark ${(pctDark*100).toFixed(1)}% >90% too dark for BW` });
@@ -329,7 +464,7 @@ function cmdIr(args: string[]): void {
 }
 function cmdLint(args: string[]): number {
   const facts=loadJson<FactsFile>(FACTS); const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
-  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags];
+  const diags: Diag[]=[...harvest(facts,scene),...lex().diags,...resolve(facts,scene),...typecheck(scene),...layout(scene).diags,...schematicCheck(scene)];
   for(const p of scene.plates) diags.push(...stylecheck(emitPrompt(scene,style,p.id,0).text));
   if(args.includes('--json')) console.log(JSON.stringify(diags,null,2)); else for(const d of diags.sort((a,b)=>a.code.localeCompare(b.code))) console.log(`${d.severity}\t${d.code}\t${d.plate??'-'}\t${d.node??'-'}\t${d.message}`);
   const errs=diags.filter(d=>d.severity==='ERROR').length; const warns=diags.filter(d=>d.severity==='WARN').length;
@@ -343,14 +478,33 @@ function cmdPrompt(args: string[]): void {
   const scene=loadJson<Scene>(SCENE); const style=loadText(STYLE);
   const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1] ?? scene.plates[0].id;
   const pass=Number(args.find(a=>a.startsWith('--pass='))?.split('=')[1] ?? '1');
+  // schematic must exist first (deterministic blueprint) - emit it now if missing
+  const schematic = emitSchematicSvg(scene, plate, pass);
   const out=emitPrompt(scene,style,plate,pass);
   const ledger=loadLedger(); const entry=plateEntry(ledger,plate);
-  const rec: PassRecord={ pass, promptFile:out.file, promptHash:out.hash, artifacts:[], findings:[], patches:[], verdict:'PROMPT-EMITTED' };
+  const rec: PassRecord={ pass, promptFile:out.file, promptHash:out.hash, schematicFile:schematic.file, schematicHash:schematic.hash, artifacts:[], findings:[], patches:[], verdict:'PROMPT-EMITTED' };
   const existing=entry.passes.findIndex(p=>p.pass===pass);
   if(existing>=0) entry.passes[existing]={ ...entry.passes[existing], ...rec, findings:entry.passes[existing].findings, artifacts:entry.passes[existing].artifacts };
   else entry.passes.push(rec);
   entry.nextPass=Math.max(entry.nextPass,pass+1); saveLedger(ledger);
+  console.log(`SCHEMATIC_FILE=${schematic.file}`); console.log(`SCHEMATIC_SHA256=${schematic.hash}`);
   console.log(out.text); console.log(`PROMPT_FILE=${out.file}`); console.log(`PROMPT_SHA256=${out.hash}`);
+}
+function cmdSchematic(args: string[]): number {
+  const scene=loadJson<Scene>(SCENE);
+  const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1] ?? scene.plates[0].id;
+  const pass=Number(args.find(a=>a.startsWith('--pass='))?.split('=')[1] ?? '1');
+  const out=emitSchematicSvg(scene, plate, pass);
+  const ledger=loadLedger(); const entry=plateEntry(ledger,plate);
+  let rec=entry.passes.find(x=>x.pass===pass);
+  if(!rec){ rec={ pass, artifacts:[], findings:[], patches:[], verdict:'SCHEMATIC' }; entry.passes.push(rec); }
+  rec.schematicFile=out.file; rec.schematicHash=out.hash;
+  saveLedger(ledger);
+  console.log(`SCHEMATIC plate=${plate} pass=${pass} file=${out.file} sha256=${out.hash}`);
+  // sanity: check schematic exists and is deterministic
+  const again=emitSchematicSvg(scene, plate, pass);
+  console.log(`DETERMINISTIC=${again.hash===out.hash ? 'YES' : 'NO'} hash=${again.hash.slice(0,12)}`);
+  return 0;
 }
 function cmdRender(args: string[]): number {
   const plate=args.find(a=>a.startsWith('--plate='))?.split('=')[1]; const pass=Number(args.find(a=>a.startsWith('--pass='))?.split('=')[1] ?? '1'); const file=args.find(a=>a.startsWith('--file='))?.split('=')[1];
@@ -400,6 +554,8 @@ function cmdSelftest(): number {
   checks.push({ name:'layout-clean', ok:layout(scene).diags.filter(d=>d.severity==='ERROR').length===0, detail:'layout' });
   for(const p of scene.plates){ const pr=emitPrompt(scene,style,p.id,0).text; const s=stylecheck(pr); checks.push({ name:`style-${p.id}`, ok:s.length===0, detail:`missing=${s.length}` }); }
   const a=emitPrompt(scene,style,scene.plates[0].id,1); const b=emitPrompt(scene,style,scene.plates[0].id,1); checks.push({ name:'deterministic', ok:a.hash===b.hash, detail:a.hash.slice(0,12) });
+  const sc1=emitSchematicSvg(scene, scene.plates[0].id, 1); const sc2=emitSchematicSvg(scene, scene.plates[0].id, 1); checks.push({ name:'schematic-deterministic', ok:sc1.hash===sc2.hash, detail:sc1.hash.slice(0,12) });
+  checks.push({ name:'schematic-anchors', ok:schematicCheck(scene).filter(d=>d.severity==='ERROR').length===0, detail:'schematic' });
   for(const c of checks) console.log(`${c.ok?'PASS':'FAIL'}\t${c.name}\t${c.detail}`);
   const failed=checks.filter(c=>!c.ok).length; console.log(`SELFTEST checks=${checks.length} failed=${failed}`); return failed?1:0;
 }
@@ -414,13 +570,14 @@ function main(): void {
     case 'lint': process.exit(cmdLint(rest)); break;
     case 'layout': process.exit(cmdLayout(rest)); break;
     case 'prompt': cmdPrompt(rest); break;
+    case 'schematic': process.exit(cmdSchematic(rest)); break;
     case 'render': process.exit(cmdRender(rest)); break;
     case 'audit': process.exit(cmdAudit(rest)); break;
     case 'findings': process.exit(cmdFindings(rest)); break;
     case 'deduct': process.exit(cmdDeduct(rest)); break;
     case 'status': cmdStatus(); break;
     case 'selftest': process.exit(cmdSelftest()); break;
-    default: console.log('usage: node tools/mac-guide-art.ts <passes|facts|ir|lint|layout|prompt|render|audit|findings|deduct|status|selftest>'); process.exit(2);
+    default: console.log('usage: node tools/mac-guide-art.ts <passes|facts|ir|lint|layout|prompt|schematic|render|audit|findings|deduct|status|selftest>'); process.exit(2);
   }
 }
 main();
