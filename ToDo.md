@@ -141,3 +141,16 @@
 
 ## Keep
 bluetooth, privoxy, tor, libvirt, yeetmouse, omen-sqm, beauty stack, xfdesktop, browsers
+
+## Mac Pro buildup (operator-ordered 2026-09-12, one step at a time)
+
+Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/data, taking out current and putting in/wiping/formatting new drives for raid. setting up airport utils. building apex omen pc." + "lets take it one step at a time, only progressing through that list once each buildup task is done".
+
+- [ ] 1. Wipe SSD (TARGET TBD - operator must name the disk; Bay 1 = destroys the fresh Lion install; nothing destructive ships until confirmed)
+- [ ] 2. Clear all keychains/logins/data (scope = volumes surviving step 1; TBD with step 1)
+- [ ] 3. Drive swap + RAID: take out current HDDs, put in new drives, wipe/format for RAID (COMBINED with the AMD GPU swap below - one chassis session; power off first, force-off at idle login is journal-safe)
+- [ ] 4. Set up AirPort utils (hardware present: Broadcom BCM432b seen on the Lion boot console)
+- [ ] 5. Build APEX OMEN PC (assembly; power-on ships as its own gated step - standing doNot "Power the APEX" still binds)
+- [ ] 0. Display (APPROVED 2026-09-12: AMD card swap): 6 software rescue waves metered (normal/safe/port/single-user-rm all blind; system windowserver-plist delete did not clear it - rm result unreported, ambiguity filed). Decision: swap to the AMD card + digital cable in the step-3 chassis session (VGA converter is the proven weak link; new card = Dell real EDID = new display identity = safe defaults, poison stays buried). Conditions: card must be Mac-EFI (else no boot screens); keep the current card until the new one POSTs + displays; retry the pref delete with `ls` verification only if still blind after the swap.
+- Deferred alongside: Lion 1080p lock + About version + GPU chipset reads (owed since LOGIN1; ride the first visible desktop)
+- Discipline: one task at a time; each released -> executed -> receipted before the next ships. Lion close-out still owed: Bay 1 home confirm, new admin?, Bay 4 spare (leave/repurpose?).

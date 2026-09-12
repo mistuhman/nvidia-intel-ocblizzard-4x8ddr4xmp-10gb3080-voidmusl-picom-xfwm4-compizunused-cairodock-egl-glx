@@ -3,7 +3,7 @@
   "session": "01a08b54",
   "machine": "Mac Pro 3,1 Early 2008 (CORRECTED 2026-09-12, was 1,1), 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1 (installer-app upgrade 2026-09-12), Dell S2725QS via VGA-HDMI, user admin / RevolYOUtionarys-Mac-Pro",
   "goal": "ACHIEVED 2026-09-12 via installer-app path: Lion 10.7 installed and booting on Bay 1 Lion SSD Base (login + desktop verified). Bay 1 is home unless operator asks for Bay 3 migration. Close-out owed: RESCUE1 display fix at 1080p, About/GPU reads, new-admin + Bay 4 spare decisions.",
-  "nextAction": "RESCUE1 RELEASED 2026-09-12 (session 01a09141): Mac is blind at 2560x1440 (RES1: no auto-revert; 1440p un-drivable through the VGA-HDMI converter, 1080p is the chain ceiling). Operator: force off, power on holding Shift to visible safe mode, log in, Displays prefs 1080p + uncheck Overscan (overwrites bad stored pref), Restart normal, report desktop + About version + Graphics chipset. Port-switch is backup only. No unlisted modes, no 3rd-party resolution tools, no erase, no blind clicking.",
+  "nextAction": "NEW-CHAT HANDOFF 2026-09-12: chassis session first (Mac powered OFF; force-off at idle blind login is journal-safe) - (0) install AMD card + digital cable (APPROVED with conditions: Mac-EFI or no boot screens; keep old card until new POSTs + displays; new Dell-real-EDID identity should dodge the 1440p poison), (3) HDD swap + RAID format. Then: display verify + 1080p lock + About/GPU reads; buildup step 1 needs the wipe target named (Bay 1 = destroys Lion; nothing destructive until confirmed). Rescue chain RESCUE1-6 all metered; delete-retry with ls verification only if still blind after the swap.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -198,7 +198,7 @@
     "repair": "pressing Repair in lion-mirror.command; this is what clears nvram Graphics Mode and blesses",
     "relay": "operator pastes the log text or a photo into chat - the only step that informs the agent"
   },
-  "status": "2026-09-12: LION INSTALLED AND BOOTING on Bay 1 Lion SSD Base via operator installer-app run (target Lion SSD Base; staged boot OK, install finished clean, first boot to Lion login with all 5 accounts, desktop + 1080p verified). Machine CORRECTED to MacPro3,1 (EFI32 notes struck). Metered since FORENSIC1: SAFEBOOT1 (SL safe desktop), VERIFY1 (clean), FIRMWARE1 (B05 final), OWNERS1 moot, PLAIN1 (fallthrough, matrix exhausted). D1 display fault explained (fresh-pref EDID probe vs VGA-HDMI converter; inherited SL prefs immune; 1080p ceiling, 1440p/4K un-drivable). RESCUE1 released (blind at 1440p). Close-out owed: RESCUE1 receipt, About/GPU reads, admin + Bay 4 + Bay 1 home confirms.",
+  "status": "2026-09-12 CLOSE-OUT: Lion on Bay 1 (installed+booting, login verified, desktop verified at 1080p before RES1). Display blind at 1440p poison (RESCUE1-6 metered, incl. system-plist delete with unreported rm result). DECIDED: AMD card + digital cable in one chassis session with the HDD swap. Buildup list in ToDo.md (wipe SSD [TBD] -> clear data -> swap+RAID -> AirPort -> APEX OMEN, one at a time). PR #80 MERGED. New chat opens with the chassis session.",
   "relay": {
     "page": "lion.html",
     "files": [

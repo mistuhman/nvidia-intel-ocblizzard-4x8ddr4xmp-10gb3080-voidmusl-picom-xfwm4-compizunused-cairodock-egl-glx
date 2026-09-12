@@ -377,3 +377,39 @@ they observed). Operator ordered: "we need to create a pr anyways" —
 record commit + PR authorized over the 405 budget BY EXPLICIT ORDER.
 Outcome of RESCUE1 and close-out (Bay 1 home, new admin, Bay 4 spare)
 PENDING.
+
+## 2026-09-12 — RESCUE1-6 metered, display still blind (session 01a09141)
+
+1440p poison survived everything: RESCUE1 (safe mode) blind - Lion safe
+mode honors the stored pref (framebuffer-bypass theory dead). RESCUE2
+(GPU port switch, the operator's proven SL-era 4K trick) blind - Lion
+keys display prefs by EDID across ports (inference). RESCUE3/4 (Cmd+S):
+first attempt black-no-OSD (signal absent: early photo vs wedged
+converter vs orphaned firmware console); move-back + reseat + 60s wait
+restored the text console (fix unattributed across the bundle).
+RESCUE5/6 (single-user delete): fsck verdict "Lion SSD Base appears to
+be OK" + "FILE SYSTEM WAS MODIFIED" on /dev/rdisk1s2 (node-shift
+CONFIRMED: Bay 1 volume at disk1s2 this boot); the 80-col dumb console
+mangled the long rm lines into one blob (nothing deleted, still
+read-only); TAB-completion method shipped; operator rebooted: "same
+timing error" (rm result unreported - delete-success vs
+poison-elsewhere AMBIGUITY filed). LP64 + Lion kexts confirmed the
+volume; BCM432b AirPort + 5.106.198.19 observed; AHCI probe timeouts
+filed for the drive swap. 1080p remains the proven VGA-chain ceiling.
+
+## 2026-09-12 — AMD-swap decision + PR merged + new-chat handoff (session 01a09141)
+
+Operator verbatim: "time for amd card? we need to swap the hdd's
+anyway, and we are booted off the ssd. decide, then merge the pr. we
+continue where we left off in a new chat l8r". DECISION: YES - AMD card
++ digital cable in ONE chassis session with the HDD swap (marginal cost
+~zero; converter is the proven weak link; new card presents the Dell
+real EDID = new display identity = safe defaults, poison buried).
+Conditions: Mac-EFI card (else no boot screens); keep current card
+until new POSTs + displays; retry pref delete with ls verification only
+if still blind. Buildup list (wipe SSD [target TBD] -> clear
+keychains/logins/data -> drive swap + RAID -> AirPort utils -> APEX
+OMEN build, one step at a time) recorded in ToDo.md per explicit order
+(append-only; doNot Rewrite-ToDo.md overridden for this write). PR #80
+merged to main (record commits 0fc2161 + catch-up). New chat opens with
+the powered-off chassis session.

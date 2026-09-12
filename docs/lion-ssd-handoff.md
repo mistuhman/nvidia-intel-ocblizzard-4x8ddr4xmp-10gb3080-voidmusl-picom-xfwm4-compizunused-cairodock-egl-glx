@@ -57,6 +57,10 @@ ACHIEVED 2026-09-12 via the installer-app path (operator brute force): Lion 10.7
 - RELEASED 2026-09-12: **RESCUE1** — force off, Shift safe-boot (framebuffer bypasses stored pref), Displays 1080p + uncheck Overscan (overwrites bad pref), Restart normal, report desktop + About + GPU. Operator port-switch = backup only; SL per-display inheritance CONFIRMED. Outcome PENDING.
 - PR ordered 2026-09-12 (operator verbatim: "we need to create a pr anyways") — record commit + PR authorized over the 405 budget BY EXPLICIT ORDER.
 
+- RECEIVED 2026-09-12: **RESCUE1-6 metered, display still blind** \u2014 safe mode, GPU port switch, and single-user rm all fail to clear the 1440p poison (fsck OK on disk1s2 = node-shift confirmed; rm result unreported). 1080p = proven VGA ceiling.
+- DECIDED 2026-09-12: **AMD card + digital cable** in ONE chassis session with the HDD swap (converter = proven weak link; new EDID identity = safe defaults). Conditions: Mac-EFI card; keep old card till new POSTs; delete-retry only if still blind.
+- BUILDUP to ToDo.md (operator order) + **PR #80 MERGED**; new chat opens with the chassis session.
+
 ## Live links (Arctic Fox)
 
 | Type | Type this | Job |
