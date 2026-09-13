@@ -342,3 +342,42 @@ Operator words: "theyre just out to put the gpu in easier" — **CONFIRMED**: re
 | SSD 2.5" | 69.85x100x7mm (Kingston 240GB class) | S4 vendor | exact |
 | Hidden SATA ports | behind fan assembly, 2 ports, 3Gb/s | S2 G-03 | exact count |
 | Booster routing | SLOT1=LOWER aux, SLOT2=UPPER aux | S3 iFixit 14161 | exact |
+
+## Entry 2026-09-13k (session 01a097ba) — FINAL BAY MAP: SSD Bay1 front coolest, HDD 2+3 coldstorage, Bay4 orange
+
+Source: operator words verbatim "ill leave the ssd in the first bay at the front so its nearest to the cooling and isolated enough from the gpu and cpu heat. then 2&3 will have unlabeled hdd coldstorage, with the last 4th slot being the orange marked one" (seq 86) + value bayMapFinal (seq 87).
+
+### Bay map RECEIPTED (operator-authoritative, supersedes all prior etch reads)
+| Bay (left→right 1-4 per seq 71) | Role | Thermal rationale | Erase rule |
+|---|---|---|---|
+| Bay1 front | **Crucial 1TB Lion SSD Base** — Lion 10.7 boot, disk0s2, 999.9GB, 19.4GB free, erase NEVER | nearest to front intake cooling, isolated from GPU/CPU heat at rear (operator words) | NEVER |
+| Bay2 | unlabeled HDD coldstorage (WD Green class from seq 70, model WD10EAVS pending label) | mid-bay, cool | coldstorage — wipe target must be named before any format, Bay1 rule still outranks |
+| Bay3 | unlabeled HDD coldstorage (second WD Green) | mid-bay | same |
+| Bay4 | **orange marked** sled (red sticker = orange marked per operator words; earlier red=Bay4 vs red=Bay2 tension CLOSED by this entry: Bay4 = orange marked) — will hold 3rd/4th HDD or ESD spare? Currently per workflow.json Bay4 = Install ESD SPARE (disk2s2), but operator says orange marked is last slot — likely Bay4 = orange marked HDD, ESD moves or is superseded. Needs explicit wipe target name before repurpose. | rear-most, warmest | SPARE status per workflow.json until operator names wipe target |
+
+### Thermal validation
+Operator thermal reasoning is **CORRECT**: front bays get fresh intake from lower front fan assembly (G-16 single blower module). GPU heat (3870 ~106W + 9800GT ~105-125W) exhausts rearward/upward; CPU compartment dual Xeon heatsinks rear of bays. Bay1 front is indeed coolest and most isolated — good for SSD longevity (NAND + controller). HDDs in 2/3 mid are acceptable; Bay4 rear warmest but HDDs tolerate higher (GreenPower low RPM).
+
+### SSD bay access — closed
+Q "how do i access the ssd bay?" now **ANSWERED + IMPLEMENTED**: SSD lives in Bay1 sled (front). Access = pull sled straight out (front-to-rear slide). No optical bay move needed for now — you have 1 SSD + 3 HDDs capacity in 4 bays (SSD Bay1 + HDD Bay2/3 + orange Bay4). If you later want 4x HDDs + SSD, you will need the optical-bay cable kit (hidden SATA + Molex→SATA power + bracket) — purchase-gated, deferred.
+
+### Current build state after this decision
+- Sleds: 3 out on top (photo seq 85) for GPU access, 1 half-in lower-left — now to be: Bay1 = SSD, Bay2/3 = HDD coldstorage, Bay4 = orange marked.
+- GPUs: dual seated, bar-less bench, boosters UNPLUGGED — still owes plug before G3.
+- Next physical steps: seat Bay1 SSD sled front, seat Bay2/3 HDD sleds, leave Bay4 orange sled out until after G3/G4 or install it now (3 drives + SSD = 4 bays filled, bootable).
+- G3 power-on unblocked once Bay1 SSD in place + boosters plugged + digital cable.
+
+### Updated photo requests (remaining)
+1. Bay1 SSD sled inserted front — photo of sled face + confirmation SSD model (Crucial MX500 label).
+2. Bay2/3 HDD labels (WD Green full model strings) + orange Bay4 sled label.
+3. Booster plugged state: UPPER aux → 3870 (SLOT2), LOWER aux → 9800GT (SLOT1) — photo before G3.
+4. Bar-screw R1 vs R2 (before case-close daily use, NOT before bench).
+5. Riser DIMM per-riser breakdown (LOW, non-blocking).
+
+### G ladder status
+- G1: GPUs seated — COMPLETE (bar-less bench OK)
+- G2: digital cable DVI→HDMI from 3870 to Dell S2725QS — OWED
+- G3: first power-on with Bay1 SSD — READY once Bay1 SSD seated + boosters plugged (boot screens EXPECTED Mac EFI)
+- G4: display verify digital 1080p + About This Mac reads — OWED
+- G5b: second GPU already seated (deviation) — will verify both in About This Mac at G4
+- G6: HDD swap + RAID format — Bay2/3 coldstorage = no RAID yet, just coldstorage; RAID format needs wipe target named (Bay1 = NEVER)

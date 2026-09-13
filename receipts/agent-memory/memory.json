@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-13",
-  "lastSeq": 85,
+  "lastSeq": 87,
   "entries": [
     {
       "seq": 1,
@@ -1675,6 +1675,23 @@
         }
       ],
       "sha256": "e02dfa158ee48113fbd8e50219a6b02b87e1f48d7e80a55fa097f56fdf804f6d"
+    },
+    {
+      "seq": 86,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "ill leave the ssd in the first bay at the front so its nearest to the cooling and isolated enough from the gpu and cpu heat. then 2&3 will have unlabeled hdd coldstorage, with the last 4th slot being the orange marked one",
+      "sha256": "b384b6c2613ec0df4ea1fb34369e78bfec0c1dc80c0b2524edcaca692dac0bb4"
+    },
+    {
+      "seq": 87,
+      "date": "2026-09-13",
+      "kind": "value",
+      "key": "bayMapFinal",
+      "value": "Bay1 front = Crucial 1TB Lion SSD Base (coolest, isolated from GPU/CPU heat); Bay2+Bay3 = unlabeled HDD coldstorage; Bay4 = orange marked (red sticker) sled",
+      "source": "operator words seq 86",
+      "sha256": "90a497558d26992d3a5e0882fb9941a83f1c4bbfc8ca4d195c573fbd117a7c3d"
     }
   ],
   "stacks": [
@@ -1734,7 +1751,9 @@
         82,
         83,
         84,
-        85
+        85,
+        86,
+        87
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
