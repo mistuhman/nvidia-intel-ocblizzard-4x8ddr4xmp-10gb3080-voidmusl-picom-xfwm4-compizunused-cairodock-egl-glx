@@ -287,3 +287,58 @@ Operator demands (seq 82 numbered):
 ### G1-G5 status after this photo
 - G1: GTX 285 out COMPLETE, 3870 + 9800 GT both seated (dual-donor bench config) — operator jumped ahead from single-card G1 to dual-card G1b. Electrically OK per entry 12f (150W envelope each), but G3 power-on still owes booster plugs (currently UNPLUGGED per photo). One change per power-on still expects G2 digital cable before G3, but dual-card bench is acceptable if operator wants it as the G3 config — note as deviation from ladder (G5b merged into G1).
 - NextAction remains docs/lion-workflow.json: install AMD card + digital cable APPROVED, HDD swap + RAID format, wipe target named before any destructive op. Nothing destructive until confirmed.
+
+## Entry 2026-09-13j (session 01a097ba) — SLEDS OUT, SSD NOT IN BAY, 4x HDD plan clarified
+
+Source: operator words verbatim "the bays do not have the ssd. the ssd cannot be in a bay because all 4 of them will have hdd's. theyre just out to put the gpu in easier" (seq 84) + chat-only photos x2 chat-attachment:macpro31-sleds-out-2026-09-13a (seq 85, bytes NOT persisted — /home/user/uploads/ missing 6th check).
+
+### Photo perception (capped confidence)
+| Item | Observed | Confidence |
+|---|---|---|
+| Sleds on top of chassis | 3 sleds stacked: top (circled 1 = Bay1), middle red sticker circled 2 = Bay2 (red sticker = Bay2 in this stack, but earlier operator words left→right 1-4 red=rightmost=Bay4 — discrepancy: red sticker appears on Bay2 sled here, not Bay4; operator mapping remains authoritative, my prior red=Bay4 read may be stale; log as tension), bottom circled 4 = Bay4 | HIGH present / MEDIUM bay mapping (operator words outrank my read) |
+| Sled in machine | 1 sled still partially inserted lower-left, covering Bay1 area (maybe Bay1 sled with Lion? but operator says bays do NOT have SSD) | HIGH present / LOW identity |
+| Bays | 3 bays empty above GPU, backplane connectors visible, no drives | HIGH |
+| GPUs | dual GPUs still seated (bottom 3870 blue, top 9800GT/VEGA), boosters dangling UNPLUGGED | HIGH |
+| SSD location | NOT visible in either photo — not on top, not in bays, not on floor of case in frame | HIGH — UNKNOWN |
+| Optical bays | upper section with two rectangular cutouts (empty optical bay faceplates removed? screws visible) | HIGH |
+
+### Correction receipted
+Operator words supersede prior assumption: **"the bays do not have the ssd."** Prior entry 13i assumed Crucial 1TB in Bay1 sled — that is now **VOID**. Current state: bays EMPTY (or with HDDs waiting), SSDs somewhere else (desk? loose? need photo). Operator constraint: **"the ssd cannot be in a bay because all 4 of them will have hdd's."** = design intent = 4x HDDs occupy all 4 bays, SSD must live elsewhere (optical bay or alternative mount).
+
+### SSD relocation — grounded options with NO conversion cables (operator words)
+Mac Pro 3,1 facts (docs/macpro-guide-facts.json):
+- G-02: 4 bays 3Gb/s cable-free direct-attach, Bay1 bottom Bay4 top, left→right 1-4 per operator.
+- G-03: 2 hidden SATA II ports behind front fan assembly (lift fan module 40mm, per G-16 single fan module lifts).
+- G-04: optical bays PATA/Molex, need Molex→SATA power adapter + SATA data from hidden ports.
+- G-05: 2.5" SSD in lower optical bay bootable via hidden SATA, freeing all 4 bays.
+
+**With no cables (current inventory):**
+- **Option A (current zero-cable):** SSDs are OUT of machine (as bays are for HDDs). To boot Lion, you must put ONE SSD back into a bay temporarily, or you cannot boot. For G3 power-on verification, Bay1 must hold the Lion SSD (Crucial 1TB) — otherwise no boot volume. The HDDs cannot all 4 be installed until after G4 display verify, unless you accept no boot.
+- **Option B (optical bay without cables):** physically place SSD on optical bay shelf (no power/data) — it will not boot. Needs cables.
+- **Option C (interim tape):** tape SSD to interior floor/wall with no connection — not bootable.
+- **Conclusion:** For G3/G4 first power-on + display verify, **put Crucial 1TB Lion SSD back into Bay1 sled** (even though final plan is 4x HDD). After G4 PASS, then order cable kit to move it to optical bay, freeing Bay1 for 4th HDD. The two Kingston 240GB SSDs cannot be used until a bay is free or cables arrive — they are spares for now.
+
+### Sleds-out rationale
+Operator words: "theyre just out to put the gpu in easier" — **CONFIRMED**: removing sleds gives clearance for PCIe booster routing and GPU seating (the black 6-pin bundle was trapped). This is the correct bench procedure. Sleds can be re-inserted after GPU power is routed.
+
+### Updated photo requests (re-issued)
+1. Where is the Crucial 1TB SSD right now? Photo of SSD + its label (model/firmware) + where you plan to mount it.
+2. Both Kingston 240GB labels.
+3. The 4x HDDs: are they the WD Greens from seq 70? Model + which bay each will occupy (Bay1-4 map). Needed before G6 names wipe target (Bay1 = destroys Lion, NEVER without explicit name).
+4. Sled contents: which sled (1-4) currently holds which drive (if any) — your stack photo shows circled numbers 1,2,4 but red sticker on 2 vs earlier red=4 — confirm red sticker bay.
+5. Bar-screw R1 vs R2 (before case-close).
+6. Booster plugged state before G3 (UPPER→3870, LOWER→9800GT).
+
+### G1-G6 status after clarification
+- G1: GPUs seated, sleds out for access — OK bench.
+- G2: digital cable still owes.
+- G3: needs Lion SSD in Bay1 to boot (since SSD not in bays per current photo, G3 is BLOCKED until one SSD re-inserted).
+- G6: 4x HDDs cannot occupy all 4 bays until SSD moves to optical bay with cable kit (purchase-gated). Interim: 3x HDDs + 1x SSD in bays, or postpone HDD install until after G4.
+
+### Measurement table update (S1-S5)
+| object | dimension | source | tolerance |
+|---|---|---|---|
+| Sled | width ~130mm, height ~25mm, length ~170mm (3.5" carrier) | S4 Apple spec | ±2mm |
+| SSD 2.5" | 69.85x100x7mm (Kingston 240GB class) | S4 vendor | exact |
+| Hidden SATA ports | behind fan assembly, 2 ports, 3Gb/s | S2 G-03 | exact count |
+| Booster routing | SLOT1=LOWER aux, SLOT2=UPPER aux | S3 iFixit 14161 | exact |

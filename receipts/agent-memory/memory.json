@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-13",
-  "lastSeq": 83,
+  "lastSeq": 85,
   "entries": [
     {
       "seq": 1,
@@ -1637,6 +1637,44 @@
         }
       ],
       "sha256": "5e9bc4f1c3ceab8ed9f3289af06980512497c90732365b1c7cd43aa5acc8dbf0"
+    },
+    {
+      "seq": 84,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the bays do not have the ssd. the ssd cannot be in a bay because all 4 of them will have hdd's. theyre just out to put the gpu in easier",
+      "sha256": "c558ca374f320dfe78d4cad919bc63d3a6cde95d2b0a418a456347c0c2de1f15"
+    },
+    {
+      "seq": 85,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-sleds-out-2026-09-13a",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "3 sleds stacked on top of chassis: top=Bay1, middle=Bay2 red sticker, bottom=Bay4; 1 sled still partially inserted lower-left (Bay1 position?)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg x2, bytes NOT persisted - /home/user/uploads/ missing 6th check"
+        },
+        {
+          "claim": "4 HDD bays empty above GPU area, backplane visible, sled guides empty",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "dual GPUs still seated: bottom 3870 blue, top 9800GT/VEGA, booster cables dangling unplugged",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "SSD not visible in bays or on top - location UNKNOWN, operator says bays do not have SSD",
+          "confidence": "HIGH",
+          "source": "operator words + photo"
+        }
+      ],
+      "sha256": "e02dfa158ee48113fbd8e50219a6b02b87e1f48d7e80a55fa097f56fdf804f6d"
     }
   ],
   "stacks": [
@@ -1694,7 +1732,9 @@
         80,
         81,
         82,
-        83
+        83,
+        84,
+        85
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
