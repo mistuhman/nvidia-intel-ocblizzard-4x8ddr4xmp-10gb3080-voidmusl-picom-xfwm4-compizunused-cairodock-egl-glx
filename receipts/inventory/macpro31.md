@@ -199,3 +199,42 @@ slot 2 = UPPER aux -> the 3870 in SLOT2 uses the UPPER connector).
 Riser split: operator states it is visible in every picture; chat-only bytes do not persist
 and my perception could not resolve DIMM counts at delivered resolution - assertion logged,
 numbers welcome as words anytime; LOW, non-blocking.
+
+## Entry 2026-09-12h (session 01a097ba) — G1 IN PROGRESS: GTX 285 out; bracket bar casualty
+
+Operator words (seq 79): "took out the retention bracket and the gtx. screws are unusable now
+since i had to torsion them out. dusted all the metal particles out of the case."
+Photo receipt (seq 80): SLOT2 empty, both slot silks legible, aux pair still unseated at
+left, slot covers in place, rear opening exposed, board clean, pliers on scene.
+
+| Item | State | Class |
+|---|---|---|
+| GTX 285 | REMOVED (bracket travels with the card; card intact, re-installable) | inverse intact |
+| Bracket bar | REMOVED; its two captive screws DESTROYED by torsion ("unusable") | NEW OPEN ITEM — see below |
+| Metal particles | operator dusted the case | verify with a magnet sweep before power-on |
+| Aux 6-pins | still unseated (will feed 3870 upper + 9800 GT later) | matches plan |
+| Sled digit etch | one digit readable second-from-left (reads like 4) — sits in tension with my entry-1 etch reads; operator words (left→right 1-4, red=rightmost) REMAIN the mapping; my digit reads at chat resolution are unreliable twice over | MEDIUM-UNRELIABLE, do not use |
+
+### Bar-screw replacement (new open item — gates CASE-CLOSED daily use, NOT the bench test)
+Function to restore = clamp the bracket bar so card brackets anchor to the chassis. Classes:
+- R1 screws only: the captives are hand thumbscrews; if heads are torsioned out, extract the
+  stub and fit a replacement (M3-class per 2006-2012 Mac Pro fastener convention — MEASURE
+  the threaded hole pitch with the caliper before buying; never guess-thread).
+- R2 whole bar: used Mac Pro PCI bracket assemblies are inexpensive used parts; harvest from
+  a donor Mac Pro is the zero-spend route (operator decides purchases).
+- A3 interim: BAR-LESS BENCH OPERATION IS ACCEPTABLE for G1-G4: the card seats in the slot
+  and the bar only anchors the bracket — allowed while the case stays OPEN on the bench and
+  the machine is not moved. NOT allowed as the daily closed-chassis state (card flex at the
+  slot = contact fatigue class).
+Sequencing rule stands: one change per power-on — bar-fix is its own later wave, never
+stacked onto the first 3870 boot.
+
+### G1 continuation checklist (zero-to-low risk, in order)
+1. Bright-light inspection of SLOT2 + SLOT1 + the board under the old card for any screw
+   stub, wire fragment, or dust remaining (magnet sweep of the shroud area too).
+2. Pop ONE slot cover aligned to SLOT2 (cover stack at right, slotted screws).
+3. Seat the 3870 Mac Edition straight into SLOT2 (never rock), bracket top edge where the
+   bar will later clamp.
+4. Upper aux 6-pin -> the 3870 (iFixit routing receipt: SLOT2 = UPPER connector).
+5. Leave the bar off for now (bench-legal per A3); G2 digital cable; G3 power-on (boot
+   screens EXPECTED — Mac EFI card); G4 desktop at digital 1080p, read back About This Mac.

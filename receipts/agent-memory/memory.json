@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-12",
-  "lastSeq": 78,
+  "updated": "2026-09-13",
+  "lastSeq": 81,
   "entries": [
     {
       "seq": 1,
@@ -1535,6 +1535,70 @@
       "kind": "note",
       "text": "2026-09-12g: captive-screw reframe receipted - the two captive thumbscrews hold the PCI bracket BAR and never come out (design); loosen 3-5 turns, lift bar, front latch up, straight pull; 2008 has no retaining rod; seized-screw tree = MASTER 2026-09-07h (hard press + rubber band, pliers, never drill). Video guidance: OWC installvideos portal (A1186 Early 2008 PCIe clip), iFixit 14161. Riser split: operator says visible in every picture; my perception could not resolve counts from chat-only photos - numbers as words anytime, LOW non-blocking.",
       "sha256": "7d2de0742bc8200b2979e6d9f7abbf881ec72edfecee5d349004e245fcb1cdff"
+    },
+    {
+      "seq": 79,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "took out the retention bracket and the gtx. screws are unusable now since i had to torsion them out. dusted all the metal particles out of the case (with 1 photo: PCIe bay empty, SLOT2-X16 + SLOT1-X16 silks readable, sled row above with one etched digit readable, red-sticker sled rightmost, two 6-pin aux leads dangling at left, slot covers in place at right, orange-handled pliers at frame right)",
+      "demands": [
+        "receipt GTX removal",
+        "receipt bracket bar + destroyed captive screws",
+        "receipt case cleaning",
+        "assess bar-less operation classes",
+        "ship G1 continuation"
+      ],
+      "sha256": "297aa9f0c75f5e3182b7b90163c2ad1f698c80741619c828aceb9d1c7ce13721"
+    },
+    {
+      "seq": 80,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-gtx-out-2026-09-12d",
+      "tool": "operator chat attachment x1 (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "SLOT2 IS EMPTY - GTX 285 removed; bare logic board with SLOT2 - X16 and SLOT1 - X16 silks legible; no card in either slot",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "The two 6-pin aux leads remain dangling unseated at frame left (two black 6-pin connectors visible)",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Drive sled row above: one etched digit readable on a sled (reads like 4, second-from-left in frame), red-sticker sled rightmost; digit-vs-operator-mapping micro-question logged (words outrank this read)",
+          "evidence": "chat photo read at resolution limit",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Rear slot-cover stack visible at right with slotted screws; bracket bar NOT installed (removed); case rear opening exposed",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Memory cage lower-right shows riser board top edges with purple caps; DIMM count not resolvable (unchanged)",
+          "evidence": "chat photo read",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Work staging: orange-handled pliers at frame right; board surface looks clean after operator dusting",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "a2148aea9e170e830dd4a73708e3ba1172bad53b2cd56347a0675f5fc67920f9"
+    },
+    {
+      "seq": 81,
+      "date": "2026-09-13",
+      "kind": "value",
+      "key": "bracketBarCasualty",
+      "value": "PCI bracket bar removed OK but its two captive screws destroyed by torsion (operator words 2026-09-12 seq 79); replacement classes R1 replacement screws (M3-class, measure thread before buying) / R2 used bar or donor harvest (purchase = operator) / A3 bar-less BENCH operation allowed case-open for G1-G4, NEVER daily closed state; bar-fix ships as its own later wave (one change per power-on); operator already dusted metal particles - magnet sweep + slot inspection before power-on",
+      "source": "operator words; seq 80 photo; entry 2026-09-12h",
+      "sha256": "18431cf4fdf442f2b4757640ed50390f27a73cf28a169cc798dd844793508e6e"
     }
   ],
   "stacks": [
@@ -1582,7 +1646,10 @@
         70,
         71,
         72,
-        73
+        73,
+        79,
+        80,
+        81
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
