@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-13",
-  "lastSeq": 87,
+  "lastSeq": 89,
   "entries": [
     {
       "seq": 1,
@@ -1692,6 +1692,39 @@
       "value": "Bay1 front = Crucial 1TB Lion SSD Base (coolest, isolated from GPU/CPU heat); Bay2+Bay3 = unlabeled HDD coldstorage; Bay4 = orange marked (red sticker) sled",
       "source": "operator words seq 86",
       "sha256": "90a497558d26992d3a5e0882fb9941a83f1c4bbfc8ca4d195c573fbd117a7c3d"
+    },
+    {
+      "seq": 88,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the orange one is two, i reordered them so theyre in order 2-4. all 4 hdds are the same 1tb model and ill show you the one thats outside of the mac in place of the ssd",
+      "sha256": "13c3ce05c9325c115fb992516fcf0786e5f8a3a9022614c9c100b51381de7f6b"
+    },
+    {
+      "seq": 89,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:wd10eavs-label-2026-09-13b",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "WD10EAVS WD Caviar GP GreenPower 1.0TB, MDL WD10EAVS-00D7B0 / 000780, S/N WCAU40497545, DATE 26 MAY 2008, DCM DHNNNT2CBB, R/N 701537, LBA 1953525168, 5V 0.70A 12V 0.55A, Product of Thailand, WWN 50014EE201940C80, GreenPower label",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg x2, bytes NOT persisted - /home/user/uploads/ missing 7th check"
+        },
+        {
+          "claim": "all 4 HDDs same 1TB model WD10EAVS class",
+          "confidence": "HIGH",
+          "source": "operator words seq 88"
+        },
+        {
+          "claim": "orange marked sled = Bay2 (not Bay4), reordered in order 2-4 on top of chassis",
+          "confidence": "HIGH",
+          "source": "operator words seq 88"
+        }
+      ],
+      "sha256": "14edc089729e69eb0e88757efe4b02a7868eb8f09b62ed6416199b908c6e0ccc"
     }
   ],
   "stacks": [
@@ -1753,7 +1786,9 @@
         84,
         85,
         86,
-        87
+        87,
+        88,
+        89
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"

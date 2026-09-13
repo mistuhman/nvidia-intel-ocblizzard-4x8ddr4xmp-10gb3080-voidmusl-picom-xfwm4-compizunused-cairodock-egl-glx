@@ -381,3 +381,58 @@ Q "how do i access the ssd bay?" now **ANSWERED + IMPLEMENTED**: SSD lives in Ba
 - G4: display verify digital 1080p + About This Mac reads — OWED
 - G5b: second GPU already seated (deviation) — will verify both in About This Mac at G4
 - G6: HDD swap + RAID format — Bay2/3 coldstorage = no RAID yet, just coldstorage; RAID format needs wipe target named (Bay1 = NEVER)
+
+## Entry 2026-09-13l (session 01a097ba) — HDD MANIFEST RECEIPTED: 4x WD10EAVS + orange=Bay2
+
+Source: operator words verbatim "the orange one is two, i reordered them so theyre in order 2-4. all 4 hdds are the same 1tb model and ill show you the one thats outside of the mac in place of the ssd" (seq 88) + chat-only label photos x2 WD10EAVS (seq 89, bytes NOT persisted — /home/user/uploads/ missing 7th check).
+
+### Label read (HIGH, S1 chat-only but legible)
+| Field | Value |
+|---|---|
+| Model | WD10EAVS WD Caviar GP |
+| MDL | WD10EAVS-00D7B0 (stamped 000780 variant) / P/N WD10EAVS-000780 |
+| S/N | WCAU40497545 |
+| Date | 26 MAY 2008 |
+| DCM | DHNNNT2CBB |
+| R/N | 701537 |
+| Capacity | 1.0TB LBA 1953525168 |
+| Power | 5V 0.70A / 12V 0.55A |
+| WWN | 50014EE201940C80 |
+| Origin | Product of Thailand |
+| Label | GreenPower Hard Drives by WD |
+| Jumper | SSC/PUIS/1.5GB PHY options (default none) |
+| GreenPower note | IntelliPark 8s head park, no TLER — mitigation wdidle3/idle3-tools per G-08 fact (WD10EACS class, now refined to WD10EAVS same family) |
+
+### Bay map update (operator-authoritative, supersedes entry 13k orange=Bay4)
+- **Orange marked = Bay2** (not Bay4) — operator reordered sleds on top to be in order 2-4 (seq 88). Previous entry 13k orange=Bay4 is VOID. New authoritative:
+  - Bay1 front = Crucial 1TB Lion SSD Base (coolest, isolated, erase NEVER) — per seq 86
+  - Bay2 = **orange marked** = WD10EAVS #1 (cold storage, unlabeled)
+  - Bay3 = WD10EAVS #2 (cold storage, unlabeled)
+  - Bay4 = WD10EAVS #3 (last slot, was 4th in stack) — plus 4th HDD outside Mac in place of SSD per operator words "ill show you the one thats outside of the mac in place of the ssd" — meaning total 4x WD10EAVS: 3 on top + 1 outside (currently not in bay) OR 4th is to be installed after SSD moves? Needs clarification but count = 4 identical.
+
+- **All 4 HDDs same 1TB model** — per operator words seq 88, confirmed by label (all WD10EAVS). This closes the WD Green manifest claim that was open since entry 12d (2 of 4 visible) — now 4x WD10EAVS 1TB, date 2008, Thailand.
+
+### Thermal + placement re-validation
+Bay1 SSD front remains correct (coolest). Bay2 orange = now directly behind SSD, still relatively cool. Bay3/4 rear progressively warmer but GreenPower low RPM (5400-7200 IntelliPower) tolerates.
+
+### Sleds reordered 2-4
+Operator words: "i reordered them so theyre in order 2-4" — meaning the 3-sled stack on top is now sorted Bay2 (orange, top), Bay3 middle, Bay4 bottom — logical order for re-insertion front→rear. Good bench practice.
+
+### Outstanding for G6
+- The 4th HDD outside Mac in place of SSD: photo owed (operator says will show). Is that 4th HDD currently sitting where SSD was? Or is SSD outside and 4th HDD is spare? Wording: "ill show you the one thats outside of the mac in place of the ssd" suggests one HDD is outside the Mac, in the spot where SSD would be? Actually SSD is in Bay1 per final map, so "outside of the mac in place of the ssd" might mean the 4th HDD is outside, waiting to replace SSD if needed? Needs next photo.
+- Wipe target for coldstorage: Bay2/3/4 are coldstorage — no RAID yet. If operator wants RAID, must name wipe target (Bay1 = destroys Lion, NEVER). Currently Bay2/3/4 can be formatted as coldstorage without touching Bay1.
+
+### Photo requests remaining
+1. Bay1 SSD sled inserted front — confirmation.
+2. Bay2/3/4 HDD sleds inserted — final bay map photo.
+3. The 4th HDD outside + its label (is it same S/N or different? Need S/Ns for all 4 to track).
+4. Booster plugged state UPPER→3870 / LOWER→9800GT before G3.
+5. Bar-screw R1/R2 before case-close.
+6. Riser DIMM counts (LOW).
+
+### G ladder
+- G1 GPUs seated — COMPLETE
+- G2 digital cable — OWED
+- G3 power-on with Bay1 SSD — READY once Bay1 SSD seated + boosters plugged
+- G4 display verify — OWED
+- G6 HDD manifest — RECEIPTED 4x WD10EAVS, orange=Bay2, order 2-4 — CLOSED for count/model, open for individual S/Ns + final insertion photo.
