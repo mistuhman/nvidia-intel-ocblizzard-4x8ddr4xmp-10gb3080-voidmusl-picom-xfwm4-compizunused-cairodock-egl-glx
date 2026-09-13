@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-13",
-  "lastSeq": 81,
+  "lastSeq": 83,
   "entries": [
     {
       "seq": 1,
@@ -1599,6 +1599,44 @@
       "value": "PCI bracket bar removed OK but its two captive screws destroyed by torsion (operator words 2026-09-12 seq 79); replacement classes R1 replacement screws (M3-class, measure thread before buying) / R2 used bar or donor harvest (purchase = operator) / A3 bar-less BENCH operation allowed case-open for G1-G4, NEVER daily closed state; bar-fix ships as its own later wave (one change per power-on); operator already dusted metal particles - magnet sweep + slot inspection before power-on",
       "source": "operator words; seq 80 photo; entry 2026-09-12h",
       "sha256": "18431cf4fdf442f2b4757640ed50390f27a73cf28a169cc798dd844793508e6e"
+    },
+    {
+      "seq": 82,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "seems to be no issue without screws. the brackets and slots native to the mac case help with this a lot. now how do i access the ssd bay? the four bays are only hard drives. we need to put the 2.5in crucial boot ssd somewhere else. i have no conversion cables or anything fyi, i have 2 240gb kingston ssd's and the 1tb crucial boot drive",
+      "sha256": "be1b8d8f6f5b11d1333ce7c7a455911f7a17b890eacdf3e451874e6db88f294b"
+    },
+    {
+      "seq": 83,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-dual-gpu-seated-2026-09-13",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "dual GPUs seated: bottom SLOT2 blue PCB blue fan ATI 3870 Mac Edition, top SLOT1? black/brown shroud EVGA 9800 GT, both brackets engaged in case slots, no bracket bar (bar-less bench)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg, bytes NOT persisted - /home/user/uploads/ missing confirmed 5th time, re-request if hash/pixel-audit needed"
+        },
+        {
+          "claim": "both 6-pin booster cables dangling UNPLUGGED over CPU cover (left side, two black connectors)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "memory riser windows lower-right: DIMMs visible but count unreadable at chat resolution",
+          "confidence": "MEDIUM",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "sled bays 1-4 above GPU, closed, orange dots visible",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        }
+      ],
+      "sha256": "5e9bc4f1c3ceab8ed9f3289af06980512497c90732365b1c7cd43aa5acc8dbf0"
     }
   ],
   "stacks": [
@@ -1647,9 +1685,16 @@
         71,
         72,
         73,
+        74,
+        75,
+        76,
+        77,
+        78,
         79,
         80,
-        81
+        81,
+        82,
+        83
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"

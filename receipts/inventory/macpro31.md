@@ -238,3 +238,52 @@ stacked onto the first 3870 boot.
 4. Upper aux 6-pin -> the 3870 (iFixit routing receipt: SLOT2 = UPPER connector).
 5. Leave the bar off for now (bench-legal per A3); G2 digital cable; G3 power-on (boot
    screens EXPECTED — Mac EFI card); G4 desktop at digital 1080p, read back About This Mac.
+
+## Entry 2026-09-13i (session 01a097ba) — G1b DUAL-GPU SEATED, bar-less holds, SSD bay question
+
+Source: operator words verbatim "seems to be no issue without screws. the brackets and slots native to the mac case help with this a lot. now how do i access the ssd bay? the four bays are only hard drives. we need to put the 2.5in crucial boot ssd somewhere else. i have no conversion cables or anything fyi, i have 2 240gb kingston ssd's and the 1tb crucial boot drive" (seq 82) + chat-only photo chat-attachment:macpro31-dual-gpu-seated-2026-09-13 (seq 83, bytes NOT persisted — /home/user/uploads/ missing 5th check, re-request if hash/pixel-audit needed).
+
+### Dual-GPU photo perception (capped confidence — chat-only, no persisted bytes)
+| Item | Observed | Confidence |
+|---|---|---|
+| Bottom card SLOT2 | blue PCB, radial blue fan, single-slot, ATI logo class — **ATI Radeon HD 3870 Mac & PC Edition** (receipted seq 77) seated, bracket engaged in rear slot rail | HIGH (identity from prior receipt, not from this photo's resolution alone) |
+| Top card SLOT3/4? | dark shroud, silver bracket, dual-slot silhouette — **EVGA e-GeForce 9800 GT** (receipted seq 72) seated above the 3870 | HIGH (class) |
+| Bracket bar | ABSENT — case open, both cards held by slot connector + rear bracket slot + gravity | HIGH — matches operator words "no issue without screws" |
+| Booster aux | TWO 6-pin black connectors dangling UNPLUGGED over CPU cover (left side) | HIGH |
+| Memory cage | lower-right windows, DIMMs visible, count unreadable at chat resolution | MEDIUM-UNRELIABLE |
+| Drive bays | four sleds above GPU, closed, orange dots | HIGH |
+| Bench condition | bar-less, open case, pliers/screwdriver off-frame but orange handle visible right edge | HIGH |
+
+### Bar-less verdict (A3 interim)
+Operator words: "seems to be no issue without screws. the brackets and slots native to the mac case help with this a lot." — **CONFIRMED bench-legal per A3**: the Mac Pro 3,1 slot + rear bracket rail provides lateral retention; the bar only clamps the bracket top against vibration/transport. For G2-G4 bench (case OPEN, not moved) it holds. For CASE-CLOSED daily use: NOT allowed — card flex at slot = contact fatigue, vibration can walk the bracket out. Replacement still owes R1 vs R2 before daily closed state, NOT before bench test. Operator dusting of metal particles from destroyed captives still stands — magnet sweep before power-on.
+
+### SSD bay question — decomposed
+Operator demands (seq 82 numbered):
+1. "seems to be no issue without screws." — bench hold receipt above.
+2. "the brackets and slots native to the mac case help with this a lot." — explanation: slot connector + rear L-bracket slot = two-point retention; bar = third point for transport.
+3. "now how do i access the ssd bay?" — there is **NO dedicated SSD bay** on Mac Pro 3,1 (fact G-02/G-03). All four bays are 3.5" SATA cable-free direct-attach (Bay 1 bottom to Bay 4 top, operator left→right 1-4). A 2.5" SSD lives in a 3.5" carrier sled (one screw or tape as interim) or in the optical bay via hidden SATA ports (needs cables).
+4. "the four bays are only hard drives." — correct: 3.5" HDD bays, 3Gb/s, sleds with captive latch.
+5. "we need to put the 2.5in crucial boot ssd somewhere else." — intent = free bays for HDDs per original mac-guide 4x1TB Green plan.
+6. "i have no conversion cables or anything fyi" — inventory: no Molex→SATA power, no SATA data extension, no 2.5→3.5 adapter bracket.
+7. "i have 2 240gb kingston ssd's and the 1tb crucial boot drive" — SSD inventory: 1x Crucial 1TB (MX500 CT1000 class, Lion SSD Base, disk0s2, Bay1, NEVER erase) + 2x Kingston 240GB (models UNKNOWN, need label photos for exact SKU).
+
+### Where can the 2.5" SSDs live? (one change per power-on, purchase-gated)
+- **Current location**: Bay 1 sled = Crucial 1TB Lion SSD Base (installer-app path, 10.7 booting). Bay 3 = MX500 CT1000 start disk clone (superseded). Bay 4 = Install ESD SPARE. Bay 2 = UNKNOWN. All 2.5" SSDs are currently in 3.5" sleds (needs verification — photo request below). This works today.
+- **Freeing bays for 4x HDD**: the designed path per G-03/G-04/G-05 = move boot SSD to **lower optical bay** using the two hidden SATA II ports behind the front fan assembly (lift fan module 40mm, per G-16). That needs: (a) SATA data cable from hidden port to optical bay, (b) 4-pin Molex→SATA power adapter (optical bay has Molex, not SATA power), (c) 2.5→5.25 or 2.5→3.5 bracket for optical bay. **Without those cables (operator words) this move is BLOCKED** — purchase = operator decision.
+- **Zero-cable interim options** (bench-legal, not daily-ideal):
+  - Keep Crucial 1TB in Bay1 sled (one screw + tape as interim if sled holes don't line up — 2.5" drive 101.6x69.85mm vs 3.5" 147x101.6mm, S4). That keeps Lion boot proven.
+  - The two Kingston 240GB SSDs can sit loose on the optical bay shelf (no power/data without cables) or in empty HDD sleds with one screw as well — but they have no data path until a SATA port is free or cabled. If Bay2 is empty, one Kingston can occupy Bay2 sled now, still using the bay's native SATA power+data (no extra cable needed — the bay itself provides both).
+  - DO NOT stack SSDs on top of HDD sleds or let them short on metal — kapton/tape isolation.
+- **Next physical step for SSDs**: photo the sleds out: which sled holds which SSD (label + bay). That decides whether Bay2 is free for a Kingston, and whether we need to order the optical-bay cable kit (SATA data + Molex→SATA power + bracket).
+
+### Updated photo requests (re-issued every turn until covered, per imaging-contract)
+1. Sled latch faces straight-on: bay numbers + drive per sled + red-sticker bay (claim 1) + which sled holds the Crucial 1TB vs Kingstons.
+2. SSD label photos: Crucial 1TB (model/firmware) + both Kingston 240GB (exact SKU, e.g. A400/SA400) — needed for power/trim/compatibility.
+3. Riser top-down: FB-DIMM count per riser (LOW, non-blocking) — operator says visible, bytes never persist.
+4. WD Green drive manifest: count + full models + target bays (needed before RAID-format wave names wipe target; Bay1 = destroys Lion, NEVER).
+5. Bar-screw replacement choice R1 vs R2 (+ thread measurement if R1) — owed before case-close daily use, NOT before bench test.
+6. Booster routing: when powering on, confirm UPPER aux → 3870 (SLOT2), LOWER aux → 9800 GT (SLOT1) per iFixit 14161; photo of plugged state before G3.
+
+### G1-G5 status after this photo
+- G1: GTX 285 out COMPLETE, 3870 + 9800 GT both seated (dual-donor bench config) — operator jumped ahead from single-card G1 to dual-card G1b. Electrically OK per entry 12f (150W envelope each), but G3 power-on still owes booster plugs (currently UNPLUGGED per photo). One change per power-on still expects G2 digital cable before G3, but dual-card bench is acceptable if operator wants it as the G3 config — note as deviation from ladder (G5b merged into G1).
+- NextAction remains docs/lion-workflow.json: install AMD card + digital cable APPROVED, HDD swap + RAID format, wipe target named before any destructive op. Nothing destructive until confirmed.
