@@ -436,3 +436,61 @@ Operator words: "i reordered them so theyre in order 2-4" — meaning the 3-sled
 - G3 power-on with Bay1 SSD — READY once Bay1 SSD seated + boosters plugged
 - G4 display verify — OWED
 - G6 HDD manifest — RECEIPTED 4x WD10EAVS, orange=Bay2, order 2-4 — CLOSED for count/model, open for individual S/Ns + final insertion photo.
+
+## Entry 2026-09-13m (session 01a097ba) — FINAL STATE: SSD Bay1 front seated, 4th HDD outside, desk prep before G3
+
+Source: operator words verbatim "this is the hdd outside of the mac, the ssd took its place inside the mac. all hdds are the same in and out of the sleds/mac. and before i power it on i need to mount some speakers to my desk and cable manage aswell as placing my ups elsewhere to get some deskroom for when i eventually need to get my pc on here too. as ill be daily driving both of them" (seq 90) + chat-only photo WD10EAVS outside in hand with sled (seq 91, bytes NOT persisted — 8th check).
+
+### Bay map FINAL (operator-authoritative, CLOSED)
+| Bay | Contents | Role | Notes |
+|---|---|---|---|
+| Bay1 front | Crucial 1TB Lion SSD Base (MX500 class, 1TB, disk0s2, Lion 10.7, 19.4GB free) | boot, erase NEVER | nearest cooling, isolated from GPU/CPU heat per seq 86, SSD took place inside Mac per seq 90 |
+| Bay2 | WD10EAVS 1TB orange marked (S/N WCAU40497545 receipted, others pending) | coldstorage unlabeled | orange = Bay2 per seq 88, reordered 2-4 |
+| Bay3 | WD10EAVS 1TB coldstorage | coldstorage unlabeled | |
+| Bay4 | WD10EAVS 1TB coldstorage (last slot) | coldstorage unlabeled | |
+| Outside Mac | WD10EAVS 1TB 4th HDD in hand with sled (photo seq 91) — same model in and out of sleds/Mac per seq 90 | spare / future Bay1 replacement if SSD moves to optical bay with cable kit | all 4 HDDs same model |
+
+**Count:** 1x SSD (Bay1) + 3x HDD (Bay2-4) = 4 bays filled, bootable. 4th HDD outside = spare for now. If you later want 4x HDDs + SSD, need optical-bay cable kit (hidden SATA + Molex→SATA power + bracket) — purchase-gated.
+
+### HDD manifest refinement
+- All 4 HDDs same model: WD10EAVS WD Caviar GP 1TB, MDL 00D7B0/000780, 26 MAY 2008, Thailand, GreenPower. S/N WCAU40497545 receipted for one; other 3 S/Ns still UNKNOWN (need labels for full tracking, but count/model CLOSED).
+- GreenPower notes: IntelliPark 8s head park, no TLER, mitigation wdidle3 per G-08. Good for coldstorage, not ideal for RAID without TLER disable.
+
+### Desk prep — power-on delayed (operator words)
+Operator: "before i power it on i need to mount some speakers to my desk and cable manage aswell as placing my ups elsewhere to get some deskroom for when i eventually need to get my pc on here too. as ill be daily driving both of them"
+
+This is a **new gated wave** before G3: deskroom for daily driving both Mac Pro 3,1 + PC (OMEN 45L / APEX). Tasks:
+- Mount speakers to desk
+- Cable manage
+- Place UPS elsewhere
+- Get deskroom for both machines
+
+**Guidance (zero-risk, no power-on):**
+- Mac Pro 3,1: 511x206x475mm HxWxD, ~19.5kg empty, 25kg+ loaded, needs 250mm width + 500mm depth + 150mm rear clearance for cables/thermal (exhaust rear 140 cross-hatch). Do NOT place UPS under desk with intake blocked — UPS needs ventilation.
+- Speakers: mount at ear height, isolated from vibration, not on same power strip as UPS output if UPS is line-interactive (can inject noise).
+- Cable manage: keep booster 6-pin bundle (currently dangling) away from fan blades + memory riser windows. Route along CPU cover edge with velcro (existing black bundle has velcro).
+- UPS placement: floor or side, not blocking PSU intake, not under desk if carpet (thermal). Keep Mac Pro + Dell monitor on UPS battery side, speakers on surge-only side.
+- Daily driving both: need KVM or separate inputs on Dell S2725QS (has multiple HDMI/DP). Plan cable routes now before G3 so you don't move case after bar-less bench (bar-less = do not move case).
+
+### G ladder status after this entry
+- G1 GPUs seated bar-less — COMPLETE
+- G2 digital cable — OWED (DVI→HDMI from 3870 to Dell)
+- G3 first power-on — READY once boosters plugged (UPPER→3870, LOWER→9800GT) + Bay1 SSD confirmed seated + desk prep done. Operator explicitly delays G3 for desk prep — **G3 BLOCKED on desk prep**, not on hardware.
+- G4 display verify digital 1080p + About This Mac reads — OWED after G3
+- G6 HDD manifest count/model — CLOSED (4x WD10EAVS), open for full S/N list + final 4-sled insertion photo
+
+### Photo requests remaining (re-issued)
+1. Bay1-4 final insertion photo (4 sleds in, numbers legible, SSD front + HDDs 2-4 + orange Bay2) — closes bay map visually.
+2. Other 3 WD10EAVS S/N labels (for full manifest).
+3. Crucial 1TB SSD label (model/firmware) + Kingston 240GB labels (if still on scene, otherwise note as spare).
+4. Booster plugged state before G3.
+5. Bar-screw R1 vs R2 before case-close.
+6. Desk prep complete photo (optional, for cable management verification).
+
+### Measurement table final
+| object | value | source |
+|---|---|---|
+| Bay1 SSD | Crucial 1TB Lion, front coolest | S1 operator words seq 86+90 |
+| Bay2-4 HDD | 3x WD10EAVS 1TB + 1x outside spare = 4x total | S1 label + operator words seq 88+90 |
+| Orange marked | Bay2 | S1 operator words seq 88 |
+| Booster routing | SLOT1=LOWER, SLOT2=UPPER | S3 iFixit 14161 |

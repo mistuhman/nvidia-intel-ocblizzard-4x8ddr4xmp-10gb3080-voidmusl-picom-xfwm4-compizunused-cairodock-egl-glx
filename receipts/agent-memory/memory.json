@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-13",
-  "lastSeq": 89,
+  "lastSeq": 91,
   "entries": [
     {
       "seq": 1,
@@ -1725,6 +1725,39 @@
         }
       ],
       "sha256": "14edc089729e69eb0e88757efe4b02a7868eb8f09b62ed6416199b908c6e0ccc"
+    },
+    {
+      "seq": 90,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "this is the hdd outside of the mac, the ssd took its place inside the mac. all hdds are the same in and out of the sleds/mac. and before i power it on i need to mount some speakers to my desk and cable manage aswell as placing my ups elsewhere to get some deskroom for when i eventually need to get my pc on here too. as ill be daily driving both of them",
+      "sha256": "72dc9d998b3da65ced419318b812112ea2eecd693bcc93927f071d45e4e9d9cb"
+    },
+    {
+      "seq": 91,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:wd10eavs-outside-hdd-2026-09-13c",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "WD10EAVS 1TB outside Mac in hand, sled attached, S/N WCAU40497545 same as prior, SSD took its place inside Mac (Bay1 front per seq86)",
+          "confidence": "HIGH",
+          "source": "operator words + chat-only image.jpg, bytes NOT persisted 8th check"
+        },
+        {
+          "claim": "all 4 HDDs same model in and out of sleds/Mac (4x WD10EAVS)",
+          "confidence": "HIGH",
+          "source": "operator words seq90"
+        },
+        {
+          "claim": "power-on delayed for desk prep: mount speakers, cable manage, place UPS elsewhere, deskroom for both Mac Pro 3,1 and PC daily driving",
+          "confidence": "HIGH",
+          "source": "operator words seq90"
+        }
+      ],
+      "sha256": "9af0cf2115a7e9a7d368c06f211497f7df6d57603b737b84248b67721447b7df"
     }
   ],
   "stacks": [
@@ -1788,7 +1821,9 @@
         86,
         87,
         88,
-        89
+        89,
+        90,
+        91
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
