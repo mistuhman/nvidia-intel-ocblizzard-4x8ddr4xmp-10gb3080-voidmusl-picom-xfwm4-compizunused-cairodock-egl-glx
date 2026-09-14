@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-13",
-  "lastSeq": 91,
+  "updated": "2026-09-14",
+  "lastSeq": 94,
   "entries": [
     {
       "seq": 1,
@@ -1758,6 +1758,32 @@
         }
       ],
       "sha256": "9af0cf2115a7e9a7d368c06f211497f7df6d57603b737b84248b67721447b7df"
+    },
+    {
+      "seq": 92,
+      "date": "2026-09-14",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the two 6pins are plugged into the 9800gt and 3870 mac edition. dont bother with instructions currently, it doesnt matter since we should plan on the mac and pc's logistics. because i have a 1050 and a gtx 285 outside of the case already, so if need be we can always install kiss linux to use the 1050 as a primary and the 285 as a tertiary for the mac. create a pull request and merge it please",
+      "sha256": "8d89fd8647e9aaef30abe128ef14dfdd647b4adfefe90b57c74904c7901c66d8"
+    },
+    {
+      "seq": 93,
+      "date": "2026-09-14",
+      "kind": "value",
+      "key": "boosterPlugged",
+      "value": "both 6-pins plugged: 9800GT + 3870 Mac Edition (UPPER->3870 SLOT2, LOWER->9800GT SLOT1 per iFixit 14161)",
+      "source": "operator words seq92",
+      "sha256": "f35a053b0c87f08d434acf97218d891bbd48f26414518363ce7ea2a92a349aab"
+    },
+    {
+      "seq": 94,
+      "date": "2026-09-14",
+      "kind": "value",
+      "key": "gpuInventoryOutside",
+      "value": "GTX 1050 + GTX 285 outside case, available as primary/tertiary; KISS Linux plan: 1050 primary + 285 tertiary for Mac",
+      "source": "operator words seq92",
+      "sha256": "1da86a7d346612bb44f8250a585d8f21fb37701a2a802784ac059de637be4c24"
     }
   ],
   "stacks": [
@@ -1823,7 +1849,10 @@
         88,
         89,
         90,
-        91
+        91,
+        92,
+        93,
+        94
       ],
       "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"

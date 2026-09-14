@@ -494,3 +494,54 @@ This is a **new gated wave** before G3: deskroom for daily driving both Mac Pro 
 | Bay2-4 HDD | 3x WD10EAVS 1TB + 1x outside spare = 4x total | S1 label + operator words seq 88+90 |
 | Orange marked | Bay2 | S1 operator words seq 88 |
 | Booster routing | SLOT1=LOWER, SLOT2=UPPER | S3 iFixit 14161 |
+
+## Entry 2026-09-14n (session 01a097ba) — BOOSTERS PLUGGED + LOGISTICS SHIFT + GPU OUTSIDE INVENTORY
+
+Source: operator words verbatim "the two 6pins are plugged into the 9800gt and 3870 mac edition. dont bother with instructions currently, it doesnt matter since we should plan on the mac and pc's logistics. because i have a 1050 and a gtx 285 outside of the case already, so if need be we can always install kiss linux to use the 1050 as a primary and the 285 as a tertiary for the mac. create a pull request and merge it please" (seq 92) + values boosterPlugged (seq93) + gpuInventoryOutside (seq94).
+
+### Booster state CLOSED
+- Both 6-pin aux leads PLUGGED: 9800GT + 3870 Mac Edition per operator words. Routing per iFixit 14161: SLOT1=LOWER aux → 9800GT, SLOT2=UPPER aux → 3870. This closes the open booster photo request from entry 13i/13j/13k/13l/13m.
+- G3 first power-on now READY from power perspective (plus Bay1 SSD seated per seq90, digital cable still owes but operator says dont bother with instructions currently).
+
+### Logistics shift — Mac + PC daily driving both
+Operator directive: "dont bother with instructions currently, it doesnt matter since we should plan on the mac and pc's logistics."
+
+New focus: desk prep + UPS relocate + speaker mount + room for both machines (Mac Pro 3,1 + PC). Operator daily drives both.
+
+Inventory outside case:
+- GTX 1050 (outside)
+- GTX 285 (outside, previously removed, inverse intact)
+- 2x Kingston 240GB SSDs (from seq82) + 1x WD10EAVS spare outside (seq91) = outside storage pool
+
+KISS Linux plan (operator words): "if need be we can always install kiss linux to use the 1050 as a primary and the 285 as a tertiary for the mac."
+
+Interpretation:
+- KISS Linux = lightweight Linux (operator's Void background, KISS principle) — could be installed on Mac Pro 3,1 as alternative OS to Lion, using GTX 1050 as primary GPU (Pascal, needs nvidia 390+ driver, works on Linux but not on Mac EFI — would be no boot screens, but works after boot) and GTX 285 as tertiary (third GPU).
+- Mac Pro 3,1 can run Linux (Void, etc.) with PC GPUs (no EFI needed). 1050 primary = modern, low power (75W, no 6-pin on some models, or 1x 6-pin), 3870 + 9800GT + 285 as compute/display extras. 980W PSU can handle multiple.
+- Logistics: PC (OMEN 8917) currently in APEX case? Actually APEX track gated. Mac Pro 3,1 is separate. Both need deskroom, UPS, cable manage.
+
+### PR creation + merge requested
+Operator: "create a pull request and merge it please" — this turn will create PR from session branch arena/01a097ba-nvidia-intel-ocblizzard-4x8ddr to main and merge, per repo rules (gh authenticated).
+
+### G ladder final for this session
+- G1 GPUs seated bar-less bench — COMPLETE, boosters PLUGGED
+- G2 digital cable — OWED but deferred per logistics shift
+- G3 power-on — READY (Bay1 SSD seated, boosters plugged, desk prep in progress) — DEFERRED per operator "dont bother with instructions"
+- G4 display verify — DEFERRED
+- G6 HDD manifest 4x WD10EAVS — CLOSED for count/model, orange=Bay2, order 2-4
+- Logistics wave: speakers mount, cable manage, UPS elsewhere, deskroom for both — ACTIVE
+
+### Photo requests remaining (deferred per operator)
+All previous photo requests remain open but deferred per "dont bother with instructions currently":
+1. Final 4-bay insertion photo (SSD Bay1 front + HDDs Bay2-4)
+2. Other WD10EAVS S/Ns + Crucial SSD label + Kingston labels
+3. Digital cable plugged state
+4. Bar-screw R1 vs R2 before case-close
+5. Riser DIMM counts (LOW)
+
+### Measurement final
+| object | value | source |
+|---|---|---|
+| Booster plugged | both 6-pins → 9800GT + 3870 | S1 operator words seq92 |
+| Outside GPUs | GTX 1050 + GTX 285 | S1 operator words seq92 |
+| KISS Linux plan | 1050 primary, 285 tertiary for Mac | S1 operator words seq92 |
