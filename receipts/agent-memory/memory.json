@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-12",
-  "lastSeq": 56,
+  "updated": "2026-09-14",
+  "lastSeq": 94,
   "entries": [
     {
       "seq": 1,
@@ -1203,6 +1203,587 @@
       "value": "operator G-20 zone map: fan tray 2x140 LEFT, dual-CPU compartment, RAM cage RIGHT of CPUs, GTX285 above RAM (backplate visible, fan toward drive bays, bracket rear/right, 3 free PCI rails, dangling booster), 4 bays ABOVE GPU L-R, DVD top-left one optical bay, PSU top-right own compartment, 140 rear cross-hatch exhaust, full I/O",
       "source": "operator verbatim 2026-09-12",
       "sha256": "3235b699907812b4dc81e25bc8a0fa018fec8cb1e1c374c6bf0f679f3b586204"
+    },
+    {
+      "seq": 57,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "vision-check.png",
+      "tool": "generate_image + read_file vision",
+      "claims": [
+        {
+          "claim": "Self-generated calibration card renders: large solid RED SQUARE top-left, solid BLUE CIRCLE top-right, solid YELLOW UP-TRIANGLE bottom-left, solid GREEN 5-POINT STAR bottom-right, white background",
+          "evidence": "read_file returned the rendered PNG and the model described all four shapes, colors and positions correctly",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Rendered text reads ARENA VISION CHECK 2026-09-12 in black sans-serif on one centered line, exact requested date",
+          "evidence": "text is crisp and legible in the returned image and matches the prompt string",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "5563e2dfc85e3ccfe0cbbc3b02c1d99133cdc3122c7755f428e4aa0f05a0f262"
+    },
+    {
+      "seq": 58,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "image-search/mac-pro-3-1-early-2008-interior-memory-r-1.jpg",
+      "tool": "image_search + read_file vision",
+      "claims": [
+        {
+          "claim": "Web photo legible: TWO blue PCB Mac Pro memory riser boards lying side-by-side on white packing foam, stacked component rows visible on each card, solder pads along edges",
+          "evidence": "read_file returned the photograph and the model identified the two riser cards and their layout",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Photo is small/low-resolution (~130px thumbnail) but component identity is readable",
+          "evidence": "fine silkscreen text not resolvable at this size; shape and color identification reliable",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "2c6c5ddf43fb25b48b2f0a6bc0378e40971dc63d0836ae25abc7786275df48b5"
+    },
+    {
+      "seq": 59,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba: vision-verify artifacts archived - vision-check.png now receipts/vision-check/testcard-2026-09-12.png and image-search/mac-pro-3-1-early-2008-interior-memory-r-1.jpg now receipts/vision-check/macpro-web-photo.jpg (seq 57/58 target paths are the original tool-call paths).",
+      "sha256": "ecad5dc3ff2809fa319af86d1adc91b901983ec3ca9a63c27f7b5b420f128cea"
+    },
+    {
+      "seq": 60,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "test-all side effects",
+      "sides": [
+        {
+          "claim": "claim: node tools/test-all.ts is worktree-clean",
+          "source": "ran by README start protocol"
+        },
+        {
+          "claim": "reality: lint re-emits receipts/mac-guide prompts+schematics from current spec v6e over older committed receipts, dirtying 10 files",
+          "source": "git diff after test-all 2026-09-12; emitPrompt writeFileSync tools/mac-guide-art.ts:772"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "agent",
+      "sha256": "5f6cfcf9285acc485c60a4cb40c835845633d037b9f554eeff5b9fa4a6f3afae"
+    },
+    {
+      "seq": 61,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "uploadsWorkflow",
+      "value": "operator uploads -> node tools/uploads.ts ingest (hash, dims, claims, dated dir) -> SHORT-TERM uploads/RECENT.md last-8 window that every image agent reads BEFORE perceiving -> LONG-TERM uploads/index.json + auto agent-memory perception receipt; every emitted render prompt carries the byte-identical UPLOADS CROSSREF BLOCK (uploads refs); uploads verify before every render (mismatch refuses); uploads gate refuses render and issues numbered photo request whenever a visual claim has no persisted evidence - ask every time; chat-only photos get capped-confidence receipts + bytes re-requested; universal contract docs/imaging-contract.md",
+      "source": "operator directive 2026-09-12 session 01a097ba; tools/uploads.ts selftest 13/13; MASTER.md uploads section",
+      "sha256": "fb4903e2dfec6548bb8705b919b530295bc59e252f8a3aa4c1ce81377545c8ec"
+    },
+    {
+      "seq": 62,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-interior-2026-09-12",
+      "tool": "operator chat attachment x2 (identical; bytes NOT persisted: /home/user/uploads/ absent from sandbox)",
+      "claims": [
+        {
+          "claim": "Mac Pro 3,1 interior through open side: DVD/optical compartment upper-LEFT (two rectangular openings, screws visible), plain PSU compartment panel upper-RIGHT - matches G-20 canon zone-for-zone",
+          "evidence": "chat photo read; zone layout identical to operator-verbatim G-20/G-21 (DVD left + PSU plain right)",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "FOUR drive sled blanks in a row with orange latch dots, worn/scuffed bare aluminum, RED STICKER on the RIGHTMOST sled - matches g01 purpose line red-sticker-rightmost",
+          "evidence": "chat photo read; four uniform silver rectangles + red sticker upper face of rightmost",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Etched/chassis digits near sleds read 3 and 4 toward the left and 1 near the red-sticker sled; full 1-4 order not cleanly readable",
+          "evidence": "small etched digits at this resolution; bay-number mapping needs close-up",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Black dual-slot GPU with curved finned blower shroud seated in a PCIe slot, silver DVI-class bracket at right rail near honeycomb + slot covers; board silkscreen SLOT2 - X16 readable",
+          "evidence": "chat photo read; silkscreen text legible; silhouette consistent with GTX 285 Mac-class card",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "TWO black cables ending in 6-pin PCIe connectors dangle UNPLUGGED near the front-left of the GPU, drooping over the CPU compartment cover",
+          "evidence": "chat photo read; both connectors clearly unseated and hanging free",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "CPU compartment: large smooth metal cover in place (dual-CPU enclosure)",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Memory cage lower-right: riser board area shows blue PCBs with populated component rows (purple caps visible); FB-DIMM COUNT NOT READABLE",
+          "evidence": "chat photo read at angle; per-DIMM count needs top-down close-up",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Dark front-mesh intake strip at photo left edge; coiled light-blue ethernet patch cable outside the case bottom-left on desk",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Case pose: lying on its back, open side up, front of chassis at photo top; sleds appear closed but drive presence per sled is NOT determinable from this angle",
+          "evidence": "geometry of optical pair + horizontal sled row + latch dots; sled faces uniform so loaded-vs-empty is unknown",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sha256": "94f12a8eb1daec3940750ef3d92f0550ee5a93a1590968de7d6236fd5817cee5"
+    },
+    {
+      "seq": 63,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "measurementFundamentals",
+      "value": "imaging agents ground every geometry claim via docs/measurement-fundamentals.md: source ladder S1 operator photo receipt > S2 repo facts > S3 hash-verified refs > S4 cited vendor spec > S5 unmeasured=ghost never hard claim; freeze a per-plate measurement table before layout; one measurement class per pass (steady, one-knob pacing); ratios must equal real ratios +-3pct checked at P3/P4 scene math and P8 pixel-audit; photo wins on any conflict with the baked scene; unsourced dimension = ERROR finding; open gaps become numbered photo requests every time",
+      "source": "operator directive 2026-09-12; docs/measurement-fundamentals.md v1",
+      "sha256": "92bd95f9d08b878779daed56ceb86ba4e6c476fe74813be053d35ba0cc2d9bb7"
+    },
+    {
+      "seq": 64,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba: inventory log started at receipts/inventory/macpro31.md (entry 1, source seq 62 chat-only photo - bytes NOT persisted: /home/user/uploads/ absent from sandbox despite attachment notice; 2 identical copies; re-request bytes when a hash-locked ref or pixel-audit needs them). Open photo requests: sled latch faces with bay numbers + per-bay drive presence (Bay 3 = MX500 per gate #1 must be receipted), riser DIMM counts, GPU 6-pin seated state (photo shows UNPLUGGED vs 2026-09-09 booted receipt), GTX 285 identity close-up.",
+      "sha256": "72cb17a287791466c724eef2d08cfd317275d28d589e3729f7fecd11b9d92e64"
+    },
+    {
+      "seq": 65,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12 session 01a097ba inventory entries 2+3: (2) GPU 6-pins UNPLUGGED is current state (photo seq 62 = latest physical receipt); H1 leading = deliberate unplug preparing the APPROVED AMD card swap during powered-off chassis session (lion-workflow nextAction aligns); H2 = knocked loose; discriminator = operator words; no boot claim after unplug. (3) Bay map receipted: Bay1 Lion SSD Base = LION ACHIEVED 2026-09-12 (was SL), Bay3 MX500 CT1000 start disk clone superseded, Bay4 ESD SPARE, Bay2 UNRECEIPTED; MASTER gate-12 Lion wording + README SL refs were STALE, fixed this commit via safe line-splice.",
+      "sha256": "21ac9dbba7ed00ed1d79c50ac68d9f806c162537f54db1d2715286cee1f23b93"
+    },
+    {
+      "seq": 66,
+      "date": "2026-09-12",
+      "kind": "discrepancy",
+      "topic": "lion-workflow volumes media fields",
+      "sides": [
+        {
+          "claim": "claim: Bay1 media=starrt disk clone, Bay3 media=Lion (as written)",
+          "source": "docs/lion-workflow.json volumes[]"
+        },
+        {
+          "claim": "reality: media fields appear transposed/typoed; roles+locations are self-consistent (Bay1=Lion SSD Base booting Lion, Bay3=SL start disk clone on MX500)",
+          "source": "inventory entry 2026-09-12c"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "agent",
+      "sha256": "ac9808eb117eb5559ffceb436d5ced57315e0fb05d2e52f83301cf5a8b234d7f"
+    },
+    {
+      "seq": 67,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "amdSwapWave",
+      "value": "docs/amd-swap-wave.md authored 2026-09-12 session 01a097ba: APPROVED-with-conditions swap (Mac-EFI boot screens or none; keep GTX 285 until new card POSTs+displays; Dell-real-EDID digital identity dodges the 1440p poison); gate ladder G0 label-photo+measurement-table+standing-claims -> G1 swap -> G2 digital cable -> G3 first power-on (garbage screens = Mac-EFI condition violated, stop) -> G4 digital 1080p verify then higher modes allowed (digital removes VGA ceiling), blind = new class metered, delete-retry WITH ls verification -> G5 About/GPU reads + inventory entry -> G6 HDD+RAID separate wave, wipe target named first; inverse documented; one change per power-on",
+      "source": "docs/lion-workflow.json nextAction+status verbatim; docs/amd-swap-wave.md; imaging-contract; measurement-fundamentals",
+      "sha256": "432a9a85924a019b2dacee9811277a1e7745cf3a08ef4a849be497dcf7d02206"
+    },
+    {
+      "seq": 68,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "QUEUED (not done) 2026-09-12 session 01a097ba: wire UPLOADS CROSSREF BLOCK into tools/mac-guide-art.ts emitPrompt + selftest assertion - deferred because plates are paused on 4 uncovered uploads-gate claims and the change would churn 15+ committed prompt receipts; ship it at the start of the next mac-guide render session (verify-before-render stays a manual contract step until then).",
+      "sha256": "ea03ced2c153f9558c62efbcaa7e837f9a24fa727abb29d156f153ceae11a345"
+    },
+    {
+      "seq": 69,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "pins unseated (with 6 identical photos of the Mac Pro 3,1 interior bay area, chat-only, /home/user/uploads/ absent from sandbox again)",
+      "demands": [
+        "photo receipt recorded",
+        "answer applies to GPU 6-pin unseat question claim 3"
+      ],
+      "sha256": "d8d6a506c8345d4afdcda305f04b71c2b7ac7c5538a4bc1ef86210f409a62342"
+    },
+    {
+      "seq": 70,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-bay-work-2026-09-12b",
+      "tool": "operator chat attachment x6 identical (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "TWO Western Digital GREEN drives are on scene in the Mac Pro bay area, apparently partially pulled/angled out of the sled cage during work: right drive label reads WD10EAVS Caviar GP GreenPower (1TB class, Green Power by WD banner, SATA, Product of Thailand, Mdl WD10EAVS-00D7B1 class, date code ~2012), left drive is a second WD Green with white label + green accent (model partially readable)",
+          "evidence": "chat photo read; WD10EAVS label text legible on right drive",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Sled blank covers remain latched in a row above the work area with orange latch dots; RED STICKER edge visible at frame right on the rightmost sled",
+          "evidence": "chat photo read; red sticker consistent with prior photo (seq 62)",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "A black bundled cable harness (four lines, two velcro straps) routes from the front-left toward the drive bays - the SATA data/power run awaiting connection",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "GTX 285 still seated in its slot: black shroud + finned top at frame bottom center on the blue board; PCIe slot silks (SLOT2 class) visible lower right; the two 6-pin connectors NOT visible in this frame (state unchanged since seq 62 unseated, per operator words pins unseated)",
+          "evidence": "chat photo read; operator words for pin state",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Work matches the receipted chassis-session step (3) HDD swap + the 4x1TB Green plan (macGuide session directive): WD Greens are the Mac-side drives going into freed bays, NOT the OMEN bulk drives (ST2000NM0033/DT01ACA200 are 2TB and different labels)",
+          "evidence": "drive model + plan cross-ref docs/lion-workflow.json nextAction; MASTER macGuide.session wording 4x1TB Green",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Bay number etchings NOT readable in this frame; drive presence per sled still not determinable (covers closed); DIMM/riser area not shown",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "f88e6dc3d53413f06cc38d44647f32b068ec061185e05012b1a5b06ddf9a9822"
+    },
+    {
+      "seq": 71,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "unplugges for card swap, i have a 9800gt aswell. left to right is bay 1-4 i showed the riser and dimm count already on the motherboard and riser (with 4 identical photos: two graphics cards on a desk - EVGA e-GeForce 9800 GT left, blue ATI Radeon right)",
+      "demands": [
+        "H1 confirmed for 6-pin unplug",
+        "9800 GT availability logged",
+        "bay numbering receipt left-to-right 1-4",
+        "riser/dimm assertion reconciled against persisted receipts"
+      ],
+      "sha256": "97b0c076731cbf95bad45b64b860f72a2f7352aa7cdca8002d02cade169a27a0"
+    },
+    {
+      "seq": 72,
+      "date": "2026-09-12",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-donor-cards-2026-09-12c",
+      "tool": "operator chat attachment x4 identical (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "LEFT card = EVGA e-GeForce 9800 GT: black shroud with orange fire graphic, printed e-GeForce 9800 GT + EVGA text, dual-slot style shroud, bracket with 2x DVI; green PCB edge; e-GeForce fan hub label",
+          "evidence": "chat photo read; text legible on shroud",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "RIGHT card = ATI Radeon on blue PCB: circular blue radial fan with red ATI RADEON logo hub, blue finned heatsink below fan, silver finned VRM heatsink at lower edge near power connector, bracket cluster of 2x DVI (+ third small connector class unreadable), white 6-pin-class PCIe power receptacle on the top PCB edge; cooler family and layout read as Radeon HD 4870-class (single-slot blower era)",
+          "evidence": "chat photo read; exact SKU text not readable in this frame",
+          "confidence": "HIGH (card present/model class MEDIUM)"
+        },
+        {
+          "claim": "Cards photographed side by side on a fabric surface near a white mouse and a silver MacBook-class lid - bench staging, not installed",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "056d1de6d374750308f466d7240bd84f817d20b74bf0eba8d0ad4bfb2c4432b8"
+    },
+    {
+      "seq": 73,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12e corrections: entry-1 MEDIUM etched-digit read (3,4 left / 1 near red sticker) SUPERSEDED by operator words left-to-right = bay 1-4 (red sticker = bay 4 rightmost); my perception was misread/partial - operator receipts outrank MEDIUM perception reads. 6-pin intent CLOSED as H1 deliberate swap-prep. Claim 2 riser count: operator asserts shown; no legible persisted photo in my records; receipted total 10GB (workflow machine line); per-riser open LOW non-blocking.",
+      "sha256": "32dfdca6adfe11a77c0f74368e78ce98392ae91ebc42e5f2a88710bbb725820d"
+    },
+    {
+      "seq": 74,
+      "date": "2026-09-12",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "both the 9800gt and radeon card only have 6pin connectors, i have two 6pin connectors for the alien so i thought i could run both of those over the gtx 285? if performance/stats prove something",
+      "demands": [
+        "log 1x6pin per donor card",
+        "log two 6pin aux leads available",
+        "evaluate dual-donor-instead-of-GTX285 proposal",
+        "give metered stats verdict"
+      ],
+      "sha256": "5c450d9b93bb0ed6454b3ef19e61781ca5aeadbd642b42ab74153355b78d9d32"
+    },
+    {
+      "seq": 75,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "donorPowerClass",
+      "value": "both donor cards 1x 6-pin each per operator words (2026-09-12 session 01a097ba seq 74); Mac Pro 3,1 aux = two 6-pin booster leads, one per x16 slot = 75W aux per slot + 75W slot = ~150W per-card envelope; proposal on table: GTX 285 out, Radeon + 9800 GT in together (slots 1+2 class), one 6-pin each, conditional on metered stats",
+      "source": "operator words verbatim; docs/amd-swap-wave.md G0",
+      "sha256": "92b833f6670ca8aa036430c9fe6c5de28b3a584b82f785826fa4e4537b640123"
+    },
+    {
+      "seq": 76,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12f dual-donor verdict logged: electrically YES (two x16, one 6-pin per slot aux, per-card 150W envelope; 9800GT fits, Radeon margin depends on SKU 4850-vs-4870); stats honesty: no CrossFire/SLI on Mac EFI = zero FPS gain from pairing, wins are displays + OpenCL device; GTX 285 likely fastest single card of the three; sequence G1 Radeon-alone first then G5b add 9800GT, one change per power-on.",
+      "sha256": "40e2b1d574c485e89c4d6e226589286e4b2c6e1e0227129e33ea36a7663d7db5"
+    },
+    {
+      "seq": 77,
+      "date": "2026-09-12",
+      "kind": "value",
+      "key": "swapCard3870Mac",
+      "value": "swap card RECEIPTED: ATI Radeon HD 3870 Mac & PC Edition (operator words 2026-09-12 seq 77): 512MB GDDR4, 2x dual-link DVI, single-slot, 1x 6-pin, TDP ~106W vs 150W envelope = comfortable; Mac EFI firmware = BOOT SCREENS + Option-picker expected on 3,1 (better branch of approved condition); Lion native; DVI->HDMI to Dell S2725QS = 1080p-class (dual-link DVI ceiling 2560x1600, no 4K); G0 COMPLETE; booster routing per iFixit 14161: SLOT2 card uses UPPER aux connector",
+      "source": "operator words; iFixit 14161 + EveryMac + Wikipedia receipts",
+      "sha256": "4247a05f1705742ce9d934daef189942faba93a0ec6f7c6ec0fd2d44bccf4f63"
+    },
+    {
+      "seq": 78,
+      "date": "2026-09-12",
+      "kind": "note",
+      "text": "2026-09-12g: captive-screw reframe receipted - the two captive thumbscrews hold the PCI bracket BAR and never come out (design); loosen 3-5 turns, lift bar, front latch up, straight pull; 2008 has no retaining rod; seized-screw tree = MASTER 2026-09-07h (hard press + rubber band, pliers, never drill). Video guidance: OWC installvideos portal (A1186 Early 2008 PCIe clip), iFixit 14161. Riser split: operator says visible in every picture; my perception could not resolve counts from chat-only photos - numbers as words anytime, LOW non-blocking.",
+      "sha256": "7d2de0742bc8200b2979e6d9f7abbf881ec72edfecee5d349004e245fcb1cdff"
+    },
+    {
+      "seq": 79,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "took out the retention bracket and the gtx. screws are unusable now since i had to torsion them out. dusted all the metal particles out of the case (with 1 photo: PCIe bay empty, SLOT2-X16 + SLOT1-X16 silks readable, sled row above with one etched digit readable, red-sticker sled rightmost, two 6-pin aux leads dangling at left, slot covers in place at right, orange-handled pliers at frame right)",
+      "demands": [
+        "receipt GTX removal",
+        "receipt bracket bar + destroyed captive screws",
+        "receipt case cleaning",
+        "assess bar-less operation classes",
+        "ship G1 continuation"
+      ],
+      "sha256": "297aa9f0c75f5e3182b7b90163c2ad1f698c80741619c828aceb9d1c7ce13721"
+    },
+    {
+      "seq": 80,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-gtx-out-2026-09-12d",
+      "tool": "operator chat attachment x1 (bytes NOT persisted)",
+      "claims": [
+        {
+          "claim": "SLOT2 IS EMPTY - GTX 285 removed; bare logic board with SLOT2 - X16 and SLOT1 - X16 silks legible; no card in either slot",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "The two 6-pin aux leads remain dangling unseated at frame left (two black 6-pin connectors visible)",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Drive sled row above: one etched digit readable on a sled (reads like 4, second-from-left in frame), red-sticker sled rightmost; digit-vs-operator-mapping micro-question logged (words outrank this read)",
+          "evidence": "chat photo read at resolution limit",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Rear slot-cover stack visible at right with slotted screws; bracket bar NOT installed (removed); case rear opening exposed",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        },
+        {
+          "claim": "Memory cage lower-right shows riser board top edges with purple caps; DIMM count not resolvable (unchanged)",
+          "evidence": "chat photo read",
+          "confidence": "MEDIUM"
+        },
+        {
+          "claim": "Work staging: orange-handled pliers at frame right; board surface looks clean after operator dusting",
+          "evidence": "chat photo read",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "a2148aea9e170e830dd4a73708e3ba1172bad53b2cd56347a0675f5fc67920f9"
+    },
+    {
+      "seq": 81,
+      "date": "2026-09-13",
+      "kind": "value",
+      "key": "bracketBarCasualty",
+      "value": "PCI bracket bar removed OK but its two captive screws destroyed by torsion (operator words 2026-09-12 seq 79); replacement classes R1 replacement screws (M3-class, measure thread before buying) / R2 used bar or donor harvest (purchase = operator) / A3 bar-less BENCH operation allowed case-open for G1-G4, NEVER daily closed state; bar-fix ships as its own later wave (one change per power-on); operator already dusted metal particles - magnet sweep + slot inspection before power-on",
+      "source": "operator words; seq 80 photo; entry 2026-09-12h",
+      "sha256": "18431cf4fdf442f2b4757640ed50390f27a73cf28a169cc798dd844793508e6e"
+    },
+    {
+      "seq": 82,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "seems to be no issue without screws. the brackets and slots native to the mac case help with this a lot. now how do i access the ssd bay? the four bays are only hard drives. we need to put the 2.5in crucial boot ssd somewhere else. i have no conversion cables or anything fyi, i have 2 240gb kingston ssd's and the 1tb crucial boot drive",
+      "sha256": "be1b8d8f6f5b11d1333ce7c7a455911f7a17b890eacdf3e451874e6db88f294b"
+    },
+    {
+      "seq": 83,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-dual-gpu-seated-2026-09-13",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "dual GPUs seated: bottom SLOT2 blue PCB blue fan ATI 3870 Mac Edition, top SLOT1? black/brown shroud EVGA 9800 GT, both brackets engaged in case slots, no bracket bar (bar-less bench)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg, bytes NOT persisted - /home/user/uploads/ missing confirmed 5th time, re-request if hash/pixel-audit needed"
+        },
+        {
+          "claim": "both 6-pin booster cables dangling UNPLUGGED over CPU cover (left side, two black connectors)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "memory riser windows lower-right: DIMMs visible but count unreadable at chat resolution",
+          "confidence": "MEDIUM",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "sled bays 1-4 above GPU, closed, orange dots visible",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        }
+      ],
+      "sha256": "5e9bc4f1c3ceab8ed9f3289af06980512497c90732365b1c7cd43aa5acc8dbf0"
+    },
+    {
+      "seq": 84,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the bays do not have the ssd. the ssd cannot be in a bay because all 4 of them will have hdd's. theyre just out to put the gpu in easier",
+      "sha256": "c558ca374f320dfe78d4cad919bc63d3a6cde95d2b0a418a456347c0c2de1f15"
+    },
+    {
+      "seq": 85,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:macpro31-sleds-out-2026-09-13a",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "3 sleds stacked on top of chassis: top=Bay1, middle=Bay2 red sticker, bottom=Bay4; 1 sled still partially inserted lower-left (Bay1 position?)",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg x2, bytes NOT persisted - /home/user/uploads/ missing 6th check"
+        },
+        {
+          "claim": "4 HDD bays empty above GPU area, backplane visible, sled guides empty",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "dual GPUs still seated: bottom 3870 blue, top 9800GT/VEGA, booster cables dangling unplugged",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg"
+        },
+        {
+          "claim": "SSD not visible in bays or on top - location UNKNOWN, operator says bays do not have SSD",
+          "confidence": "HIGH",
+          "source": "operator words + photo"
+        }
+      ],
+      "sha256": "e02dfa158ee48113fbd8e50219a6b02b87e1f48d7e80a55fa097f56fdf804f6d"
+    },
+    {
+      "seq": 86,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "ill leave the ssd in the first bay at the front so its nearest to the cooling and isolated enough from the gpu and cpu heat. then 2&3 will have unlabeled hdd coldstorage, with the last 4th slot being the orange marked one",
+      "sha256": "b384b6c2613ec0df4ea1fb34369e78bfec0c1dc80c0b2524edcaca692dac0bb4"
+    },
+    {
+      "seq": 87,
+      "date": "2026-09-13",
+      "kind": "value",
+      "key": "bayMapFinal",
+      "value": "Bay1 front = Crucial 1TB Lion SSD Base (coolest, isolated from GPU/CPU heat); Bay2+Bay3 = unlabeled HDD coldstorage; Bay4 = orange marked (red sticker) sled",
+      "source": "operator words seq 86",
+      "sha256": "90a497558d26992d3a5e0882fb9941a83f1c4bbfc8ca4d195c573fbd117a7c3d"
+    },
+    {
+      "seq": 88,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the orange one is two, i reordered them so theyre in order 2-4. all 4 hdds are the same 1tb model and ill show you the one thats outside of the mac in place of the ssd",
+      "sha256": "13c3ce05c9325c115fb992516fcf0786e5f8a3a9022614c9c100b51381de7f6b"
+    },
+    {
+      "seq": 89,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:wd10eavs-label-2026-09-13b",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "WD10EAVS WD Caviar GP GreenPower 1.0TB, MDL WD10EAVS-00D7B0 / 000780, S/N WCAU40497545, DATE 26 MAY 2008, DCM DHNNNT2CBB, R/N 701537, LBA 1953525168, 5V 0.70A 12V 0.55A, Product of Thailand, WWN 50014EE201940C80, GreenPower label",
+          "confidence": "HIGH",
+          "source": "chat-only image.jpg x2, bytes NOT persisted - /home/user/uploads/ missing 7th check"
+        },
+        {
+          "claim": "all 4 HDDs same 1TB model WD10EAVS class",
+          "confidence": "HIGH",
+          "source": "operator words seq 88"
+        },
+        {
+          "claim": "orange marked sled = Bay2 (not Bay4), reordered in order 2-4 on top of chassis",
+          "confidence": "HIGH",
+          "source": "operator words seq 88"
+        }
+      ],
+      "sha256": "14edc089729e69eb0e88757efe4b02a7868eb8f09b62ed6416199b908c6e0ccc"
+    },
+    {
+      "seq": 90,
+      "date": "2026-09-13",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "this is the hdd outside of the mac, the ssd took its place inside the mac. all hdds are the same in and out of the sleds/mac. and before i power it on i need to mount some speakers to my desk and cable manage aswell as placing my ups elsewhere to get some deskroom for when i eventually need to get my pc on here too. as ill be daily driving both of them",
+      "sha256": "72dc9d998b3da65ced419318b812112ea2eecd693bcc93927f071d45e4e9d9cb"
+    },
+    {
+      "seq": 91,
+      "date": "2026-09-13",
+      "kind": "perception",
+      "target": "chat-attachment:wd10eavs-outside-hdd-2026-09-13c",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "WD10EAVS 1TB outside Mac in hand, sled attached, S/N WCAU40497545 same as prior, SSD took its place inside Mac (Bay1 front per seq86)",
+          "confidence": "HIGH",
+          "source": "operator words + chat-only image.jpg, bytes NOT persisted 8th check"
+        },
+        {
+          "claim": "all 4 HDDs same model in and out of sleds/Mac (4x WD10EAVS)",
+          "confidence": "HIGH",
+          "source": "operator words seq90"
+        },
+        {
+          "claim": "power-on delayed for desk prep: mount speakers, cable manage, place UPS elsewhere, deskroom for both Mac Pro 3,1 and PC daily driving",
+          "confidence": "HIGH",
+          "source": "operator words seq90"
+        }
+      ],
+      "sha256": "9af0cf2115a7e9a7d368c06f211497f7df6d57603b737b84248b67721447b7df"
+    },
+    {
+      "seq": 92,
+      "date": "2026-09-14",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "the two 6pins are plugged into the 9800gt and 3870 mac edition. dont bother with instructions currently, it doesnt matter since we should plan on the mac and pc's logistics. because i have a 1050 and a gtx 285 outside of the case already, so if need be we can always install kiss linux to use the 1050 as a primary and the 285 as a tertiary for the mac. create a pull request and merge it please",
+      "sha256": "8d89fd8647e9aaef30abe128ef14dfdd647b4adfefe90b57c74904c7901c66d8"
+    },
+    {
+      "seq": 93,
+      "date": "2026-09-14",
+      "kind": "value",
+      "key": "boosterPlugged",
+      "value": "both 6-pins plugged: 9800GT + 3870 Mac Edition (UPPER->3870 SLOT2, LOWER->9800GT SLOT1 per iFixit 14161)",
+      "source": "operator words seq92",
+      "sha256": "f35a053b0c87f08d434acf97218d891bbd48f26414518363ce7ea2a92a349aab"
+    },
+    {
+      "seq": 94,
+      "date": "2026-09-14",
+      "kind": "value",
+      "key": "gpuInventoryOutside",
+      "value": "GTX 1050 + GTX 285 outside case, available as primary/tertiary; KISS Linux plan: 1050 primary + 285 tertiary for Mac",
+      "source": "operator words seq92",
+      "sha256": "1da86a7d346612bb44f8250a585d8f21fb37701a2a802784ac059de637be4c24"
     }
   ],
   "stacks": [
@@ -1234,6 +1815,46 @@
         28
       ],
       "purpose": "photo perception chain from seq7 master photo through critiques",
+      "created": "2026-09-12"
+    },
+    {
+      "name": "macpro31-inventory-2026-09-12",
+      "seqs": [
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94
+      ],
+      "purpose": "full Mac Pro 3,1 inventory context group - image agents pull this stack before perceiving any macpro31 plate",
       "created": "2026-09-12"
     },
     {

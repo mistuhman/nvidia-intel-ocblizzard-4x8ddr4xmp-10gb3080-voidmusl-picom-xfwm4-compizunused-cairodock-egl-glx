@@ -52,6 +52,7 @@ run('python3', ['-m', 'json.tool', 'docs/macpro-guide-scene.json']);
 run('node', ['tools/mac-guide-art.ts', 'selftest']);
 run('node', ['tools/mac-guide-art.ts', 'lint']);
 run('node', ['tools/agent-memory.ts', 'selftest']);
+run('node', ['tools/uploads.ts', 'selftest']);
 run('node', ['tools/lion-status.ts']);
 run('node', ['tools/lion-status.ts', 'selftest']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);

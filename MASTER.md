@@ -22,10 +22,10 @@
       "e2b.app sandbox"
     ],
     "priority": "OPERATOR DIRECTIVE 2026-09-10 (later same day): Lion 10.7 on the Bay 3 SSD is gate #1 and the only active objective. OMEN OC tracks, the SATA pool work and the BTC RAID art are deferred to the hardening phase. Do not open any new non-Lion front in this chat.",
-    "nextAction": "see docs/lion-workflow.json nextAction (BOOTLOG1 read; no reboot until the next non-destructive method is explicitly released)",
+    "nextAction": "see docs/lion-workflow.json nextAction (2026-09-12: chassis session first - AMD card swap APPROVED with conditions, HDD swap + RAID format; nothing destructive until the wipe target is named)",
     "linkCheck": "2026-09-11: current phone links da.gd/lionrelay (page) and da.gd/lionzip (bundle) were minted through the da.gd page-fetch route and verified with each slug's + coshorten destination. Current-session zips are byte-identical git blob 5501fbf3819661a6d033718286920363aea8c3ff. The relay reports burned: text=ok query=ok after a readable upload. Legacy lzr/lmz/lpg are not the current path; TinyURL is never used.",
     "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
-    "statusNote": "2026-09-11: readable Repair receipt uuid 2ad981cf verified bless/no erase. BOOTLOG1 uuid 9d0bfed6 is readable at 61946 bytes / 675 lines: three volumes and ESD bless remain intact, boot-args is absent, and Snow Leopard has no ESD-specific error because the failure is pre-OS. Hold: no reboot, second Repair, remirror, date fix, or target selection until the next non-destructive method is explicitly released.",
+    "statusNote": "2026-09-12: ACHIEVED via installer-app path - Lion 10.7 installed and booting on Bay 1 Lion SSD Base (login + Andromeda desktop @1080p verified; was SL 10.6.8). Bay 3 MX500 start disk clone superseded (migration only if operator asks); Bay 4 ESD is SPARE. Earlier holds (Repair/BOOTLOG1 receipts 2ad981cf + 9d0bfed6) are history. Next: docs/lion-workflow.json nextAction - chassis session first (Mac powered OFF): AMD card swap APPROVED with conditions, HDD swap + RAID format; blind-at-1440p close-out owes display verify + About/GPU reads.",
     "relay": "lion.html rev 2 turns a burn into an agent-readable log: the page reads ~/Desktop/lion-mirror.txt or ~/Desktop/lion-boot-log.txt with FileReader and POSTs the whole report as text/plain (plus a ?log= verdict query and the old multipart file). Read it at docs/lion-workflow.json links.logRead with fetch_page, never curl.",
     "openItem": "Shell and Node direct egress cannot reach shorteners reliably, but fetch_page reaches da.gd. The reproducible workflow is Node URL-encode exact destination -> fetch da.gd/?url=...&shorturl=... -> fetch da.gd/<slug>+ and compare coshorten output. Current slugs are da.gd/lionrelay and da.gd/lionzip; never use TinyURL.",
     "commands": "etc/lion-command.txt is the inbound channel the page renders; a push to the session branch is visible in ~5 min via raw, so short commands never have to be typed on the Mac again."
@@ -71,6 +71,8 @@
       "docs/": "OC + recovery history: oc-plan.md, oc-3080-gwe-recipe.md, oc-cpu-bios-checklist.md, omen-free-recovery-runbook.md, omen-reassembly-checklist.md, hardware-retrospective.md, next-chat-last-power-on.md, bios-flash-decision.md, recovery-research.md, open-classes-pass2.md, open-classes-pass3.md, games-receipts.md, perf-optimization-plan.md, oc-methodology-survey.md, case-swap-rad-mount.md (no-mounting-point rad sandwich + Appendix F zip-tie reality), case-swap-3-2-beep.md (POST blocked at HP 3.2 memory-init timeout: decode, cause classes M1-M5, one-power-on ladder), case-swap-hdd-mount.md (drive mounting in the APEX PC-389-C, no drilling, swappable cold, + the ZFS rules that outrank it), case-swap-final-placement.md (RECONSTRUCTED lock list for the 2026-09-02 placement decisions - the original file was never committed), case-swap-macpro-verdict.md (2026-09-07: 2009 Mac Pro A1289 swap declined as no-mod - no 180mm mounts exist, max class even converted is 140mm, all ATX conversions cut the rear wall + Dremel proprietary pegs; parked as future project chassis behind gate 12), case-swap-macpro-plan.md (2026-09-07b: operator committed to the A1289 transplant with compromises accepted - bench-first gate-12 closure, 8-point measurement inventory, kit-vs-DIY tray gate, OMEN-tach fan discipline, phased assembly/thermal gates)",
       ".github/workflows/": "CI + GPU OC lab workflows: oc-tools-ci (selftests, shellcheck, determinism, pr-budget), gpu-oc-lab (manual sweep + undervolt graph + pasteable blocks), gpu-clock-feature-matrix (core-only / memory-only / power-trim / combined / efficiency-hunt), gpu-receipt-ingest (paste dmon + Superposition, get ADVANCE/HOLD/REVERT and commit the ledger)",
       "receipts/": "gpu-oc-receipts.json: normalized metered runs (the only thing that outranks the model)",
+      "uploads/": "operator photo uploads (tools/uploads.ts): hash-verified registry index.json + RECENT.md short-term memory; cross-referenced every imaging step per docs/imaging-contract.md",
+      "docs/measurement-fundamentals.md": "measurement grounding for imaging agents (2026-09-12): source ladder S1-S5, one measurement class per pass, ratio discipline vs real constraints, photo-wins; machine inventory log lives at receipts/inventory/<machine>.md",
       "tests/": "fixtures for the receipt parsers (dmon, Superposition, Geekbench)"
     }
   },
@@ -350,6 +352,7 @@
     ]
   },
   "lessons": [
+    "edit_file fuzzy matching can silently corrupt very long single-line JSON (MASTER.md): it reported success while splicing at the wrong site and truncating a value; for huge JSON files restore from git and splice by exact string with node, then validate with python3 -m json.tool plus a byte-count check",
     "an imaging pipeline that only re-prompts is not a reproduction cycle: record the critique as findings against a numbered pass, apply the fix by patching the source IR so the emitted prompt hash moves, and measure the residual at the LATEST pass only - summing history makes a fixpoint unreachable (this exact bug shipped in tools/mac-storage-art.ts P10 and was caught by reading its own output).",
     "sed -i with trailing shell words is a data-loss vector: \"sed -i s/x/y/ f grep -n pat f\" silently truncated tools/mac-storage-art.ts to 0 bytes because sed consumed the grep arguments as filenames. Rewrite the file from source or quote every argument; never run sed -i on a generated file without a following byte-count check.",
     "LOG THE INTERFACE, NOT JUST THE VALUE: record HOW a setting was applied (F10 vs sysfs vs efibootmgr vs package vs GUI). The 1.55V incident cost five diagnostic turns because values were logged without the mechanism, and recovery differs completely between a setup-variable write and a DIMM SPD write.",
@@ -388,6 +391,15 @@
     "games campaign (CoD/Promod/Lunar stack) - remains PARKED per 2026-08-25 directive until OC objective closes",
     "viewport switcher target trial after desktop performance baseline is fixed"
   ],
+  "uploads": {
+    "directive": "2026-09-12: every operator photo upload is saved to uploads/, hash-verified, cross-referenced at EVERY instruction-imaging step, and wired into memory short+long term so image agents know the full context of the most recent photos. Ask for photos whenever evidence is missing, every time.",
+    "tool": "node tools/uploads.ts (init|ingest|list|recent|refs|verify|gate|selftest)",
+    "dir": "uploads/ (<date>/ bytes, index.json long-term registry, RECENT.md short-term window)",
+    "shortTerm": "uploads/RECENT.md - auto-regenerated last-8 window with full perceived context; EVERY image agent reads it BEFORE perceiving and re-checks after each ingest",
+    "longTerm": "uploads/index.json (append-only, full sha256, dims, claims) + automatic agent-memory perception receipt per ingest",
+    "contract": "docs/imaging-contract.md - universal subject-agnostic imaging loop: evidence gate (gate refuses render, issues numbered photo request, every time), CROSSREF BLOCK in every emitted prompt, verify before every render, reproducible response shape",
+    "chatOnly": "a chat-viewable photo without persistable bytes gets a perception receipt with capped confidence and its bytes are re-requested when hashing/pixel-audit needs them"
+  },
   "macGuide": {
     "tool": "node tools/mac-guide-art.ts",
     "selftest": "node tools/mac-guide-art.ts selftest",
