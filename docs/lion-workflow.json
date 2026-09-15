@@ -1,9 +1,9 @@
 {
   "updated": "2026-09-15",
   "session": "01a0a312",
-  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, dual Dell S2725QS displays, user admin / RevolYOUtionarys-Mac-Pro",
+  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15)",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "1. Perform pinhole hard factory reset on AirPort Time Capsules & Express to wipe passwords. 2. Re-configure AirPort Base Stations in AirPort Utility. 3. Format/RAID 3x 1TB WD Green HDDs in Disk Utility.",
+  "nextAction": "2026-09-15 WAVE: GTX 285 booted, both displays up (receipt operator). ddds admin deletion in progress (GUI Deleting Account...). NEXT = run ?(lion-erase-inventory-probe) on the Lion desktop and paste FULL output back; agent then arms ?(lion-erase-spares-wd1tb) with probe-confirmed ids (iTunes-backup HDD is KEEP, music extraction is operator's call BEFORE arming), RAID in Disk Utility after, then ?(lion-harden). AirPort base-station factory resets remain open (6.3.1 installed).",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
