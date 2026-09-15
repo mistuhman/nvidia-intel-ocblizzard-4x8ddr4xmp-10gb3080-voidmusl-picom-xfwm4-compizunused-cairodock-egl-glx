@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-14",
-  "lastSeq": 94,
+  "updated": "2026-09-15",
+  "lastSeq": 99,
   "entries": [
     {
       "seq": 1,
@@ -1784,6 +1784,53 @@
       "value": "GTX 1050 + GTX 285 outside case, available as primary/tertiary; KISS Linux plan: 1050 primary + 285 tertiary for Mac",
       "source": "operator words seq92",
       "sha256": "1da86a7d346612bb44f8250a585d8f21fb37701a2a802784ac059de637be4c24"
+    },
+    {
+      "seq": 95,
+      "date": "2026-09-15",
+      "kind": "note",
+      "text": "2026-09-15: verbose boot image-2.jpeg shows NVDAResman and Device in slot: SLOT-1 before kernel panic reboot loop. SLOT-1 is EVGA 9800 GT (PC ROM). Confirmed 9800 GT pull is required for Phase 2 installer boot. Operator asked: (1) safe to boot with unplugged 6-pin cable hanging out? Answer: Yes, 100% safe, female plastic connector won't short. (2) upload videos to repo? Answer: photos are preferred for reading screen/hardware.",
+      "sha256": "4d84a85f2d50a6a47337264aa833524c5b76e70bfc206b0a89f706acc4e82bd2"
+    },
+    {
+      "seq": 96,
+      "date": "2026-09-15",
+      "kind": "perception",
+      "target": "uploads/image.jpg",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "Mac OS X Lion 10.7 booted to desktop on Mac Pro 3,1 with dual monitors showing Andromeda Galaxy wallpaper, menu bar, dock, mounted drives, speakers connected."
+        }
+      ],
+      "sha256": "d729c6296343790fec9c74ce336eb4eeff88632bf719c0538e85b7691e400f18"
+    },
+    {
+      "seq": 97,
+      "date": "2026-09-15",
+      "kind": "note",
+      "text": "2026-09-15: Primary Gate #1 COMPLETE. Mac OS X 10.7 Lion booted on Mac Pro 3,1 with dual monitors showing full Andromeda Galaxy desktop, Skype in menu bar, dock at bottom, drives mounted. Speakers connected.",
+      "sha256": "ebd6dd1082cfba866007670b716bad20b845e890f08087c6803073fdd7b8b8ea"
+    },
+    {
+      "seq": 98,
+      "date": "2026-09-15",
+      "kind": "perception",
+      "target": "uploads/image.jpg",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "AirPort Utility on Lion showing LC Capsule Time Capsule requiring password. Keychain Access in background showing old Time Capsule password entry from 2009."
+        }
+      ],
+      "sha256": "70cfddba04fed92db803276535c3626b8b0946de137a2e7b6b9255e648cf2b26"
+    },
+    {
+      "seq": 99,
+      "date": "2026-09-15",
+      "kind": "note",
+      "text": "2026-09-15: AirPort Utility prompt for LC Capsule password. User has 2x Time Capsules + 1x Express connected via Ethernet to dual Mac Pro LAN ports, does not have base station password, wants to wipe base stations and HDDs. Solution: Hard factory reset on AirPort units (hold pinhole reset during power-on until amber flashes rapidly).",
+      "sha256": "e194516cd0cc77ccceed28d33a13f782746593425c789141655dc278cd30cd1f"
     }
   ],
   "stacks": [

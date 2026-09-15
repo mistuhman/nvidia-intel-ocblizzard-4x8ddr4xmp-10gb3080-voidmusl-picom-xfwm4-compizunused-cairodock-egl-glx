@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-12",
-  "session": "01a08b54",
-  "machine": "Mac Pro 3,1 Early 2008 (CORRECTED 2026-09-12, was 1,1), 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1 (installer-app upgrade 2026-09-12), Dell S2725QS via VGA-HDMI, user admin / RevolYOUtionarys-Mac-Pro",
-  "goal": "ACHIEVED 2026-09-12 via installer-app path: Lion 10.7 installed and booting on Bay 1 Lion SSD Base (login + desktop verified). Bay 1 is home unless operator asks for Bay 3 migration. Close-out owed: RESCUE1 display fix at 1080p, About/GPU reads, new-admin + Bay 4 spare decisions.",
-  "nextAction": "NEW-CHAT HANDOFF 2026-09-12: chassis session first (Mac powered OFF; force-off at idle blind login is journal-safe) - (0) install AMD card + digital cable (APPROVED with conditions: Mac-EFI or no boot screens; keep old card until new POSTs + displays; new Dell-real-EDID identity should dodge the 1440p poison), (3) HDD swap + RAID format. Then: display verify + 1080p lock + About/GPU reads; buildup step 1 needs the wipe target named (Bay 1 = destroys Lion; nothing destructive until confirmed). Rescue chain RESCUE1-6 all metered; delete-retry with ls verification only if still blind after the swap.",
+  "updated": "2026-09-15",
+  "session": "01a0a312",
+  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, dual Dell S2725QS displays, user admin / RevolYOUtionarys-Mac-Pro",
+  "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
+  "nextAction": "1. Perform pinhole hard factory reset on AirPort Time Capsules & Express to wipe passwords. 2. Re-configure AirPort Base Stations in AirPort Utility. 3. Format/RAID 3x 1TB WD Green HDDs in Disk Utility.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
