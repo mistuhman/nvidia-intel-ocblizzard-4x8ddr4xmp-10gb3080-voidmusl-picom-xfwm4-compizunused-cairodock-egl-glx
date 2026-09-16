@@ -72,3 +72,11 @@ screenshot-photo via the One page.
   3. Any credentialed checkout: `scripts/install-github-workflows.sh` -> commit -> push (also activates the five GPU-lab workflows, as designed).
 - After activation: merge PR #88 (operator tap) so main carries `tools/mac-es5-passthrough.ts`; then phone Actions -> mac-es5-passthrough -> Run workflow (app: discord-web, publish: on). Pre-merge, Run still works with the branch selector set to `arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr` (the tool lives on that branch).
 - Until activation + first run + on-Mac burn: T1 stays [~] in ToDo.md.
+
+### Standing tap-to-run ergonomics (2026-09-16 hardening, same day as Trigger path)
+
+- The workflow is now a STANDING update pipeline, not a one-shot: `app` input defaults to `all` and the app list lives ONLY in `tools/mac-es5-passthrough.ts` (APPS registry). Adding a planned app later = one agent commit on the arena branch; the YAML never changes, nothing is re-pasted on the phone, no merge required.
+- Checkout inside the job is pinned to `arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr`, so every tap runs the freshest tool + registry whether or not PR #88 has merged. No branch selector needed on the phone.
+- Run = two taps once activated: Actions -> mac-es5-passthrough -> Run workflow -> green Run (defaults app=all, publish=on). Output: one public release zip with one subdir per app (loader.html + es5-*.js + polyfill.js + RECEIPT.json each) and RECEIPT-INDEX.json at zip root.
+- Per-app syntax gate stays: node --check per emitted .js; any FAIL aborts the run before publish.
+- Phone setup recommendation: Safari -> github.com -> Share -> Add to Home Screen (app-like icon, stays logged in). The GitHub iOS app is optional: good for notifications, PR merges and viewing runs; its Actions support is view/cancel-only per community discussion 110751 (as of that thread), so the Run tap lives in mobile web. Merging a PR that touches `.github/workflows` from the app fails on token scope (same thread); PR #88 touches only `ci/workflows`, so app-merging it is safe.

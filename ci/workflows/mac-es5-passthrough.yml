@@ -1,23 +1,25 @@
 name: mac-es5-passthrough
 
-# Phone-triggerable agentic compiler passthrough (operator directive 2026-09-16f):
-# GitHub mobile site/app -> Actions -> mac-es5-passthrough -> Run workflow (workflow_dispatch).
-# Fetches a modern web app's script assets, transpiles to Firefox-52-class ES5, attaches a
-# core-js polyfill prelude + ES5 loader page, gates every emitted file with node --check,
-# and publishes a release zip the Mac downloads without auth. Receipt loop: burn the
-# on-Mac result through da.gd/lionone. Guide: docs/mac-modern-web.md.
+# Standing tap-to-run compiler passthrough (operator directives 2026-09-16f):
+# GitHub mobile web -> Actions -> mac-es5-passthrough -> Run workflow. Defaults are the happy
+# path (app: all, publish: on), so a run is two taps. Registry-driven: the app list lives in
+# tools/mac-es5-passthrough.ts (APPS), NOT here - adding a planned app later is an agent-side
+# commit on the branch below; this YAML never changes and nothing gets re-pasted.
+# Checkout is pinned to the agent branch so every run uses the freshest tool + registry and
+# works whether or not PR #88 has merged. Fetches each app's script assets, transpiles to
+# Firefox-52-class ES5, attaches a core-js polyfill + ES5 loader page per app, gates every
+# emitted file with node --check + sha256 (RECEIPT.json per app, RECEIPT-INDEX.json at root),
+# and publishes one public release zip the Mac downloads without auth.
+# On-Mac receipt loop: burn the result through da.gd/lionone. Guide: docs/mac-modern-web.md.
 
 on:
   workflow_dispatch:
     inputs:
       app:
-        description: 'passthrough target'
-        required: true
-        default: 'discord-web'
-        type: choice
-        options:
-          - discord-web
-          - vencord-web
+        description: 'registry id from tools/mac-es5-passthrough.ts, or all (default = every planned app)'
+        required: false
+        default: 'all'
+        type: string
       publish:
         description: 'create a public GitHub release with the bundle zip'
         type: boolean
@@ -31,20 +33,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # standing: always build from the agent branch (freshest tool + app registry);
+          # runs work pre- or post-merge of PR #88, no branch selector needed on the phone
+          ref: arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: deps (CI-only, justified per MASTER toolStyle)
         run: npm i --no-save @babel/core @babel/preset-env core-js-bundle
-      - name: fetch target assets
+      - name: fetch target assets (per-app dirs)
         run: node tools/mac-es5-passthrough.ts fetch --app=${{ inputs.app }} --out=work/src
       - name: transpile to ES5 (firefox 52 target)
         run: node tools/mac-es5-passthrough.ts transpile --in=work/src --out=work/out
-      - name: loader page
+      - name: loader pages (one per app)
         run: node tools/mac-es5-passthrough.ts loader --app=${{ inputs.app }} --dir=work/out
-      - name: receipt (sha256 + node --check gate)
+      - name: receipt (sha256 + node --check gate, per app + index)
         run: node tools/mac-es5-passthrough.ts receipt --dir=work/out
-      - name: zip bundle
+      - name: zip bundle (per-app subdirs inside)
         run: |
           cd work/out
           zip -r "../../mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" .
@@ -60,4 +66,4 @@ jobs:
           gh release create "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}" \
             "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" \
             --title "mac passthrough ${{ inputs.app }} run ${{ github.run_number }}" \
-            --notes "ES5 passthrough bundle for Arctic Fox on Lion. RECEIPT.json inside. On-Mac receipt loop: da.gd/lionone. Primary path is Chromium Legacy LION builds (docs/mac-modern-web.md); this bundle is the Arctic Fox fallback."
+            --notes "ES5 passthrough bundle for Arctic Fox on Lion; one subdir per app, RECEIPT-INDEX.json at zip root. On-Mac receipt loop: da.gd/lionone. Primary path is Chromium Legacy LION builds (docs/mac-modern-web.md); this bundle is the Arctic Fox fallback. Registry-driven: app list lives in tools/mac-es5-passthrough.ts on the agent branch."

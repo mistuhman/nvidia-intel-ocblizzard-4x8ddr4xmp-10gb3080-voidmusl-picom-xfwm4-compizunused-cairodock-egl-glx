@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 117,
+  "lastSeq": 118,
   "entries": [
     {
       "seq": 1,
@@ -2011,6 +2011,13 @@
       "kind": "note",
       "text": "2026-09-16f T1 validation (operator phone screenshot read in chat): GitHub mobile Actions = Found 0 workflows. Root causes: (A) repo never had .github/workflows on any branch - ci/workflows/ is source-only per README + scripts/install-github-workflows.sh; (B) workflow_dispatch UI lists default-branch workflows only (main lacks it; PR #88 unmerged). Test push of .github/workflows/mac-es5-passthrough.yml REJECTED verbatim: 'refusing to allow a GitHub App to create or update workflow ... without workflows permission' (commit 45b3a09 rolled back to 70d8d32, ci source intact). Activation = operator-credential action: phone web-UI create .github/workflows/mac-es5-passthrough.yml on main (content = raw ci source on arena branch), OR grant the app Workflows permission then agent re-pushes, OR run install script from credentialed checkout. gh api actions/workflows total_count=0 + actions/runs total_count=0 corroborate.",
       "sha256": "b52cede27499a77f9f56b9a42d7cea6464db1047a6f3ba8e7e29816feae2497c"
+    },
+    {
+      "seq": 118,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f hardening: mac-es5-passthrough becomes standing tap-to-run pipeline per operator ask. app input default 'all'; APPS registry in tools/mac-es5-passthrough.ts = single source of truth (adding planned apps = agent commit only, YAML never re-pasted); checkout pinned to arena/01a0a9ee branch so runs work pre/post PR #88 merge; per-app subdirs + RECEIPT-INDEX.json in one public release zip; selftest gained expand-all/expand-single/receipt-loop/loader-loop checks. iOS app receipts: GitHub iOS app exists (view runs/notifications/merge; Actions view-cancel-only per community 110751; mobile web = Run surface); NO official Arena.ai iOS app found (App Store 'Arena AI Mobile' by Andres Luiz = unrelated third-party art studio; 'Arenai' = concerts app) - recommend Safari Add-to-Home-Screen for github.com + Arena chat.",
+      "sha256": "0c7de0a89093979211db10686d09c93271909d09a3eb817f4c7c760693df08b9"
     }
   ],
   "stacks": [

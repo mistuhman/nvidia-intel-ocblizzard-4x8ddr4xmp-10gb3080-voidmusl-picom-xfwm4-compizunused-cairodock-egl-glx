@@ -3,12 +3,18 @@
 // Discovers a modern web app's script assets, transpiles them down to what Arctic Fox
 // (Firefox-52-class Goanna) can parse, attaches a core-js polyfill prelude, emits an ES5 loader
 // page and a sha256 RECEIPT with a node --check syntax gate per emitted file.
+// Registry-driven: APPS below is the single source of truth; --app=all (the workflow default)
+// expands to every registered app, so adding a planned app later is an agent-side commit here -
+// the workflow YAML never changes and the operator never re-pastes anything.
+// Layout: fetch nests per app (out/<app>/src-*.js), transpile/receipt/loader loop those dirs;
+// a flat in-dir (no subdirs) still works for one-off use.
 // Dep-free core (apps/selftest/receipt/loader); the transpile step needs @babel/core +
 // core-js-bundle, installed by ci/workflows/mac-es5-passthrough.yml (CI-only deps, justified).
 // Deterministic stdout, fail fast, no hidden policy.
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFileSync, rmSync, mkdtempSync } from 'node:fs';
 import { join, basename } from 'node:path';
+import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 
 const APPS: Record<string, { entry: string; note: string }> = {
@@ -20,16 +26,29 @@ function sha256(buf: Buffer): string {
   return createHash('sha256').update(buf).digest('hex');
 }
 
-function cmdApps(): void {
-  for (const id of Object.keys(APPS).sort()) console.log(`${id}\t${APPS[id].entry}\t${APPS[id].note}`);
+function appIds(): string[] {
+  return Object.keys(APPS).sort();
 }
 
-async function cmdFetch(app: string, out: string): Promise<void> {
-  const spec = APPS[app];
-  if (!spec) { console.error(`UNKNOWN_APP ${app}`); process.exit(2); }
-  mkdirSync(out, { recursive: true });
+function expandApps(app: string): string[] {
+  return app === 'all' ? appIds() : [app];
+}
+
+function subDirs(dir: string): string[] {
+  return existsSync(dir) ? readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort() : [];
+}
+
+function cmdApps(): void {
+  for (const id of appIds()) console.log(`${id}\t${APPS[id].entry}\t${APPS[id].note}`);
+  console.log(`all\t(expands to: ${appIds().join(',')})\tworkflow default: every registered app in one run`);
+}
+
+async function fetchApp(id: string, dir: string): Promise<void> {
+  const spec = APPS[id];
+  if (!spec) { console.error(`UNKNOWN_APP ${id}`); process.exit(2); }
+  mkdirSync(dir, { recursive: true });
   const urls: string[] = [];
-  if (app === 'discord-web') {
+  if (id === 'discord-web') {
     const html = await (await fetch(spec.entry, { redirect: 'follow' })).text();
     const re = /<script[^>]+src="([^"]+\.js[^"]*)"/g;
     let m: RegExpExecArray | null;
@@ -42,22 +61,18 @@ async function cmdFetch(app: string, out: string): Promise<void> {
   for (let i = 0; i < urls.length; i += 1) {
     const buf = Buffer.from(await (await fetch(urls[i])).arrayBuffer());
     const file = `src-${String(i).padStart(2, '0')}-${basename(urls[i].split('?')[0]) || 'bundle.js'}`;
-    writeFileSync(join(out, file), buf);
+    writeFileSync(join(dir, file), buf);
     manifest.push({ file, url: urls[i], sha256: sha256(buf) });
   }
-  writeFileSync(join(out, 'FETCH.json'), JSON.stringify({ app, entry: spec.entry, manifest }, null, 2) + '\n');
-  console.log(`FETCHED ${app} files=${manifest.length}`);
+  writeFileSync(join(dir, 'FETCH.json'), JSON.stringify({ app: id, entry: spec.entry, manifest }, null, 2) + '\n');
+  console.log(`FETCHED ${id} files=${manifest.length}`);
 }
 
-function cmdTranspile(inDir: string, out: string): void {
-  let babel: { transformSync: (code: string, opts: unknown) => { code: string } };
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    babel = require('@babel/core');
-  } catch {
-    console.error('DEPS-MISSING run inside ci/workflows/mac-es5-passthrough.yml (npm i @babel/core core-js-bundle)');
-    process.exit(2);
-  }
+async function cmdFetch(app: string, out: string): Promise<void> {
+  for (const id of expandApps(app)) await fetchApp(id, join(out, id));
+}
+
+function transpileDir(babel: { transformSync: (code: string, opts: unknown) => { code: string } }, inDir: string, out: string): void {
   mkdirSync(out, { recursive: true });
   const files = readdirSync(inDir).filter((f) => f.startsWith('src-') && f.endsWith('.js')).sort();
   for (const f of files) {
@@ -74,14 +89,31 @@ function cmdTranspile(inDir: string, out: string): void {
   try {
     const bundled = require.resolve('core-js-bundle/version/core-js.min.js');
     copyFileSync(bundled, join(out, 'polyfill.js'));
-    console.log(`TRANSPILED files=${files.length} polyfill=core-js-bundle`);
+    console.log(`TRANSPILED ${basename(out)} files=${files.length} polyfill=core-js-bundle`);
   } catch {
     console.error('DEPS-MISSING core-js-bundle');
     process.exit(2);
   }
 }
 
-function cmdReceipt(dir: string): void {
+function cmdTranspile(inDir: string, out: string): void {
+  let babel: { transformSync: (code: string, opts: unknown) => { code: string } };
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    babel = require('@babel/core');
+  } catch {
+    console.error('DEPS-MISSING run inside ci/workflows/mac-es5-passthrough.yml (npm i @babel/core core-js-bundle)');
+    process.exit(2);
+  }
+  const dirs = subDirs(inDir);
+  if (dirs.length) {
+    for (const d of dirs) transpileDir(babel, join(inDir, d), join(out, d));
+  } else {
+    transpileDir(babel, inDir, out);
+  }
+}
+
+function receiptDir(dir: string): void {
   const files = readdirSync(dir).filter((f) => f.endsWith('.js') || f.endsWith('.html')).sort();
   const rows: Array<{ file: string; bytes: number; sha256: string; syntax: string }> = [];
   for (const f of files) {
@@ -96,10 +128,25 @@ function cmdReceipt(dir: string): void {
   }
   writeFileSync(join(dir, 'RECEIPT.json'), JSON.stringify({ files: rows }, null, 2) + '\n');
   for (const r of rows) console.log(`RECEIPT ${r.file} ${r.bytes} ${r.syntax} ${r.sha256.slice(0, 12)}`);
-  console.log(`RECEIPT_DONE files=${rows.length}`);
+  console.log(`RECEIPT_DONE ${basename(dir)} files=${rows.length}`);
 }
 
-function cmdLoader(app: string, dir: string): void {
+function cmdReceipt(dir: string): void {
+  const dirs = subDirs(dir);
+  if (dirs.length) {
+    const index: Array<{ app: string; receipt_sha256: string }> = [];
+    for (const d of dirs) {
+      receiptDir(join(dir, d));
+      index.push({ app: d, receipt_sha256: sha256(readFileSync(join(dir, d, 'RECEIPT.json'))) });
+    }
+    writeFileSync(join(dir, 'RECEIPT-INDEX.json'), JSON.stringify({ apps: index }, null, 2) + '\n');
+    console.log(`RECEIPT_INDEX apps=${index.length}`);
+  } else {
+    receiptDir(dir);
+  }
+}
+
+function loaderFor(id: string, dir: string): void {
   const scripts = readdirSync(dir).filter((f) => f.startsWith('es5-') && f.endsWith('.js')).sort();
   const tags = ['polyfill.js', ...scripts].filter((f) => existsSync(join(dir, f)))
     .map((f) => `<script type="text/javascript" src="${f}"></script>`).join('\n');
@@ -107,24 +154,52 @@ function cmdLoader(app: string, dir: string): void {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>passthrough ${app}</title>
+<title>passthrough ${id}</title>
 </head>
 <body>
-<p class="note">ES5 passthrough loader for ${app} - Arctic Fox 47 / Firefox-52-class.
+<p class="note">ES5 passthrough loader for ${id} - Arctic Fox 47 / Firefox-52-class.
 If the app shell renders but login stalls, burn a screenshot-description through da.gd/lionone.</p>
 ${tags}
 </body>
 </html>
 `;
   writeFileSync(join(dir, 'loader.html'), html);
-  console.log(`LOADER ${app} scripts=${scripts.length + 1}`);
+  console.log(`LOADER ${id} scripts=${scripts.length + 1}`);
+}
+
+function cmdLoader(app: string, dir: string): void {
+  if (app === 'all') {
+    for (const id of appIds()) loaderFor(id, join(dir, id));
+  } else {
+    loaderFor(app, dir);
+  }
 }
 
 function cmdSelftest(): void {
   const ok = (id: string, cond: boolean): void => { console.log(`${cond ? 'PASS' : 'FAIL'} ${id}`); if (!cond) process.exitCode = 1; };
-  ok('apps-known', Object.keys(APPS).sort().join(',') === 'discord-web,vencord-web');
+  ok('apps-known', appIds().join(',') === 'discord-web,vencord-web');
+  ok('expand-all', expandApps('all').join(',') === 'discord-web,vencord-web');
+  ok('expand-single', expandApps('vencord-web').join(',') === 'vencord-web');
   ok('sha-stable', sha256(Buffer.from('x')) === '2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db0e658437bb6d4e27' || sha256(Buffer.from('x')).length === 64);
   ok('loader-es5-only', !/=>|\bconst\b|\blet\b|`/.test('var x = 1;'));
+  // receipt loop over per-app dirs + top-level index (dep-free, tmp fixture)
+  const tmp = mkdtempSync(join(tmpdir(), 'pt-selftest-'));
+  const appDir = join(tmp, 'out', 'fake-app');
+  mkdirSync(appDir, { recursive: true });
+  writeFileSync(join(appDir, 'es5-a.js'), 'var a = 1;\n');
+  writeFileSync(join(appDir, 'loader.html'), '<html></html>\n');
+  cmdReceipt(join(tmp, 'out'));
+  ok('receipt-loop', existsSync(join(appDir, 'RECEIPT.json')) && existsSync(join(tmp, 'out', 'RECEIPT-INDEX.json')));
+  // loader loop over per-app dirs
+  for (const id of appIds()) {
+    const d = join(tmp, 'load', id);
+    mkdirSync(d, { recursive: true });
+    writeFileSync(join(d, 'es5-x.js'), 'var x = 1;\n');
+    writeFileSync(join(d, 'polyfill.js'), 'var p = 1;\n');
+  }
+  cmdLoader('all', join(tmp, 'load'));
+  ok('loader-loop', appIds().every((id) => existsSync(join(tmp, 'load', id, 'loader.html'))));
+  rmSync(tmp, { recursive: true, force: true });
   console.log(process.exitCode ? 'PASSTHROUGH_SELFTEST=FAIL' : 'PASSTHROUGH_SELFTEST=PASS');
 }
 
@@ -141,7 +216,7 @@ async function main(): Promise<void> {
   else if (cmd === 'transpile') cmdTranspile(arg('in'), arg('out'));
   else if (cmd === 'receipt') cmdReceipt(arg('dir'));
   else if (cmd === 'loader') cmdLoader(arg('app'), arg('dir'));
-  else { console.error('usage: mac-es5-passthrough.ts apps|selftest|fetch|transpile|receipt|loader'); process.exit(2); }
+  else { console.error('usage: mac-es5-passthrough.ts apps|selftest|fetch|transpile|receipt|loader  (--app accepts any registry id or all)'); process.exit(2); }
 }
 
 main();
