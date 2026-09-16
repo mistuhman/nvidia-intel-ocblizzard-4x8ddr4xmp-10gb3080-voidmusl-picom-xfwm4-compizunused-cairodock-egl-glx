@@ -39,7 +39,9 @@ run('node', ['tools/ram-oc-plan.ts', 'selftest']);
 run('node', ['tools/ram-validate-parse.ts', 'selftest']);
 run('bash', ['-n', 'scripts/ram-validate']);
 run('bash', ['-n', 'lion-mirror.command']);
+run('bash', ['-n', 'lion-one.command']);
 run('node', ['tools/lion-mirror-sl-test.ts']);
+run('node', ['tools/lion-one-test.ts']);
 run('python3', ['-m', 'json.tool', 'docs/lion-workflow.json']);
 // Mac art pass-compiler: fact ledger, scene IR and the imaging pass loop
 run('python3', ['-m', 'json.tool', 'docs/macpro-storage-facts.json']);

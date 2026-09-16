@@ -1,29 +1,30 @@
-LIVE CURRENT LION LINKS — type these short URLs into Arctic Fox
+LIVE CURRENT LION LINK — type this short URL into Arctic Fox
 
-Current relay page:
-da.gd/lionrelay
+THE ONE LINK:
+da.gd/lionone
+(the "One" page: txt report browser + Burn armed-on-txt + live
+command + lion-one.zip download. A loaded txt burns straight to
+the model: no merge, no pull request.)
 
-Current bundle (lion-mirror2.zip):
-da.gd/lionzip
+The bundle inside (lion-one.zip, two files):
+- lion-one.command — safe read-only reporter, double-click writes
+  ~/Desktop/lion-one.txt and opens it. No sudo, no network, no
+  disk or firmware changes.
+- lion-one.html — this page, for local double-click.
 
-Forensic collector (lion-forensic.zip, this branch):
-da.gd/lionforens
-(minted 2026-09-11 the same route, verified via da.gd/lionforens+ coshorten;
-note: da.gd truncates custom slugs to 10 chars, lionforensic became lionforens)
-
-The exact destinations and mint/verification receipts are canonical in:
+The exact destination and mint/verification receipts are canonical in:
 docs/lion-workflow.json
 
 Reproducible verification:
 node tools/lion-status.ts
 node tools/lion-status.ts selftest
+node tools/lion-one-test.ts
 
-The selftest checks the da.gd/lionrelay and da.gd/lionzip destinations for the
-fixed session branch and rejects TinyURL. The links were minted 2026-09-11 with
-da.gd's encoded ?url=...&shorturl=... route and verified with da.gd/lionrelay+
-and da.gd/lionzip+ coshorten receipts.
-
-LEGACY — do not type for this session:
+LEGACY — do not type for new waves:
+da.gd/lionrelay
+da.gd/lionzip
+da.gd/lionforens
+da.gd/lionwipeh
 da.gd/lzr
 da.gd/lmz
 da.gd/lpg

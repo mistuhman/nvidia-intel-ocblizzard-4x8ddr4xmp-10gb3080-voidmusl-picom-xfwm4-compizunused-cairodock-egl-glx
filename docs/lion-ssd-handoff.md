@@ -63,6 +63,8 @@ ACHIEVED 2026-09-12 via the installer-app path (operator brute force): Lion 10.7
 
 ## Live links (Arctic Fox)
 
+**THE ONE LINK (2026-09-16): type `da.gd/lionone`** — the One page (txt browser + Burn + live command + lion-one.zip). Rows below are the legacy channel, kept for history.
+
 | Type | Type this | Job |
 |---|---|---|
 | Current relay page | `da.gd/lionrelay` | Current session page: Commands panel plus plain-text log relay. |

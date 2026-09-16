@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 
 const WORKFLOW = 'docs/lion-workflow.json';
 
-type Link = { type: string; url: string; dest?: string; job?: string; why?: string };
+type Link = { type: string; url: string; dest?: string; job?: string; why?: string; zip?: string };
 type Volume = { name: string; role: string; erase: string; lastNode?: string };
 type Tool = { path: string; run: string; job: string };
 type Workflow = {
@@ -25,6 +25,7 @@ type Workflow = {
     attachPage: Link;
     phonePage: Link;
     phoneZip: Link;
+    oneLink?: Link;
     logInbox: Link;
     withdrawn: Link[];
   };
@@ -66,6 +67,7 @@ function printStatus(w: Workflow): void {
   p(`  attachPage: ${w.links.attachPage.url}`);
   p(`  phonePage: ${w.links.phonePage.url} -> ${w.links.phonePage.dest ?? ''}`);
   p(`  phoneZip: ${w.links.phoneZip.url} -> ${w.links.phoneZip.dest ?? ''}`);
+  if (w.links.oneLink) p('  oneLink: ' + w.links.oneLink.url + ' -> ' + (w.links.oneLink.dest ?? '') + ' | zip=' + (w.links.oneLink.zip ?? ''));
   p(`  logInbox: ${w.links.logInbox.url}`);
   p('withdrawn:');
   const withdrawn = [...w.links.withdrawn].sort((a, b) => a.type.localeCompare(b.type));
@@ -106,6 +108,8 @@ function selftest(w: Workflow): void {
   else pass('link-phone-page', `${w.links.phonePage.url} -> ${w.links.phonePage.dest}`);
   if (!w.links?.phoneZip?.url?.includes('da.gd/lionzip') || !w.links.phoneZip.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip')) fail('link-phone-zip', JSON.stringify(w.links?.phoneZip));
   else pass('link-phone-zip', `${w.links.phoneZip.url} -> ${w.links.phoneZip.dest}`);
+  if (!w.links?.oneLink?.url?.includes('da.gd/lionone') || !w.links.oneLink.dest?.includes('/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.html')) fail('link-one', JSON.stringify(w.links?.oneLink));
+  else pass('link-one', w.links.oneLink.url + ' -> ' + w.links.oneLink.dest);
   const operatorLinks = [w.links.phonePage.url, w.links.phoneZip.url];
   if (operatorLinks.some((x) => /tinyurl/i.test(x))) fail('no-tinyurl', operatorLinks.join(','));
   else pass('no-tinyurl', operatorLinks.join(','));
