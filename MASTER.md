@@ -9,7 +9,7 @@
     "helper": "lion-mirror.command",
     "zip": "lion-mirror.zip",
     "links": {
-      "oneLink": "https://da.gd/lionone - THE one link since 2026-09-16, verified live 2026-09-16b (slug+ coshorten, page+zip refs alive, inbox readable)",
+      "oneLink": "https://da.gd/sQ7bEo - THE one link since 2026-09-16g (minted via the encoded da.gd route GET da.gd/s?url=, + coshorten verified = htmlpreview arena/01a0aade lion-one.html; page carries the 3-file lion-one.zip incl. lion-compiler-context.command which embeds INSTRUCTIONS v2 sha 8583a1cbf2ca and burns COMPILERCTX1). Legacy da.gd/lionone (frozen 01a0a9de page) still posts Burns to the same webhook inbox",
       "legacyLzr": "https://da.gd/lzr - legacy helper zip, do not type for new waves",
       "legacyLmz": "https://da.gd/lmz - legacy branch zip frozen to arena/01a08b54, do not type",
       "legacyLpg": "https://da.gd/lpg - legacy attach page frozen blob, do not type",

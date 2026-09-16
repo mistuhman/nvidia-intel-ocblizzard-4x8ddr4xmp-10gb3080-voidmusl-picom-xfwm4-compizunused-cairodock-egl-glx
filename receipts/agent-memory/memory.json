@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 127,
+  "lastSeq": 128,
   "entries": [
     {
       "seq": 1,
@@ -2118,6 +2118,13 @@
       "kind": "note",
       "text": "2026-09-16g: least-effort-first-compile verdict = vencord-web (receipt: registry shape). First local compile GREEN: receipts/mac-es5/2026-09-16g-vencord-local/ (FF52-floor acorn-ES2017 PASS; 209 BigInt + 184 regex-literal shims as KNOWN_LIMITATION; INSTRUCTIONS v2 2026-09-16g-v2; Babel pinned ^7 in ci). Tool fixes: createRequire for ESM file, core-js-bundle minified.js path. Sandbox egress: vencord.dev blocked, Vencord/builds git clone + npm registry OK. Open PRs to remind operator about: 72,60,57,34,24,23 + new session PR.",
       "sha256": "7c45fa89c6c1703c8c4f29ff7e37fb8ef4f4177c5ef5e7c66d9f8405ab1bdec3"
+    },
+    {
+      "seq": 128,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16g delivery: one downloadable script lion-compiler-context.command (INSTRUCTIONS v2 embedded w/ sha self-check + context + COMPILERCTX1 burn) shipped in 3-file lion-one.zip + page link; new one-link da.gd/sQ7bEo (minted GET da.gd/s?url=, + verified) repinned in ONE_LINK.txt + MASTER; lionone legacy same inbox. Operator action: double-click from zip, burn ~/Desktop/lion-compiler-context.txt on the page.",
+      "sha256": "a81251ef3b78334a755606ebe933954c7559d04ddc2a5b498d1732f22a8649ef"
     }
   ],
   "stacks": [
