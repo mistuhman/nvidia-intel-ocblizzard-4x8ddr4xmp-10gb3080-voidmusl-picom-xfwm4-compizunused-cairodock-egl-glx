@@ -1,0 +1,108 @@
+LION WAVE 2026-09-15 - WIPE THE SSD + HARDEN (Mac Pro 3,1, single fresh admin, RAID set)
+Blocks below are byte-exact registry replays: ?(lion-ssd-wipe) + ?(lion-harden).
+HOW TO:
+  1. Open Terminal, become root: sudo -s (password).
+  2. Copy BLOCK 1 in full (select all its lines), paste, Enter. It only MAPS - nothing erases.
+  3. If it prints NOTHING ERASED + a CONFIRM line, copy that exact line, paste, Enter. Now the SSD is wiped to SSD SCRATCH.
+     If it prints ABORT instead of SELECTED: STOP. Paste the whole output back to the agent chat. Do not improvise a target.
+  4. Copy BLOCK 2 in full, paste, Enter. Config-only harden (firewall+stealth, guest off, remote off, screensaver password, update chatter off). It never touches /Applications, so Arctic Fox is kept by rule.
+  5. Terminal: Cmd+A select-all, Cmd+C copy, paste the FULL transcript back into agent chat (receipts for both blocks).
+
+=== BLOCK 1: ?(lion-ssd-wipe) sha256=eafa8be718ed6b9a540b1d530e95421e6bda3676bd00d77c9fb0df24fd40ae30 ===
+id -u
+# lion-ssd-wipe.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). DESTRUCTIVE to ONE disk, double-gated.
+# Why: 2026-09-15 directive "harden and wipe the ssd" - RAID is already set and a fresh single admin account exists, node ids moved, so nothing is hardwired: the block DISCOVERS at run time and only ever considers a non-boot, non-RAID (AppleRAID AND CoreStorage members are skipped) disk whose media name matches crucial|mx500|ssd. It prints a full disk map and erases NOTHING until the operator re-runs the CONFIRM=diskN line it prints.
+# Gate: paste back BOTH runs (discovery run AND the CONFIRM run); agent records with node tools/cmd.ts result lion-ssd-wipe. If discovery says ABORT (not exactly 1 SSD candidate), paste that too - never improvise a target.
+# Rollback: none for clone bytes (the start-disk clone is superseded per the Bay 1 migration note; boot volume and RAID are guarded out by rule, not by memory). The partition table is re-creatable; the data is not.
+cat > /tmp/lion-ssd-wipe.sh <<'WIPESH'
+#!/bin/sh
+# lion-ssd-wipe.sh - discovery first, erase only on CONFIRM re-run. Re-runnable, read-only until CONFIRMED.
+BOOTPART=$(mount | grep ' on / ' | awk '{print $1}' | head -1)
+BOOTDISK=$(echo "$BOOTPART" | sed -E 's|/dev/(disk[0-9]+)s[0-9]+.*|\1|')
+[ -z "$BOOTDISK" ] && { echo "ABORT: cannot resolve the boot disk from mount output"; exit 1; }
+RAIDDISKS=$( (diskutil appleRAID list 2>/dev/null; diskutil coreStorage list 2>/dev/null) | grep -o 'disk[0-9]*' | sort -u | tr '\n' ' ')
+echo "boot=$BOOTDISK raid=[$RAIDDISKS]"
+minfo() { diskutil info "$1" 2>/dev/null | grep -i "$2" | head -1 | cut -d: -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'; }
+SELECT=""
+for d in 0 1 2 3 4 5 6 7; do
+  diskutil info disk$d >/dev/null 2>&1 || continue
+  MEDIA=$(minfo disk$d "Media Name")
+  SIZE=$(minfo disk$d "Disk Size")
+  case " $RAIDDISKS" in *" disk$d "*) echo "skip disk$d (RAID/CoreStorage member) $MEDIA"; continue;; esac
+  if [ "disk$d" = "$BOOTDISK" ]; then echo "skip disk$d (BOOT) $MEDIA"; continue; fi
+  echo "seen disk$d: $MEDIA | $SIZE"
+  echo "$MEDIA" | grep -qiE 'crucial|mx500|ssd' && SELECT="$SELECT disk$d"
+done
+set -- $SELECT
+if [ "$#" -ne 1 ]; then
+  echo "ABORT: selection is $# SSD candidate disks (need exactly 1). Paste the FULL output back - do NOT improvise a target."
+  exit 1
+fi
+TARGET=$1
+echo "SELECTED: $TARGET ($(minfo $TARGET "Media Name"))"
+diskutil list $TARGET
+if [ "$CONFIRM" != "$TARGET" ]; then
+  echo "NOTHING ERASED. To proceed, paste exactly:"
+  echo "CONFIRM=$TARGET sh /tmp/lion-ssd-wipe.sh"
+  exit 0
+fi
+diskutil info $TARGET | grep -qiE "Media Name.*(crucial|mx500|ssd)" || { echo "ABORT: $TARGET no longer matches the SSD class"; exit 1; }
+case " $RAIDDISKS" in *" $TARGET "*) echo "ABORT: $TARGET is a RAID/CoreStorage member"; exit 1;; esac
+[ "$TARGET" = "$BOOTDISK" ] && { echo "ABORT: $TARGET is the boot disk"; exit 1; }
+diskutil unmountDisk force /dev/$TARGET
+diskutil eraseDisk JHFS+ "SSD SCRATCH" /dev/$TARGET
+echo "== RESULT"
+diskutil list
+mount
+WIPESH
+sh /tmp/lion-ssd-wipe.sh
+date
+
+=== BLOCK 2: ?(lion-harden) sha256=aa9fccd01de8699ab068ee6b2d39ccb8588539009e4c6c7cdb3cb95fc39cbc44 ===
+id -u
+# lion-harden.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). CONFIG ONLY.
+# Why: 2026-09-15 directive "harden lion" on the daily-driver boot volume after the ddds admin removal. Firewall on + stealth, guest off, login hints off, remote login/apple events off, no wake-on-network, no auto-restart after power loss, screensaver password on for every remaining user, dead 10.7 update chatter off.
+# Rule: never touches /Applications (Arctic Fox is KEEP by directive), never deletes user data, never repartitions anything. Keychain data only leaves via the Users & Groups account-delete UI the operator already ran.
+# Gate: paste the FULL output (it prints PRE then POST reads); agent records it. Optional follow-ups are GUI-only and operator-decided: FileVault 2 (NOT recommended on this boot path - the bless history says a failed unlock bricks bootability; Bay 1 media is also a HDD where FDE costs seek time) and a firmware password (recoverable on the 3,1 via PRAM reset: hold Cmd-Opt-P-R at chime clears it).
+# Rollback: exact inverses - socketfilterfw --setglobalstate off --setstealthmode off; defaults write GuestEnabled -bool true; systemsetup -setremotelogin on; pmset -a womp 1 autorestart 1; defaults delete of each screensaver key; AutomaticCheckEnabled -bool true. All prior values print in the PRE section first.
+echo == PRE
+/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled 2>/dev/null
+systemsetup -getremotelogin
+systemsetup -getremoteappleevents
+pmset -g custom
+ls /Users
+ls -d /Applications/ArcticFox.app
+echo == FIREWALL ON WITH STEALTH
+/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+/usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+/usr/libexec/ApplicationFirewall/socketfilterfw --setblockall off
+echo == LOGIN WINDOW
+defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
+defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint -int 0
+echo == REMOTE SERVICES OFF
+systemsetup -setremotelogin off
+systemsetup -setremoteappleevents off
+echo == SLEEP AND POWER
+pmset -a womp 0
+pmset -a autorestart 0
+echo == SCREEN LOCK FOR EVERY REMAINING USER
+for u in $(ls /Users | grep -v Shared); do
+  defaults write "/Users/$u/Library/Preferences/com.apple.screensaver" askForPassword -int 1
+  defaults write "/Users/$u/Library/Preferences/com.apple.screensaver" askForPasswordDelay -int 0
+done
+killall cfprefsd
+echo == UPDATE CHATTER OFF - 10.7 store catalog is dead, stop background failed checks
+defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
+echo == POST
+/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled 2>/dev/null
+systemsetup -getremotelogin
+systemsetup -getremoteappleevents
+ls /Users
+ls -d /Applications/ArcticFox.app && echo KEEP-ARCTIC-OK
+date
+
+=== END - registry tools/cmd.ts replays these same bytes on demand (node tools/cmd.ts replay lion-ssd-wipe) ===

@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-15",
-  "lastSeq": 99,
+  "updated": "2026-09-16",
+  "lastSeq": 103,
   "entries": [
     {
       "seq": 1,
@@ -1831,6 +1831,42 @@
       "kind": "note",
       "text": "2026-09-15: AirPort Utility prompt for LC Capsule password. User has 2x Time Capsules + 1x Express connected via Ethernet to dual Mac Pro LAN ports, does not have base station password, wants to wipe base stations and HDDs. Solution: Hard factory reset on AirPort units (hold pinhole reset during power-on until amber flashes rapidly).",
       "sha256": "e194516cd0cc77ccceed28d33a13f782746593425c789141655dc278cd30cd1f"
+    },
+    {
+      "seq": 100,
+      "date": "2026-09-15",
+      "kind": "perception",
+      "target": "operator-chat-2026-09-15-users-groups",
+      "tool": "chat-vision",
+      "claims": [
+        {
+          "claim": "Mac Pro 3,1 Lion 10.7 Users & Groups deleting ddds admin account with Samael admin active, AirPort 6.3.1 installed, Andromeda desktop",
+          "evidence": "photo shows Users & Groups pref pane with Samael admin and ddds Deleting Account... status over Andromeda galaxy wallpaper",
+          "confidence": "HIGH"
+        }
+      ],
+      "sha256": "aef34a0185658575661be45e395a6d924ba93a00a698771dc38bc4d17d6b01af"
+    },
+    {
+      "seq": 101,
+      "date": "2026-09-15",
+      "kind": "note",
+      "text": "2026-09-15 LION STORAGE WAVE: GTX 285 in + both displays up (operator); ddds deletion in progress. Registered ?(lion-erase-inventory-probe) sha a9b1affb READ-ONLY first, ?(lion-erase-spares-wd1tb) sha 70b50c27 PLACEHOLDER-unarmed (arms only from probe receipt; boot/bay3/iTunes-backup disks hard-guarded out; music extraction = operator decision before arming), ?(lion-harden) sha aa9fccd0 config-only with Arctic Fox keep-check before/after. CMD_CHECK=PASS entries=16, block-lint PASS x3, TEST_ALL=PASS. Docs synced: ToDo.md buildup, docs/lion-workflow.json nextAction, MASTER.md nextAction. Next = operator pastes full probe output back.",
+      "sha256": "bdba5f3f9b15804e6c782ac9c49e9804e98c085203f38ca4fa00c877bd340670"
+    },
+    {
+      "seq": 102,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-15 burn wave: operator did RAID+account cleanup by hand (probe/erase blocks bypassed, un-armed history). Registered ?(lion-ssd-wipe) eafa8be7: discovery-only first run, maps every disk, hard-skips boot+AppleRAID+CoreStorage members, selects exactly one non-boot non-RAID crucial|mx500|ssd disk, erases on CONFIRM=diskN re-run to SSD SCRATCH, ABORTs if selection != 1. lion-wipe-harden.txt FILE_SHA256 eaf43ab0 = byte-exact registry replay of wipe+harden. Local git history was rolled back by sandbox restart between turns - rebased onto remote 17f9d53, registry re-add reproduced identical sha. Next = operator runs burn file, pastes both transcripts; AirPort pinhole resets open.",
+      "sha256": "1255702f7277b494eaf6b5edb592c12adc9d9c507805676f8f51f10ba0384c90"
+    },
+    {
+      "seq": 103,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "da.gd/lionwipeh minted 2026-09-15 via fetch_page route, verified by coshorten: dest = jsDelivr @87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt. Slug recorded in docs/lion-workflow.json links.wipeHardenWave.",
+      "sha256": "661426ccb3095fedf861d69c40d43f2720b2a466edc76802fb1ce121f742935c"
     }
   ],
   "stacks": [

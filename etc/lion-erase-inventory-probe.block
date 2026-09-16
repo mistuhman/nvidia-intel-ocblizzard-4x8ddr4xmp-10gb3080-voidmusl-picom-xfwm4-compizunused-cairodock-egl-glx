@@ -1,0 +1,40 @@
+id -u
+# lion-erase-inventory-probe.block - USER shell on the Mac Pro 3,1 (Terminal on the Lion desktop). READ-ONLY.
+# Why: 2026-09-15 operator directive "erase the drives, harden lion, keep arctic, and keep my itunes
+# backup on my hdd". Node numbers move between boots and the bay roles were last metered 2026-09-12
+# (Bay 1 Lion SSD Base = erase NEVER, Bay 3 clone = NEVER, Bay 4 spare); the 3x WD Green 1TB live in
+# the bays and at least one holds the iTunes backup. The gated erase block can only be armed from this receipt.
+# Gate: paste the FULL output back; agent records it (node tools/cmd.ts result lion-erase-inventory-probe)
+# and rewrites the KEEP/ERASE lists in lion-erase-spares-wd1tb before it is ever delivered.
+# Rollback: nothing to roll back - read-only, no disk was written.
+sw_vers
+diskutil list
+echo == DISKS
+for d in 0 1 2 3 4 5 6 7; do
+  if diskutil info disk$d >/dev/null 2>&1; then
+    echo "-- disk$d"
+    diskutil info disk$d | grep -E "Device Node|Media Name|Volume Name|Disk Size|Total Space|Free Space|Partition Map Type|Device Location|Volume Mount Point|SMART Status"
+  fi
+done
+echo == MOUNTS
+mount
+df -H
+echo == VOLUME TOP LEVELS
+for v in /Volumes/*; do echo "-- $v"; ls -1 "$v" 2>/dev/null | head -25; done
+echo == ITUNES MUSIC AND BACKUP HUNT
+for v in /Volumes/*; do find "$v" -maxdepth 3 \( -iname "iTunes Library.itl" -o -iname "iTunes Music Library.xml" -o -iname "*itunes backup*" -o -iname "Music" \) 2>/dev/null | head -25; done
+find /Users -maxdepth 6 -type d -name Backup -path "*MobileSync*" 2>/dev/null | head
+echo == USERS AND ACCOUNTS
+ls /Users
+ls "/Users/Deleted Users" 2>/dev/null
+id
+dscl . list /Users | grep -v '^_' | head -20
+echo == ARCTIC FOX KEEP CHECK
+ls -d /Applications/ArcticFox.app 2>/dev/null; ls -d "/Applications/Arctic Fox.app" 2>/dev/null
+defaults read /Applications/ArcticFox.app/Contents/Info CFBundleShortVersionString 2>/dev/null
+echo == GPU AND DISPLAYS
+system_profiler SPDisplaysDataType 2>/dev/null | grep -E "Chipset Model|VRAM|Vendor Id|Device Id|Resolution" | head -20
+echo == RAID AND CORESTORAGE STATE
+diskutil appleRAID list
+diskutil coreStorage list
+echo INVENTORY_DONE

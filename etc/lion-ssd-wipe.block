@@ -1,0 +1,48 @@
+id -u
+# lion-ssd-wipe.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). DESTRUCTIVE to ONE disk, double-gated.
+# Why: 2026-09-15 directive "harden and wipe the ssd" - RAID is already set and a fresh single admin account exists, node ids moved, so nothing is hardwired: the block DISCOVERS at run time and only ever considers a non-boot, non-RAID (AppleRAID AND CoreStorage members are skipped) disk whose media name matches crucial|mx500|ssd. It prints a full disk map and erases NOTHING until the operator re-runs the CONFIRM=diskN line it prints.
+# Gate: paste back BOTH runs (discovery run AND the CONFIRM run); agent records with node tools/cmd.ts result lion-ssd-wipe. If discovery says ABORT (not exactly 1 SSD candidate), paste that too - never improvise a target.
+# Rollback: none for clone bytes (the start-disk clone is superseded per the Bay 1 migration note; boot volume and RAID are guarded out by rule, not by memory). The partition table is re-creatable; the data is not.
+cat > /tmp/lion-ssd-wipe.sh <<'WIPESH'
+#!/bin/sh
+# lion-ssd-wipe.sh - discovery first, erase only on CONFIRM re-run. Re-runnable, read-only until CONFIRMED.
+BOOTPART=$(mount | grep ' on / ' | awk '{print $1}' | head -1)
+BOOTDISK=$(echo "$BOOTPART" | sed -E 's|/dev/(disk[0-9]+)s[0-9]+.*|\1|')
+[ -z "$BOOTDISK" ] && { echo "ABORT: cannot resolve the boot disk from mount output"; exit 1; }
+RAIDDISKS=$( (diskutil appleRAID list 2>/dev/null; diskutil coreStorage list 2>/dev/null) | grep -o 'disk[0-9]*' | sort -u | tr '\n' ' ')
+echo "boot=$BOOTDISK raid=[$RAIDDISKS]"
+minfo() { diskutil info "$1" 2>/dev/null | grep -i "$2" | head -1 | cut -d: -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'; }
+SELECT=""
+for d in 0 1 2 3 4 5 6 7; do
+  diskutil info disk$d >/dev/null 2>&1 || continue
+  MEDIA=$(minfo disk$d "Media Name")
+  SIZE=$(minfo disk$d "Disk Size")
+  case " $RAIDDISKS" in *" disk$d "*) echo "skip disk$d (RAID/CoreStorage member) $MEDIA"; continue;; esac
+  if [ "disk$d" = "$BOOTDISK" ]; then echo "skip disk$d (BOOT) $MEDIA"; continue; fi
+  echo "seen disk$d: $MEDIA | $SIZE"
+  echo "$MEDIA" | grep -qiE 'crucial|mx500|ssd' && SELECT="$SELECT disk$d"
+done
+set -- $SELECT
+if [ "$#" -ne 1 ]; then
+  echo "ABORT: selection is $# SSD candidate disks (need exactly 1). Paste the FULL output back - do NOT improvise a target."
+  exit 1
+fi
+TARGET=$1
+echo "SELECTED: $TARGET ($(minfo $TARGET "Media Name"))"
+diskutil list $TARGET
+if [ "$CONFIRM" != "$TARGET" ]; then
+  echo "NOTHING ERASED. To proceed, paste exactly:"
+  echo "CONFIRM=$TARGET sh /tmp/lion-ssd-wipe.sh"
+  exit 0
+fi
+diskutil info $TARGET | grep -qiE "Media Name.*(crucial|mx500|ssd)" || { echo "ABORT: $TARGET no longer matches the SSD class"; exit 1; }
+case " $RAIDDISKS" in *" $TARGET "*) echo "ABORT: $TARGET is a RAID/CoreStorage member"; exit 1;; esac
+[ "$TARGET" = "$BOOTDISK" ] && { echo "ABORT: $TARGET is the boot disk"; exit 1; }
+diskutil unmountDisk force /dev/$TARGET
+diskutil eraseDisk JHFS+ "SSD SCRATCH" /dev/$TARGET
+echo "== RESULT"
+diskutil list
+mount
+WIPESH
+sh /tmp/lion-ssd-wipe.sh
+date

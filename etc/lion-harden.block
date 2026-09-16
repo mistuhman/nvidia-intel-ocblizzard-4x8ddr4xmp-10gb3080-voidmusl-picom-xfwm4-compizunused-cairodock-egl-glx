@@ -1,0 +1,45 @@
+id -u
+# lion-harden.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). CONFIG ONLY.
+# Why: 2026-09-15 directive "harden lion" on the daily-driver boot volume after the ddds admin removal. Firewall on + stealth, guest off, login hints off, remote login/apple events off, no wake-on-network, no auto-restart after power loss, screensaver password on for every remaining user, dead 10.7 update chatter off.
+# Rule: never touches /Applications (Arctic Fox is KEEP by directive), never deletes user data, never repartitions anything. Keychain data only leaves via the Users & Groups account-delete UI the operator already ran.
+# Gate: paste the FULL output (it prints PRE then POST reads); agent records it. Optional follow-ups are GUI-only and operator-decided: FileVault 2 (NOT recommended on this boot path - the bless history says a failed unlock bricks bootability; Bay 1 media is also a HDD where FDE costs seek time) and a firmware password (recoverable on the 3,1 via PRAM reset: hold Cmd-Opt-P-R at chime clears it).
+# Rollback: exact inverses - socketfilterfw --setglobalstate off --setstealthmode off; defaults write GuestEnabled -bool true; systemsetup -setremotelogin on; pmset -a womp 1 autorestart 1; defaults delete of each screensaver key; AutomaticCheckEnabled -bool true. All prior values print in the PRE section first.
+echo == PRE
+/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled 2>/dev/null
+systemsetup -getremotelogin
+systemsetup -getremoteappleevents
+pmset -g custom
+ls /Users
+ls -d /Applications/ArcticFox.app
+echo == FIREWALL ON WITH STEALTH
+/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
+/usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+/usr/libexec/ApplicationFirewall/socketfilterfw --setblockall off
+echo == LOGIN WINDOW
+defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
+defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint -int 0
+echo == REMOTE SERVICES OFF
+systemsetup -setremotelogin off
+systemsetup -setremoteappleevents off
+echo == SLEEP AND POWER
+pmset -a womp 0
+pmset -a autorestart 0
+echo == SCREEN LOCK FOR EVERY REMAINING USER
+for u in $(ls /Users | grep -v Shared); do
+  defaults write "/Users/$u/Library/Preferences/com.apple.screensaver" askForPassword -int 1
+  defaults write "/Users/$u/Library/Preferences/com.apple.screensaver" askForPasswordDelay -int 0
+done
+killall cfprefsd
+echo == UPDATE CHATTER OFF - 10.7 store catalog is dead, stop background failed checks
+defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
+echo == POST
+/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+/usr/libexec/ApplicationFirewall/socketfilterfw --getstealthmode
+defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled 2>/dev/null
+systemsetup -getremotelogin
+systemsetup -getremoteappleevents
+ls /Users
+ls -d /Applications/ArcticFox.app && echo KEEP-ARCTIC-OK
+date

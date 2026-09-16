@@ -1,0 +1,29 @@
+id -u
+# lion-erase-spares-wd1tb.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). DESTRUCTIVE - bytes erased here do not come back.
+# Why: 2026-09-15 directive "erase the drives ... keep my itunes backup on my hdd". Erases ONLY the spare WD Greens the operator is done extracting from; the boot volume, the Bay 3 clone, and whatever disk carries the iTunes backup stay untouched.
+# Gate: run ONLY after lion-erase-inventory-probe is pasted back, any music still wanted off the WDs has been copied off or explicitly abandoned, and the agent has REWRITTEN the three node lines below with probe-confirmed ids. If the word PLACEHOLDER appears anywhere below, the block is NOT armed - stop.
+# Rollback: none for data (this is the point of an erase). Partitions are re-creatable with diskutil, erased content is not. Never re-run forward without a fresh probe receipt.
+BOOT=disk0
+KEEP=diskPLACEHOLDER-KEEP
+ERASE="diskPLACEHOLDER-A diskPLACEHOLDER-B"
+case "$BOOT$KEEP$ERASE" in *PLACEHOLDER*) echo "ABORT: block not armed - agent must rewrite KEEP/ERASE from the probe receipt first"; exit 1;; esac
+case " $ERASE " in *" $KEEP "*) echo "ABORT: the iTunes-backup disk is inside the erase list"; exit 1;; esac
+case " $ERASE " in *" $BOOT "*) echo "ABORT: boot volume inside erase list"; exit 1;; esac
+for d in $ERASE; do
+  for v in /Volumes/*; do
+    dv=$(df "$v" 2>/dev/null | awk 'NR==2 {print $1}')
+    case "$dv" in /dev/${d}s*)
+      ls "$v" 2>/dev/null | grep -qiE 'itunes|backup|music' && { echo "ABORT: $v on $d carries iTunes/backup/music data - not a spare"; exit 1; }
+    ;; esac
+  done
+done
+echo "ARMED: boot=$BOOT keep=$KEEP erase=[$ERASE]"
+date; sleep 5
+for d in $ERASE; do
+  diskutil unmountDisk force /dev/$d
+  diskutil eraseDisk JHFS+ SPARE-$d GPT /dev/$d
+done
+echo == RESULT
+diskutil list
+mount
+date
