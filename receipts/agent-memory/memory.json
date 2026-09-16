@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 125,
+  "lastSeq": 127,
   "entries": [
     {
       "seq": 1,
@@ -2102,6 +2102,22 @@
       "kind": "note",
       "text": "2026-09-16g session 01a0aade: operator quick note QUEUED (opens next prompt): winamp-for-mac with the themes; mp3->CD burn context. Research receipts: Winamp for Mac 0.8.1.13 (2012-09-21) runs Mac OS X 10.6+ => Lion class [mywinamp.com/winamp-for-mac + mac.filehorse.com old-versions]; skins claimed (FileHorse PROS) but native .wsz on 0.8.1 unverified; NO CD-burn in the Mac feature list (play/import/sync only) => iTunes native burn (docs/mac-daily-driver.md S1) remains the burn path; 32/64-bit on Lion unverified. Capability gate FULL PASS (bash/read-write-edit/node/git+gh/web search+fetch/bg-process). orient.ts prints BRANCH_MISMATCH expected=01a0a9ee - stale hardcode from prior session; session branch 01a0aade is correct per Arena.",
       "sha256": "e0d071bbe87675562f13becf6c69a66a5dd6e48d2993c45a6035578b16172a95"
+    },
+    {
+      "seq": 126,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "merge-rule-01a0aade",
+      "value": "operator directive 2026-09-16g: PR merges are OPERATOR-ONLY; agent NEVER runs gh pr merge; when a PR is ready the agent REMINDS the operator (PR number + head branch) and re-lists other open PRs. Persisted in MASTER.md hardConstraints.process + ToDo.md 2026-09-16g section.",
+      "source": "operator chat 2026-09-16g",
+      "sha256": "db24658ce820c8824926810dd24b0728c0ff10c99177ac4435c7090a7833874f"
+    },
+    {
+      "seq": 127,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16g: least-effort-first-compile verdict = vencord-web (receipt: registry shape). First local compile GREEN: receipts/mac-es5/2026-09-16g-vencord-local/ (FF52-floor acorn-ES2017 PASS; 209 BigInt + 184 regex-literal shims as KNOWN_LIMITATION; INSTRUCTIONS v2 2026-09-16g-v2; Babel pinned ^7 in ci). Tool fixes: createRequire for ESM file, core-js-bundle minified.js path. Sandbox egress: vencord.dev blocked, Vencord/builds git clone + npm registry OK. Open PRs to remind operator about: 72,60,57,34,24,23 + new session PR.",
+      "sha256": "7c45fa89c6c1703c8c4f29ff7e37fb8ef4f4177c5ef5e7c66d9f8405ab1bdec3"
     }
   ],
   "stacks": [

@@ -4,3 +4,6 @@ image-search/
 
 # compiled render prompts are object files: regenerate with `node tools/mac-storage-art.ts prompt --plate=ID --pass=N`
 receipts/mac-art/prompts/
+node_modules/
+package.json
+package-lock.json

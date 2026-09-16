@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: 22
       - name: deps (CI-only, justified per MASTER toolStyle)
-        run: npm i --no-save @babel/core @babel/preset-env core-js-bundle
+        run: npm i --no-save @babel/core@^7 @babel/preset-env@^7 core-js-bundle
       - name: fetch target assets (per-app dirs)
         run: node tools/mac-es5-passthrough.ts fetch --app=${{ inputs.app }} --out=work/src
       - name: transpile to ES5 (firefox 52 target)

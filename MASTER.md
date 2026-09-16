@@ -356,7 +356,8 @@
       "run node tools/test-all.ts before delivery",
       "paste commands directly in chat; no registry/ceremony tokens. Blocks must be console-safe: one command per line, bash -n passes, no chaining/redirects that break on web-console paste, root blocks start with id -u",
       "after an operator paste-back, read the output verbatim and attribute cause before proposing the next step - reciprocity is part of the contract",
-      "do not conclude impossible; search a new class or gather more context first"
+      "do not conclude impossible; search a new class or gather more context first",
+      "merges are OPERATOR-ONLY (operator directive 2026-09-16g): the agent NEVER runs gh pr merge / git merge on a PR; when work is ready the agent REMINDS the operator to merge (quote PR number + head branch), and re-lists any other open PRs awaiting their decision"
     ]
   },
   "lessons": [
@@ -388,7 +389,9 @@
     "sandbox bash egress is filtered (webhook.site, da.gd, ppng.io, 0x0.st, jsDelivr and raw.githubusercontent all fail TLS with HTTP 000) while the fetch_page tool reaches the same hosts fine. Prove reachability per-tool before declaring an external dependency dead, and never write a fix that assumes curl works here.",
     "when a long URL is the problem, shorten the WORKFLOW not the URL: the page ships inside the zip the operator already downloads, so the fix was one double-click on a file instead of a shorter link. Two zip names with identical bytes beat one name behind a 12h CDN cache, and a cache-buster query does not help when the edge keys on path only.",
     "read where the short link actually lands before building on it: da.gd/lmz resolved to an older arena branch, not main and not this session branch, so a zip change on main is invisible to the Burn click. A write-once redirect is a frozen dependency - verify its destination ref, and prefer a link printed inside a page you control.",
-    "the Burn bundle is pinned to a git TAG, not a branch or main: jsDelivr serves @main with HTTP 500 on this repo, branch paths cache ~12h, and a cache-buster query is ignored at the edge - only @tag resolves instantly and immutably, so updates move the tag rather than the file."
+    "the Burn bundle is pinned to a git TAG, not a branch or main: jsDelivr serves @main with HTTP 500 on this repo, branch paths cache ~12h, and a cache-buster query is ignored at the edge - only @tag resolves instantly and immutably, so updates move the tag rather than the file.",
+    "a tool file that mixes ESM import syntax with CJS require() silently breaks under node module-syntax detection: the file classifies as ESM where require is undefined, and try/catch turns that into a fake DEPS-MISSING - bind createRequire(import.meta.url) at the top (mac-es5-passthrough.ts fix 2026-09-16g; would have hit the first CI run too).",
+    "npm i --no-save without a package.json PRUNES node_modules to exactly the named set each call - install all needed deps in ONE command or the previous install vanishes (2026-09-16g sandbox compile)."
   ],
   "parked": [
     "phase7 leftovers (operator direction only): doas hardening / sudo removal decision (base-system + testdisk reverse-depend sudo), durable machine logging, network control/interception",

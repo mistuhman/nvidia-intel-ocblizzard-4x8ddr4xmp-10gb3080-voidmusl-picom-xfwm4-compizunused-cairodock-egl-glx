@@ -16,6 +16,12 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, copyFi
 import { join, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
+
+// This file is ESM (import syntax) but the optional CI-only deps are loaded with CJS
+// require(); bare require is undefined in ESM - bind it here so transpile works in CI
+// and in local runs alike. (Bug found 2026-09-16g: DEPS-MISSING despite deps present.)
+const require = createRequire(import.meta.url);
 
 const APPS: Record<string, { entry: string; note: string }> = {
   'discord-web': { entry: 'https://discord.com/app', note: 'app shell: discover <script src="..."> assets, transpile each' },
@@ -28,7 +34,7 @@ const APPS: Record<string, { entry: string; note: string }> = {
 // receipt cites the exact corpus version. Growth rule: new hazard or shim = new entry HERE with a
 // receipt citation (CI log or da.gd/lionone burn); no silent behavior changes, ever.
 const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, string[]> } = {
-  version: "2026-09-16f-v1",
+  version: "2026-09-16g-v2",
   common: [
     "target floor: firefox 52 (Arctic Fox 47 Goanna parse class) via @babel/preset-env, modules:false - syntax lowering only, no module wrapping",
     "polyfill prelude: core-js-bundle full build loads FIRST in loader.html (polyfill.js before every es5-*.js); order is load-bearing",
@@ -39,6 +45,9 @@ const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, st
     "hazard Web Workers with type module: unsupported on FF52-class; v1 = detection + KNOWN_LIMITATION in the burn receipt only, never silently drop workers",
     "hazard WebCrypto crypto.subtle: absent outside secure contexts on FF52-class; apps gating login on it stall BY DESIGN - route real sessions to Chromium Legacy LION primary path (docs/mac-modern-web.md)",
     "polyfill gaps NOT covered by core-js (shim candidates, none auto-added in v1): ResizeObserver, TextEncoder/TextDecoder webcompat gaps, IntersectionObserver (FF55+)",
+    "hazard BigInt literals (ES2020 syntax, FF68+): preset-env cannot lower the syntax; shimmed since 2026-09-16g-v2 as BigIntLiteral -> BigInt(\"<digits>\") call; core-js-bundle full build supplies global BigInt on FF52. CAVEAT: core-js is a ponyfill and cannot fix === reference equality between polyfilled values - runtime comparisons of polyfilled BigInts stay KNOWN_LIMITATION until an on-Mac burn receipt rules otherwise. Discovery receipt: 2026-09-16g local compile, Vencord 1.15.6 bundle carried 209 snowflake BigInt literals",
+    "babel major pinned to ^7 in ci + local (2026-09-16g): babel 8 raised its output baseline experiment differed and pinning keeps local vs CI receipts comparable; receipt 2026-09-16g local compile",
+    "hazard post-FF52 regex literals (lookbehind (?<= / (?<!, named groups (?<name>, dotAll s, hasIndices d): parse-fatal on FF52; shimmed since 2026-09-16g-v2 as deferred new RegExp(src,flags) construction - the bundle parses, a throw is deferred to first execution of that code path = KNOWN_LIMITATION until burn receipt. Discovery receipt: 2026-09-16g local compile, Vencord 1.15.6 camelCase splitter /(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/ at es5 line 2240",
     "present on FF52, no action needed: fetch, WebSocket, localStorage, IndexedDB, Promise, Map/Set",
     "SRI integrity attributes and CSP meta from discovered shells are NOT ported to loader.html by design (local same-origin bundle)",
     "script order = discovery order (webpack chunk dependencies); never sort assets alphabetically",
@@ -123,6 +132,55 @@ async function cmdFetch(app: string, out: string): Promise<void> {
   for (const id of expandApps(app)) await fetchApp(id, join(out, id));
 }
 
+// Semantic shim per INSTRUCTIONS v2 (2026-09-16g): BigInt literals are ES2020 syntax
+// (FF68+) and parse-fatal on FF52-class; preset-env cannot lower the syntax, so rewrite
+// each literal to BigInt("<digits>") - core-js-bundle polyfills global BigInt at runtime.
+// The === equality caveat is documented in the corpus (KNOWN_LIMITATION until burn receipt).
+function bigIntLiteralShim(): unknown {
+  return {
+    visitor: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      BigIntLiteral(path: any): void {
+        const raw = String(path.node.bigint);
+        path.replaceWith({
+          type: 'CallExpression',
+          callee: { type: 'Identifier', name: 'BigInt' },
+          arguments: [{ type: 'StringLiteral', value: raw }],
+        });
+      },
+    },
+  };
+}
+
+// Semantic shim per INSTRUCTIONS v2 (2026-09-16g): regex literals using post-FF52 features
+// (lookbehind (?<= / (?<!, named groups (?<name>, dotAll s flag, hasIndices d flag) are
+// parse-fatal on FF52-class. Rewrite those literals to new RegExp("src","flags") so the
+// bundle PARSES; construction (and any throw) is deferred to first execution of that code
+// path. Literals using only FF52-safe features are left untouched.
+function ff52RegexLiteralShim(): unknown {
+  const risky = (pattern: string, flags: string): boolean =>
+    /\(\?<[=!]/.test(pattern) || /\(\?<[A-Za-z_$]/.test(pattern) || /[sd]/.test(flags);
+  return {
+    visitor: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      RegExpLiteral(path: any): void {
+        const node = path.node;
+        const pattern: string = String(node.pattern);
+        const flags: string = String(node.flags || '');
+        if (!risky(pattern, flags)) return;
+        path.replaceWith({
+          type: 'NewExpression',
+          callee: { type: 'Identifier', name: 'RegExp' },
+          arguments: [
+            { type: 'StringLiteral', value: pattern },
+            { type: 'StringLiteral', value: flags },
+          ],
+        });
+      },
+    },
+  };
+}
+
 function transpileDir(babel: { transformSync: (code: string, opts: unknown) => { code: string } }, inDir: string, out: string): void {
   mkdirSync(out, { recursive: true });
   const files = readdirSync(inDir).filter((f) => f.startsWith('src-') && f.endsWith('.js')).sort();
@@ -134,13 +192,17 @@ function transpileDir(babel: { transformSync: (code: string, opts: unknown) => {
       configFile: false,
       compact: false,
       presets: [[require.resolve('@babel/preset-env'), { targets: { firefox: '52' }, modules: false }]],
+      plugins: [bigIntLiteralShim(), ff52RegexLiteralShim()],
     });
     writeFileSync(join(out, f.replace(/^src-/, 'es5-')), res.code);
   }
   try {
-    const bundled = require.resolve('core-js-bundle/version/core-js.min.js');
+    // core-js-bundle layout moved across majors: old = version/core-js.min.js, 3.50+ = minified.js / index.js
+    const candidates = ['core-js-bundle/version/core-js.min.js', 'core-js-bundle/minified.js', 'core-js-bundle/index.js'];
+    const bundled = candidates.map((c) => { try { return require.resolve(c); } catch { return ''; } }).find(Boolean);
+    if (!bundled) throw new Error('no core-js-bundle entry resolved');
     copyFileSync(bundled, join(out, 'polyfill.js'));
-    console.log(`TRANSPILED ${basename(out)} files=${files.length} polyfill=core-js-bundle`);
+    console.log(`TRANSPILED ${basename(out)} files=${files.length} polyfill=core-js-bundle:${basename(bundled)}`);
   } catch {
     console.error('DEPS-MISSING core-js-bundle');
     process.exit(2);

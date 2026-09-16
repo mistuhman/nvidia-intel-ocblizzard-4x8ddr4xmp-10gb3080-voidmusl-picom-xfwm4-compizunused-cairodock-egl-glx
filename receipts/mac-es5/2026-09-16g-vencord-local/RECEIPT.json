@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "file": "es5-00-Vencord.user.js",
+      "bytes": 1312620,
+      "sha256": "03ea3f10b9e5372bdb8e34a688d9bf5d0f99a109349bd1c6f6ec3120532cee61",
+      "syntax": "OK"
+    },
+    {
+      "file": "polyfill.js",
+      "bytes": 273494,
+      "sha256": "19ef6c6270dd909cb78ea5f8eb67a9ae716b0415b0600fd3686332db14bfc8ab",
+      "syntax": "OK"
+    }
+  ]
+}
