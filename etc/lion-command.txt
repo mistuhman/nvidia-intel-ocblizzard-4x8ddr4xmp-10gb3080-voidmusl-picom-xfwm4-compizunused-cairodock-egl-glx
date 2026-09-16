@@ -34,3 +34,11 @@ STILL FORBIDDEN:
 - no 1440p+/4K/unlisted modes (1080p ceiling), no resolution tools
 - no re-bless of Bay 4 ESD (spare; both states metered failures)
 - no AirPods pairing attempt on this Mac (BT 2.0 + Lion: impossible)
+
+COMPILER CONTEXT WAVE (2026-09-16g):
+- lion-one.zip now carries lion-compiler-context.command (three files).
+- Double-click it: writes ~/Desktop/passthrough-INSTRUCTIONS.json (compiler
+  corpus 2026-09-16g-v2, sha 8583a1cbf2ca) + passthrough-CONTEXT.txt (floor
+  doctrine, shims, provenance, promotion rules) and burns
+  ~/Desktop/lion-compiler-context.txt (COMPILERCTX1 ... _DONE) - pick it on
+  the One page and press Burn. No sudo, no network, nothing erased.

@@ -98,8 +98,12 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
   </div>
   <div id="body">
     <p>The one link: <b>da.gd/lionone</b> (this page). Download:
-       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
-       - report command + this page, two files.</p>
+       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
+       - report command + compiler context command + this page, three files.</p>
+    <p>Compiler context (one downloadable script):
+       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-compiler-context.command">lion-compiler-context.command</a>
+       - carries the ES5 passthrough instruction sets + full context, drops them on the
+       Desktop, burns a COMPILERCTX1 receipt through this page. No sudo, no network.</p>
     <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
 
     <fieldset>
@@ -135,7 +139,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
 
     <div id="btns">
       <button class="aqua default" type="button" id="burn" disabled="disabled">Burn</button>
-      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
+      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
     </div>
   </div>
 </div>
@@ -148,13 +152,18 @@ var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom
 // works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
 // max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
 var CANDIDATES = [
-  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
   "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
 ];
 var KEY = /(LIONONE1|BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot\.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback|AIRPORT|AirPort|ARCTIC|ArcticFox|Wi-Fi|AUDIO|Audio|FIREWALL|Firewall)/i;
 var LOADED = null;
 var EMBEDDED = [
-  "LION-ONE | live channel 2026-09-16b | the one link is da.gd/lionone",
+  "LION-ONE | live channel 2026-09-16g | compiler context script added to the zip",
+  "LION-ONE | legacy one link da.gd/lionone; current page repinned to arena/01a0aade",
+  "",
+  "COMPILER CONTEXT: double-click lion-compiler-context.command (in lion-one.zip) -",
+  "drops passthrough-INSTRUCTIONS.json + passthrough-CONTEXT.txt on the Desktop and",
+  "burns a COMPILERCTX1 receipt here. Corpus 2026-09-16g-v2 sha 8583a1cbf2ca.",
   "",
   "OPEN WAVE (paste receipts back to agent chat, one wave at a time):",
   "1. lion-wipe-harden.txt BLOCK 1 discovery run, then the exact CONFIRM",
