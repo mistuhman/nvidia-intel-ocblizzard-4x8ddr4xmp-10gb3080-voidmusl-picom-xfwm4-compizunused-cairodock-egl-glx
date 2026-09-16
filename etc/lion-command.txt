@@ -1,37 +1,33 @@
-LION-SSD | RESCUE1 RELEASED 2026-09-12 | safe-mode display rescue
+LION-SSD | WAVE 2026-09-16 | AirPort LEDs + owed receipts
 
-STATE: Lion 10.7 is INSTALLED and BOOTING on Bay 1 Lion SSD Base
-(operator installer-app run; login + desktop verified). Mac Pro 3,1
-(corrected; was 1,1). Display chain Dell S2725QS via VGA-HDMI,
-1080p ceiling (1440p/4K un-drivable, no auto-revert).
+STATE: Lion 10.7 booting on Bay 1, GTX 285 primary, both Dells up
+@1080p. RAID set + single admin Samael DONE. CandyBar, Flavours,
+iTunes installed by operator; CD burn planned next.
 
-RES1 RECEIPT READ BY THE AGENT:
-2026-09-12 operator words: 1440 doesnt work, doesnt auto revert.
-- 2560x1440 blinds the Dell with NO revert countdown. 1080p stays
-  the permanent ceiling on this chain. Never pick 1440p+ or 4K.
+OWED RECEIPTS (agent still unread):
+1. lion-ssd-wipe transcript - the CONFIRM-gated SSD erase
+2. lion-harden transcript - config-only hardening
+(Paste both back in chat, or Burn the transcript .txt files
+from the rev-3 page.)
 
-RELEASED — DO THIS ONE WAVE (RESCUE1, safe-mode fix, ~5 min):
-1. Hold power until the Mac shuts off (idle desktop: journal-safe).
-2. Wait 10 s, press power, IMMEDIATELY hold Shift until login
-   appears (red Safe Boot text; basic visible resolution).
-3. Log in, System Preferences > Displays: select 1080p, UNCHECK
-   Overscan, close. (This overwrites the bad stored pref.)
-4. Apple menu > Restart (normal boot). Expect Lion desktop 1080p.
-5. Same session: About This Mac version + More Info >
-   Graphics/Displays chipset line. Quote or photograph.
-6. Report here: desktop back? version? GPU?
-
-GATE: 1080p desktop = RESOLVED, mission close-out next.
-Safe mode also out-of-range = report; single-user pref-delete ships.
-Do NOT switch cables/ports unless safe mode fails (backup only).
+AIRPORT WAVE 1 (report only, no resets on the Time Capsules yet):
+- AirPort Utility 6.3.1 on this Mac. Click EACH base station.
+- Quote the status line under each (the amber dot opens the reason).
+- AirPort 1 blinking green = Flash-On-Activity or normal per
+  Apple HT202211; the AU entry decides.
+- AirPort 2 amber = attention condition; the AU text names it.
+- Express unresponsive: plug in, wait 60 s, watch the LED, report
+  any light at all. Then factory-default: hold the reset button
+  while plugging power back in, keep holding ~6 s until rapid
+  amber flash, release, wait 1 min. Slow blinking amber = alive;
+  it shows under "New AirPort Base Station", not the device list.
+  Dark after two tries = dead unit class.
 
 STILL FORBIDDEN:
-- no 1440p+/4K/unlisted modes, no third-party resolution tools
-- no erase of any volume (Bay 4 ESD is spare; repurpose needs its
-  own explicitly directed wave)
-- no blind clicking, no other reboot
+- no 1440p+/4K on the VGA-HDMI chain (1080p ceiling, no revert)
+- no erase of Lion SSD Base or the RAID set
+- Bay 4 ESD stays spare unless a wave explicitly opens it
 
 Prior readable receipts: Repair 2ad981cf, BOOTLOG1 9d0bfed6,
-FORENSIC1 6e8ebd6a+a8f76d53, VERBOSE1/SDBOOT1/SAFEBOOT1 photos,
-VERIFY1 clean, FIRMWARE1 3,1/B05-final, PLAIN1 fallthrough,
-installer-app Lion install + first boot + desktop @1080p.
+FORENSIC1 6e8ebd6a+a8f76d53, FIRMWARE1 3,1/B05-final, VERIFY1
+clean, installer-app Lion install + desktop @1080p.
