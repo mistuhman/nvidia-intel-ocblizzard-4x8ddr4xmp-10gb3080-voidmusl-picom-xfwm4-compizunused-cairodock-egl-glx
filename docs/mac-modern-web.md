@@ -59,3 +59,16 @@ screenshot-photo via the One page.
 - DRM-gated services stay dead on every Lion route (no EME/DRM in Arctic Fox; Chromium Legacy
   carries Widevine only for officially supported OSes - treat streaming-music as
   YouTube/SoundCloud web, not Spotify/Netflix).
+
+## Trigger path — validated 2026-09-16 (receipt: operator phone screenshot, Actions tab "Found 0 workflows")
+
+- Screenshot proves: phone -> repo -> Actions reachable, search works, repo in GitHub "Get started" state = ZERO registered workflows. Corroborated: `gh api .../actions/workflows` total_count=0 and `.../actions/runs` total_count=0 (the five GPU-lab workflows were never activated either).
+- Root cause A: `ci/workflows/` is source-only by this repo's design (README line + `scripts/install-github-workflows.sh` header): GitHub registers/runs only `.github/workflows/`, which never existed here.
+- Root cause B: `workflow_dispatch` UI listing shows default-branch workflows only (GitHub docs, SO 75250667, community discussion 178194). main lacks it; PR #88 unmerged.
+- Hard gate (test-push receipt, verbatim): GitHub refused the agent push of `.github/workflows/mac-es5-passthrough.yml` — "refusing to allow a GitHub App to create or update workflow ... without `workflows` permission". Activation therefore requires OPERATOR credentials. Local activation commit 45b3a09 rolled back to 70d8d32; ci source intact.
+- Activation options (operator, lightest first):
+  1. Phone web UI (~3 min, no computer): github.com -> this repo -> branch **main** -> Add file -> Create new file -> name `.github/workflows/mac-es5-passthrough.yml` -> paste content copied from the raw ci source on the arena branch: `https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/ci/workflows/mac-es5-passthrough.yml` (open, select-all, copy) -> commit straight to main.
+  2. Grant the Arena GitHub App the Workflows permission (repo Settings -> the App -> Repository permissions -> Workflows = read and write); the agent then re-pushes the activation commit.
+  3. Any credentialed checkout: `scripts/install-github-workflows.sh` -> commit -> push (also activates the five GPU-lab workflows, as designed).
+- After activation: merge PR #88 (operator tap) so main carries `tools/mac-es5-passthrough.ts`; then phone Actions -> mac-es5-passthrough -> Run workflow (app: discord-web, publish: on). Pre-merge, Run still works with the branch selector set to `arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr` (the tool lives on that branch).
+- Until activation + first run + on-Mac burn: T1 stays [~] in ToDo.md.

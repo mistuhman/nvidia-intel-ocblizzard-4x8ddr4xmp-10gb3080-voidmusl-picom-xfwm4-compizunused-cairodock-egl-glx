@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 116,
+  "lastSeq": 117,
   "entries": [
     {
       "seq": 1,
@@ -2004,6 +2004,13 @@
       "kind": "note",
       "text": "2026-09-16f: outage over per operator; T1 (passthrough workflow + chromium-legacy ranking + docs/mac-modern-web.md) repo-side done; ToDo.md T1-T7 one-at-a-time tracker added per operator order; next task T2 native lossless audio interface; gaming matrix = T3 (research when opened); T7 = Chromium Legacy install wave on operator go-ahead",
       "sha256": "43aa407eca746d0ac6229e0410e1429a4771d4fe9e3d83f704cd4ff5fb98fa6f"
+    },
+    {
+      "seq": 117,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f T1 validation (operator phone screenshot read in chat): GitHub mobile Actions = Found 0 workflows. Root causes: (A) repo never had .github/workflows on any branch - ci/workflows/ is source-only per README + scripts/install-github-workflows.sh; (B) workflow_dispatch UI lists default-branch workflows only (main lacks it; PR #88 unmerged). Test push of .github/workflows/mac-es5-passthrough.yml REJECTED verbatim: 'refusing to allow a GitHub App to create or update workflow ... without workflows permission' (commit 45b3a09 rolled back to 70d8d32, ci source intact). Activation = operator-credential action: phone web-UI create .github/workflows/mac-es5-passthrough.yml on main (content = raw ci source on arena branch), OR grant the app Workflows permission then agent re-pushes, OR run install script from credentialed checkout. gh api actions/workflows total_count=0 + actions/runs total_count=0 corroborate.",
+      "sha256": "b52cede27499a77f9f56b9a42d7cea6464db1047a6f3ba8e7e29816feae2497c"
     }
   ],
   "stacks": [
