@@ -1,0 +1,61 @@
+# Mac modern web — Chromium Legacy vs ES5 passthrough vs parked (2026-09-16f)
+
+Operator directive 2026-09-16f: "for those unsupported apps, make a repo workflow (easy to
+compile from phone) that runs an agentic compiler passthrough for the mac so we can have fast
+(chromium? any other alternatives?) webpage apps like vencord etc." This doc ranks every route
+with receipts and defines the passthrough workflow + its receipt loop. Machine: Mac Pro 3,1,
+Lion 10.7.5, x86_64 (64-bit kernel capable), GTX 285.
+
+## 1. Ranking
+
+| Rank | Route | Verdict | Receipt |
+|---|---|---|---|
+| 1 | **Chromium Legacy (blueboxd/chromium-legacy)** — community Chromium fork with dedicated **LION builds**: release tags `121.0.6167.160.1-stable.lion`, `121.0.6167.139.1-stable.lion`, `120.0.6099.199.1-stable.lion` (x86_64); newer legacy builds 124-127 for 10.9+; macintoshrepository mirrors `chromium_legacy.zip` build 1260910 (2024) claiming 10.7-10.14, SHA1 cdbf14b42dea1a5e049069b41e063401f1c6a901 | PRIMARY: a Chromium-120/121-class engine ON LION = Discord web, Vencord userscript, YouTube, SoundCloud, modern uBlock Origin all native. Last Google Chrome for 10.7-era was v49 (2016, dead) - Chromium Legacy is what supersedes it | github.com/blueboxd/chromium-legacy/releases (fetched 2026-09-16f: lion tags present); macintoshrepository.org/81376-chromium-legacy (10.7-10.14, SHA1 above); Chrome-49-cutoff: apple.stackexchange.com/questions/237271 |
+| 2 | **Arctic Fox 47.3 + this repo's ES5 passthrough** (ci/workflows/mac-es5-passthrough.yml) | FALLBACK + channel browser: transpiles a modern app's bundles to FF52-parseable ES5 + core-js polyfill. Experimental: syntax down-levels, but runtime feature checks (WebRTC shape, CSS) may still stall some apps - receipt-gated | tools/mac-es5-passthrough.ts; Babel preset-env targets firefox 52; core-js-bundle prelude |
+| 3 | Text bridges (matrix/IRC) or phone | PARKED: needs a host; operator excluded the Void box 2026-09-16d | docs/mac-daily-driver.md §10 |
+
+Hardening rules for Chromium Legacy (community binary, no Google updater):
+- Verify the downloaded zip against the published SHA (release asset hash / mirror SHA1 above)
+  BEFORE opening; record the hash you verified in the burn receipt.
+- Dedicated profile used ONLY as the "apps browser" (Discord/music/video); keep Arctic Fox as
+  the hardened daily + agent-channel browser (its user.js hardening stays).
+- No Google sign-in/sync in it; install uBlock Origin (modern, from the Chrome Web Store -
+  Chromium 120-class supports it) instead of the legacy XPI there.
+- Treat it as untrusted-vendor software: if a build ever behaves oddly, quit, burn the
+  description, and fall back to rank 2.
+
+## 2. Vencord / Discord path on Chromium Legacy
+
+1. Install Chromium Legacy lion build (rank 1 source; sha-verify).
+2. Install Violentmonkey (Chrome Web Store) as the userscript manager.
+3. Install the Vencord web userscript from vencord.dev (web install button) into Violentmonkey.
+4. Open https://discord.com/app - Vencord patches the web client in-page (that IS
+   "vesktop/discord w/ vencord" on this Mac, browser-class).
+5. Voice: WebRTC on Chromium-120-class works; expect the browser tab to be the call endpoint
+   (headphones out of the MicPort chain or the Mac jacks; mic = system default input = MicPort
+   once docs/mac-daily-driver.md §9 wave lands).
+Receipt owed: login + one channel render + Vencord settings pane visible; burn description or
+screenshot-photo via the One page.
+
+## 3. The passthrough workflow (rank 2), phone-triggerable
+
+- Trigger from phone: GitHub mobile site or app -> this repo -> Actions ->
+  `mac-es5-passthrough` -> Run workflow -> choose app (discord-web | vencord-web) -> Run.
+  (Any shell with gh can also: gh workflow run mac-es5-passthrough.yml -f app=discord-web.)
+- What it does: fetch target script assets (discord: discover <script src> from the app shell;
+  vencord: single userscript) -> Babel preset-env (targets firefox 52) per file -> copy
+  core-js-bundle as polyfill.js -> emit ES5 loader.html -> RECEIPT.json (sha256 + node --check
+  per file, syntax FAIL aborts the run) -> upload artifact + publish a public release zip.
+- On the Mac: download the release zip (public, no auth), open loader.html in Arctic Fox.
+- Receipt loop: whatever renders/stalls gets burned through da.gd/lionone (any .txt or a
+  written description), agent reads inbox and iterates the tool (regex/targets) in the next run.
+- Deps are CI-only (@babel/core, @babel/preset-env, core-js-bundle) per MASTER toolStyle
+  "zero dependency unless justified"; sandbox selftest stays dep-free.
+
+## 4. What this does NOT change
+
+- Arctic Fox hardening wave + uBlock legacy XPI remain as shipped (daily/channel browser).
+- The one link da.gd/lionone remains the single channel and receipt loop.
+- DRM-gated services stay dead on every Lion route (no EME/DRM in Arctic Fox; Chromium Legacy
+  carries Widevine only for officially supported OSes - treat streaming-music as
+  YouTube/SoundCloud web, not Spotify/Netflix).

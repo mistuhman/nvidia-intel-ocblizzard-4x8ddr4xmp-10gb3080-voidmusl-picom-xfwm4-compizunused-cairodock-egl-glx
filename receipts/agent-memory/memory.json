@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 114,
+  "lastSeq": 116,
   "entries": [
     {
       "seq": 1,
@@ -1988,6 +1988,22 @@
       "kind": "note",
       "text": "2026-09-16e: repo keeps BOTH contexts; Void unusable; focus Mac-only; hostless four PARKED (skipped ask_user). Detox set: MASTER lionMac.links legacy-relabel (contradiction with ONE_LINK removed), STATE.md MicPort host note, mac-daily-driver downgrades (SoundCloud expectation-flagged, Audacity 2.x ladder, AU Lab/GarageBand if-present), omen banner both-contexts, lion-one.html EMBEDDED outage fallback + zip rebuild + test regex",
       "sha256": "bc172b0795931025d9ac3e2d36eed18663a7da6857321ee356e197de08b06a13"
+    },
+    {
+      "seq": 115,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "chromium-legacy-lion-2026-09-16f",
+      "value": "blueboxd/chromium-legacy has dedicated LION builds: tags 121.0.6167.160.1-stable.lion / 121.0.6167.139.1-stable.lion / 120.0.6099.199.1-stable.lion (x86_64, Chromium 120-121 class); newer 124-127 legacy builds for 10.9+; macintoshrepository mirror chromium_legacy.zip build 1260910 (2024) claims 10.7-10.14 SHA1 cdbf14b42dea1a5e049069b41e063401f1c6a901; Google Chrome cutoff for the era = v49 (2016). PRIMARY modern-web route on Lion; hardening = sha-verify, dedicated apps profile, no sync, modern uBlock inside it",
+      "source": "github.com/blueboxd/chromium-legacy/releases fetched 2026-09-16f + macintoshrepository.org/81376 + apple.stackexchange 237271",
+      "sha256": "af059989d728437905e8e79c4b976dd64d4ad53989e2bdfe949a9ebcb1369b02"
+    },
+    {
+      "seq": 116,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f: outage over per operator; T1 (passthrough workflow + chromium-legacy ranking + docs/mac-modern-web.md) repo-side done; ToDo.md T1-T7 one-at-a-time tracker added per operator order; next task T2 native lossless audio interface; gaming matrix = T3 (research when opened); T7 = Chromium Legacy install wave on operator go-ahead",
+      "sha256": "43aa407eca746d0ac6229e0410e1429a4771d4fe9e3d83f704cd4ff5fb98fa6f"
     }
   ],
   "stacks": [
