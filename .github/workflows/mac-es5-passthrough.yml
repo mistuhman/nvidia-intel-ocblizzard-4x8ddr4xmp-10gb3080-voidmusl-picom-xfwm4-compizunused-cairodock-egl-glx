@@ -1,0 +1,63 @@
+name: mac-es5-passthrough
+
+# Phone-triggerable agentic compiler passthrough (operator directive 2026-09-16f):
+# GitHub mobile site/app -> Actions -> mac-es5-passthrough -> Run workflow (workflow_dispatch).
+# Fetches a modern web app's script assets, transpiles to Firefox-52-class ES5, attaches a
+# core-js polyfill prelude + ES5 loader page, gates every emitted file with node --check,
+# and publishes a release zip the Mac downloads without auth. Receipt loop: burn the
+# on-Mac result through da.gd/lionone. Guide: docs/mac-modern-web.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'passthrough target'
+        required: true
+        default: 'discord-web'
+        type: choice
+        options:
+          - discord-web
+          - vencord-web
+      publish:
+        description: 'create a public GitHub release with the bundle zip'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  passthrough:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: deps (CI-only, justified per MASTER toolStyle)
+        run: npm i --no-save @babel/core @babel/preset-env core-js-bundle
+      - name: fetch target assets
+        run: node tools/mac-es5-passthrough.ts fetch --app=${{ inputs.app }} --out=work/src
+      - name: transpile to ES5 (firefox 52 target)
+        run: node tools/mac-es5-passthrough.ts transpile --in=work/src --out=work/out
+      - name: loader page
+        run: node tools/mac-es5-passthrough.ts loader --app=${{ inputs.app }} --dir=work/out
+      - name: receipt (sha256 + node --check gate)
+        run: node tools/mac-es5-passthrough.ts receipt --dir=work/out
+      - name: zip bundle
+        run: |
+          cd work/out
+          zip -r "../../mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-passthrough-${{ inputs.app }}
+          path: work/out
+      - name: release (public download for the Mac)
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}" \
+            "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" \
+            --title "mac passthrough ${{ inputs.app }} run ${{ github.run_number }}" \
+            --notes "ES5 passthrough bundle for Arctic Fox on Lion. RECEIPT.json inside. On-Mac receipt loop: da.gd/lionone. Primary path is Chromium Legacy LION builds (docs/mac-modern-web.md); this bundle is the Arctic Fox fallback."
