@@ -26,6 +26,8 @@ run('node', ['tools/gpu-oc-verify.ts', 'selftest']);
 run('bash', ['-n', 'scripts/gpu-oc-apply']);
 run('bash', ['-n', 'scripts/gpu-dmon-summary']);
 run('bash', ['-n', 'scripts/cpu-park-ctrl']);
+run('bash', ['-n', 'scripts/micport-select']);
+run('bash', ['-n', 'scripts/micport-attach']);
 run('bash', ['-n', 'scripts/rgb-omen']);
 // every cmd_* in a target script must actually be reachable from its dispatcher
 run('node', ['tools/script-dispatch-check.ts', 'scripts/gpu-oc-apply']);

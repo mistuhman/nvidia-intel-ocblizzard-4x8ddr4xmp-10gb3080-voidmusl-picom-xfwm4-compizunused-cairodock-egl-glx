@@ -90,6 +90,23 @@ Per-connect interface ("usable every time the mic is connected"):
 - Level discipline receipt to capture post-install: `pw-dump | grep -A5 MicPort` node volumes +
   one EasyEffects preset export (JSON) committed to etc/ so the chain is rebuildable from repo.
 
+Files shipped 2026-09-16c (session 01a0a9ee) so the chain is one paste post-gate-12:
+- scripts/micport-select - one-shot or --wait (60 s poll) default-source switcher, exit 1 when
+  the MicPort node is absent (bash -n gated in test-all).
+- scripts/micport-attach - root udev RUN wrapper handing the switch to sd's pipewire session.
+- etc/micport-udev.rules - the add-rule for 1c07:0001 (installs as 60-micport.rules).
+- etc/easyeffects-autostart.desktop - per-boot `easyeffects --gapplication-service`.
+- etc/micport-default-autostart.desktop - per-boot default-source waiter.
+- etc/omen-audio-chain.block - the whole install wave, BLOCK_LINT --target-console PASS,
+  rollback listed before forward per house rule.
+
+Preset recipe (START VALUES, operator-tuned at the mic; the receipt is the exported preset JSON
+committed back to etc/): input device = Default device; chain order Gain 0 dB (MicPort hardware
+knob ~70% at loudest shout first) -> Compressor threshold -18 dB ratio 3:1 attack 5 ms release
+100 ms -> Equalizer HPF 80 Hz 12 dB/oct + peaking +3 dB @ 4 kHz Q 1 + peaking -2 dB @ 200 Hz ->
+Noise Suppression RNNoise defaults -> Pitch (sound-design only, cents offset) -> Limiter -1 dB.
+Save as preset "sm7b-micport", enable load-last-preset-at-startup.
+
 ## 4. RPCS3 + PS3 discs ("roms working for when i eventually get a blu ray drive installed")
 
 - No rpcs3 package in void-packages (404 on srcpkgs/rpcs3/template, fetched 2026-09-16). Install
@@ -127,12 +144,13 @@ Per-connect interface ("usable every time the mic is connected"):
 
 1. Bench POST receipt (gate 12) - gates everything here.
 2. Read-only inventory wave: xbps-query -L, flatpak list, pw-dump sources, bluetoothctl show.
-3. Steam install wave (root block, id -u first, xbps-install -y steam) + launch receipt.
-4. EasyEffects install + chain wave: xbps-install -y easyeffects; build preset; autostart +
-   udev files delivered by heredoc; reboot gate; per-connect test (unplug/replug MicPort).
+3. Steam install wave = etc/omen-steam-install.block + launch receipt.
+4. Audio chain wave = etc/omen-audio-chain.block (installs easyeffects + micport-select/attach +
+   udev rule + both autostart entries); reboot gate; per-connect test = unplug/replug MicPort and
+   watch `pactl get-default-source` flip; preset per the recipe above; export preset JSON back.
 5. Vesktop audio-binding wave (default source = EasyEffects virtual; call test).
-6. RPCS3 flatpak + firmware wave (no discs yet - drive not installed).
-7. AirPods pairing wave (optional, operator paces).
+6. RPCS3 wave = etc/omen-rpcs3-setup.block + firmware GUI step (no discs yet - drive not installed).
+7. AirPods pairing wave = etc/omen-airpods-pair.block (optional, operator paces).
 
 Every block: one command per line, console-safe, root blocks start with id -u, rollback named
 before forward (STATE.md Rules 1-3, MASTER hardConstraints.consolePaste).

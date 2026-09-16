@@ -1,0 +1,30 @@
+# OMEN AirPods gen 2 pairing (BlueZ + PipeWire) - GATED behind gate-12 bench POST receipt.
+# The Mac Pro 3,1 can NEVER pair them (BT 2.0 + Lion, Apple compat matrix: 2nd gen needs
+# macOS >= 10.14) - see docs/mac-daily-driver.md section 5. Console-safe, USER sd.
+
+# --- read-only probe first (paste FULL output back) ---
+bluetoothctl show
+bluetoothctl devices
+pactl list short sinks
+pactl list short sources
+
+# --- pairing (operator, interactive REPL): run bluetoothctl, then INSIDE it, one per line: ---
+# agent on
+# default-agent
+# scan on            (put AirPods in pairing mode: case open, hold back button until white blink)
+# pair <MAC-from-scan>
+# trust <MAC>
+# connect <MAC>
+# quit
+
+# --- post-pairing receipts (paste FULL output back; substitute the real MAC) ---
+# bluetoothctl info AA:BB:CC:DD:EE:FF
+pactl list short sinks
+pactl list short sources
+
+# Expect: A2DP sink (playback, AAC/SBC) + HFP source (mic, headset mode). Quality drop during
+# calls = the HFP profile, not a fault; music returns to A2DP after the call.
+# Route Discord/Vesktop mic via the EasyEffects virtual source, not the raw HFP source
+# (docs/omen-daily-driver.md sections 2-3).
+
+# --- ROLLBACK: bluetoothctl remove <MAC> ---

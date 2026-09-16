@@ -1,0 +1,22 @@
+# OMEN RPCS3 setup (Flathub flatpak; void-packages has NO rpcs3 template - 404 receipt
+# 2026-09-16) - GATED behind gate-12 bench POST receipt. No disc work until the BD drive exists.
+# Console-safe: one command per line, no chaining. All steps as USER sd.
+
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install -y flathub net.rpcs3.RPCS3
+mkdir -p /home/sd/.var/app/net.rpcs3.RPCS3/data/RPCS3/redump
+mkdir -p /mnt/games/rpcs3
+flatpak info net.rpcs3.RPCS3
+
+# --- THEN, in the RPCS3 GUI (operator): ---
+# 1. File > Install Firmware... with Sony's official PS3UPDAT.PUP (Sony-distributed, legal).
+# 2. Settings > VFS / Add Games: point a games dir at /mnt/games/rpcs3 (dumped disc dirs and
+#    installed PSN titles live there, never on the NVMe root pool).
+# 3. When the BD drive is installed: add the drive path; RPCS3 (>= 2026-08-31 Linux builds)
+#    boots PS3 discs straight from compatible drives, but each commercial disc still needs its
+#    decryption key in the redump dir created above (keys from YOUR OWN disc via PS3 homebrew or
+#    PS3 Disc Dumper). Drive must be on the RPCS3 community compatibility list - receipt before
+#    purchase (docs/omen-daily-driver.md section 4).
+# 4. Legacy path stays supported: PS3 Disc Dumper -> folder/ISO -> import.
+
+# --- ROLLBACK: flatpak uninstall -y net.rpcs3.RPCS3 ---
