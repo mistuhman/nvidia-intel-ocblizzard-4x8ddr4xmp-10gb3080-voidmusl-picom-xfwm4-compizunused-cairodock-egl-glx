@@ -157,7 +157,7 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 
 > Rule (operator verbatim 2026-09-16f): "take our tasks one at a time agentically each time
 > before moving on with the next task." A task closes only with its receipts pasted/read.
-> Current task: T1 (authored; first CI-run + on-Mac receipt pending).
+> Current task: T1 (2026-09-16h: context burns verified; runtime/precompile HOLD; workflow activated but stale installed template, zero runs).
 
 - [~] **T1 agentic ES5 passthrough workflow for the Mac** (phone-triggerable): tools/mac-es5-passthrough.ts + ci/workflows/mac-es5-passthrough.yml (workflow_dispatch from GitHub mobile; publishes a public release zip the Mac downloads) + docs/mac-modern-web.md ranking (Chromium Legacy LION builds 121.0.6167.x-stable.lion = PRIMARY native modern engine; Arctic Fox + passthrough = fallback; bridges parked). Repo side DONE 2026-09-16f; closes on first workflow run receipt + on-Mac loader result burn.
 - [ ] **T2 native lossless audio interface on the Mac** (mic control + EasyEffects-like effects, NOT necessarily EasyEffects; native preferred to preserve lossless on the SM7B/MicPort chain): host matrix AU Lab / GarageBand '11 if installed / Logic 9 / Audacity 2.x ladder; CoreAudio 24-bit path, WAV/AIFF capture; opens after T1 closes.
@@ -192,3 +192,9 @@ Promotion rule: candidate -> registry only with a CI run receipt (fetch+transpil
 - [ ] Next steady step (one at a time, operator-paced): discord-web local compile on the same pipeline, OR vencord on-Mac burn once T1 workflow is activated (operator-credential path in docs/mac-modern-web.md "Trigger path").
 - [ ] **MERGE RULE (operator directive 2026-09-16g): the operator merges PRs; the agent reminds and NEVER merges.** Persisted in MASTER.md hardConstraints.process + agent-memory. Open PRs awaiting operator decision: #72, #60, #57, #34, #24, #23, plus this session's PR (quoted in chat when opened).
 - [x] **One downloadable compiler-context script with burnable receipt DELIVERED (2026-09-16g):** `lion-compiler-context.command` inside `lion-one.zip` (now three files) + direct page link; embeds INSTRUCTIONS v2 (sha 8583a1cbf2ca) + full context, drops Desktop companions, burns COMPILERCTX1. New one-link **da.gd/sQ7bEo** minted via GET da.gd/s?url= + coshorten-verified; ONE_LINK.txt + MASTER repinned; da.gd/lionone legacy (same inbox). gates: ONE_TEST=PASS.
+
+## 2026-09-16h burn verification — T1 stays open
+- [x] Three text burns read via webhook full POSTs: CONTEXT `8d9da9c2`, COMPILERCTX1 `33b7117b` (v2 `CORPUS_SHA=MATCH`, complete), LIONONE1 `1c474145` (10.7.5, AF47.3, GTX285, dual1080p). Receipt record: `receipts/mac-es5/2026-09-16h-burn-verification/`. No repeat burn needed.
+- [~] **Correction to the earlier GREEN compile:** syntax-only, NOT runtime. Repro emits `BigInt("undefined")` because Babel uses `node.value`; core-js 3.50.0 does NOT supply absent BigInt. v3 fixes the AST field and blocks known BigInt/deferred-regex hazards at transpile/receipt. Next single task = verify semantic runtime implementation; no full app compile authorized by this receipt.
+- [~] Actions ACTIVATED (gh API, zero runs); installed `.github/workflows` is the OLD template, not current `ci/workflows` source. Source repinned to this session with exact dependency versions + real compiler regressions. Operator update still required, but does not resolve runtime blockers by itself.
+- **STORAGE HOLD:** current root = `start disk clone` (`disk3s2` at receipt time); old wipe wave SUSPENDED. Three Apple_RAID members + mounted 3 TB Raid X observed, but physical bays/RAID mode/health unverified. No erase, reset or account deletion. Firewall disabled; no MicPort or hardening completion inferred. T5/T6 remain open.

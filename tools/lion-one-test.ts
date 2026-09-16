@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // One-link channel tests: lion-one.command (safe read-only reporter) + lion-one.zip
-// (reporter + page, two files) + the One page shape. Additive to the frozen-era
+// (reporter + compiler context + page, three files) + the One page shape. Additive to the frozen-era
 // lion-mirror-sl-test.ts, which keeps asserting the old bundle byte-shape.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -73,7 +73,7 @@ function agentPage(): void {
   const text = readFileSync(PAGE, 'utf8');
   const required: Array<[string, RegExp]> = [
     ['title', /<title>One<\/title>/],
-    ['onelink', /da\.gd\/lionone/],
+    ['onelink', /da\.gd\/sQ7bEo/],
     ['picker', /id="pick"/],
     ['burn-armed', /id="burn"[^>]*disabled="disabled"/],
     ['burn-handler', /\$\("burn"\)\.onclick = burn/],
@@ -83,6 +83,9 @@ function agentPage(): void {
     ['cmd-pull', /etc\/lion-command\.txt/],
     ['branch', /arena\/01a0aade-nvidia-intel-ocblizzard-4x8ddr/],
     ['compiler-link', /lion-compiler-context\.command/],
+    ['compiler-hold', /COMPILE_GATE=HOLD/],
+    ['storage-hold', /Old lion-wipe-harden\.txt directions are SUSPENDED/],
+    ['compiler-query-markers', /var KEY = \/\(COMPILERCTX1\|CORPUS_\|COMPILE_GATE/],
     ['zip', /lion-one\.zip/],
     ['header-compat', /LIONMIRROR1 size=/],
     ['embedded-fallback', /var EMBEDDED = \[/],
@@ -183,6 +186,11 @@ function agentZip(): void {
   else pass('Z-entries', sorted);
   if (exec.slice().sort().join(',') !== [SCRIPT, CSCRIPT].sort().join(',')) fail('Z-exec', exec.join(',') || 'none');
   else pass('Z-exec', 'unix exec bit on both .command reporters');
+  for (const name of [SCRIPT, CSCRIPT, PAGE]) {
+    const zipped = execFileSync('unzip', ['-p', ZIP, name]);
+    if (!zipped.equals(readFileSync(name))) fail('Z-bytes', name);
+    else pass('Z-bytes', name);
+  }
 }
 
 function compilerSyntax(): void {
@@ -254,6 +262,12 @@ function compilerRun(): void {
     }
     if (!existsSync(join(home, 'Desktop/passthrough-INSTRUCTIONS.json'))) fail('C2-json', 'instructions json missing');
     else pass('C2-json', 'instructions json written');
+    const exported = JSON.parse(readFileSync(join(home, 'Desktop/passthrough-INSTRUCTIONS.json'), 'utf8'));
+    const source = JSON.parse(execFileSync(process.execPath, ['tools/mac-es5-passthrough.ts', 'instructions'], { encoding: 'utf8' }));
+    if (JSON.stringify(exported) !== JSON.stringify(source)) fail('C2-corpus-source', 'export differs from compiler source');
+    else pass('C2-corpus-source', source.version);
+    if (!text.includes('COMPILE_GATE=HOLD')) fail('C2-compile-hold', 'context receipt mistaken for app readiness');
+    else pass('C2-compile-hold', 'context export is not a compile');
     if (!existsSync(join(home, 'Desktop/passthrough-CONTEXT.txt'))) fail('C2-ctx', 'context txt missing');
     else pass('C2-ctx', 'context txt written');
   } finally {

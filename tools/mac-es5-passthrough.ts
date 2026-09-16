@@ -17,6 +17,7 @@ import { join, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
+import { runInNewContext } from 'node:vm';
 
 // This file is ESM (import syntax) but the optional CI-only deps are loaded with CJS
 // require(); bare require is undefined in ESM - bind it here so transpile works in CI
@@ -34,20 +35,20 @@ const APPS: Record<string, { entry: string; note: string }> = {
 // receipt cites the exact corpus version. Growth rule: new hazard or shim = new entry HERE with a
 // receipt citation (CI log or da.gd/lionone burn); no silent behavior changes, ever.
 const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, string[]> } = {
-  version: "2026-09-16g-v2",
+  version: "2026-09-16h-v3",
   common: [
     "target floor: firefox 52 (Arctic Fox 47 Goanna parse class) via @babel/preset-env, modules:false - syntax lowering only, no module wrapping",
     "polyfill prelude: core-js-bundle full build loads FIRST in loader.html (polyfill.js before every es5-*.js); order is load-bearing",
     "no behavior rewrites: transpile + polyfill only; any semantic shim requires its own instruction entry plus a receipt citation",
-    "syntax gate: node --check per emitted .js; any FAIL aborts the run before publish (RECEIPT.json syntax=OK rows are the proof)",
+    "node --check proves current Node syntax ONLY, not FF52 runtime. COMPATIBILITY.json records known blockers; BLOCKED or INCOMPLETE aborts transpile/receipt before publication. Other output remains runtime UNVERIFIED until target receipts",
     "loader.html stays ES5-only: no module scripts, no arrow/const/let/template literals in emitted loader (selftest loader-es5-only)",
-    "hazard ES2020+ (optional chaining, nullish coalescing, class fields, dynamic import): preset-env lowers for ff52; assert emitted bytes carry no import( or ?. leftovers; burn a receipt if an app stalls here",
+    "preset-env targets FF52 for supported syntax transforms, not missing Web APIs. Dynamic import with modules:false and module workers remain unverified; no universal modern-app compatibility claim",
     "hazard Web Workers with type module: unsupported on FF52-class; v1 = detection + KNOWN_LIMITATION in the burn receipt only, never silently drop workers",
     "hazard WebCrypto crypto.subtle: absent outside secure contexts on FF52-class; apps gating login on it stall BY DESIGN - route real sessions to Chromium Legacy LION primary path (docs/mac-modern-web.md)",
     "polyfill gaps NOT covered by core-js (shim candidates, none auto-added in v1): ResizeObserver, TextEncoder/TextDecoder webcompat gaps, IntersectionObserver (FF55+)",
-    "hazard BigInt literals (ES2020 syntax, FF68+): preset-env cannot lower the syntax; shimmed since 2026-09-16g-v2 as BigIntLiteral -> BigInt(\"<digits>\") call; core-js-bundle full build supplies global BigInt on FF52. CAVEAT: core-js is a ponyfill and cannot fix === reference equality between polyfilled values - runtime comparisons of polyfilled BigInts stay KNOWN_LIMITATION until an on-Mac burn receipt rules otherwise. Discovery receipt: 2026-09-16g local compile, Vencord 1.15.6 bundle carried 209 snowflake BigInt literals",
+    "BigInt correction (2026-09-16h): core-js-bundle 3.50.0 does NOT supply BigInt when native support is absent. Babel BigIntLiteral stores digits in node.value, not node.bigint; v2 emitted BigInt(\"undefined\"). Conversion fixed, but FF52 publication stays BLOCKED for BigInt or deferred regex hazards until a semantic implementation is verified. Repro: receipts/mac-es5/2026-09-16h-burn-verification/PREFLIGHT.txt; core-js.io/docs/missing-polyfills",
     "babel major pinned to ^7 in ci + local (2026-09-16g): babel 8 raised its output baseline experiment differed and pinning keeps local vs CI receipts comparable; receipt 2026-09-16g local compile",
-    "hazard post-FF52 regex literals (lookbehind (?<= / (?<!, named groups (?<name>, dotAll s, hasIndices d): parse-fatal on FF52; shimmed since 2026-09-16g-v2 as deferred new RegExp(src,flags) construction - the bundle parses, a throw is deferred to first execution of that code path = KNOWN_LIMITATION until burn receipt. Discovery receipt: 2026-09-16g local compile, Vencord 1.15.6 camelCase splitter /(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/ at es5 line 2240",
+    "hazard post-FF52 regex literals (lookbehind (?<= / (?<!, named groups (?<name>, dotAll s, hasIndices d): parse-fatal on FF52; shimmed since 2026-09-16g-v2 as deferred new RegExp(src,flags) construction - the bundle parses, a throw can occur immediately at module initialization. v3 BLOCKS publication of these unverified rewrites instead of treating parse success as runtime success. Discovery receipt: 2026-09-16g local compile, Vencord 1.15.6 camelCase splitter /(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/ at es5 line 2240",
     "present on FF52, no action needed: fetch, WebSocket, localStorage, IndexedDB, Promise, Map/Set",
     "SRI integrity attributes and CSP meta from discovered shells are NOT ported to loader.html by design (local same-origin bundle)",
     "script order = discovery order (webpack chunk dependencies); never sort assets alphabetically",
@@ -132,16 +133,17 @@ async function cmdFetch(app: string, out: string): Promise<void> {
   for (const id of expandApps(app)) await fetchApp(id, join(out, id));
 }
 
-// Semantic shim per INSTRUCTIONS v2 (2026-09-16g): BigInt literals are ES2020 syntax
-// (FF68+) and parse-fatal on FF52-class; preset-env cannot lower the syntax, so rewrite
-// each literal to BigInt("<digits>") - core-js-bundle polyfills global BigInt at runtime.
-// The === equality caveat is documented in the corpus (KNOWN_LIMITATION until burn receipt).
-function bigIntLiteralShim(): unknown {
+// Syntax-only rewrites, NOT a BigInt implementation or regex compatibility layer.
+// Both hazard classes block FF52 publication until their semantics are verified.
+type Hazards = { bigint: number; regex: number };
+function bigIntLiteralShim(hazards: Hazards): unknown {
   return {
     visitor: {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       BigIntLiteral(path: any): void {
-        const raw = String(path.node.bigint);
+        const raw = path.node.value;
+        if (typeof raw !== 'string' || !raw) throw new Error('BAD_BIGINT_AST_VALUE');
+        hazards.bigint += 1;
         path.replaceWith({
           type: 'CallExpression',
           callee: { type: 'Identifier', name: 'BigInt' },
@@ -157,7 +159,7 @@ function bigIntLiteralShim(): unknown {
 // parse-fatal on FF52-class. Rewrite those literals to new RegExp("src","flags") so the
 // bundle PARSES; construction (and any throw) is deferred to first execution of that code
 // path. Literals using only FF52-safe features are left untouched.
-function ff52RegexLiteralShim(): unknown {
+function ff52RegexLiteralShim(hazards: Hazards): unknown {
   const risky = (pattern: string, flags: string): boolean =>
     /\(\?<[=!]/.test(pattern) || /\(\?<[A-Za-z_$]/.test(pattern) || /[sd]/.test(flags);
   return {
@@ -168,6 +170,7 @@ function ff52RegexLiteralShim(): unknown {
         const pattern: string = String(node.pattern);
         const flags: string = String(node.flags || '');
         if (!risky(pattern, flags)) return;
+        hazards.regex += 1;
         path.replaceWith({
           type: 'NewExpression',
           callee: { type: 'Identifier', name: 'RegExp' },
@@ -183,6 +186,10 @@ function ff52RegexLiteralShim(): unknown {
 
 function transpileDir(babel: { transformSync: (code: string, opts: unknown) => { code: string } }, inDir: string, out: string): void {
   mkdirSync(out, { recursive: true });
+  const hazards: Hazards = { bigint: 0, regex: 0 };
+  const compatibility = (status: string): void => writeFileSync(join(out, 'COMPATIBILITY.json'),
+    JSON.stringify({ target: 'firefox52', status, hazards, instructions_sha256: instructionsHash() }, null, 2) + '\n');
+  compatibility('INCOMPLETE');
   const files = readdirSync(inDir).filter((f) => f.startsWith('src-') && f.endsWith('.js')).sort();
   for (const f of files) {
     const code = readFileSync(join(inDir, f), 'utf8');
@@ -192,8 +199,16 @@ function transpileDir(babel: { transformSync: (code: string, opts: unknown) => {
       configFile: false,
       compact: false,
       presets: [[require.resolve('@babel/preset-env'), { targets: { firefox: '52' }, modules: false }]],
-      plugins: [bigIntLiteralShim(), ff52RegexLiteralShim()],
+      plugins: [bigIntLiteralShim(hazards), ff52RegexLiteralShim(hazards)],
     });
+    if (hazards.bigint || hazards.regex) {
+      compatibility('BLOCKED');
+      console.error(`RUNTIME_BLOCKED ${f} bigint=${hazards.bigint} deferred_regex=${hazards.regex}; no verified FF52 implementation`);
+      process.exit(4);
+    }
+    if (code.startsWith('// ==UserScript==') && !res.code.startsWith('// ==UserScript==')) {
+      throw new Error('USERSCRIPT_HEADER_LOST');
+    }
     writeFileSync(join(out, f.replace(/^src-/, 'es5-')), res.code);
   }
   try {
@@ -202,6 +217,7 @@ function transpileDir(babel: { transformSync: (code: string, opts: unknown) => {
     const bundled = candidates.map((c) => { try { return require.resolve(c); } catch { return ''; } }).find(Boolean);
     if (!bundled) throw new Error('no core-js-bundle entry resolved');
     copyFileSync(bundled, join(out, 'polyfill.js'));
+    compatibility('UNVERIFIED');
     console.log(`TRANSPILED ${basename(out)} files=${files.length} polyfill=core-js-bundle:${basename(bundled)}`);
   } catch {
     console.error('DEPS-MISSING core-js-bundle');
@@ -227,6 +243,12 @@ function cmdTranspile(inDir: string, out: string): void {
 }
 
 function receiptDir(dir: string): void {
+  const compatibility = join(dir, 'COMPATIBILITY.json');
+  const runtime = existsSync(compatibility) ? JSON.parse(readFileSync(compatibility, 'utf8')) : { status: 'UNVERIFIED' };
+  if (!['UNVERIFIED'].includes(runtime.status)) {
+    console.error(`RUNTIME_BLOCKED ${basename(dir)} status=${runtime.status}`);
+    process.exit(4);
+  }
   const files = readdirSync(dir).filter((f) => f.endsWith('.js') || f.endsWith('.html')).sort();
   const rows: Array<{ file: string; bytes: number; sha256: string; syntax: string }> = [];
   for (const f of files) {
@@ -239,7 +261,7 @@ function receiptDir(dir: string): void {
     }
     rows.push({ file: f, bytes: buf.length, sha256: sha256(buf), syntax });
   }
-  writeFileSync(join(dir, 'RECEIPT.json'), JSON.stringify({ files: rows }, null, 2) + '\n');
+  writeFileSync(join(dir, 'RECEIPT.json'), JSON.stringify({ files: rows, runtime }, null, 2) + '\n');
   for (const r of rows) console.log(`RECEIPT ${r.file} ${r.bytes} ${r.syntax} ${r.sha256.slice(0, 12)}`);
   console.log(`RECEIPT_DONE ${basename(dir)} files=${rows.length}`);
 }
@@ -317,7 +339,44 @@ function cmdSelftest(): void {
   rmSync(tmp, { recursive: true, force: true });
   ok('instructions-versioned', INSTRUCTIONS.version.length > 0 && INSTRUCTIONS.common.length >= 10 && Object.keys(INSTRUCTIONS.apps).sort().join(',') === 'discord-web,vencord-web');
   ok('instructions-hash-stable', instructionsHash().length === 64 && instructionsHash() === sha256(Buffer.from(JSON.stringify(INSTRUCTIONS))));
+  if (process.argv.includes('--compiler')) compilerTests(ok);
   console.log(process.exitCode ? 'PASSTHROUGH_SELFTEST=FAIL' : 'PASSTHROUGH_SELFTEST=PASS');
+}
+
+// Optional real-dependency regressions: CI runs these before fetching any apps.
+function compilerTests(ok: (id: string, cond: boolean) => void): void {
+  const babel = require('@babel/core');
+  const hazards: Hazards = { bigint: 0, regex: 0 };
+  const result = babel.transformSync('var a = 343383572805058560n, b = 0xffn, c = -10n;', {
+    babelrc: false, configFile: false, plugins: [bigIntLiteralShim(hazards)],
+  }).code;
+  ok('bigint-digits-preserved', runInNewContext(result + '[a,b,c].map(String).join(",")') === '343383572805058560,255,-10' && hazards.bigint === 3);
+  const prelude = readFileSync(require.resolve('core-js-bundle/minified.js'), 'utf8');
+  ok('corejs-does-not-polyfill-bigint', runInNewContext(prelude + '\n;typeof BigInt', { BigInt: undefined }, { timeout: 10000 }) === 'undefined');
+  const root = mkdtempSync(join(tmpdir(), 'pt-compiler-'));
+  try {
+    const input = join(root, 'in');
+    mkdirSync(input);
+    for (const [id, code, expected] of [
+      ['bigint', 'var x = 1n;', 4],
+      ['regex', 'var x = /(?<=a)b/;', 4],
+      ['safe', 'var x = ({a:1})?.a ?? 0;', 0],
+    ] as const) {
+      writeFileSync(join(input, 'src-00-test.js'), code);
+      const output = join(root, id);
+      const r = spawnSync(process.execPath, [process.argv[1], 'transpile', '--in=' + input, '--out=' + output], { encoding: 'utf8' });
+      ok('transpile-gate-' + id, r.status === expected);
+      const meta = JSON.parse(readFileSync(join(output, 'COMPATIBILITY.json'), 'utf8'));
+      ok('compatibility-' + id, meta.status === (expected ? 'BLOCKED' : 'UNVERIFIED'));
+      const receipt = spawnSync(process.execPath, [process.argv[1], 'receipt', '--dir=' + output], { encoding: 'utf8' });
+      ok('receipt-gate-' + id, receipt.status === expected);
+      if (!expected) {
+        const emitted = readFileSync(join(output, 'es5-00-test.js'), 'utf8');
+        require('acorn').parse(emitted, { ecmaVersion: 2017 });
+        ok('fixture-es2017-parse', true);
+      }
+    }
+  } finally { rmSync(root, { recursive: true, force: true }); }
 }
 
 async function main(): Promise<void> {

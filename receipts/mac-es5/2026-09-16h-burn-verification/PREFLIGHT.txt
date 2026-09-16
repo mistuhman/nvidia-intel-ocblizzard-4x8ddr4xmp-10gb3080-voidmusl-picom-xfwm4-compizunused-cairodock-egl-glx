@@ -1,0 +1,21 @@
+2026-09-16h compiler preflight, agent sandbox only (NOT a Mac runtime receipt)
+Before correction: tools/mac-es5-passthrough.ts at 6ab6d2f.
+Fixture input: var snowflake = 343383572805058560n;
+FIXTURE_TRANSPILE_EXIT=0
+EMITTED=var snowflake = BigInt("undefined");
+Babel 7.29.7 BigIntLiteral has value="1" for 1n; node.bigint is absent.
+NATIVE_RUNTIME=SyntaxError: Cannot convert undefined to a BigInt
+COREJS_VERSION=3.50.0
+POLYFILL_SHA256=19ef6c6270dd909cb78ea5f8eb67a9ae716b0415b0600fd3686332db14bfc8ab
+A fresh node:vm context was created with BigInt: undefined before loading that prelude.
+BIGINT_AFTER_PRELUDE=undefined
+NO_NATIVE_BIGINT=TypeError: BigInt is not a function
+LOCAL_COMPACT_V2_CORPUS_SHA256=8583a1cbf2ca700725b50f973843e03ffd46a6dab1a70ab4a825d58de0899372
+This polyfill hash exactly matches the previously saved Vencord compile receipt.
+Upstream corroboration: https://core-js.io/docs/missing-polyfills (BigInt not polyfilled; suggests JSBI).
+Correction: read Babel node.value; explicitly block unsupported BigInt/deferred regex publication.
+Reproduce regressions after installing pinned deps from ci/workflows/mac-es5-passthrough.yml:
+node tools/mac-es5-passthrough.ts selftest --compiler
+Tests include decimal >2^53, hex, negative literals; absent-native BigInt prelude;
+BigInt and lookbehind transpile AND receipt exits=4; safe optional-chaining fixture exits=0.
+No full app CI build, workflow dispatch, application launch or target change was performed.

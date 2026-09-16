@@ -108,7 +108,7 @@ function selftest(w: Workflow): void {
   else pass('link-phone-page', `${w.links.phonePage.url} -> ${w.links.phonePage.dest}`);
   if (!w.links?.phoneZip?.url?.includes('da.gd/lionzip') || !w.links.phoneZip.dest?.includes('/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip')) fail('link-phone-zip', JSON.stringify(w.links?.phoneZip));
   else pass('link-phone-zip', `${w.links.phoneZip.url} -> ${w.links.phoneZip.dest}`);
-  if (!w.links?.oneLink?.url?.includes('da.gd/lionone') || !w.links.oneLink.dest?.includes('/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.html')) fail('link-one', JSON.stringify(w.links?.oneLink));
+  if (!w.links?.oneLink?.url?.includes('da.gd/sQ7bEo') || !w.links.oneLink.dest?.includes('/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.html')) fail('link-one', JSON.stringify(w.links?.oneLink));
   else pass('link-one', w.links.oneLink.url + ' -> ' + w.links.oneLink.dest);
   const operatorLinks = [w.links.phonePage.url, w.links.phoneZip.url];
   if (operatorLinks.some((x) => /tinyurl/i.test(x))) fail('no-tinyurl', operatorLinks.join(','));

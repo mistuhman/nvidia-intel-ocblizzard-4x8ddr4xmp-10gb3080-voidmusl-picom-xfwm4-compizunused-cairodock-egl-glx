@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-16b",
-  "session": "01a0a9ee",
-  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15); 2026-09-16 operator daily-driver state: CandyBar + Flavours theming installed and working, iTunes library in use, audio-CD burn planned (native iTunes 10.x burn, no agent step)",
+  "updated": "2026-09-16h",
+  "session": "01a0aade",
+  "machine": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-16f (session 01a0a9ee, outage over): ONE-TASK-AT-A-TIME tracker lives in ToDo.md (T1-T7). T1 repo-side DONE: tools/mac-es5-passthrough.ts + ci/workflows/mac-es5-passthrough.yml + docs/mac-modern-web.md (Chromium Legacy LION builds = primary modern engine with receipts; ES5 passthrough = Arctic Fox fallback; Vencord userscript path). STILL OPEN: T5 Wave-1 receipts; T6 wipe-harden transcripts. NEXT: T2 native lossless audio interface (opens after T1 closes). One link da.gd/lionone unchanged; embedded outage snapshot remains in lion-one.html.",
+  "nextAction": "2026-09-16h: three text burns verified (VERIFICATION.json in receipts/mac-es5/2026-09-16h-burn-verification/). COMPILERCTX1 v2 internal corpus hash MATCH; not a compile/runtime result. T1 HOLD: v2 emitted BigInt(\"undefined\") and core-js does not supply missing BigInt; v3 fixes AST field and blocks unverified BigInt/regex publication. Actions now ACTIVE, zero runs, old installed template (WORKFLOW.json); operator update of corrected ci source still needed, no dispatch released. Next single task = semantic BigInt/regex implementation verification, not another app compile. No repeat burn needed. T2-T7/Winamp stay queued. Storage HOLD: root is start disk clone; old wipe wave suspended. Current channel da.gd/sQ7bEo. PR merges operator-only.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -16,29 +16,28 @@
   },
   "volumes": [
     {
-      "name": "Lion SSD Base",
-      "role": "Lion 10.7 installed + booting (installer-app upgrade 2026-09-12; was SL 10.6.8 working base). Login + Andromeda desktop verified at 1080p.",
-      "lastNode": "/dev/disk0s2",
-      "location": "Bay 1",
-      "media": "starrt disk clone",
-      "free": "19.4 GB of 999.9 GB",
+      "name": "start disk clone",
+      "role": "CURRENT BOOT: mounted at /, Lion 10.7.5; old wipe authorization suspended",
+      "lastNode": "/dev/disk3s2",
+      "location": "UNVERIFIED; do not infer Bay 3 or SSD from historical name",
+      "erase": "NEVER (current boot)"
+    },
+    {
+      "name": "Raid X",
+      "role": "3.0 TB logical HFS journaled volume mounted at /Volumes/Raid X; RAID mode/health not measured",
+      "lastNode": "/dev/disk4",
+      "erase": "NEVER (live data)"
+    },
+    {
+      "name": "Apple_RAID members",
+      "role": "disk0s2, disk1s2, disk2s2 each ~999.9 GB; membership health and physical bays not measured",
+      "lastNode": "/dev/disk0s2,/dev/disk1s2,/dev/disk2s2",
       "erase": "NEVER"
     },
     {
-      "name": "start disk clone",
-      "role": "SL start-disk clone; superseded by Bay 1. 2026-09-15: operator directed WIPE via ?(lion-ssd-wipe) - block self-discovers target (non-boot, non-RAID, crucial|mx500|ssd match), CONFIRM-gated; awaiting paste-back",
-      "lastNode": "/dev/disk1s2",
-      "location": "Bay 3 MX500 CT1000",
-      "media": "Lion",
-      "erase": "WIPE AUTHORIZED 2026-09-15 via lion-ssd-wipe (discovery-gated, never boot/RAID)"
-    },
-    {
-      "name": "Mac OS X Install ESD",
-      "role": "asr-restored Lion installer (Bay 4). ESD-boot matrix EXHAUSTED (all cells fail; cause moot, bypassed by installer app). Volume now SPARE.",
-      "lastNode": "/dev/disk2s2",
-      "location": "Bay 4",
-      "media": "Apple_HFS_Untitled_2",
-      "erase": "spare; do not remirror; erase/repurpose only on explicit operator direction (separate gated wave)"
+      "name": "Lion SSD Base / Mac OS X Install ESD (historical names)",
+      "role": "Not listed in current receipt. Prior disk/bay mappings retired; absence does not prove wipe, removal or failure. Historical facts remain in git history.",
+      "erase": "HOLD; no discovery/erase wave released"
     }
   ],
   "links": {
@@ -74,12 +73,12 @@
       "job": "Current session bundle. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionzip+."
     },
     "oneLink": {
-      "type": "da.gd/lionone",
-      "url": "https://da.gd/lionone",
-      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.html",
-      "zip": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip",
-      "job": "THE one link (2026-09-16): txt browser + Burn armed-on-txt, full text + verdict query direct to the model via the same inbox (no merge/PR). Zip = lion-one.command safe reporter + the page (two files).",
-      "verified": "2026-09-16b: da.gd/lionone+ coshorten OK; origin branch arena/01a0a9de alive (page + zip raw links resolve); inbox 18 entries newest 2026-09-12"
+      "type": "da.gd/sQ7bEo",
+      "url": "https://da.gd/sQ7bEo",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.html",
+      "zip": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip",
+      "job": "Current One page: three-file zip, compiler HOLD and storage HOLD; v2 burn read, v3 export available; no repeated burn requested.",
+      "verified": "2026-09-16h: three readable POSTs from the current branch page; receipt UUIDs in VERIFICATION.json. Link mint/coshorten verified 2026-09-16g."
     },
     "logInbox": {
       "type": "webhook.site",
@@ -132,7 +131,7 @@
       "type": "da.gd/lionwipeh",
       "url": "https://da.gd/lionwipeh",
       "dest": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt",
-      "job": "burn wave 2026-09-15: ?(lion-ssd-wipe) discovery+CONFIRM, then ?(lion-harden). Type into Arctic Fox, copy each block into Terminal (sudo -s). Verified via da.gd/lionwipeh+ coshorten same turn. Commit-pinned jsDelivr sha, FILE_SHA256 eaf43ab0."
+      "job": "SUSPENDED 2026-09-16h: start disk clone is the current boot volume. Historical pinned transcript only; do not execute or reuse its CONFIRM line."
     }
   },
   "helper": {
@@ -179,7 +178,7 @@
   ],
   "doNot": [
     "Erase Lion SSD Base",
-    "Erase start disk clone / MX500",
+    "Erase start disk clone (CURRENT BOOT per 2026-09-16 LIONONE1); old wipe directions suspended",
     "asr remirror Bay 4",
     "Set clock to 2015 or 2016; do not run lion-installer-date-fix.command",
     "Send operator to da.gd/lionfix or da.gd/lup",

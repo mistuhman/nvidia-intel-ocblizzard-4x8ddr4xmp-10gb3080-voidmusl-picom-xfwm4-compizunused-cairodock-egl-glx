@@ -1,5 +1,17 @@
 # Mac modern web — Chromium Legacy vs ES5 passthrough vs parked (2026-09-16f)
 
+> **2026-09-16h current gate: HOLD before compiling.** The three context/inventory burns are read;
+> v2 `CORPUS_SHA=MATCH` proves context delivery only. The prior local GREEN meant syntax only:
+> Babel `node.bigint` emitted `BigInt("undefined")`; core-js 3.50.0 does not implement missing BigInt.
+> v3 fixes `node.value` and blocks BigInt/deferred-regex hazards until semantic support is verified.
+> Receipt + reproduction: `receipts/mac-es5/2026-09-16h-burn-verification/`.
+> GitHub Actions is now ACTIVE with zero runs, but the installed workflow is the old unpinned copy.
+> Corrected source: `ci/workflows/mac-es5-passthrough.yml` on `arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr`.
+> Do not Run yet. Operator must eventually replace the installed `.github/workflows` file with that
+> source (agent lacks Workflows permission), AND runtime blockers must be resolved first.
+> This supersedes the historical activation/PR88 steps below. No further burn needed for this batch.
+
+
 Operator directive 2026-09-16f: "for those unsupported apps, make a repo workflow (easy to
 compile from phone) that runs an agentic compiler passthrough for the mac so we can have fast
 (chromium? any other alternatives?) webpage apps like vencord etc." This doc ranks every route

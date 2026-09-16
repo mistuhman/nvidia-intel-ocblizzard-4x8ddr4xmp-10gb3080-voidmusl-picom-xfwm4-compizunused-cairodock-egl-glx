@@ -1,22 +1,17 @@
 https://da.gd/sQ7bEo
-THE ONE LINK (2026-09-16g): the "One" page repinned to arena/01a0aade -
-txt report browser + Burn (arms only when a txt is loaded; sends the full
-text straight to the model: no merge, no pull request) + live command +
-lion-one.zip download, NOW THREE FILES: lion-one.command safe reporter +
-lion-compiler-context.command + the page.
-lion-compiler-context.command = the one downloadable compiler-context
-script: embeds the ES5 passthrough INSTRUCTIONS v2 (corpus 2026-09-16g-v2,
-sha 8583a1cbf2ca) plus full context (FF52 floor doctrine, BigInt + regex
-shims and their KNOWN_LIMITATION caveats, loader order, provenance and
-promotion rules), drops passthrough-INSTRUCTIONS.json +
-passthrough-CONTEXT.txt on the Desktop, and burns
-~/Desktop/lion-compiler-context.txt (COMPILERCTX1 ... COMPILERCTX1_DONE).
-No sudo, no network, nothing erased.
-Minted 2026-09-16g via the encoded da.gd route (GET da.gd/s?url=...);
-verified via da.gd/sQ7bEo+ coshorten = htmlpreview arena/01a0aade
-lion-one.html; page + script + zip present on origin (gh api contents).
-LEGACY (page frozen at 01a0a9de but Burn still posts to the same webhook
-inbox, so old typed links keep delivering receipts): da.gd/lionone.
-Older legacy, do not type for new waves: da.gd/lionrelay, da.gd/lionzip,
-da.gd/lionforens, da.gd/lionwipeh, da.gd/lzr, da.gd/lmz, da.gd/lpg.
-Withdrawn, never type: da.gd/lionfix, da.gd/lup, TinyURL.
+THE ONE LINK (current session arena/01a0aade).
+2026-09-16h: three new text burns READ; COMPILERCTX1 v2 reports CORPUS_SHA=MATCH.
+This proves context delivery, not compilation or runtime compatibility.
+COMPILE_GATE=HOLD: v2 BigInt AST bug corrected; BigInt/regex implementation
+still unverified. Active installed workflow is OLD with zero runs.
+Do not run it yet; source ci/workflows/mac-es5-passthrough.yml is corrected
+but installing that source alone does not remove the runtime blockers.
+No repeat burns needed. Current downloads carry v3 17c6a29a052e with HOLD.
+Bundle: lion-one.command + lion-compiler-context.command + lion-one.html.
+No sudo or network from scripts; reports sent only by the page Burn action.
+STORAGE: start disk clone is now the boot volume. Old wipe wave SUSPENDED.
+Protect boot + all RAID members; no erase, reboot, hardening or install wave.
+Receipt details: receipts/mac-es5/2026-09-16h-burn-verification/VERIFICATION.json.
+PR merges OPERATOR-ONLY; agent reminds, never merges.
+Legacy da.gd/lionone still burns to the same inbox, but its page is frozen.
+Withdrawn: da.gd/lionfix, da.gd/lup, TinyURL. Do not use the stale phone generator.
