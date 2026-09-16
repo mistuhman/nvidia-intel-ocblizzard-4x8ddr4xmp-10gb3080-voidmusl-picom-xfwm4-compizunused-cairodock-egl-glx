@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 110,
+  "lastSeq": 112,
   "entries": [
     {
       "seq": 1,
@@ -1944,6 +1944,34 @@
       "kind": "note",
       "text": "2026-09-16c: inbox rechecked = still 18 entries newest 09-12 (no wave-1 burn, no wipe-harden transcript). Authored OMEN paste-ready set: scripts/micport-select + micport-attach, etc/micport-udev.rules, 2 autostart desktops, 4 blocks (audio-chain/steam/rpcs3-setup/airpods-pair) all block-lint target-console PASS; omen doc gained preset recipe + file list; wave discipline held (no second target wave while wave-1 receipts owed)",
       "sha256": "dd431172e3cbb056085986b2aca2df625c1aff90f0467a90ae45df585448c2a1"
+    },
+    {
+      "seq": 111,
+      "date": "2026-09-16",
+      "kind": "discrepancy",
+      "topic": "MicPort Pro + SM7B chain host",
+      "sides": [
+        {
+          "claim": "STATE.md audio row places CEntrance MicPort Pro (1c07:0001) on the Void OMEN",
+          "source": "STATE.md hardware table"
+        },
+        {
+          "claim": "operator 2026-09-16d: the whole stack incl. mic chain is on Mac OS X Lion, not the Void PC",
+          "source": "chat verbatim"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "ea0f5275b2a4ce10f03798dee65a867979fa301aa3347e06383071d9be6fec28"
+    },
+    {
+      "seq": 112,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "lion-app-feasibility-2026-09-16d",
+      "value": "On Lion 10.7 (Mac Pro 3,1): Steam IMPOSSIBLE (Valve cut 10.7 support 2019-01-01; modern floor 10.15-class); Discord/Vesktop+Vencord IMPOSSIBLE (Discord floor macOS 11 as of 2026, was 10.10 hard cap in 2016; Vesktop modern Electron); EasyEffects binary IMPOSSIBLE (PipeWire/Linux-only) but capabilities native via Audacity 2.4.2 (eq/pitch/offline NR/playthrough) + Apple AUs (AUParametricEQ/AUNBandEQ/AUPitch/AUDynamicsProcessor gate); RPCS3 IMPOSSIBLE (macOS 12+/AVX2/Vulkan; GTX 285 has neither); MicPort Pro UAC1 WORKS native CoreAudio; call feedback = MicPort hardware direct monitor or Audacity playthrough",
+      "source": "Valve notice steamcommunity 1744479063984354544; steamcommunity 4030223998577542894; r/discordapp 44zuew + 1jdy0oc + 1qth63l; void-packages easyeffects template; rpcs3.net/requirements 2026",
+      "sha256": "0ea64d2fb0a7091fa24c0dd39c7bd70080de1b9c01cfe3157d8bbcb658fb1bb9"
     }
   ],
   "stacks": [

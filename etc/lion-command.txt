@@ -13,6 +13,16 @@ OPEN WAVE (paste receipts back to agent chat, one wave at a time):
    (config-only user.js, backs up prefs.js, writes
    ~/Desktop/lion-arcticfox.txt), then install uBlock Origin legacy
    1.16.4.30 XPI from the URL in docs/mac-daily-driver.md section 3.
+4. Mic chain (docs/mac-daily-driver.md section 9): System Preferences
+   Sound > Input = MicPort Pro; install Audacity 2.4.2 (macintosh-
+   repository or audacityarchive); Audacity recording device = MicPort
+   Pro, software playthrough ON with headphones; hardware direct
+   monitor on the MicPort for zero-latency call feedback.
+
+2026-09-16d PLACEMENT CORRECTION: every app-stack front is MAC-side.
+Steam, Discord/Vesktop+Vencord, EasyEffects and RPCS3 binaries CANNOT
+run on Lion at all (receipts in docs/mac-daily-driver.md section 8);
+their plans are parked until a modern host is named (section 10).
 
 FLOW: double-click lion-one.command (writes ~/Desktop/lion-one.txt),
 pick the txt on the One page, press Burn - full text goes straight

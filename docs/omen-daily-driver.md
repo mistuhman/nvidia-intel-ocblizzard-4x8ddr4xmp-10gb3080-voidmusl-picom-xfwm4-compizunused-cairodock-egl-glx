@@ -1,5 +1,15 @@
 # OMEN daily driver — Steam, Vesktop+Vencord, SM7B/MicPort/EasyEffects, RPCS3, AirPods (2026-09-16)
 
+> **MISPLACED 2026-09-16d — BANNER.** Operator correction verbatim: "no, you completely
+> misunderstood. this is all on mac os x lion. not the void pc whatsoever". Every demand in the
+> 2026-09-16 message (Steam, Vesktop/Discord+Vencord, SM7B+MicPort+EasyEffects, RPCS3) was
+> re-judged Mac-side in docs/mac-daily-driver.md sections 8-10: the Lion-native audio chain lives
+> there (section 9), and the four binaries that cannot exist on Lion are parked pending a named
+> modern host (section 10). THIS FILE IS DEMOTED to (a) the record of the misplacement and (b) a
+> fallback-host plan if the operator ever names the Void box (or another modern machine) as a
+> deliberate exception. Do NOT execute anything here as the operator's intent; gate-12 still
+> blocks all OMEN execution regardless.
+
 Target: Void Linux glibc on the HP BlizzardOC 8917 (i7-12700KF, RTX 3080), user sd, runit,
 pipewire, lightdm+XFCE+compiz beauty stack FROZEN. HARD GATE: the board does not POST today
 (gate 12, HP 3.2 memory-init beeps, docs/case-swap-3-2-beep.md; bench POST wave owed per

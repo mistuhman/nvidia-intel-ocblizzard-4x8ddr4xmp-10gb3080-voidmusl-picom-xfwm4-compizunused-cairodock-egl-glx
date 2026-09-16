@@ -94,20 +94,21 @@ Mac Pro 3,1 = Bluetooth 2.0+EDR, and Lion predates the AirPods pairing stack.
 VERDICT: AirPods gen 2 CANNOT pair with this Mac - not a config fault, no dongle fixes the OS
 stack on 10.7. Daily-driver audio on the Mac = wired/USB audio (built-in jacks, USB DAC) or the
 speakers already connected (ToDo 2026-09-15).
-Where AirPods DO work daily: the OMEN (Void Linux, BlueZ + PipeWire: A2DP playback + HFP mic) and
-any phone. The sound-design mic chain (SM7B + CEntrance MicPort Pro + EasyEffects) lives on the
-OMEN per STATE.md ("Audio IF | CEntrance MicPort Pro (USB 1c07:0001)") - see
-docs/omen-daily-driver.md. "mic working smoothly" is therefore an OMEN-side deliverable, authored
-and gated behind gate-12 bench POST.
+Where AirPods DO work daily: any phone or a modern Mac/PC (the Void OMEN included) - not this Mac.
+The sound-design mic chain (SM7B + CEntrance MicPort Pro) is MAC-SIDE per operator correction
+2026-09-16d verbatim: "no, you completely misunderstood. this is all on mac os x lion. not the
+void pc whatsoever". The STATE.md row "Audio IF | CEntrance MicPort Pro (USB 1c07:0001)" is stale
+as to host and is logged as a discrepancy in agent-memory. The Lion chain = section 9 below
+(CoreAudio UAC1 + Audacity 2.4.2 + Apple Audio Units); "mic working smoothly" is a Mac-side
+deliverable, and its wave is queued in etc/lion-command.txt.
 
 ## 6. Steam / Discord on the Mac: not possible, by receipt
 
-- The current Steam client requires a macOS far newer than 10.7 (Valve progressively dropped
-  legacy-OS support from 2019 onward); on Lion it will not install or run. Steam = OMEN track
-  (Void nonfree `steam` package template exists: raw.githubusercontent void-packages master
-  srcpkgs/steam/template, fetched 2026-09-16).
+- The current Steam client requires a macOS far newer than 10.7 (Valve cut Lion/Mountain Lion/
+  Mavericks/Yosemite support on 2019-01-01 and the modern floor is 10.15-class; receipts below in
+  section 8); on Lion it will not install or run. Full matrix + what replaces it: section 8.
 - Discord desktop = Electron, no Lion build; Discord web needs modern JS+WebRTC that a 52-class
-  engine cannot fully run. Vesktop+Vencord = OMEN track (already a system flatpak per STATE.md).
+  engine cannot fully run. Vesktop+Vencord = same Electron class. Matrix + substitutes: section 8.
 
 ## 7. Daily-driver checklist (Mac)
 
@@ -119,3 +120,65 @@ and gated behind gate-12 bench POST.
 - [ ] uBlock legacy XPI install (section 3)
 - [ ] YouTube/SoundCloud UA fallback only if a stall is observed (section 4)
 - [ ] iTunes audio-CD burn: native, no agent step; burn a test CD-R before the important one
+- [ ] Mic chain wave (section 9): Audacity 2.4.2 + Sound pref input + login item + monitor path
+- [ ] Parked-with-receipt review (section 10): operator names a modern host or accepts substitutes
+
+## 8. App-stack feasibility matrix, ALL MAC-SIDE per correction 2026-09-16d
+
+Operator correction verbatim: "no, you completely misunderstood. this is all on mac os x lion. not
+the void pc whatsoever". Latest instruction wins: every item below is judged on Lion 10.7 on the
+Mac Pro 3,1. Where a named binary cannot exist on Lion, the substitute is named in the same row -
+no requirement is silently dropped.
+
+| Named item | Lion 10.7 verdict | Receipt | Substitute / plan |
+|---|---|---|---|
+| Steam | IMPOSSIBLE (client support for 10.7 ended 2019-01-01; modern floor 10.15-class) | Valve notice via Steam forum 1744479063984354544; current-minimum Catalina per Steam forum 4030223998577542894 | Native Mac games + source ports (the keep-as-Mac pivot's own list); GOG/old retail installs where licensed; Steam library stays on whatever modern host you name |
+| Vesktop / Discord + Vencord | IMPOSSIBLE as clients (Discord app floor was already 10.10 in 2016 and is macOS 11-class now; Vesktop = modern Electron; Vencord needs Discord web/app which a 52-class engine cannot parse) | r/discordapp 44zuew (10.10 hard cap, "no way around"); r/discordapp 1jdy0oc + 1qth63l (minimum macOS 11, 2026) | Discord stays on phone/modern machine; Mac-side chat substitute = none native (do not install junk clients); if a text bridge is ever wanted it needs a host you name (section 10) |
+| EasyEffects (pitch/eq/noise-suppression) | BINARY IMPOSSIBLE (Linux/PipeWire-only: Void template short_desc "Sound effects for systems using PipeWire"); the CAPABILITIES are possible natively, see section 9 | void-packages easyeffects template (fetched 2026-09-16); easyeffects upstream is PipeWire/Linux | Lion chain section 9: Audacity 2.4.2 (EQ, pitch shift, noise reduction offline, playthrough monitor) + Apple-shipped Audio Units (AUParametricEQ/AUNBandEQ = eq, AUPitch = pitch, AUDynamicsProcessor gate = real-time noise gate); real-time RNNoise-class suppression does not exist on Lion - offline NR in Audacity is the honest equivalent |
+| RPCS3 + PS3 discs/BD drive | IMPOSSIBLE on Lion (RPCS3 needs macOS 12+/15-class, AVX2-class CPU, Vulkan/Metal GPU; the 3,1's GTX 285 has neither Vulkan nor Metal) | rpcs3.net/requirements 2026 table (macOS 15 minimum column, macOS 12 in quickstart mirrors); tech-insider 2026 requirement recap (AVX2 non-negotiable) | The disc/dump/key plan in docs/omen-daily-driver.md section 4 stays VALID AS DOCUMENTATION for the future modern host you name; on Lion nothing emulates PS3 |
+| SM7B + CEntrance MicPort Pro | WORKS NATIVE (USB Audio Class 1 = CoreAudio class driver; STATE.md already records 1c07:0001 UAC1 "12 Mbit full-speed is CORRECT") | STATE.md audio row; USB-IF UAC1 support in CoreAudio since 10.0-era | Section 9 chain |
+| uBlock / modern web / YouTube / SoundCloud | POSSIBLE (sections 3-4) | as cited above | as cited above |
+| AirPods gen 2 | IMPOSSIBLE on this Mac (section 5) | Apple compat matrix + BT4.0 requirement | phone/modern machine |
+
+## 9. Lion sound-design chain: SM7B -> MicPort Pro -> CoreAudio -> Audacity/AUs
+
+Signal path: SM7B (dynamic, ~-60 dBV class) -> MicPort Pro hardware preamp (set hardware gain so
+loudest shout peaks one notch below red) -> USB UAC1 -> CoreAudio input device "MicPort Pro".
+Lion remembers the chosen default input across reboots (System Preferences > Sound > Input), and
+CoreAudio hot-plugs UAC1 devices on connect - that IS "interfaced upon every reboot and usable
+every time the mic is connected" natively; no daemon needed. What needs authoring is only the
+processing + monitoring layer:
+
+1. Audacity 2.4.2 (last 2.x line; the 10.7-compatible line per Audacity's own OSX notes "OS X
+   10.7 Lion and later"; 3.x needs 10.13+ per current download pages). Source on this Mac:
+   macintoshrepository (SSL-off HTTP, proven route in docs/case-swap-macpro-daily-driver.md) or
+   audacityarchive.org. Gives: Equalization filter (eq), Change Pitch / Pitch shift (pitch),
+   Noise Reduction (offline noise suppression), software playthrough (monitoring).
+2. Real-time inserts (if you want eq/pitch live, not per-recording): Apple ships Audio Units on
+   Lion - AUParametricEQ / AUNBandEQ (eq), AUPitch (pitch), AUDynamicsProcessor (gate = the
+   real-time noise-suppression substitute). Host them in AU Lab (Apple's free AU host of the
+   10.7 era) or any Lion DAW (GarageBand '11 ships with Lion-era iLife).
+3. Monitoring / "feedback for calls": prefer the MicPort Pro's own hardware direct monitor
+   (zero latency, OS-independent - confirm the monitor control on your unit); software fallback =
+   Audacity software playthrough or AU Lab monitoring, HEADPHONES ONLY (speaker monitoring howls).
+   Calls on Lion (FaceTime/Skype-class) take the system default input, i.e. the MicPort, with no
+   extra config once Sound pref input is set.
+4. Per-boot nicety (optional, config-only): add the monitor host to login items so monitoring is
+   up at login: osascript System Events make login item (pasteable line ships in the wave).
+
+Wave (queued in etc/lion-command.txt item 4, ships after the open Wave-1 receipts land):
+Sound pref input=MicPort Pro (GUI, one click) -> Audacity 2.4.2 install from the named source ->
+set Audacity recording device = MicPort Pro, playthrough on with headphones -> optional login-item
+line -> receipt = lion-one.command burn (it already captures system_profiler SPAudioDataType) plus
+one 10-second test recording pasted description (levels, noise floor with gate/NR on).
+
+## 10. Parked-with-receipts (needs one operator decision)
+
+Four named binaries cannot exist on Lion at all: Steam, Discord/Vesktop+Vencord, EasyEffects,
+RPCS3 (matrix above). Their plans are authored and receipt-backed but HOSTLESS now that the Void
+PC is excluded by the 2026-09-16d correction: docs/omen-daily-driver.md (demoted to fallback-host
+plan, bannered) holds the Steam/RPCS3/AirPort-free blocks; section 9 covers everything Lion can
+actually do for the mic. The single open decision: name the modern host (future machine? console-
+adjacent PC? the Void box as a deliberate exception?) or accept "parked until such a host exists".
+Nothing is dropped: the BD-drive PS3 plan, the redump-key procedure and the drive-compatibility
+rule all survive verbatim for that host.
