@@ -299,7 +299,7 @@ function pull() {
   function attempt() {
     if (i >= CANDIDATES.length) {
       $("cmd").value = EMBEDDED.join("\n");
-      s.innerHTML = "GitHub unreachable - showing embedded snapshot";
+      s.innerHTML = "GitHub unreachable or stale - showing embedded snapshot";
       return;
     }
     var url = CANDIDATES[i] + "?cb=" + (new Date().getTime());
@@ -312,7 +312,7 @@ function pull() {
       x.onerror = function () { attempt(); };
       x.onreadystatechange = function () {
         if (x.readyState !== 4) { return; }
-        if ((x.status === 200 || x.status === 0) && x.responseText && x.responseText.length > 0) {
+        if ((x.status === 200 || x.status === 0) && x.responseText && x.responseText.indexOf(EMBEDDED[0] + "\n") === 0) {
           $("cmd").value = x.responseText;
           s.innerHTML = "loaded " + x.responseText.length + " bytes from " + (url.indexOf("/main/") > 0 ? "main" : "branch");
           return;

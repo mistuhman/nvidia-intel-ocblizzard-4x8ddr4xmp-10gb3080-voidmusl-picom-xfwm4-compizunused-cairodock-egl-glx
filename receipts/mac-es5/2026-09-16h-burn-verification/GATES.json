@@ -8,7 +8,7 @@
   "git_diff_check": "PASS",
   "pr_budget": {
     "limit": 405,
-    "changed_lines": 1070,
+    "changed_lines": 1093,
     "verdict": "FAIL",
     "operator_override": "REQUIRED if over budget; not granted"
   },
@@ -16,7 +16,7 @@
   "workflow_dispatch": "NOT_RUN",
   "merge": "NOT_RUN; operator-only",
   "artifacts_sha256": {
-    "lion-one.zip": "67a9633ccfcf69ffd0b588a1a87a9c4afc628bb1cf0f418a179665efd6f0136d",
+    "lion-one.zip": "7ad40bfb0ed8c59e75e4734398b07d08800814a3c9e19b3a06b23909464afb10",
     "lion-compiler-context.command": "c9044fe6bbdbe206d504ea6d319771afcbf56102afb53386418fe26b8255648d"
   }
 }

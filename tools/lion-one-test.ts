@@ -6,6 +6,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { runInNewContext } from 'node:vm';
 
 const SCRIPT = 'lion-one.command';
 const CSCRIPT = 'lion-compiler-context.command';
@@ -89,12 +90,28 @@ function agentPage(): void {
     ['zip', /lion-one\.zip/],
     ['header-compat', /LIONMIRROR1 size=/],
     ['embedded-fallback', /var EMBEDDED = \[/],
-    ['embedded-status', /GitHub unreachable - showing embedded snapshot/],
+    ['embedded-status', /GitHub unreachable or stale - showing embedded snapshot/],
     ['escape', /function esc\(s\)/],
   ];
   for (const [id, re] of required) {
     if (!re.test(text)) fail(`P-${id}`, 'missing page element');
     else pass(`P-${id}`, 'present');
+  }
+  const script = text.split('<script type="text/javascript">')[1].split('</script>')[0];
+  const current = readFileSync('etc/lion-command.txt', 'utf8');
+  for (const responses of [[current], ['LION-ONE old wipe wave', 'old main'], ['old branch', current]]) {
+    const elements: Record<string, any> = {};
+    const pending = responses.slice();
+    function XHR(this: any): void {
+      this.open = function (): void {};
+      this.send = function (): void {
+        this.readyState = 4; this.status = 200; this.responseText = pending.shift() || '';
+        this.onreadystatechange();
+      };
+    }
+    runInNewContext(script, { document: { getElementById: (id: string) => elements[id] || (elements[id] = {}) }, XMLHttpRequest: XHR }, { timeout: 1000 });
+    if (elements.cmd.value.trimEnd() !== current.trimEnd()) fail('P-command-epoch', 'stale response or stale embedded snapshot');
+    else pass('P-command-epoch', responses.length === 1 ? 'current branch accepted' : 'old commands cannot replace current safety gate');
   }
   const banned: Array<[string, RegExp]> = [
     ['fetch', /\bfetch\(/],

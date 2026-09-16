@@ -31,7 +31,7 @@ The earlier “GREEN” compile is retained as a historical **syntax-only** resu
 - Added `COMPATIBILITY.json`: known BigInt/deferred-regex hazards stop transpile and receipt with exit 4. Otherwise runtime status remains `UNVERIFIED`, not PASS.
 - Added real-dependency compiler regressions before app fetching in the workflow source; pinned versions and the current session branch. The installed workflow still requires an operator update.
 - Updated the downloadable context to v3 (`17c6a29a052ec7632064a56948874ef22b45ea5717a9b779e366407d5e1e5a7a`), with an explicit HOLD. This new corpus is **not** claimed as already burned on the Mac.
-- Corrected canonical machine state and the One-page live/offline instructions. The existing short link is unchanged.
+- Corrected canonical machine state and the One-page live/offline instructions. Stale branch/main command responses cannot replace the current safety snapshot (mocked page tests pass). The existing short link is unchanged.
 
 ## Target facts and limits
 
