@@ -78,8 +78,10 @@ Facts with receipts:
   "something went wrong": set useragent.override.youtube.com =
   Mozilla/5.0 (iPad; CPU OS 10_2_1 like Mac OS X) AppleWebKit/602.4.6 (KHTML, like Gecko) Version/10.0 Mobile/14D27 Safari/602.1
   and retry; m.youtube.com is the expected landing.
-- SoundCloud: HTML5 audio-only player; works on 52-class when TLS 1.2 min is on. If the waveform
-  player fails, the mobile UA trick is the same fallback. No DRM on SoundCloud = no EME blocker
+- SoundCloud: HTML5 audio-only player, no DRM - EXPECTED to work on 52-class with TLS 1.2 min
+  (unverified first-hand as of 2026-09-16; verify on first visit and report back - it is a
+  flagged expectation, not a receipt). If the waveform player stalls, the same mobile-UA
+  fallback as YouTube applies. No DRM on SoundCloud = no EME blocker
   (Arctic Fox has NO DRM/EME at all: receipt reddit r/mac Arctic Fox thread - "doesn't support
   any kind of DRM"). Consequence: Spotify web / Netflix / Prime will NEVER play here; iTunes and
   local files remain the music path (operator's CD burn plan fits).
@@ -149,15 +151,19 @@ CoreAudio hot-plugs UAC1 devices on connect - that IS "interfaced upon every reb
 every time the mic is connected" natively; no daemon needed. What needs authoring is only the
 processing + monitoring layer:
 
-1. Audacity 2.4.2 (last 2.x line; the 10.7-compatible line per Audacity's own OSX notes "OS X
-   10.7 Lion and later"; 3.x needs 10.13+ per current download pages). Source on this Mac:
-   macintoshrepository (SSL-off HTTP, proven route in docs/case-swap-macpro-daily-driver.md) or
-   audacityarchive.org. Gives: Equalization filter (eq), Change Pitch / Pitch shift (pitch),
-   Noise Reduction (offline noise suppression), software playthrough (monitoring).
+1. Audacity 2.x line, ladder 2.4.2 -> 2.1.3 -> 2.0.6 (first that installs AND runs on this box).
+   Audacity's 2.x-era OSX notes say "OS X 10.7 Lion and later"; the exact last 10.7-capable build
+   is UNVERIFIED first-hand, hence the ladder (audacityarchive.org keeps every old build;
+   macintoshrepository is the proven SSL-off HTTP route from docs/case-swap-macpro-daily-driver.md).
+   3.x needs 10.13+ per current download pages - do not waste a download on it. Gives:
+   Equalization filter (eq), Change Pitch / Pitch shift (pitch), Noise Reduction (offline noise
+   suppression), software playthrough (monitoring).
 2. Real-time inserts (if you want eq/pitch live, not per-recording): Apple ships Audio Units on
    Lion - AUParametricEQ / AUNBandEQ (eq), AUPitch (pitch), AUDynamicsProcessor (gate = the
-   real-time noise-suppression substitute). Host them in AU Lab (Apple's free AU host of the
-   10.7 era) or any Lion DAW (GarageBand '11 ships with Lion-era iLife).
+   real-time noise-suppression substitute). Host them in AU Lab if present on this unit (Apple's
+   Core Audio host of the 10.7 era; presence UNVERIFIED here), or in GarageBand '11 if iLife '11
+   is installed on this unit (it does not ship with the OS - verify before relying on it), or
+   skip live inserts and use Audacity per-recording (fully sufficient for sound design).
 3. Monitoring / "feedback for calls": prefer the MicPort Pro's own hardware direct monitor
    (zero latency, OS-independent - confirm the monitor control on your unit); software fallback =
    Audacity software playthrough or AU Lab monitoring, HEADPHONES ONLY (speaker monitoring howls).

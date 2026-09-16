@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 112,
+  "lastSeq": 114,
   "entries": [
     {
       "seq": 1,
@@ -1972,6 +1972,22 @@
       "value": "On Lion 10.7 (Mac Pro 3,1): Steam IMPOSSIBLE (Valve cut 10.7 support 2019-01-01; modern floor 10.15-class); Discord/Vesktop+Vencord IMPOSSIBLE (Discord floor macOS 11 as of 2026, was 10.10 hard cap in 2016; Vesktop modern Electron); EasyEffects binary IMPOSSIBLE (PipeWire/Linux-only) but capabilities native via Audacity 2.4.2 (eq/pitch/offline NR/playthrough) + Apple AUs (AUParametricEQ/AUNBandEQ/AUPitch/AUDynamicsProcessor gate); RPCS3 IMPOSSIBLE (macOS 12+/AVX2/Vulkan; GTX 285 has neither); MicPort Pro UAC1 WORKS native CoreAudio; call feedback = MicPort hardware direct monitor or Audacity playthrough",
       "source": "Valve notice steamcommunity 1744479063984354544; steamcommunity 4030223998577542894; r/discordapp 44zuew + 1jdy0oc + 1qth63l; void-packages easyeffects template; rpcs3.net/requirements 2026",
       "sha256": "0ea64d2fb0a7091fa24c0dd39c7bd70080de1b9c01cfe3157d8bbcb658fb1bb9"
+    },
+    {
+      "seq": 113,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "github-outage-probe-2026-09-16e",
+      "value": "sandbox probe this turn: git ls-remote origin 0.44s OK; gh api REST OK; gh pr view 88 = OPEN; raw.githubusercontent serving arena/01a0a9ee etc/lion-command.txt (16d text); htmlpreview.github.io renders frozen One page incl. its JS XHR (884 bytes from branch); cdn.jsdelivr @main serves main copy (stale-by-merge, not outage); da.gd + webhook.site OK. VERDICT: outage NOT measurable on agent tooling; operator rule = say so, purge nothing working; tertiary outage path = lion-one.html EMBEDDED command snapshot + offline trio ONE_LINK.txt/etc/lion-command.txt/tools/lion-status.ts",
+      "source": "live probes 2026-09-16e session 01a0a9ee",
+      "sha256": "9f8a0b284d62e457da90462092f0d2126097c71f4434602d0c15988e8f4db4cc"
+    },
+    {
+      "seq": 114,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16e: repo keeps BOTH contexts; Void unusable; focus Mac-only; hostless four PARKED (skipped ask_user). Detox set: MASTER lionMac.links legacy-relabel (contradiction with ONE_LINK removed), STATE.md MicPort host note, mac-daily-driver downgrades (SoundCloud expectation-flagged, Audacity 2.x ladder, AU Lab/GarageBand if-present), omen banner both-contexts, lion-one.html EMBEDDED outage fallback + zip rebuild + test regex",
+      "sha256": "bc172b0795931025d9ac3e2d36eed18663a7da6857321ee356e197de08b06a13"
     }
   ],
   "stacks": [

@@ -32,7 +32,7 @@ APEX spec sheet. **No new target receipt** — the board currently will not POST
 | LED hub | M82868-001 — **deliberately unplugged**, no RGB |
 | Monitors | DELL G3223Q + DELL S2725QS (both 4K) + a tertiary |
 | Kernel | `6.18.35-tkg-bore` running; `/boot` also holds 6.18.36/38/40/41 stock and 6.18.39-tkg-bore |
-| Audio IF | CEntrance MicPort Pro (USB 1c07:0001), USB Audio Class 1 — **12 Mbit full-speed is CORRECT, not a fault** |
+| Audio IF | CEntrance MicPort Pro (USB 1c07:0001), USB Audio Class 1 — **12 Mbit full-speed is CORRECT, not a fault**. 2026-09-16d host correction: the operator's live chain is on the LION MAC, not this box (row kept verbatim for context; UAC1 facts unchanged; see docs/mac-daily-driver.md §9) |
 
 ### SATA emulation is **AHCI**, not RAID
 `ahci 10000:e0:17.0: AHCI vers 0001.0301 ... SATA mode`, `ata5-8 link up 6.0 Gbps`,

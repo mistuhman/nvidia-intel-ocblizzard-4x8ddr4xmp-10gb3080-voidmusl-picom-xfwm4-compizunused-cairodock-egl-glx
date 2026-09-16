@@ -9,6 +9,12 @@
 > fallback-host plan if the operator ever names the Void box (or another modern machine) as a
 > deliberate exception. Do NOT execute anything here as the operator's intent; gate-12 still
 > blocks all OMEN execution regardless.
+>
+> **2026-09-16e — BOTH CONTEXTS STAY.** Operator verbatim: "this repo needs to contain context of
+> both. but the void machine is unusable currently, and we are only focusing and working on the
+> mac os x lion mac pro 3,1". Nothing in this file is deleted: it remains the Void/OMEN context
+> (hardware facts, blocks, wave order) for future sessions and for the day a modern host is
+> named. Only the WORK FOCUS is Mac-only while the Void machine is unusable.
 
 Target: Void Linux glibc on the HP BlizzardOC 8917 (i7-12700KF, RTX 3080), user sd, runit,
 pipewire, lightdm+XFCE+compiz beauty stack FROZEN. HARD GATE: the board does not POST today

@@ -83,6 +83,8 @@ function agentPage(): void {
     ['branch', /arena\/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/],
     ['zip', /lion-one\.zip/],
     ['header-compat', /LIONMIRROR1 size=/],
+    ['embedded-fallback', /var EMBEDDED = \[/],
+    ['embedded-status', /GitHub unreachable - showing embedded snapshot/],
     ['escape', /function esc\(s\)/],
   ];
   for (const [id, re] of required) {
