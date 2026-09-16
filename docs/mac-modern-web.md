@@ -80,3 +80,10 @@ screenshot-photo via the One page.
 - Run = two taps once activated: Actions -> mac-es5-passthrough -> Run workflow -> green Run (defaults app=all, publish=on). Output: one public release zip with one subdir per app (loader.html + es5-*.js + polyfill.js + RECEIPT.json each) and RECEIPT-INDEX.json at zip root.
 - Per-app syntax gate stays: node --check per emitted .js; any FAIL aborts the run before publish.
 - Phone setup recommendation: Safari -> github.com -> Share -> Add to Home Screen (app-like icon, stays logged in). The GitHub iOS app is optional: good for notifications, PR merges and viewing runs; its Actions support is view/cancel-only per community discussion 110751 (as of that thread), so the Run tap lives in mobile web. Merging a PR that touches `.github/workflows` from the app fails on token scope (same thread); PR #88 touches only `ci/workflows`, so app-merging it is safe.
+
+### Compiler training corpus v1 (2026-09-16f, operator: "train the compiler with copious instruction sets")
+
+- The INSTRUCTIONS registry in `tools/mac-es5-passthrough.ts` is the versioned instruction set: 13 common compile hazards/shims + per-app directives for discord-web and vencord-web (version tag 2026-09-16f-v1).
+- Every CI run snapshots it into the bundle zip as INSTRUCTIONS.json and hashes it into RECEIPT-INDEX.json (`instructions_sha256`), so any on-Mac burn or CI log cites the exact corpus version it was built with.
+- v1 covers: ff52 syntax floor and polyfill load order; ES2020+ lowering assertions; module-worker and WebCrypto KNOWN_LIMITATION policy (route real sessions to Chromium Legacy); core-js gaps listed as shim candidates (ResizeObserver, TextEncoder/TextDecoder, IntersectionObserver) with none auto-added; SRI/CSP non-porting; discovery-order rule; vencord UserScript header preservation.
+- Growth rule: a new hazard or shim becomes an entry here WITH a receipt citation (CI log line or da.gd/lionone burn); no silent behavior changes. Candidate apps (youtube-web, soundcloud-web) join the registry only after a green fetch+transpile CI receipt (ToDo.md app build list).

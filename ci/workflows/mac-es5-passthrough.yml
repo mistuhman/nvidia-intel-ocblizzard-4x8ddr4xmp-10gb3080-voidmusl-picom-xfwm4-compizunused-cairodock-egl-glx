@@ -50,6 +50,8 @@ jobs:
         run: node tools/mac-es5-passthrough.ts loader --app=${{ inputs.app }} --dir=work/out
       - name: receipt (sha256 + node --check gate, per app + index)
         run: node tools/mac-es5-passthrough.ts receipt --dir=work/out
+      - name: instruction-set snapshot (training corpus rides in the zip)
+        run: node tools/mac-es5-passthrough.ts instructions --out=work/out/INSTRUCTIONS.json
       - name: zip bundle (per-app subdirs inside)
         run: |
           cd work/out

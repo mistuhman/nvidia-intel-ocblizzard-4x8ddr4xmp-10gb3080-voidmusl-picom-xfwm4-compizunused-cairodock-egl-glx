@@ -22,6 +22,57 @@ const APPS: Record<string, { entry: string; note: string }> = {
   'vencord-web': { entry: 'https://vencord.dev/assets/Vencord.user.js', note: 'single userscript bundle, transpile as-is' },
 };
 
+// Training corpus v1 (operator 2026-09-16f: "train the compiler with copious instruction sets").
+// Versioned instruction set: common compile hazards/shims + per-app directives. Every run snapshots
+// it into the bundle zip (INSTRUCTIONS.json) and hashes it into RECEIPT-INDEX.json so any on-Mac
+// receipt cites the exact corpus version. Growth rule: new hazard or shim = new entry HERE with a
+// receipt citation (CI log or da.gd/lionone burn); no silent behavior changes, ever.
+const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, string[]> } = {
+  version: "2026-09-16f-v1",
+  common: [
+    "target floor: firefox 52 (Arctic Fox 47 Goanna parse class) via @babel/preset-env, modules:false - syntax lowering only, no module wrapping",
+    "polyfill prelude: core-js-bundle full build loads FIRST in loader.html (polyfill.js before every es5-*.js); order is load-bearing",
+    "no behavior rewrites: transpile + polyfill only; any semantic shim requires its own instruction entry plus a receipt citation",
+    "syntax gate: node --check per emitted .js; any FAIL aborts the run before publish (RECEIPT.json syntax=OK rows are the proof)",
+    "loader.html stays ES5-only: no module scripts, no arrow/const/let/template literals in emitted loader (selftest loader-es5-only)",
+    "hazard ES2020+ (optional chaining, nullish coalescing, class fields, dynamic import): preset-env lowers for ff52; assert emitted bytes carry no import( or ?. leftovers; burn a receipt if an app stalls here",
+    "hazard Web Workers with type module: unsupported on FF52-class; v1 = detection + KNOWN_LIMITATION in the burn receipt only, never silently drop workers",
+    "hazard WebCrypto crypto.subtle: absent outside secure contexts on FF52-class; apps gating login on it stall BY DESIGN - route real sessions to Chromium Legacy LION primary path (docs/mac-modern-web.md)",
+    "polyfill gaps NOT covered by core-js (shim candidates, none auto-added in v1): ResizeObserver, TextEncoder/TextDecoder webcompat gaps, IntersectionObserver (FF55+)",
+    "present on FF52, no action needed: fetch, WebSocket, localStorage, IndexedDB, Promise, Map/Set",
+    "SRI integrity attributes and CSP meta from discovered shells are NOT ported to loader.html by design (local same-origin bundle)",
+    "script order = discovery order (webpack chunk dependencies); never sort assets alphabetically",
+    "corpus is versioned and sha256-hashed into RECEIPT-INDEX.json (instructions_sha256); every new hazard/shim lands as an entry here with its receipt citation",
+  ],
+  apps: {
+    "discord-web": [
+      "discovery: <script src=...js...> on the https://discord.com/app shell; relative urls absolutized against https://discord.com",
+      "keep ALL discovered chunks in v1 (empty drop list); a drop entry requires a burn receipt proving the chunk is fatal",
+      "discord shell expects globalThis plus webpack chunk registry; polyfill.js supplies globalThis before chunks load",
+      "expected stall point: login/QR flows lean on WebCrypto + modern TLS UI = KNOWN_LIMITATION on Arctic Fox; burn a description via da.gd/lionone and use Chromium Legacy for real sessions",
+    ],
+    "vencord-web": [
+      "single userscript bundle transpiled as-is; the // ==UserScript== metadata header MUST survive transpile - assert emitted file still opens with the header before publish",
+      "vencord injects into discord web at runtime: pair with the discord-web bundle on Arctic Fox, or use Violentmonkey + the vencord.dev userscript on Chromium Legacy (primary path)",
+      "plugin sub-fetches at runtime are NOT bundled in v1; a plugin fetching ES2020 code at runtime = KNOWN_LIMITATION entry until a fetch-hook shim exists",
+    ],
+  },
+};
+
+function instructionsHash(): string {
+  return sha256(Buffer.from(JSON.stringify(INSTRUCTIONS)));
+}
+
+function cmdInstructions(out: string): void {
+  const json = JSON.stringify(INSTRUCTIONS, null, 2) + "\n";
+  if (out) {
+    writeFileSync(out, json);
+    console.log(`INSTRUCTIONS_WRITTEN ${out} sha256=${instructionsHash().slice(0, 12)}`);
+  } else {
+    console.log(json.trimEnd());
+  }
+}
+
 function sha256(buf: Buffer): string {
   return createHash('sha256').update(buf).digest('hex');
 }
@@ -139,7 +190,7 @@ function cmdReceipt(dir: string): void {
       receiptDir(join(dir, d));
       index.push({ app: d, receipt_sha256: sha256(readFileSync(join(dir, d, 'RECEIPT.json'))) });
     }
-    writeFileSync(join(dir, 'RECEIPT-INDEX.json'), JSON.stringify({ apps: index }, null, 2) + '\n');
+    writeFileSync(join(dir, 'RECEIPT-INDEX.json'), JSON.stringify({ apps: index, instructions_sha256: instructionsHash() }, null, 2) + '\n');
     console.log(`RECEIPT_INDEX apps=${index.length}`);
   } else {
     receiptDir(dir);
@@ -199,12 +250,20 @@ function cmdSelftest(): void {
   }
   cmdLoader('all', join(tmp, 'load'));
   ok('loader-loop', appIds().every((id) => existsSync(join(tmp, 'load', id, 'loader.html'))));
+  cmdInstructions(join(tmp, 'INSTRUCTIONS.json'));
+  ok('instructions-write', existsSync(join(tmp, 'INSTRUCTIONS.json')));
   rmSync(tmp, { recursive: true, force: true });
+  ok('instructions-versioned', INSTRUCTIONS.version.length > 0 && INSTRUCTIONS.common.length >= 10 && Object.keys(INSTRUCTIONS.apps).sort().join(',') === 'discord-web,vencord-web');
+  ok('instructions-hash-stable', instructionsHash().length === 64 && instructionsHash() === sha256(Buffer.from(JSON.stringify(INSTRUCTIONS))));
   console.log(process.exitCode ? 'PASSTHROUGH_SELFTEST=FAIL' : 'PASSTHROUGH_SELFTEST=PASS');
 }
 
 async function main(): Promise<void> {
   const [cmd, ...rest] = process.argv.slice(2);
+  const argOpt = (name: string): string => {
+    const hit = rest.find((x) => x.startsWith(`--${name}=`));
+    return hit ? hit.slice(name.length + 3) : '';
+  };
   const arg = (name: string): string => {
     const hit = rest.find((x) => x.startsWith(`--${name}=`));
     if (!hit) { console.error(`MISSING_ARG ${name}`); process.exit(2); }
@@ -216,7 +275,8 @@ async function main(): Promise<void> {
   else if (cmd === 'transpile') cmdTranspile(arg('in'), arg('out'));
   else if (cmd === 'receipt') cmdReceipt(arg('dir'));
   else if (cmd === 'loader') cmdLoader(arg('app'), arg('dir'));
-  else { console.error('usage: mac-es5-passthrough.ts apps|selftest|fetch|transpile|receipt|loader  (--app accepts any registry id or all)'); process.exit(2); }
+  else if (cmd === 'instructions') cmdInstructions(argOpt('out'));
+  else { console.error('usage: mac-es5-passthrough.ts apps|selftest|fetch|transpile|receipt|loader|instructions  (--app accepts any registry id or all)'); process.exit(2); }
 }
 
 main();

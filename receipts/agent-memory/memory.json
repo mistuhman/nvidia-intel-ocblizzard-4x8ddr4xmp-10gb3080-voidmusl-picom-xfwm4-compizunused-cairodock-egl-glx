@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 118,
+  "lastSeq": 119,
   "entries": [
     {
       "seq": 1,
@@ -2018,6 +2018,13 @@
       "kind": "note",
       "text": "2026-09-16f hardening: mac-es5-passthrough becomes standing tap-to-run pipeline per operator ask. app input default 'all'; APPS registry in tools/mac-es5-passthrough.ts = single source of truth (adding planned apps = agent commit only, YAML never re-pasted); checkout pinned to arena/01a0a9ee branch so runs work pre/post PR #88 merge; per-app subdirs + RECEIPT-INDEX.json in one public release zip; selftest gained expand-all/expand-single/receipt-loop/loader-loop checks. iOS app receipts: GitHub iOS app exists (view runs/notifications/merge; Actions view-cancel-only per community 110751; mobile web = Run surface); NO official Arena.ai iOS app found (App Store 'Arena AI Mobile' by Andres Luiz = unrelated third-party art studio; 'Arenai' = concerts app) - recommend Safari Add-to-Home-Screen for github.com + Arena chat.",
       "sha256": "0c7de0a89093979211db10686d09c93271909d09a3eb817f4c7c760693df08b9"
+    },
+    {
+      "seq": 119,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f app build list + training corpus + merge: ToDo.md gained the app build list (registry BUILDING: discord-web, vencord-web; CANDIDATES pending CI receipts: youtube-web, soundcloud-web; install waves: Chromium Legacy T7, audio stack T2, gaming T3; hostless-four parked; promotion rule = green fetch+transpile receipt). Compiler trained with INSTRUCTIONS corpus v1 (2026-09-16f-v1): 13 common hazard/shim directives + per-app directives; hashed into RECEIPT-INDEX (instructions_sha256) and snapshotted as INSTRUCTIONS.json in every bundle zip; growth rule = entry + receipt citation, no silent changes. Operator directive: no GitHub iOS app; merge PR #88 after these land.",
+      "sha256": "3577d8a9a5fb43f394ef33abe3454b86fbd5fa34062affa54aa644f708e35822"
     }
   ],
   "stacks": [

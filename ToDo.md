@@ -169,3 +169,17 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] parked: modern-host decision for the hostless four (docs/mac-daily-driver.md §10); RPCS3+BD-drive plan survives verbatim for it.
 - T1 validation receipt (2026-09-16, operator phone screenshot): Actions "Found 0 workflows" root-caused = ci/workflows source-only by repo design + workflow_dispatch lists default-branch only; agent .github push rejected (App lacks workflows permission, verbatim receipt in memory seq 117). Activation = operator-credential path, steps in docs/mac-modern-web.md "Trigger path". T1 stays [~] until activation + first CI run + on-Mac burn.
 - T1 hardening (2026-09-16, operator: "tap to run real easy whenever you need to update apps"): workflow now standing + registry-driven - app input default all, app list only in tools/mac-es5-passthrough.ts APPS, checkout pinned to arena branch (runs pre/post merge), per-app subdirs + RECEIPT-INDEX.json in one release zip. Run = 2 taps once activated. New planned apps = agent commit only.
+
+## App build list — compiler targets + install waves (operator 2026-09-16f: "get the apps we need to build on the ToDo.md")
+Compiler passthrough registry (tools/mac-es5-passthrough.ts APPS; training corpus INSTRUCTIONS v1 = 2026-09-16f-v1, hashed into every RECEIPT-INDEX):
+- discord-web [BUILDING] app-shell chunk discovery + ES5 + core-js; login stall = KNOWN_LIMITATION (WebCrypto on FF52-class) - real sessions via Chromium Legacy
+- vencord-web [BUILDING] userscript transpile with header-preservation assert; pairs with discord-web bundle or Violentmonkey on Chromium Legacy
+Compiler candidates (research-at-open; a fetch+transpile CI receipt is required BEFORE registry promotion):
+- youtube-web [CANDIDATE] player ES2020 heavies; iPad-UA trick remains the Arctic Fox stopgap
+- soundcloud-web [CANDIDATE] operator interest; unverified-on-Lion flag stands until first burn
+Native install waves (NOT compiler jobs):
+- Chromium Legacy LION builds [T7 install wave, awaits operator go-ahead] primary modern engine (tags 121.0.6167.x-stable.lion, x86_64)
+- audio interface stack [T2, next after T1 closes]: AU Lab / GarageBand '11 if-present / Logic 9 / Audacity 2.x ladder (2.4.2 -> 2.1.3 -> 2.0.6) + CoreAudio aggregate device + mic control; native chain preserves lossless on the expensive mic (operator directive)
+- gaming [T3, research-at-open]: legacy Minecraft <=1.12.2 on Java 8 + Quake source ports = Mac-possible class; Prism Launcher / Roblox / Unreal / Steam verdicts land when T3 opens (Steam already receipted impossible on Lion: 2019-01-01 client cutoff)
+- parked: hostless-four modern-host decision (Void excluded by operator)
+Promotion rule: candidate -> registry only with a CI run receipt (fetch+transpile+node --check gate green); every promotion logged here + in receipts/agent-memory.
