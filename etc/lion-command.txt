@@ -1,36 +1,28 @@
-LION-ONE | live channel 2026-09-16b | the one link is da.gd/lionone
+LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo
 
-OPEN WAVE (paste receipts back to agent chat, one wave at a time):
-1. lion-wipe-harden.txt BLOCK 1 discovery run, then the exact CONFIRM
-   line it prints, then BLOCK 2 (Terminal, sudo -s). Paste BOTH full
-   transcripts back. Nothing else erases anything.
-2. AirPort triage (docs/lion-airport-triage.md): read each light BEFORE
-   touching it. AP1 blink-green = HEALTHY, do not reset. AP2 amber =
-   config/WAN class: read the AirPort Utility 6.3.1 badge first. Express
-   unresponsive = factory-default pinhole (unplug, hold reset, replug
-   while holding, 6-10 s until rapid amber blink). One unit per message.
-3. Arctic Fox hardening: double-click lion-arcticfox-harden.command
-   (config-only user.js, backs up prefs.js, writes
-   ~/Desktop/lion-arcticfox.txt), then install uBlock Origin legacy
-   1.16.4.30 XPI from the URL in docs/mac-daily-driver.md section 3.
-4. Mic chain (docs/mac-daily-driver.md section 9): System Preferences
-   Sound > Input = MicPort Pro; install Audacity 2.4.2 (macintosh-
-   repository or audacityarchive); Audacity recording device = MicPort
-   Pro, software playthrough ON with headphones; hardware direct
-   monitor on the MicPort for zero-latency call feedback.
+RECEIPTS READ: three text burns received 2026-09-16 16:24:20-39 (server time).
+- passthrough-CONTEXT.txt: readable companion (not a runtime test).
+- COMPILERCTX1: v2 CORPUS_SHA=MATCH; complete COMPILERCTX1_DONE.
+- LIONONE1: Lion 10.7.5, Arctic Fox 47.3, GTX 285, two 1080p displays.
 
-2026-09-16d PLACEMENT CORRECTION: every app-stack front is MAC-side.
-Steam, Discord/Vesktop+Vencord, EasyEffects and RPCS3 binaries CANNOT
-run on Lion at all (receipts in docs/mac-daily-driver.md section 8);
-their plans are parked until a modern host is named (section 10).
+COMPILE_GATE=HOLD. No repeat burn is needed for these three files.
+The v2 converter read the wrong Babel field and emitted BigInt("undefined").
+Corrected in v3; core-js still DOES NOT supply BigInt on an engine without it.
+Unverified BigInt / deferred-regex rewrites now block transpile and receipt.
+Instruction export is context delivery, NOT an app build or runtime PASS.
+The installed GitHub workflow is ACTIVE with zero runs, but is the OLD copy.
+Do not Run workflow yet. Corrected source is ci/workflows/mac-es5-passthrough.yml;
+operator installation of that source alone will NOT solve the runtime blockers.
+Next single task: verify an actual BigInt/regex compatibility implementation.
+New context downloads carry v3 17c6a29a052e and explicitly report this HOLD.
 
-FLOW: double-click lion-one.command (writes ~/Desktop/lion-one.txt),
-pick the txt on the One page, press Burn - full text goes straight
-to the model. No merge, no pull request. Burn the hardening report
-the same way (any .txt arms Burn).
+STORAGE HOLD: root is start disk clone (/dev/disk3s2 at receipt time).
+Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.
+Protect the current boot volume, Lion SSD Base, Raid X and every RAID member.
+Disk numbers are observations, NEVER reusable erase targets; bay IDs unknown.
+Firewall reports disabled; no hardening, AirPort reset or MicPort completion
+is inferred from this inventory. Those tasks remain queued, not released.
 
-STILL FORBIDDEN:
-- no erase of Lion SSD Base or any RAID member
-- no 1440p+/4K/unlisted modes (1080p ceiling), no resolution tools
-- no re-bless of Bay 4 ESD (spare; both states metered failures)
-- no AirPods pairing attempt on this Mac (BT 2.0 + Lion: impossible)
+The One page still accepts text reports: choose the txt, press Burn.
+No merge, no pull request is needed to send a report straight to the model.
+PR merges are OPERATOR-ONLY. Agent reminds and never merges.

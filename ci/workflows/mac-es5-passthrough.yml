@@ -2,14 +2,15 @@ name: mac-es5-passthrough
 
 # Standing tap-to-run compiler passthrough (operator directives 2026-09-16f):
 # GitHub mobile web -> Actions -> mac-es5-passthrough -> Run workflow. Defaults are the happy
-# path (app: all, publish: on), so a run is two taps. Registry-driven: the app list lives in
+# path once runtime gates pass (app: all, publish: on), so a run is two taps. Registry-driven: the app list lives in
 # tools/mac-es5-passthrough.ts (APPS), NOT here - adding a planned app later is an agent-side
 # commit on the branch below; this YAML never changes and nothing gets re-pasted.
 # Checkout is pinned to the agent branch so every run uses the freshest tool + registry and
-# works whether or not PR #88 has merged. Fetches each app's script assets, transpiles to
+# works whether or not PR #89 has merged. Fetches each app's script assets, transpiles to
 # Firefox-52-class ES5, attaches a core-js polyfill + ES5 loader page per app, gates every
 # emitted file with node --check + sha256 (RECEIPT.json per app, RECEIPT-INDEX.json at root),
-# and publishes one public release zip the Mac downloads without auth.
+# and publishes an EXPERIMENTAL zip only if known runtime blockers are absent.
+# v3: BigInt / deferred regex hazards are BLOCKED; Node syntax PASS is not Lion runtime PASS.
 # On-Mac receipt loop: burn the result through da.gd/lionone. Guide: docs/mac-modern-web.md.
 
 on:
@@ -31,23 +32,27 @@ permissions:
 jobs:
   passthrough:
     runs-on: ubuntu-latest
+    env:
+      APP: ${{ inputs.app }}
     steps:
       - uses: actions/checkout@v4
         with:
           # standing: always build from the agent branch (freshest tool + app registry);
-          # runs work pre- or post-merge of PR #88, no branch selector needed on the phone
-          ref: arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr
+          # runs work pre- or post-merge of PR #89, no branch selector needed on the phone
+          ref: arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: deps (CI-only, justified per MASTER toolStyle)
-        run: npm i --no-save @babel/core @babel/preset-env core-js-bundle
+        run: npm i --no-save --no-package-lock @babel/core@7.29.7 @babel/preset-env@7.29.7 core-js-bundle@3.50.0 acorn@8.18.0
+      - name: compiler preflight (real pinned dependencies; fail before app fetch)
+        run: node tools/mac-es5-passthrough.ts selftest --compiler
       - name: fetch target assets (per-app dirs)
-        run: node tools/mac-es5-passthrough.ts fetch --app=${{ inputs.app }} --out=work/src
+        run: node tools/mac-es5-passthrough.ts fetch --app="$APP" --out=work/src
       - name: transpile to ES5 (firefox 52 target)
         run: node tools/mac-es5-passthrough.ts transpile --in=work/src --out=work/out
       - name: loader pages (one per app)
-        run: node tools/mac-es5-passthrough.ts loader --app=${{ inputs.app }} --dir=work/out
+        run: node tools/mac-es5-passthrough.ts loader --app="$APP" --dir=work/out
       - name: receipt (sha256 + node --check gate, per app + index)
         run: node tools/mac-es5-passthrough.ts receipt --dir=work/out
       - name: instruction-set snapshot (training corpus rides in the zip)
@@ -55,7 +60,7 @@ jobs:
       - name: zip bundle (per-app subdirs inside)
         run: |
           cd work/out
-          zip -r "../../mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" .
+          zip -r "../../mac-passthrough-${APP}-${{ github.run_number }}.zip" .
       - uses: actions/upload-artifact@v4
         with:
           name: mac-passthrough-${{ inputs.app }}
@@ -65,7 +70,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}" \
-            "mac-passthrough-${{ inputs.app }}-${{ github.run_number }}.zip" \
-            --title "mac passthrough ${{ inputs.app }} run ${{ github.run_number }}" \
+          gh release create "mac-passthrough-${APP}-${{ github.run_number }}" \
+            "mac-passthrough-${APP}-${{ github.run_number }}.zip" \
+            --title "mac passthrough ${APP} run ${{ github.run_number }}" \
             --notes "ES5 passthrough bundle for Arctic Fox on Lion; one subdir per app, RECEIPT-INDEX.json at zip root. On-Mac receipt loop: da.gd/lionone. Primary path is Chromium Legacy LION builds (docs/mac-modern-web.md); this bundle is the Arctic Fox fallback. Registry-driven: app list lives in tools/mac-es5-passthrough.ts on the agent branch."

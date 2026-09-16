@@ -1,13 +1,17 @@
-https://da.gd/lionone
-THE ONE LINK (2026-09-16): the "One" page - txt report browser + Burn
-(arms only when a txt is loaded; sends the full text straight to the
-model: no merge, no pull request) + live command + lion-one.zip
-download (lion-one.command safe reporter + the page, two files).
-VERIFIED 2026-09-16b (session 01a0a9ee): da.gd/lionone+ coshorten still
-points at the htmlpreview page; origin branch arena/01a0a9de alive so
-the page and its zip link resolve; webhook inbox readable via fetch_page
-(18 entries, newest 2026-09-12 FORENSIC1 - wipe-harden transcripts owed).
-Repo page + zip repinned to arena/01a0a9ee for future mints.
-Legacy, do not type for new waves: da.gd/lionrelay, da.gd/lionzip,
-da.gd/lionforens, da.gd/lionwipeh, da.gd/lzr, da.gd/lmz, da.gd/lpg.
-Withdrawn, never type: da.gd/lionfix, da.gd/lup, TinyURL.
+https://da.gd/sQ7bEo
+THE ONE LINK (current session arena/01a0aade).
+2026-09-16h: three new text burns READ; COMPILERCTX1 v2 reports CORPUS_SHA=MATCH.
+This proves context delivery, not compilation or runtime compatibility.
+COMPILE_GATE=HOLD: v2 BigInt AST bug corrected; BigInt/regex implementation
+still unverified. Active installed workflow is OLD with zero runs.
+Do not run it yet; source ci/workflows/mac-es5-passthrough.yml is corrected
+but installing that source alone does not remove the runtime blockers.
+No repeat burns needed. Current downloads carry v3 17c6a29a052e with HOLD.
+Bundle: lion-one.command + lion-compiler-context.command + lion-one.html.
+No sudo or network from scripts; reports sent only by the page Burn action.
+STORAGE: start disk clone is now the boot volume. Old wipe wave SUSPENDED.
+Protect boot + all RAID members; no erase, reboot, hardening or install wave.
+Receipt details: receipts/mac-es5/2026-09-16h-burn-verification/VERIFICATION.json.
+PR merges OPERATOR-ONLY; agent reminds, never merges.
+Legacy da.gd/lionone still burns to the same inbox, but its page is frozen.
+Withdrawn: da.gd/lionfix, da.gd/lup, TinyURL. Do not use the stale phone generator.

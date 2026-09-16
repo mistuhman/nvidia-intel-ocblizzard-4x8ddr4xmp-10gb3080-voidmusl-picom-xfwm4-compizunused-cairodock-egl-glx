@@ -1,0 +1,9 @@
+{
+  "apps": [
+    {
+      "app": "vencord-web",
+      "receipt_sha256": "f0ec749c2af5875e190dcc9760347c2517616c88f30678689cefcc900ab9bf03"
+    }
+  ],
+  "instructions_sha256": "8583a1cbf2ca700725b50f973843e03ffd46a6dab1a70ab4a825d58de0899372"
+}

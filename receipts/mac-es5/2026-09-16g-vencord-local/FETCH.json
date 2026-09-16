@@ -1,0 +1,12 @@
+{
+  "app": "vencord-web",
+  "entry": "https://vencord.dev/assets/Vencord.user.js",
+  "egressNote": "vencord.dev unreachable from sandbox (HTTP 000); bytes taken from first-party mirror github.com/Vencord/builds head 8a2b56ed722781381cdf93e62f1096f6358817c1 (2026-09-14); CI run re-fetches canonical and compares sha",
+  "manifest": [
+    {
+      "file": "src-00-Vencord.user.js",
+      "url": "https://github.com/Vencord/builds/blob/8a2b56ed722781381cdf93e62f1096f6358817c1/Vencord.user.js",
+      "sha256": "325bb7568d1fdc790d996387c51f6155edb2ee7ffd4dc710681d9dfcea44210d"
+    }
+  ]
+}

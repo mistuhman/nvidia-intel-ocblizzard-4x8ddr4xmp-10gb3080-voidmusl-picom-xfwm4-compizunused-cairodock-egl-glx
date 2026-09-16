@@ -1,5 +1,12 @@
 # Lion SSD handoff — Mac Pro 3,1 (corrected 2026-09-12; 1,1 below is history)
 
+> **Current target receipt, 2026-09-16h:** Lion 10.7.5 boots from `start disk clone`
+> (`/dev/disk3s2` mounted at `/` in LIONONE1 `1c474145`). Prior Bay1/SSD node mappings below
+> are HISTORY, not erase targets. Old wipe wave suspended; protect boot and all RAID members.
+> GTX285 + G3223Q/S2725QS both 1080p online. Current link **da.gd/sQ7bEo**.
+> Three text burns verified; compiler runtime HOLD. See `docs/lion-workflow.json` for the next gate.
+
+
 **New chat pickup.** First message `README.md` still bootstraps the whole repo. Then run:
 
 ```

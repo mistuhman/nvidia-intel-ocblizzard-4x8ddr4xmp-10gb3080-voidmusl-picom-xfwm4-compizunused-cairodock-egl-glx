@@ -1,0 +1,17 @@
+{
+  "verified_on": "2026-09-16",
+  "interface": "gh REST API (read-only); operator activation method unreported",
+  "installed_blob_sha": "331899ae16d3478c29e0bb8223edf5916f8d095f",
+  "installed_sha256": "109af8944bba0a54c3e518c1cecf2437795227c4adf7eea0d1f1e2981ee0af1e",
+  "installed_url": "https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/main/.github/workflows/mac-es5-passthrough.yml",
+  "workflows": [
+    {
+      "name": "mac-es5-passthrough",
+      "path": ".github/workflows/mac-es5-passthrough.yml",
+      "state": "active"
+    }
+  ],
+  "workflow_runs": 0,
+  "installed_copy": "Old choice-input template: unpinned Babel/core-js; checkout has no ref; lacks instructions snapshot and compiler preflight",
+  "verdict": "ACTIVATED, NOT READY TO RUN. ci/workflows source is not the installed .github/workflows file. Operator update needed after fixes; no agent workflow-path push or dispatch."
+}

@@ -1,0 +1,69 @@
+{
+  "verified_on": "2026-09-16",
+  "interface": "functions.fetch_page; webhook API sorted newest; full text/plain POST content, not GET summaries",
+  "source_url": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?sorting=newest&per_page=100",
+  "privacy": "Selected receipt fields only; IP, hostnames, user names, MAC addresses and display serials not copied to this public record.",
+  "burns": [
+    {
+      "uuid": "8d9da9c2-6bf9-4ab2-a896-7015b8b55bca",
+      "received_at": "2026-09-16 16:24:20",
+      "kind": "passthrough-CONTEXT.txt",
+      "reported_file_bytes": 3685,
+      "reported_lines_including_trailing_empty": 62,
+      "verdict": "READABLE",
+      "byte_identity": "NOT_VERIFIED; page extraction strips angle-bracket tokens in JSON strings",
+      "expected_source_bytes": 3685,
+      "expected_source_sha256": "691e1bd080a7bd6a9f96778a26aeb14d77a25957a71fc5cc7ff3e9c59df70791"
+    },
+    {
+      "uuid": "33b7117b-a153-40c0-9fc9-63e6b760cd70",
+      "received_at": "2026-09-16 16:24:25",
+      "kind": "COMPILERCTX1",
+      "reported_file_bytes": 557,
+      "reported_lines_including_trailing_empty": 15,
+      "version": "2026-09-16g-v2",
+      "CORPUS_SHA_EXPECTED": "8583a1cbf2ca700725b50f973843e03ffd46a6dab1a70ab4a825d58de0899372",
+      "CORPUS_SHA": "MATCH",
+      "complete_marker": "COMPILERCTX1_DONE",
+      "local_compact_hash_matches": true,
+      "scope": "Internal corpus self-check matched the source corpus; Desktop JSON was not independently uploaded."
+    },
+    {
+      "uuid": "1c474145-b25a-41d8-a848-a68f333035bf",
+      "received_at": "2026-09-16 16:24:39",
+      "kind": "LIONONE1",
+      "reported_file_bytes": 5780,
+      "reported_lines_including_trailing_empty": 177,
+      "complete_marker": "LIONONE1_DONE No disk was erased."
+    }
+  ],
+  "target_observations": {
+    "os": "Mac OS X 10.7.5",
+    "build": "11G63",
+    "model": "MacPro3,1",
+    "architecture": "x86_64",
+    "ram_bytes": 10737418240,
+    "cpu_count": 8,
+    "arcticfox": "47.3 /Applications/ArcticFox.app",
+    "chromium_probe": "absent by /Applications name-only probe; other locations not searched",
+    "root": "/dev/disk3s2 on / (hfs, local, journaled)",
+    "boot_volume": "start disk clone",
+    "raid": "disk0s2, disk1s2, disk2s2 Apple_RAID; 3.0 TB disk4 mounted at /Volumes/Raid X; mode/health/bay identity NOT verified",
+    "gpu": "GTX 285 in Slot-1, x16, 1024 MB",
+    "displays": "DELL G3223Q + DELL S2725QS, each online 1920x1080 at 60Hz",
+    "firewall": "Firewall is disabled. (State = 0)",
+    "audio": "Only built-in audio in captured output; MicPort presence not established",
+    "users": "Directory listing is not an account inventory; no deletion or active-account-count inference"
+  },
+  "gates": {
+    "receipt_delivery": "PASS (three text burns)",
+    "v2_corpus_delivery": "MATCH; not a runtime compatibility result",
+    "compile": "HOLD (reproduced v2 conversion error + missing BigInt implementation + unverified regex rewrites)",
+    "storage": "HOLD: boot is now start disk clone; old wipe wave suspended; no disk changes",
+    "tasks_still_open": [
+      "T1 runtime implementation and first CI/on-Mac app run",
+      "T5 hardening/AirPort-specific receipts",
+      "T6 wipe/harden transcripts (old wipe wave withdrawn)"
+    ]
+  }
+}
