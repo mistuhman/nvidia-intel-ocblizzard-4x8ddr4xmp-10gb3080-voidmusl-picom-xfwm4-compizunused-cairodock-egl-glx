@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 102,
+  "lastSeq": 103,
   "entries": [
     {
       "seq": 1,
@@ -1860,6 +1860,13 @@
       "kind": "note",
       "text": "2026-09-15 burn wave: operator did RAID+account cleanup by hand (probe/erase blocks bypassed, un-armed history). Registered ?(lion-ssd-wipe) eafa8be7: discovery-only first run, maps every disk, hard-skips boot+AppleRAID+CoreStorage members, selects exactly one non-boot non-RAID crucial|mx500|ssd disk, erases on CONFIRM=diskN re-run to SSD SCRATCH, ABORTs if selection != 1. lion-wipe-harden.txt FILE_SHA256 eaf43ab0 = byte-exact registry replay of wipe+harden. Local git history was rolled back by sandbox restart between turns - rebased onto remote 17f9d53, registry re-add reproduced identical sha. Next = operator runs burn file, pastes both transcripts; AirPort pinhole resets open.",
       "sha256": "1255702f7277b494eaf6b5edb592c12adc9d9c507805676f8f51f10ba0384c90"
+    },
+    {
+      "seq": 103,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "da.gd/lionwipeh minted 2026-09-15 via fetch_page route, verified by coshorten: dest = jsDelivr @87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt. Slug recorded in docs/lion-workflow.json links.wipeHardenWave.",
+      "sha256": "661426ccb3095fedf861d69c40d43f2720b2a466edc76802fb1ce121f742935c"
     }
   ],
   "stacks": [

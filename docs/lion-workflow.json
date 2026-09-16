@@ -119,6 +119,12 @@
       "url": "https://da.gd/lionforens",
       "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a09141-nvidia-intel-ocblizzard-4x8ddr/lion-forensic.zip",
       "job": "FORENSIC1 read-only ESD collector (1721 bytes, sha256 0d0ee722c64cd00c506868111cd1ae71d9ced816cd67de006c7bf5ae4bdf73d3, 1 exec entry). Minted 2026-09-11 via the encoded da.gd route; da.gd truncates custom slugs to 10 chars (lionforensic became lionforens); verified via da.gd/lionforens+ coshorten. Report lion-forensic.txt attaches via da.gd/lionrelay (generic file picker, any .txt)."
+    },
+    "wipeHardenWave": {
+      "type": "da.gd/lionwipeh",
+      "url": "https://da.gd/lionwipeh",
+      "dest": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt",
+      "job": "burn wave 2026-09-15: ?(lion-ssd-wipe) discovery+CONFIRM, then ?(lion-harden). Type into Arctic Fox, copy each block into Terminal (sudo -s). Verified via da.gd/lionwipeh+ coshorten same turn. Commit-pinned jsDelivr sha, FILE_SHA256 eaf43ab0."
     }
   },
   "helper": {
