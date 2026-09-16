@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>One</title>
+<style type="text/css">
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:"Lucida Grande","Lucida Sans Unicode",Helvetica,Arial,sans-serif;
+  font-size:13px;color:#000;background:#ececec;
+  -moz-osx-font-smoothing:grayscale;
+}
+#win{
+  width:520px;margin:40px auto 0;background:#ececec;
+  border:1px solid #7a7a7a;
+  -moz-border-radius:6px;border-radius:6px;
+  -moz-box-shadow:0 10px 28px rgba(0,0,0,0.35);
+  box-shadow:0 10px 28px rgba(0,0,0,0.35);
+}
+#bar{
+  height:22px;position:relative;
+  background:#c8c8c8;
+  background:-moz-linear-gradient(top,#e8e8e8 0%,#c4c4c4 100%);
+  background:linear-gradient(to bottom,#e8e8e8 0%,#c4c4c4 100%);
+  border-bottom:1px solid #9a9a9a;
+  -moz-border-radius:6px 6px 0 0;border-radius:6px 6px 0 0;
+}
+#dots{position:absolute;left:8px;top:5px;white-space:nowrap;}
+#dots b{
+  display:inline-block;width:12px;height:12px;margin-right:6px;
+  -moz-border-radius:6px;border-radius:6px;
+  border:1px solid #8a8a8a;
+  background:#d9d9d9;
+  background:-moz-linear-gradient(top,#f2f2f2,#cfcfcf);
+  background:linear-gradient(to bottom,#f2f2f2,#cfcfcf);
+  vertical-align:top;
+}
+#bar h1{
+  margin:0;padding:0;text-align:center;font-size:13px;font-weight:bold;
+  line-height:22px;color:#404040;text-shadow:0 1px 0 #f6f6f6;
+}
+#body{padding:16px 20px 14px;}
+p{margin:0 0 10px;line-height:1.35;}
+.row{margin:12px 0;}
+.k{color:#222;margin-right:8px;}
+a.link{color:#053f96;text-decoration:underline;}
+input[type=file]{font-family:"Lucida Grande",sans-serif;font-size:13px;max-width:100%;}
+fieldset{
+  border:1px solid #b6b6b6;-moz-border-radius:5px;border-radius:5px;
+  margin:0 0 12px;padding:8px 10px 10px;background:#f5f5f5;
+}
+legend{color:#404040;font-weight:bold;padding:0 4px;}
+textarea{
+  width:100%;-moz-box-sizing:border-box;box-sizing:border-box;
+  font-family:Monaco,"Courier New",monospace;font-size:11px;
+  border:1px solid #9a9a9a;background:#fff;color:#000;
+  -moz-border-radius:3px;border-radius:3px;padding:5px;
+}
+#btns{text-align:right;margin-top:16px;}
+a.aqua,button.aqua,input.aqua{
+  display:inline-block;vertical-align:middle;
+  -moz-appearance:none;appearance:none;
+  font-family:"Lucida Grande","Lucida Sans Unicode",sans-serif;
+  font-size:13px;line-height:19px;height:21px;
+  padding:0 16px;margin-left:8px;
+  border:1px solid #5a5a5a;
+  -moz-border-radius:11px;border-radius:11px;
+  background:#e6e6e6;
+  background:-moz-linear-gradient(top,#fff 0%,#f3f3f3 48%,#e4e4e4 49%,#cfcfcf 100%);
+  background:linear-gradient(to bottom,#fff 0%,#f3f3f3 48%,#e4e4e4 49%,#cfcfcf 100%);
+  -moz-box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(0,0,0,0.12);
+  box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(0,0,0,0.12);
+  color:#000;text-shadow:0 1px 0 #fff;
+  text-decoration:none;cursor:default;
+}
+a.aqua.default,button.aqua.default{
+  border-color:#2a5a86;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,0.35);
+  background:#3d89d3;
+  background:-moz-linear-gradient(top,#7ebef3 0%,#4d9ee6 48%,#2176c4 49%,#4aa3ea 100%);
+  background:linear-gradient(to bottom,#7ebef3 0%,#4d9ee6 48%,#2176c4 49%,#4aa3ea 100%);
+  -moz-box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),0 0 0 3px rgba(80,160,230,0.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.45),0 0 0 3px rgba(80,160,230,0.35);
+}
+a.aqua:active,button.aqua:active{background:#c0c0c0;}
+button.aqua[disabled]{opacity:0.45;}
+#st{color:#276c2e;min-height:1.2em;margin-top:6px;font-size:12px;}
+#st.bad{color:#9b1c1c;}
+iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
+.note{color:#555;font-size:11px;line-height:1.3;}
+</style>
+</head>
+<body>
+<div id="win">
+  <div id="bar">
+    <span id="dots"><b></b><b></b><b></b></span>
+    <h1>One</h1>
+  </div>
+  <div id="body">
+    <p>The one link: <b>da.gd/lionone</b> (this page). Download:
+       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
+       - report command + this page, two files.</p>
+    <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
+
+    <fieldset>
+      <legend>Report</legend>
+      <p class="note">Pick any <b>.txt</b> report - for example <b>lion-one.txt</b> on the
+      Desktop after double-clicking <b>lion-one.command</b>. <b>Burn</b> arms only when a
+      report is loaded. Pressing it sends the <b>full text</b> plus a verdict query
+      <b>straight to the model</b>: no merge, no pull request, nothing to type.</p>
+      <div class="row">
+        <span class="k">Browse .txt:</span>
+        <input type="file" id="pick" name="log" accept=".txt,text/plain">
+      </div>
+      <p id="pv" class="note"></p>
+      <p id="st"></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Command</legend>
+      <p class="note">Pulled from the repo branch, so nothing has to be typed here. Select the
+      block, then Edit &gt; Copy.</p>
+      <div class="row">
+        <button class="aqua default" type="button" id="pull">Reload</button>
+        <span class="note" id="pullst">not loaded</span>
+      </div>
+      <textarea id="cmd" rows="7" readonly="readonly" wrap="off"></textarea>
+    </fieldset>
+
+    <form id="drop" action="https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6"
+          method="post" enctype="multipart/form-data" target="dropframe">
+      <input type="file" id="pick2" name="log" accept=".txt,text/plain">
+    </form>
+    <iframe name="dropframe"></iframe>
+
+    <div id="btns">
+      <button class="aqua default" type="button" id="burn" disabled="disabled">Burn</button>
+      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+// ES5 only: FileReader + XMLHttpRequest, no fetch/arrow/template strings,
+// because Arctic Fox 47 is Firefox 52 class.
+var INBOX = "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6";
+var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx";
+// branch first so a fresh agent push is visible in ~5 min, then main so the page still
+// works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
+// max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
+var CANDIDATES = [
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
+];
+var KEY = /(LIONONE1|BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot\.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback|AIRPORT|AirPort|ARCTIC|ArcticFox|Wi-Fi|AUDIO|Audio|FIREWALL|Firewall)/i;
+var LOADED = null;
+
+function $(id) { return document.getElementById(id); }
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function st(msg, bad) {
+  var e = $("st");
+  e.innerHTML = msg;
+  e.className = bad ? "bad" : "";
+}
+
+function summary(text, size) {
+  // Header stays LIONMIRROR1: the agent's inbox filter takes entries whose
+  // content begins with it, and the one link rides the same inbox.
+  var lines = text.split(/\r?\n/);
+  var out = ["LIONMIRROR1 size=" + size + " lines=" + lines.length + " page=one"];
+  var i, s;
+  for (i = 0; i < lines.length; i = i + 1) {
+    s = lines[i].replace(/^\s+|\s+$/g, "");
+    if (s.length === 0) { continue; }
+    if (KEY.test(s)) {
+      if (s.length > 190) { s = s.substring(0, 190) + "~"; }
+      out.push(s);
+    }
+    if (out.length > 26) { out.push("...truncated"); break; }
+  }
+  return out.join("\n");
+}
+
+function postText(body) {
+  try {
+    var x = new XMLHttpRequest();
+    x.open("POST", INBOX, true);
+    x.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+    x.send(body);
+    return true;
+  } catch (e) { return false; }
+}
+
+function postQuery(body) {
+  try {
+    var x = new XMLHttpRequest();
+    x.open("GET", INBOX + "?log=" + encodeURIComponent(body), true);
+    x.send("");
+    return true;
+  } catch (e) { return false; }
+}
+
+function handle(file) {
+  if (!file) { return; }
+  if (typeof FileReader === "undefined") {
+    st("FileReader missing - this Arctic Fox cannot read local files.", true);
+    return;
+  }
+  var r = new FileReader();
+  r.onload = function () {
+    var text = String(r.result || "");
+    var lines = text.split(/\r?\n/);
+    var i, s, hits = [];
+    for (i = 0; i < lines.length; i = i + 1) {
+      s = lines[i].replace(/^\s+|\s+$/g, "");
+      if (s.length > 0 && KEY.test(s)) {
+        if (s.length > 120) { s = s.substring(0, 120) + "~"; }
+        hits.push(s);
+        if (hits.length >= 6) { break; }
+      }
+    }
+    LOADED = {
+      file: file,
+      name: file.name || "report.txt",
+      size: file.size || text.length,
+      text: text,
+      lines: lines
+    };
+    var pv = esc(LOADED.name) + " - " + LOADED.size + " bytes - " +
+             lines.length + " lines - " + hits.length + "+ verdict lines";
+    if (hits.length > 0) { pv += "<br>" + esc(hits.join(" | ")); }
+    $("pv").innerHTML = pv;
+    $("burn").disabled = false;
+    st("report loaded - Burn is armed.", false);
+  };
+  r.onerror = function () { st("could not read the file", true); };
+  r.readAsText(file);
+}
+
+function burn() {
+  if (!LOADED) { st("pick a .txt first - Burn arms when a report loads.", true); return; }
+  var head = "LIONMIRROR1 size=" + LOADED.size + " lines=" + LOADED.lines.length + " page=one";
+  var a = postText(head + "\n----- report follows -----\n" + LOADED.text);
+  var b = postQuery(summary(LOADED.text, LOADED.size));
+  try {
+    if (window.DataTransfer) {
+      var transfer = new DataTransfer();
+      transfer.items.add(LOADED.file);
+      $("pick2").files = transfer.files;
+      $("drop").submit();
+    }
+  } catch (e) { /* multipart copy is best-effort */ }
+  st("burned: text=" + (a ? "ok" : "blocked") + " query=" + (b ? "ok" : "blocked") +
+     " (" + esc(LOADED.name) + ", " + LOADED.size + " bytes)", !a && !b);
+}
+
+function pull() {
+  var s = $("pullst");
+  var i = 0;
+  s.innerHTML = "fetching...";
+  function attempt() {
+    if (i >= CANDIDATES.length) {
+      s.innerHTML = "no source reachable - use the Download button below";
+      return;
+    }
+    var url = CANDIDATES[i] + "?cb=" + (new Date().getTime());
+    i = i + 1;
+    try {
+      var x = new XMLHttpRequest();
+      x.open("GET", url, true);
+      x.timeout = 12000;
+      x.ontimeout = function () { attempt(); };
+      x.onerror = function () { attempt(); };
+      x.onreadystatechange = function () {
+        if (x.readyState !== 4) { return; }
+        if ((x.status === 200 || x.status === 0) && x.responseText && x.responseText.length > 0) {
+          $("cmd").value = x.responseText;
+          s.innerHTML = "loaded " + x.responseText.length + " bytes from " + (url.indexOf("/main/") > 0 ? "main" : "branch");
+          return;
+        }
+        attempt();
+      };
+      x.send("");
+    } catch (e) { attempt(); }
+  }
+  attempt();
+}
+
+$("pick").onchange = function () {
+  handle(this.files && this.files[0] ? this.files[0] : null);
+};
+$("burn").onclick = burn;
+$("pull").onclick = pull;
+pull();
+</script>
+</body>
+</html>

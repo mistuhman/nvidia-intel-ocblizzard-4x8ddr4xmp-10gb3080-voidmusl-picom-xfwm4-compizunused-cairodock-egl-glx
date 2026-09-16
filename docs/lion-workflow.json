@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-15",
-  "session": "01a0a312",
+  "updated": "2026-09-16",
+  "session": "01a0a9de",
   "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15)",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-15 (later): RAID set + fresh single-admin account DONE by operator in GUI. OPEN WAVE = burn file lion-wipe-harden.txt (da.gd link in chat): ?(lion-ssd-wipe) discovery+CONFIRM erase of the non-boot non-RAID SSD, then ?(lion-harden) config-only; paste both transcripts back. AirPort base-station pinhole resets + re-config still open. RAID member layout to be confirmed from the wipe-block diskutil list receipt.",
+  "nextAction": "2026-09-16: ONE-LINK CHANNEL LIVE = da.gd/lionone (lion-one.html on this branch: txt browser + Burn armed-on-txt, full text direct to the model, no merge/PR; lion-one.zip = lion-one.command safe reporter + page). Still OPEN: wipe-harden wave (BLOCK1 discovery+CONFIRM, BLOCK2) - paste both transcripts back. Queued after receipts: AirPort pinhole resets (LED fault 2026-09-16: AP1 blink-green, AP2 amber, Express unresponsive) then Arctic Fox 47.3 hardening. OMEN-side tracks (Steam / Vesktop+Vencord / SM7B+EasyEffects / RPCS3) recorded, gated behind gate-12 bench POST.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -73,6 +73,13 @@
       "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a08f01-nvidia-intel-ocblizzard-4x8ddr/lion-mirror2.zip",
       "job": "Current session bundle. Type this short URL into Arctic Fox. Minted 2026-09-11 through da.gd and verified with da.gd/lionzip+."
     },
+    "oneLink": {
+      "type": "da.gd/lionone",
+      "url": "https://da.gd/lionone",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.html",
+      "zip": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip",
+      "job": "THE one link (2026-09-16): txt browser + Burn armed-on-txt, full text + verdict query direct to the model via the same inbox (no merge/PR). Zip = lion-one.command safe reporter + the page (two files)."
+    },
     "logInbox": {
       "type": "webhook.site",
       "url": "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6",
@@ -113,7 +120,7 @@
       "url": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@lion-relay-1/lion-mirror2.zip",
       "job": "the Burn target. Pinned to git tag lion-relay-1 because jsDelivr returns HTTP 500 for @main on this repo and a branch path caches ~12h; a tag ref resolves instantly. Updating the bundle = move/recreate the release tag."
     },
-    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay and lionzip. TinyURL is never used.",
+    "shortenBlocked": "Shell/Node direct fetch remains filtered for da.gd, but fetch_page reaches da.gd. Reproducible route used 2026-09-11: Node URL-encode the exact destination, fetch da.gd/?url=...&shorturl=..., then fetch da.gd/<slug>+ and compare the coshorten destination. Current verified slugs are lionrelay, lionzip, and lionone (THE one link as of 2026-09-16). TinyURL is never used.",
     "forensicZip": {
       "type": "da.gd/lionforens",
       "url": "https://da.gd/lionforens",
