@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 103,
+  "lastSeq": 109,
   "entries": [
     {
       "seq": 1,
@@ -1867,6 +1867,76 @@
       "kind": "note",
       "text": "da.gd/lionwipeh minted 2026-09-15 via fetch_page route, verified by coshorten: dest = jsDelivr @87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt. Slug recorded in docs/lion-workflow.json links.wipeHardenWave.",
       "sha256": "661426ccb3095fedf861d69c40d43f2720b2a466edc76802fb1ce121f742935c"
+    },
+    {
+      "seq": 104,
+      "date": "2026-09-16",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "deploy agents to thoroughly parse and read README.me and MASTER.md to the very granular detail while cross referencing the repo context per line for querying then verify model image sight capability before continuing / been using the mac for a bit, added candybar, flavours, some itunes stuff and im gonna be burning music to the cd. centralize everything into just one link. one gui, txt file browser with a burn option thats available once a txt is available, and when selected it directly sends the txt to the model without merging or creating a pr. then there's the command in the download. simple, no bloat, same style. need to get arcticfox working securely with modern browsing and hardening. then even install steam maybe? prepare it for use w vesktop/discord w/ vencord and sm7b audio software for the sound design micpre and centrance micport pro. easyeffects pitch, eq, noise suppression, all interfaced upon every reboot and usable every time the mic is connected for ease of use, with feedback for calls and everything. I also wanna get rpcs3 roms working for when i eventually get a blu ray drive installed / airport 1 is blinking green; airport 2 orange airport express unresponsive / quick note, mostly need to get stuff like ublock, modern web, youtube, soundcloud, airpod gen 2's and mic working smoothly. making it daily drivable",
+      "demands": [
+        "parse README+MASTER granular",
+        "verify image sight",
+        "one link centralization",
+        "txt browser GUI burn-on-txt direct-to-model no merge/PR",
+        "command in download simple same style",
+        "ArcticFox secure modern browsing hardening",
+        "Steam maybe",
+        "Vesktop/Discord+Vencord",
+        "SM7B+MicPort Pro+EasyEffects pitch/eq/noise-suppression per-boot+per-connect+call feedback",
+        "RPCS3 roms for future BD drive",
+        "AirPort AP1 blink-green AP2 orange Express unresponsive",
+        "uBlock/modern web/YouTube/SoundCloud/AirPods gen2/mic daily drivable"
+      ],
+      "sha256": "0150cc1f548ae2a93e81f0deed5440d465bc94c8ab8f6abe231e3816181aa6b7"
+    },
+    {
+      "seq": 105,
+      "date": "2026-09-16",
+      "kind": "perception",
+      "target": "receipts/vision-check/testcard-2026-09-12.png",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "testcard perceived 2026-09-16 session 01a0a9ee: red square top-left, blue circle top-right, yellow triangle bottom-left, green five-point star bottom-right, centered text ARENA VISION CHECK 2026-09-12 on white; image sight CONFIRMED live this chat",
+          "confidence": "high"
+        }
+      ],
+      "sha256": "8b906767ee1a6bd14afb2cfaa655259453f7797772c7bf8d77e0b8265851ec84"
+    },
+    {
+      "seq": 106,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "mac-daily-driver-2026-09-16",
+      "value": "CandyBar + Flavours theming working, iTunes library in use, audio-CD burn planned (native iTunes burn); Arctic Fox 47.3 mac32 is current upstream release (2026-07-29, sha256 mac32 1534d71b...); uBlock route = legacy XPI 1.16.4.30; AirPods gen2 impossible on Lion (BT2.0 + OS matrix)",
+      "source": "operator chat 2026-09-16 + github rmottola/Arctic-Fox releases + gorhill/uBlock-for-firefox-legacy update.xml + Apple community 253010466",
+      "sha256": "88c7b5e1176a2421995e92bfe1fba2364d9fbe7eb54dde881ba0280f49e47474"
+    },
+    {
+      "seq": 107,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "airport-led-2026-09-16",
+      "value": "AP1 blink-green = HEALTHY (Apple aputility guide alap11006 flashing green = working); AP2 amber = config/WAN fault class (badge in AirPort Utility 6.3.1 explains); Express unresponsive = factory-default pinhole ladder, solid-amber-forever = hardware class",
+      "source": "support.apple.com/guide/aputility/alap11006 + apple discussions 251085589/254395474",
+      "sha256": "dad9e710c8a4b9c4dd83d07f1033c6643d26f6fdcc7d8491abe2712ba7247c08"
+    },
+    {
+      "seq": 108,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "omen-tracks-2026-09-16",
+      "value": "Steam=void nonfree template 1.0.0.87; Vesktop=dev.vencord.Vesktop system flatpak; EasyEffects 8.2.9 void pkg has rnnoise+soundtouch+webrtc; RPCS3 has NO void package (404) -> Flathub flatpak; PS3 direct-disc boot on Linux since 2026-08-31 needing data/redump keys; all gated behind gate-12 bench POST",
+      "source": "raw void-packages templates fetched 2026-09-16 + rpcs3.net quickstart via heldgames/generationamiga 2026-09",
+      "sha256": "fa6f1bbd31d5d13a79acd8af5937bca05f5874641df20918ec40b4affe7a0b4c"
+    },
+    {
+      "seq": 109,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16b session 01a0a9ee shipped: docs/lion-airport-triage.md, docs/mac-daily-driver.md, docs/omen-daily-driver.md, lion-arcticfox-harden.command + tools/lion-arcticfox-test.ts (wired into test-all), lion-one.html+zip repinned arena/01a0a9ee, etc/lion-command.txt + ONE_LINK.txt refreshed, docs/lion-workflow.json + MASTER.md spliced; one-link da.gd/lionone verified live (slug+ coshorten, origin branch 01a0a9de alive, inbox 18 entries newest 09-12)",
+      "sha256": "2efd1f685f5c966ebdaa3f80eb15d8bedb5fcb094afb4a7d88890493438aa6e1"
     }
   ],
   "stacks": [

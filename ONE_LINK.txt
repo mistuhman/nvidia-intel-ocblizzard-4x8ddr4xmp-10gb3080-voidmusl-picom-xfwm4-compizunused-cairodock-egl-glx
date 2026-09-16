@@ -3,6 +3,11 @@ THE ONE LINK (2026-09-16): the "One" page - txt report browser + Burn
 (arms only when a txt is loaded; sends the full text straight to the
 model: no merge, no pull request) + live command + lion-one.zip
 download (lion-one.command safe reporter + the page, two files).
+VERIFIED 2026-09-16b (session 01a0a9ee): da.gd/lionone+ coshorten still
+points at the htmlpreview page; origin branch arena/01a0a9de alive so
+the page and its zip link resolve; webhook inbox readable via fetch_page
+(18 entries, newest 2026-09-12 FORENSIC1 - wipe-harden transcripts owed).
+Repo page + zip repinned to arena/01a0a9ee for future mints.
 Legacy, do not type for new waves: da.gd/lionrelay, da.gd/lionzip,
 da.gd/lionforens, da.gd/lionwipeh, da.gd/lzr, da.gd/lmz, da.gd/lpg.
 Withdrawn, never type: da.gd/lionfix, da.gd/lup, TinyURL.
