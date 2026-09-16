@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-15",
-  "lastSeq": 101,
+  "updated": "2026-09-16",
+  "lastSeq": 102,
   "entries": [
     {
       "seq": 1,
@@ -1853,6 +1853,13 @@
       "kind": "note",
       "text": "2026-09-15 LION STORAGE WAVE: GTX 285 in + both displays up (operator); ddds deletion in progress. Registered ?(lion-erase-inventory-probe) sha a9b1affb READ-ONLY first, ?(lion-erase-spares-wd1tb) sha 70b50c27 PLACEHOLDER-unarmed (arms only from probe receipt; boot/bay3/iTunes-backup disks hard-guarded out; music extraction = operator decision before arming), ?(lion-harden) sha aa9fccd0 config-only with Arctic Fox keep-check before/after. CMD_CHECK=PASS entries=16, block-lint PASS x3, TEST_ALL=PASS. Docs synced: ToDo.md buildup, docs/lion-workflow.json nextAction, MASTER.md nextAction. Next = operator pastes full probe output back.",
       "sha256": "bdba5f3f9b15804e6c782ac9c49e9804e98c085203f38ca4fa00c877bd340670"
+    },
+    {
+      "seq": 102,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-15 burn wave: operator did RAID+account cleanup by hand (probe/erase blocks bypassed, un-armed history). Registered ?(lion-ssd-wipe) eafa8be7: discovery-only first run, maps every disk, hard-skips boot+AppleRAID+CoreStorage members, selects exactly one non-boot non-RAID crucial|mx500|ssd disk, erases on CONFIRM=diskN re-run to SSD SCRATCH, ABORTs if selection != 1. lion-wipe-harden.txt FILE_SHA256 eaf43ab0 = byte-exact registry replay of wipe+harden. Local git history was rolled back by sandbox restart between turns - rebased onto remote 17f9d53, registry re-add reproduced identical sha. Next = operator runs burn file, pastes both transcripts; AirPort pinhole resets open.",
+      "sha256": "1255702f7277b494eaf6b5edb592c12adc9d9c507805676f8f51f10ba0384c90"
     }
   ],
   "stacks": [

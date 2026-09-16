@@ -3,7 +3,7 @@
   "session": "01a0a312",
   "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15)",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-15 WAVE: GTX 285 booted, both displays up (receipt operator). ddds admin deletion in progress (GUI Deleting Account...). NEXT = run ?(lion-erase-inventory-probe) on the Lion desktop and paste FULL output back; agent then arms ?(lion-erase-spares-wd1tb) with probe-confirmed ids (iTunes-backup HDD is KEEP, music extraction is operator's call BEFORE arming), RAID in Disk Utility after, then ?(lion-harden). AirPort base-station factory resets remain open (6.3.1 installed).",
+  "nextAction": "2026-09-15 (later): RAID set + fresh single-admin account DONE by operator in GUI. OPEN WAVE = burn file lion-wipe-harden.txt (da.gd link in chat): ?(lion-ssd-wipe) discovery+CONFIRM erase of the non-boot non-RAID SSD, then ?(lion-harden) config-only; paste both transcripts back. AirPort base-station pinhole resets + re-config still open. RAID member layout to be confirmed from the wipe-block diskutil list receipt.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -26,11 +26,11 @@
     },
     {
       "name": "start disk clone",
-      "role": "SL start-disk clone (was the recorded Lion destination; Lion landed on Bay 1 instead - migration only if operator asks)",
+      "role": "SL start-disk clone; superseded by Bay 1. 2026-09-15: operator directed WIPE via ?(lion-ssd-wipe) - block self-discovers target (non-boot, non-RAID, crucial|mx500|ssd match), CONFIRM-gated; awaiting paste-back",
       "lastNode": "/dev/disk1s2",
       "location": "Bay 3 MX500 CT1000",
       "media": "Lion",
-      "erase": "NEVER"
+      "erase": "WIPE AUTHORIZED 2026-09-15 via lion-ssd-wipe (discovery-gated, never boot/RAID)"
     },
     {
       "name": "Mac OS X Install ESD",
