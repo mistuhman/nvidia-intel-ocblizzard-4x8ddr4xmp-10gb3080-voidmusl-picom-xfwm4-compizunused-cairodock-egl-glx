@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 119,
+  "lastSeq": 120,
   "entries": [
     {
       "seq": 1,
@@ -2025,6 +2025,13 @@
       "kind": "note",
       "text": "2026-09-16f app build list + training corpus + merge: ToDo.md gained the app build list (registry BUILDING: discord-web, vencord-web; CANDIDATES pending CI receipts: youtube-web, soundcloud-web; install waves: Chromium Legacy T7, audio stack T2, gaming T3; hostless-four parked; promotion rule = green fetch+transpile receipt). Compiler trained with INSTRUCTIONS corpus v1 (2026-09-16f-v1): 13 common hazard/shim directives + per-app directives; hashed into RECEIPT-INDEX (instructions_sha256) and snapshotted as INSTRUCTIONS.json in every bundle zip; growth rule = entry + receipt citation, no silent changes. Operator directive: no GitHub iOS app; merge PR #88 after these land.",
       "sha256": "3577d8a9a5fb43f394ef33abe3454b86fbd5fa34062affa54aa644f708e35822"
+    },
+    {
+      "seq": 120,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f close-out receipts: operator activation paste landed on main as commit 0450afe (.github/workflows/mac-es5-passthrough.yml); GitHub registered workflow id 359758529 state active - Run button live on mobile web. Pasted YAML is the PRE-hardening version (choice input discord-web/vencord-web, required true; no pinned checkout ref; no INSTRUCTIONS snapshot step) - functional post-merge because main now carries tools/mac-es5-passthrough.ts with corpus v1; sync-to-ci-source pending via app Workflows permission grant (recommended) or operator re-paste. PR #88 MERGED merge commit d57fb8f1354df7b70d1391c2d9715cbdf2b5392e per operator directive; main = tools + docs + ci sources + .github activation. First merge attempt bounced (base modified by 0450afe, then async mergeable recompute) - resolved by merging origin/main into branch (f48679e) then retry. Gates post-merge: TEST_ALL=PASS, selftest PASS. T1 closure pending: first CI run + on-Mac burn.",
+      "sha256": "2e8c8681daf3be28e82d59fbb1a6bd2ffc2eb65d1dff90e3443b685c0477f070"
     }
   ],
   "stacks": [
