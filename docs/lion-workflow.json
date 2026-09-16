@@ -1,9 +1,9 @@
 {
   "updated": "2026-09-15",
   "session": "01a0a312",
-  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, dual Dell S2725QS displays, user admin / RevolYOUtionarys-Mac-Pro",
+  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15)",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "1. Perform pinhole hard factory reset on AirPort Time Capsules & Express to wipe passwords. 2. Re-configure AirPort Base Stations in AirPort Utility. 3. Format/RAID 3x 1TB WD Green HDDs in Disk Utility.",
+  "nextAction": "2026-09-15 (later): RAID set + fresh single-admin account DONE by operator in GUI. OPEN WAVE = burn file lion-wipe-harden.txt (da.gd link in chat): ?(lion-ssd-wipe) discovery+CONFIRM erase of the non-boot non-RAID SSD, then ?(lion-harden) config-only; paste both transcripts back. AirPort base-station pinhole resets + re-config still open. RAID member layout to be confirmed from the wipe-block diskutil list receipt.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -26,11 +26,11 @@
     },
     {
       "name": "start disk clone",
-      "role": "SL start-disk clone (was the recorded Lion destination; Lion landed on Bay 1 instead - migration only if operator asks)",
+      "role": "SL start-disk clone; superseded by Bay 1. 2026-09-15: operator directed WIPE via ?(lion-ssd-wipe) - block self-discovers target (non-boot, non-RAID, crucial|mx500|ssd match), CONFIRM-gated; awaiting paste-back",
       "lastNode": "/dev/disk1s2",
       "location": "Bay 3 MX500 CT1000",
       "media": "Lion",
-      "erase": "NEVER"
+      "erase": "WIPE AUTHORIZED 2026-09-15 via lion-ssd-wipe (discovery-gated, never boot/RAID)"
     },
     {
       "name": "Mac OS X Install ESD",
@@ -119,6 +119,12 @@
       "url": "https://da.gd/lionforens",
       "dest": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a09141-nvidia-intel-ocblizzard-4x8ddr/lion-forensic.zip",
       "job": "FORENSIC1 read-only ESD collector (1721 bytes, sha256 0d0ee722c64cd00c506868111cd1ae71d9ced816cd67de006c7bf5ae4bdf73d3, 1 exec entry). Minted 2026-09-11 via the encoded da.gd route; da.gd truncates custom slugs to 10 chars (lionforensic became lionforens); verified via da.gd/lionforens+ coshorten. Report lion-forensic.txt attaches via da.gd/lionrelay (generic file picker, any .txt)."
+    },
+    "wipeHardenWave": {
+      "type": "da.gd/lionwipeh",
+      "url": "https://da.gd/lionwipeh",
+      "dest": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt",
+      "job": "burn wave 2026-09-15: ?(lion-ssd-wipe) discovery+CONFIRM, then ?(lion-harden). Type into Arctic Fox, copy each block into Terminal (sudo -s). Verified via da.gd/lionwipeh+ coshorten same turn. Commit-pinned jsDelivr sha, FILE_SHA256 eaf43ab0."
     }
   },
   "helper": {
