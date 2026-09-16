@@ -1,0 +1,31 @@
+#!/bin/bash
+# micport-select - make the CEntrance MicPort Pro (USB 1c07:0001) the default PipeWire source.
+# usage: micport-select [--wait]
+#   --wait = poll up to 60 s for the node (udev per-connect + login autostart path).
+# Plain run = one shot (manual/receipt path). Exit 1 when no MicPort node is present.
+set -u
+WAIT=0
+if [ "${1:-}" = "--wait" ]; then
+  WAIT=1
+fi
+find_node() {
+  pactl list short sources 2>/dev/null | grep -i 'micport' | head -1 | cut -f2
+}
+NODE=""
+if [ "$WAIT" -eq 1 ]; then
+  for _ in $(seq 1 30); do
+    NODE=$(find_node)
+    if [ -n "$NODE" ]; then
+      break
+    fi
+    sleep 2
+  done
+else
+  NODE=$(find_node)
+fi
+if [ -z "$NODE" ]; then
+  echo "MICPORT-SELECT: no MicPort source node present"
+  exit 1
+fi
+pactl set-default-source "$NODE"
+echo "MICPORT-SELECT: default source = $NODE"

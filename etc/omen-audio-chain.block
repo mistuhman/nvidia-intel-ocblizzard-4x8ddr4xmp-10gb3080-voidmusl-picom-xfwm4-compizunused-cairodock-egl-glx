@@ -1,0 +1,43 @@
+# OMEN audio chain install - SM7B + CEntrance MicPort Pro + EasyEffects (Void, user sd).
+# GATED: run ONLY after gate-12 bench POST receipt closes gate 12 (docs/omen-daily-driver.md).
+# Console-safe: one command per line, no chaining. Root section assumes a root shell already.
+# Deliverables come from the repo clone at /home/sd/oc-lab (git pull), never curl.
+
+# --- USER sd: refresh the lab clone so the new scripts/blocks exist ---
+cd /home/sd/oc-lab
+git pull
+# fallback if the pull track lacks the files (after PR merge):
+# git checkout origin/main -- scripts/micport-select scripts/micport-attach etc/micport-udev.rules etc/easyeffects-autostart.desktop etc/micport-default-autostart.desktop
+
+# --- ROOT: package + install the per-connect and per-boot interfaces ---
+id -u
+xbps-install -S
+xbps-install -y easyeffects
+install -Dm755 /home/sd/oc-lab/scripts/micport-select /usr/local/bin/micport-select
+install -Dm755 /home/sd/oc-lab/scripts/micport-attach /usr/local/bin/micport-attach
+install -Dm644 /home/sd/oc-lab/etc/micport-udev.rules /etc/udev/rules.d/60-micport.rules
+udevadm control --reload-rules
+
+# --- USER sd: per-boot autostart (EasyEffects service + default-source waiter) ---
+mkdir -p /home/sd/.config/autostart
+cp /home/sd/oc-lab/etc/easyeffects-autostart.desktop /home/sd/.config/autostart/easyeffects.desktop
+cp /home/sd/oc-lab/etc/micport-default-autostart.desktop /home/sd/.config/autostart/micport-default.desktop
+
+# --- USER sd: receipts (paste FULL output back) ---
+pactl list short sources
+micport-select
+easyeffects --version
+
+# --- THEN, in the EasyEffects GUI (operator, one session): build the input chain in this
+# order: Gain (0 dB start) -> Compressor (-18 dB, 3:1) -> Equalizer (HPF 80 Hz, +3 dB @4 kHz,
+# -2 dB @200 Hz) -> Noise Suppression (RNNoise) -> [Pitch only when sound-designing] ->
+# Limiter (-1 dB). Set input device = Default device, save preset "sm7b-micport", enable
+# "load last preset at startup". Export the preset JSON and paste/commit it as the receipt.
+
+# --- ROLLBACK (root): ---
+# rm /etc/udev/rules.d/60-micport.rules
+# rm /usr/local/bin/micport-select
+# rm /usr/local/bin/micport-attach
+# udevadm control --reload-rules
+# xbps-remove -y easyeffects
+# plus user: rm /home/sd/.config/autostart/easyeffects.desktop /home/sd/.config/autostart/micport-default.desktop

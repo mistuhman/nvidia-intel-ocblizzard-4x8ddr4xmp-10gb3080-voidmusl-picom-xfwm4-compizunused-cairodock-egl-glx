@@ -1,0 +1,23 @@
+# OMEN Steam install (Void nonfree) - GATED behind gate-12 bench POST receipt.
+# Console-safe: one command per line, no chaining. Root section assumes a root shell already.
+
+# --- ROOT ---
+id -u
+xbps-install -S
+xbps-query -L
+xbps-install -y steam
+
+# --- USER sd: receipts + first launch ---
+xbps-query steam
+steam
+
+# Notes:
+# - xbps-query -L must list nonfree (it does if nvidia came from nonfree); if missing, add
+#   the nonfree repo conf first (operator gate, separate wave).
+# - Games live on /fast/steam or /mnt/games (STATE.md disk map); ~/Downloads is a symlink to
+#   /mnt/games/Downloads, use find -L when hunting installs (MASTER lessons).
+# - Fallback if the native client fights the beauty stack: flatpak install com.valvesoftware.Steam
+#   (system flatpak already in use for Vesktop).
+# - Proton comes from Steam itself; the parked games campaign stays PARKED (2026-08-25).
+
+# --- ROLLBACK (root): xbps-remove -y steam ---

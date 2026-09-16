@@ -1,0 +1,6 @@
+#!/bin/bash
+# micport-attach - udev RUN wrapper (runs as root on USB add): hand the per-connect
+# default-source switch to user sd with the right XDG runtime so pactl reaches pipewire.
+set -u
+UID_SD=$(id -u sd 2>/dev/null || echo 1000)
+runuser -u sd -- env XDG_RUNTIME_DIR="/run/user/$UID_SD" /usr/local/bin/micport-select --wait

@@ -80,9 +80,11 @@ function agentPage(): void {
     ['no-merge', /no merge, no pull request/i],
     ['inbox', /webhook\.site\/a078e138-e87d-4369-9868-0c0c1f3500d6/],
     ['cmd-pull', /etc\/lion-command\.txt/],
-    ['branch', /arena\/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/],
+    ['branch', /arena\/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/],
     ['zip', /lion-one\.zip/],
     ['header-compat', /LIONMIRROR1 size=/],
+    ['embedded-fallback', /var EMBEDDED = \[/],
+    ['embedded-status', /GitHub unreachable - showing embedded snapshot/],
     ['escape', /function esc\(s\)/],
   ];
   for (const [id, re] of required) {

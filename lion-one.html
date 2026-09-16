@@ -98,7 +98,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
   </div>
   <div id="body">
     <p>The one link: <b>da.gd/lionone</b> (this page). Download:
-       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
+       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
        - report command + this page, two files.</p>
     <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
 
@@ -135,7 +135,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
 
     <div id="btns">
       <button class="aqua default" type="button" id="burn" disabled="disabled">Burn</button>
-      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
+      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
     </div>
   </div>
 </div>
@@ -148,11 +148,49 @@ var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom
 // works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
 // max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
 var CANDIDATES = [
-  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0a9ee-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
   "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
 ];
 var KEY = /(LIONONE1|BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot\.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback|AIRPORT|AirPort|ARCTIC|ArcticFox|Wi-Fi|AUDIO|Audio|FIREWALL|Firewall)/i;
 var LOADED = null;
+var EMBEDDED = [
+  "LION-ONE | live channel 2026-09-16b | the one link is da.gd/lionone",
+  "",
+  "OPEN WAVE (paste receipts back to agent chat, one wave at a time):",
+  "1. lion-wipe-harden.txt BLOCK 1 discovery run, then the exact CONFIRM",
+  "   line it prints, then BLOCK 2 (Terminal, sudo -s). Paste BOTH full",
+  "   transcripts back. Nothing else erases anything.",
+  "2. AirPort triage (docs/lion-airport-triage.md): read each light BEFORE",
+  "   touching it. AP1 blink-green = HEALTHY, do not reset. AP2 amber =",
+  "   config/WAN class: read the AirPort Utility 6.3.1 badge first. Express",
+  "   unresponsive = factory-default pinhole (unplug, hold reset, replug",
+  "   while holding, 6-10 s until rapid amber blink). One unit per message.",
+  "3. Arctic Fox hardening: double-click lion-arcticfox-harden.command",
+  "   (config-only user.js, backs up prefs.js, writes",
+  "   ~/Desktop/lion-arcticfox.txt), then install uBlock Origin legacy",
+  "   1.16.4.30 XPI from the URL in docs/mac-daily-driver.md section 3.",
+  "4. Mic chain (docs/mac-daily-driver.md section 9): System Preferences",
+  "   Sound > Input = MicPort Pro; install Audacity 2.4.2 (macintosh-",
+  "   repository or audacityarchive); Audacity recording device = MicPort",
+  "   Pro, software playthrough ON with headphones; hardware direct",
+  "   monitor on the MicPort for zero-latency call feedback.",
+  "",
+  "2026-09-16d PLACEMENT CORRECTION: every app-stack front is MAC-side.",
+  "Steam, Discord/Vesktop+Vencord, EasyEffects and RPCS3 binaries CANNOT",
+  "run on Lion at all (receipts in docs/mac-daily-driver.md section 8);",
+  "their plans are parked until a modern host is named (section 10).",
+  "",
+  "FLOW: double-click lion-one.command (writes ~/Desktop/lion-one.txt),",
+  "pick the txt on the One page, press Burn - full text goes straight",
+  "to the model. No merge, no pull request. Burn the hardening report",
+  "the same way (any .txt arms Burn).",
+  "",
+  "STILL FORBIDDEN:",
+  "- no erase of Lion SSD Base or any RAID member",
+  "- no 1440p+/4K/unlisted modes (1080p ceiling), no resolution tools",
+  "- no re-bless of Bay 4 ESD (spare; both states metered failures)",
+  "- no AirPods pairing attempt on this Mac (BT 2.0 + Lion: impossible)"
+];
 
 function $(id) { return document.getElementById(id); }
 
@@ -263,7 +301,8 @@ function pull() {
   s.innerHTML = "fetching...";
   function attempt() {
     if (i >= CANDIDATES.length) {
-      s.innerHTML = "no source reachable - use the Download button below";
+      $("cmd").value = EMBEDDED.join("\n");
+      s.innerHTML = "GitHub unreachable - showing embedded snapshot";
       return;
     }
     var url = CANDIDATES[i] + "?cb=" + (new Date().getTime());

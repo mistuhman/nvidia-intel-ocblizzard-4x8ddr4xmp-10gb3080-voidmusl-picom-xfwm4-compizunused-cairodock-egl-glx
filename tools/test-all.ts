@@ -26,6 +26,8 @@ run('node', ['tools/gpu-oc-verify.ts', 'selftest']);
 run('bash', ['-n', 'scripts/gpu-oc-apply']);
 run('bash', ['-n', 'scripts/gpu-dmon-summary']);
 run('bash', ['-n', 'scripts/cpu-park-ctrl']);
+run('bash', ['-n', 'scripts/micport-select']);
+run('bash', ['-n', 'scripts/micport-attach']);
 run('bash', ['-n', 'scripts/rgb-omen']);
 // every cmd_* in a target script must actually be reachable from its dispatcher
 run('node', ['tools/script-dispatch-check.ts', 'scripts/gpu-oc-apply']);
@@ -40,8 +42,11 @@ run('node', ['tools/ram-validate-parse.ts', 'selftest']);
 run('bash', ['-n', 'scripts/ram-validate']);
 run('bash', ['-n', 'lion-mirror.command']);
 run('bash', ['-n', 'lion-one.command']);
+run('bash', ['-n', 'lion-arcticfox-harden.command']);
 run('node', ['tools/lion-mirror-sl-test.ts']);
 run('node', ['tools/lion-one-test.ts']);
+run('node', ['tools/lion-arcticfox-test.ts']);
+run('node', ['tools/mac-es5-passthrough.ts', 'selftest']);
 run('python3', ['-m', 'json.tool', 'docs/lion-workflow.json']);
 // Mac art pass-compiler: fact ledger, scene IR and the imaging pass loop
 run('python3', ['-m', 'json.tool', 'docs/macpro-storage-facts.json']);

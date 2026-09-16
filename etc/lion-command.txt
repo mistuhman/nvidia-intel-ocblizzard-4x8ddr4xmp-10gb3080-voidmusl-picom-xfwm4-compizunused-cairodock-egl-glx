@@ -1,20 +1,36 @@
-LION-ONE | live channel 2026-09-16 | the one link is da.gd/lionone
+LION-ONE | live channel 2026-09-16b | the one link is da.gd/lionone
 
 OPEN WAVE (paste receipts back to agent chat, one wave at a time):
 1. lion-wipe-harden.txt BLOCK 1 discovery run, then the exact CONFIRM
    line it prints, then BLOCK 2 (Terminal, sudo -s). Paste BOTH full
    transcripts back. Nothing else erases anything.
+2. AirPort triage (docs/lion-airport-triage.md): read each light BEFORE
+   touching it. AP1 blink-green = HEALTHY, do not reset. AP2 amber =
+   config/WAN class: read the AirPort Utility 6.3.1 badge first. Express
+   unresponsive = factory-default pinhole (unplug, hold reset, replug
+   while holding, 6-10 s until rapid amber blink). One unit per message.
+3. Arctic Fox hardening: double-click lion-arcticfox-harden.command
+   (config-only user.js, backs up prefs.js, writes
+   ~/Desktop/lion-arcticfox.txt), then install uBlock Origin legacy
+   1.16.4.30 XPI from the URL in docs/mac-daily-driver.md section 3.
+4. Mic chain (docs/mac-daily-driver.md section 9): System Preferences
+   Sound > Input = MicPort Pro; install Audacity 2.4.2 (macintosh-
+   repository or audacityarchive); Audacity recording device = MicPort
+   Pro, software playthrough ON with headphones; hardware direct
+   monitor on the MicPort for zero-latency call feedback.
 
-QUEUED AFTER THE WIPE RECEIPTS LAND:
-2. AirPort pinhole factory resets (Time Capsule + Express), then setup
-   in AirPort Utility 6.3.1.
-3. Arctic Fox 47.3 secure-browsing hardening.
+2026-09-16d PLACEMENT CORRECTION: every app-stack front is MAC-side.
+Steam, Discord/Vesktop+Vencord, EasyEffects and RPCS3 binaries CANNOT
+run on Lion at all (receipts in docs/mac-daily-driver.md section 8);
+their plans are parked until a modern host is named (section 10).
 
 FLOW: double-click lion-one.command (writes ~/Desktop/lion-one.txt),
 pick the txt on the One page, press Burn - full text goes straight
-to the model. No merge, no pull request.
+to the model. No merge, no pull request. Burn the hardening report
+the same way (any .txt arms Burn).
 
 STILL FORBIDDEN:
 - no erase of Lion SSD Base or any RAID member
 - no 1440p+/4K/unlisted modes (1080p ceiling), no resolution tools
 - no re-bless of Bay 4 ESD (spare; both states metered failures)
+- no AirPods pairing attempt on this Mac (BT 2.0 + Lion: impossible)

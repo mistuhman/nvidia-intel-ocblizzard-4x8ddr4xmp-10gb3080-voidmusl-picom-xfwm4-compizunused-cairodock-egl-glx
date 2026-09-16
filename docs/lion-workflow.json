@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-16",
-  "session": "01a0a9de",
-  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15)",
+  "updated": "2026-09-16b",
+  "session": "01a0a9ee",
+  "machine": "Mac Pro 3,1 Early 2008, 2x Quad Xeon 2.8GHz, 10GB, BootROM MP31.006C.B05 final, SMC 1.25f4, Lion 10.7 on Bay 1, GTX 285 primary (both displays up 2026-09-15; 3870/9800 GT blowers pulled from display path), dual Dell S2725QS displays, admin Samael (second admin ddds deletion in progress 2026-09-15); 2026-09-16 operator daily-driver state: CandyBar + Flavours theming installed and working, iTunes library in use, audio-CD burn planned (native iTunes 10.x burn, no agent step)",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-16: ONE-LINK CHANNEL LIVE = da.gd/lionone (lion-one.html on this branch: txt browser + Burn armed-on-txt, full text direct to the model, no merge/PR; lion-one.zip = lion-one.command safe reporter + page). Still OPEN: wipe-harden wave (BLOCK1 discovery+CONFIRM, BLOCK2) - paste both transcripts back. Queued after receipts: AirPort pinhole resets (LED fault 2026-09-16: AP1 blink-green, AP2 amber, Express unresponsive) then Arctic Fox 47.3 hardening. OMEN-side tracks (Steam / Vesktop+Vencord / SM7B+EasyEffects / RPCS3) recorded, gated behind gate-12 bench POST.",
+  "nextAction": "2026-09-16f (session 01a0a9ee, outage over): ONE-TASK-AT-A-TIME tracker lives in ToDo.md (T1-T7). T1 repo-side DONE: tools/mac-es5-passthrough.ts + ci/workflows/mac-es5-passthrough.yml + docs/mac-modern-web.md (Chromium Legacy LION builds = primary modern engine with receipts; ES5 passthrough = Arctic Fox fallback; Vencord userscript path). STILL OPEN: T5 Wave-1 receipts; T6 wipe-harden transcripts. NEXT: T2 native lossless audio interface (opens after T1 closes). One link da.gd/lionone unchanged; embedded outage snapshot remains in lion-one.html.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -78,7 +78,8 @@
       "url": "https://da.gd/lionone",
       "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.html",
       "zip": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0a9de-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip",
-      "job": "THE one link (2026-09-16): txt browser + Burn armed-on-txt, full text + verdict query direct to the model via the same inbox (no merge/PR). Zip = lion-one.command safe reporter + the page (two files)."
+      "job": "THE one link (2026-09-16): txt browser + Burn armed-on-txt, full text + verdict query direct to the model via the same inbox (no merge/PR). Zip = lion-one.command safe reporter + the page (two files).",
+      "verified": "2026-09-16b: da.gd/lionone+ coshorten OK; origin branch arena/01a0a9de alive (page + zip raw links resolve); inbox 18 entries newest 2026-09-12"
     },
     "logInbox": {
       "type": "webhook.site",
@@ -195,7 +196,9 @@
     "Assume a jsDelivr branch path is fresh: it caches ~12h and a ?cb= query does not bust it at the edge. Use raw.githubusercontent for anything that must be current, or a new filename.",
     "Re-bless Bay 4 (2078 and 2082 both metered failures)",
     "Select 1440p or higher on the VGA-HDMI chain (1080p ceiling; RES1 proved 1440p blinds with no revert)",
-    "Third-party resolution forcing tools (unlisted-mode forcing risks blind states)"
+    "Third-party resolution forcing tools (unlisted-mode forcing risks blind states)",
+    "Pair AirPods gen 2 with this Mac (BT 2.0 + Lion: impossible per Apple compatibility matrix; AirPods live on the OMEN/phones)",
+    "Reset AP1 while it blinks green (flashing green = working per Apple guide; a reset would destroy a good config)"
   ],
   "operatorConstraints": [
     "One physical action per message",
@@ -222,7 +225,7 @@
     "zip": "lion-mirror2.zip",
     "js": "ES5 only - FileReader + XMLHttpRequest, no fetch/arrow/template strings, because Arctic Fox 47 is Firefox 52 class; DataTransfer multipart copy is best-effort behind a feature test",
     "tests": "node tools/lion-mirror-sl-test.ts (agents A syntax, B mocked 10.6.8 refuses, Z both zips: exactly two executable entries (repair + boot-log) and the page is non-executable)",
-    "commands": "etc/lion-command.txt - the text the Commands panel renders. It now carries the safe root-level boot-log wave; a push to the session branch is visible in ~5 min via raw."
+    "commands": "etc/lion-command.txt refreshed 2026-09-16b (wipe-harden OPEN, AirPort triage + Arctic Fox hardening waves). NOTE: the frozen da.gd/lionone page pulls etc/lion-command.txt from branch arena/01a0a9de first, so panel text there is static; CHAT is authoritative."
   },
   "lastOptionBootAttempt": {
     "when": "2026-09-12, operator words (PLAIN1): normal lion ssd boot",
@@ -253,5 +256,26 @@
     "verdict": "No disk was erased, restored, blessed, mounted, or changed by the collector; no ESD-specific error was recorded by Snow Leopard.",
     "uuidPrefix": "9d0bfed6"
   },
-  "commandsPanel": "STALE 2026-09-11: the frozen relay page (01a08f01 blob) pulls etc/lion-command.txt from arena/01a08f01 then main, never this branch; chat is authoritative and the operator has executed every wave from chat. lion.html left untouched (page changes cannot reach the frozen page without a new slug). RESCUE1 ships via chat 2026-09-12 (Lion installed; chat still authoritative)."
+  "commandsPanel": "STALE 2026-09-11: the frozen relay page (01a08f01 blob) pulls etc/lion-command.txt from arena/01a08f01 then main, never this branch; chat is authoritative and the operator has executed every wave from chat. lion.html left untouched (page changes cannot reach the frozen page without a new slug). RESCUE1 ships via chat 2026-09-12 (Lion installed; chat still authoritative).",
+  "hardening": {
+    "command": "lion-arcticfox-harden.command",
+    "report": "~/Desktop/lion-arcticfox.txt",
+    "test": "node tools/lion-arcticfox-test.ts",
+    "rule": "config-only user.js in the Arctic Fox profile; keeps Arctic Fox 47.3 mac32 (64-bit build broken, upstream issue #214); rollback = delete user.js, prefs.js.prehardened stays",
+    "prefs": "security.tls.version.min=3, cookieBehavior=1, trackingprotection, DNT, geo/battery/offline-cache/clipboard off, warn_entering/leaving_secure off, xpinstall.signatures.required=false (for the legacy uBlock XPI); WebRTC-off and hard-OCSP shipped commented",
+    "ublock": "https://github.com/gorhill/uBlock-for-firefox-legacy/releases/download/firefox-legacy-1.16.4.30/uBlock0_1.16.4.30.firefox-legacy.xpi (legacy XUL line; uBO >=1.17 is WebExt-only and cannot run on FF52-class)"
+  },
+  "airportTriage": {
+    "doc": "docs/lion-airport-triage.md",
+    "ledReceipt": "Apple AirPort Utility guide alap11006: flashing green = working; flashing amber = cannot connect/problem; solid amber = starting; flashing amber+green = startup retry",
+    "report2026-09-16": "AP1 blink-green HEALTHY (no reset); AP2 amber = config/WAN class; Express unresponsive = factory-default pinhole ladder",
+    "utility": "6.3.1 installed; legacy units need 5.6.1 launcher before declaring hardware death"
+  },
+  "correction2026-09-16d": "operator verbatim: \"no, you completely misunderstood. this is all on mac os x lion. not the void pc whatsoever\". All 2026-09-16 app-stack fronts re-judged Mac-side in docs/mac-daily-driver.md sections 8-10: Lion-native mic chain (SM7B + MicPort Pro UAC1 + Audacity 2.4.2 + Apple AUs + hardware direct monitor) = section 9; Steam/Discord+Vesktop+Vencord/EasyEffects/RPCS3 binaries IMPOSSIBLE on Lion (receipts: Valve 2019-01-01 Lion cutoff + modern 10.15 floor; Discord macOS 11 floor 2026; EasyEffects PipeWire/Linux-only; RPCS3 macOS 12+/AVX2/Vulkan) = parked pending a named modern host, section 10. docs/omen-daily-driver.md demoted to fallback-host plan (bannered). STATE.md MicPort row stale as to host (discrepancy logged in agent-memory).",
+  "outage2026-09-16e": {
+    "operatorContext": "GitHub outage asserted current; repo keeps BOTH contexts; Void unusable; focus Mac-only",
+    "sandboxProbe": "2026-09-16e this turn: git ls-remote 0.44s OK; gh api REST OK; gh pr view 88 OPEN; raw.githubusercontent serving arena/01a0a9ee; htmlpreview renders frozen One page (its JS pulled 884 bytes from branch); cdn.jsdelivr @main serves main copy; da.gd + webhook.site OK earlier same turn. VERDICT: no outage impact measurable on agent tooling; nothing purged on outage grounds",
+    "tertiaryOutagePath": "lion-one.html embeds a snapshot of etc/lion-command.txt (var EMBEDDED) so the Command panel works with GitHub fully down; Burn path never needed GitHub (webhook.site). Offline channel context with zero network: ONE_LINK.txt + etc/lion-command.txt + node tools/lion-status.ts",
+    "operatorRule": "if the outage IS the bottleneck, say so and do not purge working things; build outage-compatible tertiary toolsets instead, consistent and reproducible across instances/chats"
+  }
 }

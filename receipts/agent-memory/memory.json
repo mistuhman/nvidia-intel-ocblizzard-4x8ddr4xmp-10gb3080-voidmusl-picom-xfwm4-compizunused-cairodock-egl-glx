@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 103,
+  "lastSeq": 119,
   "entries": [
     {
       "seq": 1,
@@ -1867,6 +1867,164 @@
       "kind": "note",
       "text": "da.gd/lionwipeh minted 2026-09-15 via fetch_page route, verified by coshorten: dest = jsDelivr @87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt. Slug recorded in docs/lion-workflow.json links.wipeHardenWave.",
       "sha256": "661426ccb3095fedf861d69c40d43f2720b2a466edc76802fb1ce121f742935c"
+    },
+    {
+      "seq": 104,
+      "date": "2026-09-16",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "deploy agents to thoroughly parse and read README.me and MASTER.md to the very granular detail while cross referencing the repo context per line for querying then verify model image sight capability before continuing / been using the mac for a bit, added candybar, flavours, some itunes stuff and im gonna be burning music to the cd. centralize everything into just one link. one gui, txt file browser with a burn option thats available once a txt is available, and when selected it directly sends the txt to the model without merging or creating a pr. then there's the command in the download. simple, no bloat, same style. need to get arcticfox working securely with modern browsing and hardening. then even install steam maybe? prepare it for use w vesktop/discord w/ vencord and sm7b audio software for the sound design micpre and centrance micport pro. easyeffects pitch, eq, noise suppression, all interfaced upon every reboot and usable every time the mic is connected for ease of use, with feedback for calls and everything. I also wanna get rpcs3 roms working for when i eventually get a blu ray drive installed / airport 1 is blinking green; airport 2 orange airport express unresponsive / quick note, mostly need to get stuff like ublock, modern web, youtube, soundcloud, airpod gen 2's and mic working smoothly. making it daily drivable",
+      "demands": [
+        "parse README+MASTER granular",
+        "verify image sight",
+        "one link centralization",
+        "txt browser GUI burn-on-txt direct-to-model no merge/PR",
+        "command in download simple same style",
+        "ArcticFox secure modern browsing hardening",
+        "Steam maybe",
+        "Vesktop/Discord+Vencord",
+        "SM7B+MicPort Pro+EasyEffects pitch/eq/noise-suppression per-boot+per-connect+call feedback",
+        "RPCS3 roms for future BD drive",
+        "AirPort AP1 blink-green AP2 orange Express unresponsive",
+        "uBlock/modern web/YouTube/SoundCloud/AirPods gen2/mic daily drivable"
+      ],
+      "sha256": "0150cc1f548ae2a93e81f0deed5440d465bc94c8ab8f6abe231e3816181aa6b7"
+    },
+    {
+      "seq": 105,
+      "date": "2026-09-16",
+      "kind": "perception",
+      "target": "receipts/vision-check/testcard-2026-09-12.png",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "testcard perceived 2026-09-16 session 01a0a9ee: red square top-left, blue circle top-right, yellow triangle bottom-left, green five-point star bottom-right, centered text ARENA VISION CHECK 2026-09-12 on white; image sight CONFIRMED live this chat",
+          "confidence": "high"
+        }
+      ],
+      "sha256": "8b906767ee1a6bd14afb2cfaa655259453f7797772c7bf8d77e0b8265851ec84"
+    },
+    {
+      "seq": 106,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "mac-daily-driver-2026-09-16",
+      "value": "CandyBar + Flavours theming working, iTunes library in use, audio-CD burn planned (native iTunes burn); Arctic Fox 47.3 mac32 is current upstream release (2026-07-29, sha256 mac32 1534d71b...); uBlock route = legacy XPI 1.16.4.30; AirPods gen2 impossible on Lion (BT2.0 + OS matrix)",
+      "source": "operator chat 2026-09-16 + github rmottola/Arctic-Fox releases + gorhill/uBlock-for-firefox-legacy update.xml + Apple community 253010466",
+      "sha256": "88c7b5e1176a2421995e92bfe1fba2364d9fbe7eb54dde881ba0280f49e47474"
+    },
+    {
+      "seq": 107,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "airport-led-2026-09-16",
+      "value": "AP1 blink-green = HEALTHY (Apple aputility guide alap11006 flashing green = working); AP2 amber = config/WAN fault class (badge in AirPort Utility 6.3.1 explains); Express unresponsive = factory-default pinhole ladder, solid-amber-forever = hardware class",
+      "source": "support.apple.com/guide/aputility/alap11006 + apple discussions 251085589/254395474",
+      "sha256": "dad9e710c8a4b9c4dd83d07f1033c6643d26f6fdcc7d8491abe2712ba7247c08"
+    },
+    {
+      "seq": 108,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "omen-tracks-2026-09-16",
+      "value": "Steam=void nonfree template 1.0.0.87; Vesktop=dev.vencord.Vesktop system flatpak; EasyEffects 8.2.9 void pkg has rnnoise+soundtouch+webrtc; RPCS3 has NO void package (404) -> Flathub flatpak; PS3 direct-disc boot on Linux since 2026-08-31 needing data/redump keys; all gated behind gate-12 bench POST",
+      "source": "raw void-packages templates fetched 2026-09-16 + rpcs3.net quickstart via heldgames/generationamiga 2026-09",
+      "sha256": "fa6f1bbd31d5d13a79acd8af5937bca05f5874641df20918ec40b4affe7a0b4c"
+    },
+    {
+      "seq": 109,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16b session 01a0a9ee shipped: docs/lion-airport-triage.md, docs/mac-daily-driver.md, docs/omen-daily-driver.md, lion-arcticfox-harden.command + tools/lion-arcticfox-test.ts (wired into test-all), lion-one.html+zip repinned arena/01a0a9ee, etc/lion-command.txt + ONE_LINK.txt refreshed, docs/lion-workflow.json + MASTER.md spliced; one-link da.gd/lionone verified live (slug+ coshorten, origin branch 01a0a9de alive, inbox 18 entries newest 09-12)",
+      "sha256": "2efd1f685f5c966ebdaa3f80eb15d8bedb5fcb094afb4a7d88890493438aa6e1"
+    },
+    {
+      "seq": 110,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16c: inbox rechecked = still 18 entries newest 09-12 (no wave-1 burn, no wipe-harden transcript). Authored OMEN paste-ready set: scripts/micport-select + micport-attach, etc/micport-udev.rules, 2 autostart desktops, 4 blocks (audio-chain/steam/rpcs3-setup/airpods-pair) all block-lint target-console PASS; omen doc gained preset recipe + file list; wave discipline held (no second target wave while wave-1 receipts owed)",
+      "sha256": "dd431172e3cbb056085986b2aca2df625c1aff90f0467a90ae45df585448c2a1"
+    },
+    {
+      "seq": 111,
+      "date": "2026-09-16",
+      "kind": "discrepancy",
+      "topic": "MicPort Pro + SM7B chain host",
+      "sides": [
+        {
+          "claim": "STATE.md audio row places CEntrance MicPort Pro (1c07:0001) on the Void OMEN",
+          "source": "STATE.md hardware table"
+        },
+        {
+          "claim": "operator 2026-09-16d: the whole stack incl. mic chain is on Mac OS X Lion, not the Void PC",
+          "source": "chat verbatim"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "ea0f5275b2a4ce10f03798dee65a867979fa301aa3347e06383071d9be6fec28"
+    },
+    {
+      "seq": 112,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "lion-app-feasibility-2026-09-16d",
+      "value": "On Lion 10.7 (Mac Pro 3,1): Steam IMPOSSIBLE (Valve cut 10.7 support 2019-01-01; modern floor 10.15-class); Discord/Vesktop+Vencord IMPOSSIBLE (Discord floor macOS 11 as of 2026, was 10.10 hard cap in 2016; Vesktop modern Electron); EasyEffects binary IMPOSSIBLE (PipeWire/Linux-only) but capabilities native via Audacity 2.4.2 (eq/pitch/offline NR/playthrough) + Apple AUs (AUParametricEQ/AUNBandEQ/AUPitch/AUDynamicsProcessor gate); RPCS3 IMPOSSIBLE (macOS 12+/AVX2/Vulkan; GTX 285 has neither); MicPort Pro UAC1 WORKS native CoreAudio; call feedback = MicPort hardware direct monitor or Audacity playthrough",
+      "source": "Valve notice steamcommunity 1744479063984354544; steamcommunity 4030223998577542894; r/discordapp 44zuew + 1jdy0oc + 1qth63l; void-packages easyeffects template; rpcs3.net/requirements 2026",
+      "sha256": "0ea64d2fb0a7091fa24c0dd39c7bd70080de1b9c01cfe3157d8bbcb658fb1bb9"
+    },
+    {
+      "seq": 113,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "github-outage-probe-2026-09-16e",
+      "value": "sandbox probe this turn: git ls-remote origin 0.44s OK; gh api REST OK; gh pr view 88 = OPEN; raw.githubusercontent serving arena/01a0a9ee etc/lion-command.txt (16d text); htmlpreview.github.io renders frozen One page incl. its JS XHR (884 bytes from branch); cdn.jsdelivr @main serves main copy (stale-by-merge, not outage); da.gd + webhook.site OK. VERDICT: outage NOT measurable on agent tooling; operator rule = say so, purge nothing working; tertiary outage path = lion-one.html EMBEDDED command snapshot + offline trio ONE_LINK.txt/etc/lion-command.txt/tools/lion-status.ts",
+      "source": "live probes 2026-09-16e session 01a0a9ee",
+      "sha256": "9f8a0b284d62e457da90462092f0d2126097c71f4434602d0c15988e8f4db4cc"
+    },
+    {
+      "seq": 114,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16e: repo keeps BOTH contexts; Void unusable; focus Mac-only; hostless four PARKED (skipped ask_user). Detox set: MASTER lionMac.links legacy-relabel (contradiction with ONE_LINK removed), STATE.md MicPort host note, mac-daily-driver downgrades (SoundCloud expectation-flagged, Audacity 2.x ladder, AU Lab/GarageBand if-present), omen banner both-contexts, lion-one.html EMBEDDED outage fallback + zip rebuild + test regex",
+      "sha256": "bc172b0795931025d9ac3e2d36eed18663a7da6857321ee356e197de08b06a13"
+    },
+    {
+      "seq": 115,
+      "date": "2026-09-16",
+      "kind": "value",
+      "key": "chromium-legacy-lion-2026-09-16f",
+      "value": "blueboxd/chromium-legacy has dedicated LION builds: tags 121.0.6167.160.1-stable.lion / 121.0.6167.139.1-stable.lion / 120.0.6099.199.1-stable.lion (x86_64, Chromium 120-121 class); newer 124-127 legacy builds for 10.9+; macintoshrepository mirror chromium_legacy.zip build 1260910 (2024) claims 10.7-10.14 SHA1 cdbf14b42dea1a5e049069b41e063401f1c6a901; Google Chrome cutoff for the era = v49 (2016). PRIMARY modern-web route on Lion; hardening = sha-verify, dedicated apps profile, no sync, modern uBlock inside it",
+      "source": "github.com/blueboxd/chromium-legacy/releases fetched 2026-09-16f + macintoshrepository.org/81376 + apple.stackexchange 237271",
+      "sha256": "af059989d728437905e8e79c4b976dd64d4ad53989e2bdfe949a9ebcb1369b02"
+    },
+    {
+      "seq": 116,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f: outage over per operator; T1 (passthrough workflow + chromium-legacy ranking + docs/mac-modern-web.md) repo-side done; ToDo.md T1-T7 one-at-a-time tracker added per operator order; next task T2 native lossless audio interface; gaming matrix = T3 (research when opened); T7 = Chromium Legacy install wave on operator go-ahead",
+      "sha256": "43aa407eca746d0ac6229e0410e1429a4771d4fe9e3d83f704cd4ff5fb98fa6f"
+    },
+    {
+      "seq": 117,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f T1 validation (operator phone screenshot read in chat): GitHub mobile Actions = Found 0 workflows. Root causes: (A) repo never had .github/workflows on any branch - ci/workflows/ is source-only per README + scripts/install-github-workflows.sh; (B) workflow_dispatch UI lists default-branch workflows only (main lacks it; PR #88 unmerged). Test push of .github/workflows/mac-es5-passthrough.yml REJECTED verbatim: 'refusing to allow a GitHub App to create or update workflow ... without workflows permission' (commit 45b3a09 rolled back to 70d8d32, ci source intact). Activation = operator-credential action: phone web-UI create .github/workflows/mac-es5-passthrough.yml on main (content = raw ci source on arena branch), OR grant the app Workflows permission then agent re-pushes, OR run install script from credentialed checkout. gh api actions/workflows total_count=0 + actions/runs total_count=0 corroborate.",
+      "sha256": "b52cede27499a77f9f56b9a42d7cea6464db1047a6f3ba8e7e29816feae2497c"
+    },
+    {
+      "seq": 118,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f hardening: mac-es5-passthrough becomes standing tap-to-run pipeline per operator ask. app input default 'all'; APPS registry in tools/mac-es5-passthrough.ts = single source of truth (adding planned apps = agent commit only, YAML never re-pasted); checkout pinned to arena/01a0a9ee branch so runs work pre/post PR #88 merge; per-app subdirs + RECEIPT-INDEX.json in one public release zip; selftest gained expand-all/expand-single/receipt-loop/loader-loop checks. iOS app receipts: GitHub iOS app exists (view runs/notifications/merge; Actions view-cancel-only per community 110751; mobile web = Run surface); NO official Arena.ai iOS app found (App Store 'Arena AI Mobile' by Andres Luiz = unrelated third-party art studio; 'Arenai' = concerts app) - recommend Safari Add-to-Home-Screen for github.com + Arena chat.",
+      "sha256": "0c7de0a89093979211db10686d09c93271909d09a3eb817f4c7c760693df08b9"
+    },
+    {
+      "seq": 119,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16f app build list + training corpus + merge: ToDo.md gained the app build list (registry BUILDING: discord-web, vencord-web; CANDIDATES pending CI receipts: youtube-web, soundcloud-web; install waves: Chromium Legacy T7, audio stack T2, gaming T3; hostless-four parked; promotion rule = green fetch+transpile receipt). Compiler trained with INSTRUCTIONS corpus v1 (2026-09-16f-v1): 13 common hazard/shim directives + per-app directives; hashed into RECEIPT-INDEX (instructions_sha256) and snapshotted as INSTRUCTIONS.json in every bundle zip; growth rule = entry + receipt citation, no silent changes. Operator directive: no GitHub iOS app; merge PR #88 after these land.",
+      "sha256": "3577d8a9a5fb43f394ef33abe3454b86fbd5fa34062affa54aa644f708e35822"
     }
   ],
   "stacks": [

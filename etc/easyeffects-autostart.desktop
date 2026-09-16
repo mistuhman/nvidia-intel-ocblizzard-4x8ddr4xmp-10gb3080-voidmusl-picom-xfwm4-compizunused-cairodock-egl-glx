@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Easy Effects (service)
+Comment=PipeWire effect service for the SM7B + MicPort Pro chain
+Exec=easyeffects --gapplication-service
+Terminal=false
+X-GNOME-Autostart-enabled=true

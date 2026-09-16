@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=MicPort default source
+Comment=Point the PipeWire default source at the MicPort Pro once its node appears
+Exec=/usr/local/bin/micport-select --wait
+Terminal=false
+X-GNOME-Autostart-enabled=true

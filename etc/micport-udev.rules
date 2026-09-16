@@ -1,0 +1,3 @@
+# CEntrance MicPort Pro (USB 1c07:0001): on connect, make it sd's default PipeWire source.
+# Installed by etc/omen-audio-chain.block as /etc/udev/rules.d/60-micport.rules.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="1c07", ATTR{idProduct}=="0001", RUN+="/usr/local/bin/micport-attach"

@@ -152,3 +152,34 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
 - [ ] 4. **Build APEX OMEN PC** (deferred).
+
+## 2026-09-16f operator tracks — ONE TASK AT A TIME, agentically (operator directive)
+
+> Rule (operator verbatim 2026-09-16f): "take our tasks one at a time agentically each time
+> before moving on with the next task." A task closes only with its receipts pasted/read.
+> Current task: T1 (authored; first CI-run + on-Mac receipt pending).
+
+- [~] **T1 agentic ES5 passthrough workflow for the Mac** (phone-triggerable): tools/mac-es5-passthrough.ts + ci/workflows/mac-es5-passthrough.yml (workflow_dispatch from GitHub mobile; publishes a public release zip the Mac downloads) + docs/mac-modern-web.md ranking (Chromium Legacy LION builds 121.0.6167.x-stable.lion = PRIMARY native modern engine; Arctic Fox + passthrough = fallback; bridges parked). Repo side DONE 2026-09-16f; closes on first workflow run receipt + on-Mac loader result burn.
+- [ ] **T2 native lossless audio interface on the Mac** (mic control + EasyEffects-like effects, NOT necessarily EasyEffects; native preferred to preserve lossless on the SM7B/MicPort chain): host matrix AU Lab / GarageBand '11 if installed / Logic 9 / Audacity 2.x ladder; CoreAudio 24-bit path, WAV/AIFF capture; opens after T1 closes.
+- [ ] **T3 gaming matrix**: Mac-possible class = legacy Minecraft (<=1.12.2 on Java 8, which supports 10.7) + Quake/source ports (legacy Mac builds); Prism Launcher / Roblox / Unreal / Steam = verdicts researched WHEN THIS TASK OPENS (known: Steam Lion-dead 2019-01-01, docs/mac-daily-driver.md §8); Void-on-recovery = the full set on the 3080.
+- [ ] **T4 mic chain wave** (etc/lion-command.txt item 4 / docs/mac-daily-driver.md §9) — queued behind Wave-1 receipts.
+- [ ] **T5 Wave-1 receipts** (AirPort light reads + 6.3.1 badge + post-reset sequences; lion-arcticfox.txt burn) — OPEN, operator owes.
+- [ ] **T6 wipe-harden transcripts** (lion-wipe-harden.txt BLOCK1+BLOCK2) — OPEN, operator owes.
+- [ ] **T7 Chromium Legacy LION install wave** (sha-verified lion build, dedicated apps profile, Violentmonkey + Vencord userscript, modern uBlock; docs/mac-modern-web.md §1-2) — opens on operator go-ahead (independent of T1 CI).
+- [ ] parked: modern-host decision for the hostless four (docs/mac-daily-driver.md §10); RPCS3+BD-drive plan survives verbatim for it.
+- T1 validation receipt (2026-09-16, operator phone screenshot): Actions "Found 0 workflows" root-caused = ci/workflows source-only by repo design + workflow_dispatch lists default-branch only; agent .github push rejected (App lacks workflows permission, verbatim receipt in memory seq 117). Activation = operator-credential path, steps in docs/mac-modern-web.md "Trigger path". T1 stays [~] until activation + first CI run + on-Mac burn.
+- T1 hardening (2026-09-16, operator: "tap to run real easy whenever you need to update apps"): workflow now standing + registry-driven - app input default all, app list only in tools/mac-es5-passthrough.ts APPS, checkout pinned to arena branch (runs pre/post merge), per-app subdirs + RECEIPT-INDEX.json in one release zip. Run = 2 taps once activated. New planned apps = agent commit only.
+
+## App build list — compiler targets + install waves (operator 2026-09-16f: "get the apps we need to build on the ToDo.md")
+Compiler passthrough registry (tools/mac-es5-passthrough.ts APPS; training corpus INSTRUCTIONS v1 = 2026-09-16f-v1, hashed into every RECEIPT-INDEX):
+- discord-web [BUILDING] app-shell chunk discovery + ES5 + core-js; login stall = KNOWN_LIMITATION (WebCrypto on FF52-class) - real sessions via Chromium Legacy
+- vencord-web [BUILDING] userscript transpile with header-preservation assert; pairs with discord-web bundle or Violentmonkey on Chromium Legacy
+Compiler candidates (research-at-open; a fetch+transpile CI receipt is required BEFORE registry promotion):
+- youtube-web [CANDIDATE] player ES2020 heavies; iPad-UA trick remains the Arctic Fox stopgap
+- soundcloud-web [CANDIDATE] operator interest; unverified-on-Lion flag stands until first burn
+Native install waves (NOT compiler jobs):
+- Chromium Legacy LION builds [T7 install wave, awaits operator go-ahead] primary modern engine (tags 121.0.6167.x-stable.lion, x86_64)
+- audio interface stack [T2, next after T1 closes]: AU Lab / GarageBand '11 if-present / Logic 9 / Audacity 2.x ladder (2.4.2 -> 2.1.3 -> 2.0.6) + CoreAudio aggregate device + mic control; native chain preserves lossless on the expensive mic (operator directive)
+- gaming [T3, research-at-open]: legacy Minecraft <=1.12.2 on Java 8 + Quake source ports = Mac-possible class; Prism Launcher / Roblox / Unreal / Steam verdicts land when T3 opens (Steam already receipted impossible on Lion: 2019-01-01 client cutoff)
+- parked: hostless-four modern-host decision (Void excluded by operator)
+Promotion rule: candidate -> registry only with a CI run receipt (fetch+transpile+node --check gate green); every promotion logged here + in receipts/agent-memory.
