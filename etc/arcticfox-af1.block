@@ -1,0 +1,53 @@
+# AF1 Arctic Fox safe-prefs (Mac Pro 3,1, Lion 10.7, USER shell, no sudo).
+# Why: first hardening wave for Arctic Fox 47.3 mac32 - telemetry/phone-home off (Track A anonymity), dead features off (Pocket/Hello/SelfSupport/auto-update), DNT on, search-geo lookup off. Invisible prefs only: zero page-load risk. TLS/ciphers, tracking protection, extensions, WebRTC, and cert roots wait for AF2 probe receipts.
+# Gate: paste the FULL Terminal output back + Help > Troubleshooting Information Version line + loads test (da.gd/lionone and one daily site). AF2 ships after this receipt.
+# Rollback: exact inverse is printed by the script (restore user.js.pre-af1, or rm user.js if AF1 wrote the only one), then relaunch Arctic Fox. Re-running the block is safe (backup kept, prefs de-duplicated).
+cat > /tmp/arcticfox-af1.sh <<'AF1SH'
+#!/bin/sh
+# AF1: safe-subset user.js for Arctic Fox 47.3 mac32. Idempotent, re-runnable.
+PROF=$(ls -d "$HOME/Library/Application Support/ArcticFox/Profiles/"*.default 2>/dev/null | head -1)
+[ -z "$PROF" ] && { echo "ABORT: no ArcticFox default profile found"; exit 1; }
+[ -d "$PROF" ] || { echo "ABORT: not a dir: $PROF"; exit 1; }
+echo "PROF=$PROF"
+echo "ALL-PROFILES:"
+ls -d "$HOME/Library/Application Support/ArcticFox/Profiles/"*.default 2>/dev/null
+echo "date=$(date)"
+ls -d /Applications/ArcticFox.app 2>/dev/null || echo "APP-MISSING"
+if [ -f "$PROF/user.js.pre-af1" ]; then
+  echo "BACKUP=exists $PROF/user.js.pre-af1 (kept)"
+elif [ -f "$PROF/user.js" ]; then
+  cp "$PROF/user.js" "$PROF/user.js.pre-af1"
+  echo "BACKUP=$PROF/user.js.pre-af1"
+else
+  echo "BACKUP=none (no prior user.js)"
+fi
+PREFS='toolkit.telemetry.enabled toolkit.telemetry.unified datareporting.healthreport.service.enabled datareporting.policy.dataSubmissionEnabled browser.pocket.enabled loop.enabled browser.selfsupport.url privacy.donottrackheader.enabled app.update.enabled app.update.auto browser.search.geoip.url'
+TMP="$PROF/user.js.af1tmp"
+cp "$PROF/user.js" "$TMP" 2>/dev/null || : > "$TMP"
+for p in $PREFS; do
+  grep -v "user_pref(\"$p\"," "$TMP" > "$TMP.n" || true
+  mv "$TMP.n" "$TMP"
+done
+cat >> "$TMP" <<'EOF'
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("toolkit.telemetry.unified", false);
+user_pref("datareporting.healthreport.service.enabled", false);
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("browser.pocket.enabled", false);
+user_pref("loop.enabled", false);
+user_pref("browser.selfsupport.url", "");
+user_pref("privacy.donottrackheader.enabled", true);
+user_pref("app.update.enabled", false);
+user_pref("app.update.auto", false);
+user_pref("browser.search.geoip.url", "");
+EOF
+mv "$TMP" "$PROF/user.js"
+echo "WROTE=$PROF/user.js"
+grep -c '^user_pref' "$PROF/user.js"
+if [ -f "$PROF/user.js.pre-af1" ]; then
+  echo "RESTORE: cp $PROF/user.js.pre-af1 $PROF/user.js"
+else
+  echo "RESTORE: rm $PROF/user.js"
+fi
+AF1SH
+sh /tmp/arcticfox-af1.sh
