@@ -1,11 +1,11 @@
 #!/bin/sh
 # absolution.command - READ-ONLY context probe for the Lion clear + harden wave (Lion 10.7, double-click).
-# Rollout R3 | branch arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr | PR 91 | session 01a0ad71
+# Rollout R4 | branch arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr | PR 91 | session 01a0ad71
 # Writes ONLY ~/Desktop/absolution.txt then opens it for the page picker.
 # No sudo, no network, no erase, no move, no delete. Every probe is best-effort.
 REPORT="$HOME/Desktop/absolution.txt"
 {
-echo "ABSOLUTION1 rollout=R3 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91 session=01a0ad71 date=2026-09-17"
+echo "ABSOLUTION1 rollout=R4 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91 session=01a0ad71 date=2026-09-17"
 echo "date=$(date 2>/dev/null || echo UNKNOWN)"
 echo "host=$(hostname 2>/dev/null || echo UNKNOWN)"
 echo "user=$(whoami 2>/dev/null || echo UNKNOWN)"

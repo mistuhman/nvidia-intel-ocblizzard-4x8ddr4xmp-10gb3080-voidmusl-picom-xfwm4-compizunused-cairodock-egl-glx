@@ -1,6 +1,6 @@
 {
   "name": "absolution",
-  "rollout": "R3",
+  "rollout": "R4",
   "branch": "arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr",
   "pr": 91,
   "session": "01a0ad71",

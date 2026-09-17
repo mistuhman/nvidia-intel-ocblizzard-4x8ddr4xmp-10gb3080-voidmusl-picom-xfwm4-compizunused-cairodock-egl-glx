@@ -47,7 +47,7 @@ const SHORT = `https://da.gd/${NAME}`;
 // ---------------------------------------------------------------- rollout identity
 // Printed in the chat, stamped into the page, and echoed into the log, so a receipt can always be
 // traced back to the exact bytes that produced it.
-export const ROLLOUT = 'R3';
+export const ROLLOUT = 'R4';
 const BRANCH = 'arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr';
 const PR = 91;
 const SESSION = '01a0ad71';
@@ -183,6 +183,7 @@ legend{color:#b8bcc0;font-size:11px;padding:0 4px}
 .aqua[disabled]{background:#4a4d50;border-color:#3a3d40;color:#8b8f93;cursor:default}
 a.link{color:#7fb2e5}
 pre{background:#1d1f21;border:1px solid #3a3d41;border-radius:4px;padding:8px;font:11px Monaco,monospace;white-space:pre-wrap;max-height:200px;overflow:auto}
+textarea{width:100%;background:#1d1f21;color:#d8d8d8;border:1px solid #3a3d41;border-radius:4px;font:11px Monaco,monospace;padding:6px}
 iframe{display:none}
 .ok{color:#8fc48f}.bad{color:#e08a8a}
 </style></head>
@@ -204,8 +205,11 @@ It changes nothing until you re-run it with sudo and CONFIRM, which it prints.</
 </fieldset>
 
 <fieldset><legend>2 &mdash; attach it</legend>
-<div><input type="file" id="pick" accept=".txt,text/plain"></div>
+<div><input type="file" id="pick"></div>
 <p id="pv" class="note">no file chosen</p>
+<p class="note">Picker greyed out or not working? Open ~/Desktop/absolution.txt in TextEdit,
+Cmd+A, Cmd+C, then click in the box below and Cmd+V. The Burn button enables either way.</p>
+<textarea id="paste" rows="5" placeholder="paste the absolution.txt contents here"></textarea>
 <pre id="prev"></pre>
 </fieldset>
 
@@ -272,24 +276,43 @@ function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls 
 
 loadPointer(0);
 
+function acceptText(text, label){
+  BODY = String(text || "");
+  $("pv").innerHTML = label + " - " + BODY.length + " bytes, " + BODY.split("\\n").length + " lines";
+  $("prev").innerHTML = BODY.substring(0, 1200).replace(/</g, "&lt;");
+  if (BODY.length === 0) {
+    $("burn").disabled = true;
+    setStatus("empty", "bad");
+  } else if (BODY.indexOf(TAG) === -1) {
+    // Do NOT hard-block: an older rollout tag or a partial copy is still worth burning.
+    $("burn").disabled = false;
+    setStatus("warning: no " + TAG + " tag found, burning anyway", "bad");
+  } else {
+    $("burn").disabled = false;
+    setStatus("ready", "ok");
+  }
+}
+
 $("pick").onchange = function(){
   var f = this.files && this.files[0];
   if (!f) { return; }
+  if (typeof FileReader === "undefined") {
+    setStatus("this browser cannot read files - use the paste box", "bad");
+    return;
+  }
   var r = new FileReader();
-  r.onload = function(){
-    BODY = String(r.result || "");
-    $("pv").innerHTML = "loaded " + f.name + " - " + BODY.length + " bytes, " + BODY.split("\\n").length + " lines";
-    $("prev").innerHTML = BODY.substring(0, 1200).replace(/</g, "&lt;");
-    if (BODY.indexOf(TAG) === -1) {
-      $("burn").disabled = true;
-      setStatus("not an " + TAG + " report", "bad");
-    } else {
-      $("burn").disabled = false;
-      setStatus("ready", "ok");
-    }
-  };
-  r.readAsText(f);
+  r.onload = function(){ acceptText(r.result, "loaded " + f.name); };
+  r.onerror = function(){ setStatus("could not read that file - use the paste box", "bad"); };
+  try { r.readAsText(f); } catch (e) { setStatus("read failed - use the paste box", "bad"); }
 };
+
+function pasteChanged(){
+  var v = $("paste").value;
+  if (v && v.length > 0) { acceptText(v, "pasted text"); }
+}
+$("paste").onchange = pasteChanged;
+$("paste").onkeyup = pasteChanged;
+$("paste").onpaste = function(){ setTimeout(pasteChanged, 50); };
 
 function postText(body){
   try {
@@ -589,6 +612,15 @@ function selftest(): void {
   }
   check('page posts text/plain', page.includes('text/plain;charset=UTF-8'));
   check('page gates on the tag', page.includes('BODY.indexOf(TAG) === -1'));
+  // R4: the R3 picker was unusable on the Mac. Mozilla 671172 - on macOS an accept filter greys out
+  // files and the native panel gives no way back to "All Files" on FF-52-class builds. So: no accept
+  // attribute, and a paste box that can always deliver the report even if the picker is dead.
+  check('page file input has NO accept filter (Mozilla 671172)', !/id="pick"[^>]*accept=/.test(page));
+  check('page has a paste fallback', page.includes('id="paste"') && page.includes('acceptText'));
+  check('paste box is wired to change+keyup+paste',
+    page.includes('$("paste").onchange') && page.includes('$("paste").onkeyup') && page.includes('$("paste").onpaste'));
+  check('missing tag warns but still allows burning', page.includes('burning anyway'));
+  check('FileReader failure tells the operator to paste', page.includes('use the paste box'));
   check('no TinyURL anywhere', !cmd.includes('tinyurl') && !page.toLowerCase().includes('tinyurl'));
 
   // reproducibility: emitting twice must produce identical bytes
@@ -677,7 +709,7 @@ function selftest(): void {
     const el = (id: string) => (els[id] = els[id] || { innerHTML: '', href: '' });
     // every id the page script touches, including the picker/burn handlers it installs at load
     for (const id of ['dl-cmd', 'dl-zip', 's-rollout', 's-branch', 's-pr', 's-session', 's-date',
-      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st', 'dl-acct']) el(id);
+      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st', 'dl-acct', 'paste']) el(id);
     const body = (page.split('<script type="text/javascript">')[1] || '').split('</script>')[0];
     const harness = `
       var document = { getElementById: function(id){ return ELS[id]; } };

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>absolution R3</title>
+<html><head><meta charset="utf-8"><title>absolution R4</title>
 <style type="text/css">
 body{background:#191b1d;color:#e8e8e8;font:13px "Lucida Grande",Helvetica,sans-serif;margin:0;padding:18px}
 .card{max-width:700px;margin:0 auto;background:#26292c;border:1px solid #111;border-radius:8px;padding:16px}
@@ -14,12 +14,13 @@ legend{color:#b8bcc0;font-size:11px;padding:0 4px}
 .aqua[disabled]{background:#4a4d50;border-color:#3a3d40;color:#8b8f93;cursor:default}
 a.link{color:#7fb2e5}
 pre{background:#1d1f21;border:1px solid #3a3d41;border-radius:4px;padding:8px;font:11px Monaco,monospace;white-space:pre-wrap;max-height:200px;overflow:auto}
+textarea{width:100%;background:#1d1f21;color:#d8d8d8;border:1px solid #3a3d41;border-radius:4px;font:11px Monaco,monospace;padding:6px}
 iframe{display:none}
 .ok{color:#8fc48f}.bad{color:#e08a8a}
 </style></head>
 <body><div class="card">
 <h1>absolution</h1>
-<div class="stamp" id="stamp">rollout <b id="s-rollout">R3</b> &middot; branch <span id="s-branch">arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr</span> &middot; <a class="link" id="s-pr" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session <span id="s-session">01a0ad71</span> &middot; <span id="s-date">2026-09-17</span><br>
+<div class="stamp" id="stamp">rollout <b id="s-rollout">R4</b> &middot; branch <span id="s-branch">arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr</span> &middot; <a class="link" id="s-pr" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session <span id="s-session">01a0ad71</span> &middot; <span id="s-date">2026-09-17</span><br>
 permanent link https://da.gd/absolution &middot; log tag <span id="s-tag">ABSOLUTION1</span> &middot; <span id="s-live">checking for a newer rollout&hellip;</span></div>
 <p class="note">READ-ONLY context probe. Nothing is erased, moved or deleted by this page or by
 absolution.command. The report travels as <b>text</b>, the only form the agent can read back.</p>
@@ -35,8 +36,11 @@ It changes nothing until you re-run it with sudo and CONFIRM, which it prints.</
 </fieldset>
 
 <fieldset><legend>2 &mdash; attach it</legend>
-<div><input type="file" id="pick" accept=".txt,text/plain"></div>
+<div><input type="file" id="pick"></div>
 <p id="pv" class="note">no file chosen</p>
+<p class="note">Picker greyed out or not working? Open ~/Desktop/absolution.txt in TextEdit,
+Cmd+A, Cmd+C, then click in the box below and Cmd+V. The Burn button enables either way.</p>
+<textarea id="paste" rows="5" placeholder="paste the absolution.txt contents here"></textarea>
 <pre id="prev"></pre>
 </fieldset>
 
@@ -52,7 +56,7 @@ It changes nothing until you re-run it with sudo and CONFIRM, which it prints.</
 // ES5 only: Arctic Fox 47 is Firefox 52 class. No fetch, no arrows, no template literals, no const/let.
 var INBOX = "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6";
 var TAG = "ABSOLUTION1";
-var ROLLOUT = "R3";
+var ROLLOUT = "R4";
 var BODY = null;
 
 // The short link is write-once, so this page must never be the thing that goes stale. It reads
@@ -103,24 +107,43 @@ function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls 
 
 loadPointer(0);
 
+function acceptText(text, label){
+  BODY = String(text || "");
+  $("pv").innerHTML = label + " - " + BODY.length + " bytes, " + BODY.split("\n").length + " lines";
+  $("prev").innerHTML = BODY.substring(0, 1200).replace(/</g, "&lt;");
+  if (BODY.length === 0) {
+    $("burn").disabled = true;
+    setStatus("empty", "bad");
+  } else if (BODY.indexOf(TAG) === -1) {
+    // Do NOT hard-block: an older rollout tag or a partial copy is still worth burning.
+    $("burn").disabled = false;
+    setStatus("warning: no " + TAG + " tag found, burning anyway", "bad");
+  } else {
+    $("burn").disabled = false;
+    setStatus("ready", "ok");
+  }
+}
+
 $("pick").onchange = function(){
   var f = this.files && this.files[0];
   if (!f) { return; }
+  if (typeof FileReader === "undefined") {
+    setStatus("this browser cannot read files - use the paste box", "bad");
+    return;
+  }
   var r = new FileReader();
-  r.onload = function(){
-    BODY = String(r.result || "");
-    $("pv").innerHTML = "loaded " + f.name + " - " + BODY.length + " bytes, " + BODY.split("\n").length + " lines";
-    $("prev").innerHTML = BODY.substring(0, 1200).replace(/</g, "&lt;");
-    if (BODY.indexOf(TAG) === -1) {
-      $("burn").disabled = true;
-      setStatus("not an " + TAG + " report", "bad");
-    } else {
-      $("burn").disabled = false;
-      setStatus("ready", "ok");
-    }
-  };
-  r.readAsText(f);
+  r.onload = function(){ acceptText(r.result, "loaded " + f.name); };
+  r.onerror = function(){ setStatus("could not read that file - use the paste box", "bad"); };
+  try { r.readAsText(f); } catch (e) { setStatus("read failed - use the paste box", "bad"); }
 };
+
+function pasteChanged(){
+  var v = $("paste").value;
+  if (v && v.length > 0) { acceptText(v, "pasted text"); }
+}
+$("paste").onchange = pasteChanged;
+$("paste").onkeyup = pasteChanged;
+$("paste").onpaste = function(){ setTimeout(pasteChanged, 50); };
 
 function postText(body){
   try {
