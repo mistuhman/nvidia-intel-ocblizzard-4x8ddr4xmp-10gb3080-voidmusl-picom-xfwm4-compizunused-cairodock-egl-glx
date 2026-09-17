@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 154,
+  "lastSeq": 155,
   "entries": [
     {
       "seq": 1,
@@ -2451,6 +2451,28 @@
       "value": "2026-09-17e operator: the icons and img textures were downloaded on the el admin account, the only account used since Lion was installed. Therefore textures are on the KEEPER and are protected by construction - absolution-accounts never touches /Users/el. revo's 54G Downloads is NOT the texture source; it is harvested only as an uninventoried-data precaution. Harvest target moved from /Users/Shared to /Users/el/absolution-harvest and chowned to el.",
       "source": "tools/lib/absolution-accounts.ts",
       "sha256": "88a9b88195d8c967858d023cb1c69fdcca5b0206cc4e1c2b69556e61393b468f"
+    },
+    {
+      "seq": 155,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/absolution/R5/identity-and-space.md",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "dscl RealName confirms el = Samael and admin group is root+el, so KEEPER=el is verified not guessed; jazzyempire and revo are non-admin",
+          "source": "ABSOLUTION1 R5 burn uuid 4f787751"
+        },
+        {
+          "claim": "/Users/revo is 775G - the real cause of the 97% full boot volume, not the 5.09GB app sweep",
+          "source": "same burn, per-user du"
+        },
+        {
+          "claim": "/Users/el/Downloads holds 256 icns + 82 images + CandyBar/Flavours installers; Flavours themes live in el Library Application Support - all on the keeper, protected by construction",
+          "source": "same burn, downloads + deep theme scan"
+        }
+      ],
+      "sha256": "dad21ebd407e3e3cd76e02d1f8dabd87f3975215df6b0292cd876a9863802b70"
     }
   ],
   "stacks": [
