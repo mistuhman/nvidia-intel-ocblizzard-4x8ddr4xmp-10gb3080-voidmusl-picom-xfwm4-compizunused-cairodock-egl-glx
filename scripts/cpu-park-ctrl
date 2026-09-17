@@ -26,15 +26,22 @@
 #   sh cpu-park-ctrl oc-turbo50      Program 50x (5.0 GHz) all-core P-core turbo ratio to MSR 0x1ad
 #   sh cpu-park-ctrl oc-restore      Restore stock turbo ratios (0x2f2f303031313132) and stock limits
 #   sh cpu-park-ctrl uncore <ratio>  Set uncore (ring/L3) max ratio via MSR 0x620 (e.g. 48 = 4.8 GHz)
-#   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz on loaded samples of a bench CSV (or latest)
+#   sh cpu-park-ctrl mc-bzy <csv>    Per-core avg Bzy_MHz + pkg watts on loaded samples (TAB turbostat log)
+#   sh cpu-park-ctrl pl-probe        Read MSR + MMIO RAPL package zones (limits, windows, enabled)
+#   sh cpu-park-ctrl throttle-probe  20T stress + MSR 0x64F decode: NAME the clock limiter (PL1/PL2/EDP/thermal)
 #   sh cpu-park-ctrl irq-pin-bench   Pin nvidia/nvkm IRQs to CPU18 + NIC IRQs to CPU19 (backup kept)
 #   sh cpu-park-ctrl irq-restore     Restore IRQ affinities from the /tmp backup
+#   sh cpu-park-ctrl persist-install Install runit service cpu-park-oc: bench-oc + irq pins at every boot
+#   sh cpu-park-ctrl persist-remove  Remove the boot service (live knobs untouched; restore or reboot reverts)
 #
 # Safety: All actions are runtime-only sysfs/MSR changes; reboot fully reverts all states.
 set -u
 
 RAPL_PL1=/sys/class/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw
 RAPL_PL2=/sys/class/powercap/intel-rapl/intel-rapl:0/constraint_1_power_limit_uw
+# MMIO copy of the package limit: on OEM boards it can clamp while the MSR copy obeys.
+RAPL_MMIO_PL1=/sys/class/powercap/intel-rapl-mmio:0/constraint_0_power_limit_uw
+RAPL_MMIO_PL2=/sys/class/powercap/intel-rapl-mmio:0/constraint_1_power_limit_uw
 
 need_root() {
 	if [ "$(id -u)" != "0" ]; then
@@ -75,6 +82,25 @@ reset_scaling_max() {
 			cat "/sys/devices/system/cpu/cpu$c/cpufreq/cpuinfo_max_freq" > "/sys/devices/system/cpu/cpu$c/cpufreq/scaling_max_freq" 2>/dev/null || true
 		fi
 	done
+}
+
+# cpu_capacity is READ-ONLY on kernel 6.18 (receipt 2026-08-28: Permission denied x4
+# even as root; status read 1024=1024 all day, so the 778 bias NEVER applied and SC
+# placement is carried by ITMT alone). Attempt silently, report the truth via read-back.
+set_ecap() {
+	VAL=$1
+	APPLIED=1
+	for c in 16 17 18 19; do
+		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
+		[ -e "$CAP" ] || continue
+		{ echo "$VAL" > "$CAP"; } 2>/dev/null || true
+		[ "$(cat "$CAP" 2>/dev/null)" = "$VAL" ] || APPLIED=0
+	done
+	if [ "$APPLIED" = "1" ]; then
+		echo "CPU_PARK_CTRL: E-core cpu_capacity=$VAL applied"
+	else
+		echo "CPU_PARK_CTRL: E-core cpu_capacity READ-ONLY on this kernel (dead knob; ITMT is the live P-first bias)"
+	fi
 }
 
 # HWP 0x774 max is NOT a turbo ratio. high=64 maps to fused 50x; max=51 ran at
@@ -196,6 +222,18 @@ cmd_pl_unlock() {
 	fi
 	echo 241000000 > "$RAPL_PL1"
 	echo "CPU_PARK_CTRL=OK PL1 raised to 241.0 W (matches PL2)"
+	# MMIO zone: the EFFECTIVE limit is min(MSR, MMIO). 147 W peak at 241 W MSR PL1
+	# (receipt 2026-08-28 run 19080943) fingerprints an MMIO clamp on this HP board.
+	if [ -w "$RAPL_MMIO_PL1" ]; then
+		echo 241000000 > "$RAPL_MMIO_PL1" 2>/dev/null || true
+		echo "CPU_PARK_CTRL: MMIO PL1 now $(cat "$RAPL_MMIO_PL1" 2>/dev/null) uW"
+	else
+		echo "CPU_PARK_CTRL: MMIO PL1 zone absent or read-only ($(cat "$RAPL_MMIO_PL1" 2>/dev/null || echo none) uW)"
+	fi
+	if [ -w "$RAPL_MMIO_PL2" ]; then
+		echo 241000000 > "$RAPL_MMIO_PL2" 2>/dev/null || true
+		echo "CPU_PARK_CTRL: MMIO PL2 now $(cat "$RAPL_MMIO_PL2" 2>/dev/null) uW"
+	fi
 }
 
 cmd_pl_restore() {
@@ -205,7 +243,36 @@ cmd_pl_restore() {
 		exit 1
 	fi
 	echo 125000000 > "$RAPL_PL1"
-	echo "CPU_PARK_CTRL=OK PL1 restored to stock 125.0 W"
+	if [ -w "$RAPL_MMIO_PL1" ]; then
+		echo 125000000 > "$RAPL_MMIO_PL1" 2>/dev/null || true
+	fi
+	echo "CPU_PARK_CTRL=OK PL1 restored to stock 125.0 W (MSR + MMIO zones)"
+}
+
+# Read every RAPL package zone: name, PL1/PL2 limits, time windows, enabled flag.
+# Answers: which zone is the 147 W clamp - MSR (intel-rapl:0) or MMIO (intel-rapl-mmio:0)?
+cmd_pl_probe() {
+	for Z in /sys/class/powercap/intel-rapl:0 /sys/class/powercap/intel-rapl-mmio:0; do
+		if [ ! -d "$Z" ]; then
+			echo "=== $Z ABSENT ==="
+			continue
+		fi
+		echo "=== $Z ($(cat "$Z/name" 2>/dev/null)) enabled=$(cat "$Z/enabled" 2>/dev/null) ==="
+		for N in 0 1; do
+			L="$Z/constraint_${N}_power_limit_uw"
+			[ -r "$L" ] || continue
+			W=$(awk '{printf "%.1f", $1/1000000}' "$L")
+			T=$(cat "$Z/constraint_${N}_time_window_us" 2>/dev/null || echo na)
+			NM=$(cat "$Z/constraint_${N}_name" 2>/dev/null || echo "c$N")
+			RO=ro
+			[ -w "$L" ] && RO=rw
+			echo "constraint_$N ($NM): ${W} W window=${T}us $RO"
+		done
+	done
+	if command -v rdmsr >/dev/null 2>&1; then
+		echo "MSR 0x610 raw: $(rdmsr -x 0x610 2>/dev/null || echo unreadable)"
+	fi
+	echo "CPU_PARK_CTRL=OK pl-probe (effective limit = min of MSR and MMIO zones)"
 }
 
 cmd_park_ecores() {
@@ -354,12 +421,7 @@ cmd_bench_oc() {
 	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
 		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
 	fi
-	for c in 16 17 18 19; do
-		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
-		if [ -w "$CAP" ]; then
-			echo 778 > "$CAP" 2>/dev/null || true
-		fi
-	done
+	set_ecap 778
 	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
 		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
 	fi
@@ -371,7 +433,7 @@ cmd_bench_oc() {
 	echo "CPU_PARK_CTRL: scaling_max CPU0=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null) cpuinfo_max=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq 2>/dev/null)"
 	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
 	echo "CPU_PARK_CTRL: cpuidle=$(cat /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null)"
-	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle + E cap 778"
+	echo "CPU_PARK_CTRL=OK bench-oc: all-core 5.0GHz + 1-2C 5.1GHz + E 3.8GHz + PL1 241W + menu cpuidle"
 }
 
 cmd_restore() {
@@ -386,12 +448,7 @@ cmd_restore() {
 	online_all
 	reset_scaling_max
 	set_gov_epp "0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19" powersave balance_performance
-	for c in 16 17 18 19; do
-		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
-		if [ -w "$CAP" ]; then
-			echo 1024 > "$CAP" 2>/dev/null || true
-		fi
-	done
+	set_ecap 1024
 	if [ -w /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost ]; then
 		echo 0 > /sys/devices/system/cpu/intel_pstate/hwp_dynamic_boost 2>/dev/null || true
 	fi
@@ -414,12 +471,7 @@ cmd_base() {
 	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
 		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
 	fi
-	for c in 16 17 18 19; do
-		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
-		if [ -w "$CAP" ]; then
-			echo 778 > "$CAP" 2>/dev/null || true
-		fi
-	done
+	set_ecap 778
 	cmd_pl_restore
 	echo "CPU_PARK_CTRL: 0x1ad=$(rdmsr -p 0 -x 0x1ad 2>/dev/null || echo fail)"
 	echo "CPU_PARK_CTRL: cpu_capacity CPU0=$(cat /sys/devices/system/cpu/cpu0/cpu_capacity 2>/dev/null) CPU16=$(cat /sys/devices/system/cpu/cpu16/cpu_capacity 2>/dev/null)"
@@ -462,8 +514,8 @@ cmd_bench_geekbench() {
 	echo "CPU_PARK_CTRL: Starting turbostat background meter (per-core, not Summary) -> $TLOG"
 	turbostat --quiet -i 1 --out "$TLOG" &
 	TPID=$!
-	echo "CPU_PARK_CTRL: Starting geekbench6 --cpu..."
-	geekbench6 --cpu
+	echo "CPU_PARK_CTRL: Starting geekbench6 --cpu at nice -10 (outschedules compiz/Xorg session burn)..."
+	nice -n -10 geekbench6 --cpu
 	GB_RC=$?
 	kill $TPID 2>/dev/null || true
 	wait $TPID 2>/dev/null || true
@@ -519,12 +571,7 @@ cmd_oc_turbo50() {
 	if [ -w /sys/devices/system/cpu/cpuidle/current_governor ]; then
 		echo menu > /sys/devices/system/cpu/cpuidle/current_governor 2>/dev/null || true
 	fi
-	for c in 16 17 18 19; do
-		CAP="/sys/devices/system/cpu/cpu$c/cpu_capacity"
-		if [ -w "$CAP" ]; then
-			echo 778 > "$CAP" 2>/dev/null || true
-		fi
-	done
+	set_ecap 778
 	if [ -w /proc/sys/kernel/sched_itmt_enabled ]; then
 		echo 1 > /proc/sys/kernel/sched_itmt_enabled 2>/dev/null || true
 	fi
@@ -578,6 +625,45 @@ cmd_oc_restore() {
 	cmd_restore
 }
 
+# Persist the 19081392 profile (SC 2770 = 102.0%, MC 14506; peaks 149.6 W / 74 C):
+# bench-oc (P 50x all-core + 51x 1-2C, E stock 3.8, PL1 241 W, menu cpuidle) + IRQ pins.
+# Mechanism (LOG THE INTERFACE): runit service /etc/sv/cpu-park-oc linked into
+# /var/service; run script applies once at boot then parks on sleep. The service dir
+# carries its OWN COPY of this script (sha logged) so /home/sd/oc-lab can move freely.
+# Inverse: persist-remove (next boot = stock); live revert any time = cpu-park-ctrl restore.
+SVDIR=/etc/sv/cpu-park-oc
+cmd_persist_install() {
+	need_root
+	mkdir -p "$SVDIR"
+	cp "$0" "$SVDIR/cpu-park-ctrl"
+	chmod 755 "$SVDIR/cpu-park-ctrl"
+	cat > "$SVDIR/run" <<'EOF'
+#!/bin/sh
+exec >> /var/log/cpu-park-oc.log 2>&1
+echo "=== cpu-park-oc boot apply $(date) ==="
+sleep 8
+sh /etc/sv/cpu-park-oc/cpu-park-ctrl bench-oc
+sh /etc/sv/cpu-park-oc/cpu-park-ctrl irq-pin-bench
+sh /etc/sv/cpu-park-oc/cpu-park-ctrl status
+exec sleep infinity
+EOF
+	chmod 755 "$SVDIR/run"
+	ln -sf "$SVDIR" /var/service/cpu-park-oc
+	SHA=$(sha256sum "$SVDIR/cpu-park-ctrl" | cut -c1-16)
+	echo "CPU_PARK_CTRL: service dir $SVDIR (script sha256 $SHA...)"
+	echo "CPU_PARK_CTRL: linked /var/service/cpu-park-oc -> applies bench-oc + irq-pin-bench at every boot"
+	echo "CPU_PARK_CTRL: log = /var/log/cpu-park-oc.log; inverse = persist-remove; live revert = restore"
+	echo "CPU_PARK_CTRL=OK persist-install done"
+}
+
+cmd_persist_remove() {
+	need_root
+	rm -f /var/service/cpu-park-oc
+	sv down cpu-park-oc 2>/dev/null || true
+	rm -rf "$SVDIR"
+	echo "CPU_PARK_CTRL=OK persist-remove: service gone; live knobs untouched (run restore or reboot for stock)"
+}
+
 # Uncore (ring/L3) ratio via MSR 0x620: bits 15:8 max ratio, bits 7:0 min ratio.
 # Stock on this board receipts as 800-4600 MHz = 0x2e08. 48x = 0x3008.
 cmd_uncore() {
@@ -606,6 +692,37 @@ cmd_uncore() {
 	echo "CPU_PARK_CTRL=OK uncore max ${RATIO}00 MHz requested (turbostat UncMHz line is the proof)"
 }
 
+# Name the clock limiter under a 20T load via MSR 0x64F (CORE_PERF_LIMIT_REASONS).
+# Log bits are sticky until cleared: clear, stress 15 s, read, decode. Empty list =
+# nothing limited core clocks in the window (then the deficit is scheduling, not silicon).
+cmd_throttle_probe() {
+	need_root
+	allow_msr
+	if ! command -v stress-ng >/dev/null 2>&1; then
+		echo "CPU_PARK_CTRL=FAIL stress-ng not found"
+		exit 1
+	fi
+	wrmsr -a 0x64f 0 2>/dev/null || true
+	echo "CPU_PARK_CTRL: 0x64F log bits cleared; running 20T matrixprod 15s..."
+	stress-ng --cpu 20 --cpu-method matrixprod --timeout 15 >/dev/null 2>&1 || true
+	RAW=$(rdmsr -p 0 -x 0x64f 2>/dev/null || echo 0)
+	echo "MSR 0x64F (CPU0) raw: 0x$RAW"
+	V=$((0x$RAW))
+	FOUND=0
+	for PAIR in 16:PROCHOT 17:Thermal 20:ResidencyState 21:RunningAvgThermal 22:VR-Therm 23:VR-TDC 24:Other-EDP-IccMax 26:PL1 27:PL2 28:MaxTurboLimit 29:TurboAttenuation; do
+		B=${PAIR%%:*}
+		N=${PAIR#*:}
+		if [ $(( (V >> B) & 1 )) = "1" ]; then
+			echo "  LIMIT LOGGED: $N"
+			FOUND=1
+		fi
+	done
+	if [ "$FOUND" = "0" ]; then
+		echo "  (no limit logged - clocks were free in the window)"
+	fi
+	echo "CPU_PARK_CTRL=OK throttle-probe"
+}
+
 # Per-core Bzy_MHz average over loaded samples (Busy% at or above 90) of a bench CSV.
 # Answers: did P-cores hold 5000 during Geekbench MC, or sag under the ~150W package wall?
 cmd_mc_bzy() {
@@ -618,16 +735,34 @@ cmd_mc_bzy() {
 		exit 1
 	fi
 	echo "=== mc-bzy: per-core avg Bzy_MHz on Busy% samples at or above 90 ($CSV) ==="
-	awk -F, '/^Core,/{gsub(/ /,"");for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i}next} c&&$c~/^[0-9]+$/{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++}}END{for(i=0;i<20;i++)if(n[i])printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i];if(!n[0])print "mc-bzy: no loaded rows matched (dump: head -n 3 of the csv)"}' "$CSV"
+	# turbostat --out writes TAB-separated columns (receipt 2026-08-28: the comma
+	# parser matched zero rows on a real log). Split on tabs, fall back to spaces.
+	# The '-' summary row carries PkgWatt: report loaded-package watts alongside.
+	awk -F'\t' '
+	NF<2{FS=" ";$0=$0}
+	$1=="Core"{for(i=1;i<=NF;i++){if($i=="CPU")c=i;if($i=="Busy%")b=i;if($i=="Bzy_MHz")m=i;if($i=="PkgWatt")w=i}next}
+	c&&$c=="-"{if(w&&$w+0>pw)pw=$w+0;next}
+	c&&$c~/^[0-9]+$/{v=$b+0;if(v>=90){s[$c]+=$m;n[$c]++;if(w&&$w+0>0){ws+=$w;wn++}}}
+	END{
+		any=0
+		for(i=0;i<20;i++)if(n[i]){printf "CPU%02d loaded=%d avgBzy=%.0f MHz\n",i,n[i],s[i]/n[i];any=1}
+		if(wn)printf "loaded PkgWatt avg=%.1f W (peak incl idle %.1f W)\n",ws/wn,pw
+		if(!any)print "mc-bzy: no loaded rows matched (paste: head -n 3 of the csv)"
+	}' "$CSV"
 	echo "CPU_PARK_CTRL=OK mc-bzy (P 0-15, E 16-19; 5000 = all-core OC held under MC load)"
 }
 
 action=${1:-status}
+# forward remaining args to arg-taking subcommands (uncore <ratio>, mc-bzy <csv>);
+# guard shift per the dash special-builtin lesson.
+if [ $# -gt 0 ]; then shift; fi
 case "$action" in
 status) cmd_status ;;
 probe-itmt) cmd_probe_itmt ;;
 pl-unlock) cmd_pl_unlock ;;
 pl-restore) cmd_pl_restore ;;
+pl-probe) cmd_pl_probe ;;
+throttle-probe) cmd_throttle_probe ;;
 park-ecores) cmd_park_ecores ;;
 park-smt) cmd_park_smt ;;
 park-one) cmd_park_one ;;
@@ -643,15 +778,17 @@ bench-geekbench) cmd_bench_geekbench ;;
 oc-probe) cmd_oc_probe ;;
 oc-turbo50) cmd_oc_turbo50 ;;
 oc-restore) cmd_oc_restore ;;
-uncore) cmd_uncore ;;
-mc-bzy) cmd_mc_bzy ;;
+uncore) cmd_uncore "$@" ;;
+mc-bzy) cmd_mc_bzy "$@" ;;
 irq-pin-bench) cmd_irq_pin_bench ;;
 irq-restore) cmd_irq_restore ;;
+persist-install) cmd_persist_install ;;
+persist-remove) cmd_persist_remove ;;
 help|--help)
 	sed -n '2,31p' "$0" | sed 's/^# \{0,1\}//'
 	;;
 *)
-	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore"
+	echo "usage: sh cpu-park-ctrl status|probe-itmt|pl-unlock|pl-restore|pl-probe|throttle-probe|park-ecores|park-smt|park-one|idle-snap|clock-high|park-game|asym-game|bench-oc|base|freq-proof|restore|bench-geekbench|oc-probe|oc-turbo50|oc-restore|uncore|mc-bzy|irq-pin-bench|irq-restore|persist-install|persist-remove"
 	exit 1
 	;;
 esac
