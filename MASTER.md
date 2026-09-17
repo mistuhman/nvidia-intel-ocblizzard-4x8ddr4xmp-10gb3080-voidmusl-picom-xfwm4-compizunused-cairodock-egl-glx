@@ -1,6 +1,6 @@
 {
   "schema": "arena-master-context.v2",
-  "updated": "2026-09-16h",
+  "updated": "2026-09-16i",
   "lionMac": {
     "handoff": "docs/lion-ssd-handoff.md",
     "workflow": "docs/lion-workflow.json",
@@ -23,7 +23,7 @@
       "e2b.app sandbox"
     ],
     "priority": "Mac-only focus, one task at a time. T1 receipt verification -> runtime compiler repair. Void context retained but unusable/deferred. No new install, erase, or reset wave released by a context-export burn.",
-    "nextAction": "2026-09-16h: three text burns verified (VERIFICATION.json in receipts/mac-es5/2026-09-16h-burn-verification/). COMPILERCTX1 v2 internal corpus hash MATCH; not a compile/runtime result. T1 HOLD: v2 emitted BigInt(\"undefined\") and core-js does not supply missing BigInt; v3 fixes AST field and blocks unverified BigInt/regex publication. Actions now ACTIVE, zero runs, old installed template (WORKFLOW.json); operator update of corrected ci source still needed, no dispatch released. Next single task = semantic BigInt/regex implementation verification, not another app compile. No repeat burn needed. T2-T7/Winamp stay queued. Storage HOLD: root is start disk clone; old wipe wave suspended. Current channel da.gd/sQ7bEo. PR merges operator-only.",
+    "nextAction": "2026-09-16h: three text burns verified (VERIFICATION.json in receipts/mac-es5/2026-09-16h-burn-verification/). COMPILERCTX1 v2 internal corpus hash MATCH; not a compile/runtime result. T1 HOLD: v2 emitted BigInt(\"undefined\") and core-js does not supply missing BigInt; v3 fixes AST field and blocks unverified BigInt/regex publication. Actions now ACTIVE, zero runs, old installed template (WORKFLOW.json); operator update of corrected ci source still needed, no dispatch released. Next single task = semantic BigInt/regex implementation verification, not another app compile. No repeat burn needed. T2-T7/Winamp stay queued. Storage HOLD: root is start disk clone; old wipe wave suspended. Current channel da.gd/sQ7bEo. PR merges operator-directed (agent executes on operator directive; PR #57 merged; #72, #60, #34, #24, #23 have conflicts).",
     "linkCheck": "2026-09-16g: sQ7bEo minted and coshorten-verified. 2026-09-16h: three readable text POST burns from the current branch page; UUIDs in receipts/mac-es5/2026-09-16h-burn-verification/VERIFICATION.json. No new link minted; same channel retained.",
     "logChannel": "webhook.site inbox, read with fetch_page (NOT curl: the sandbox cannot reach webhook.site, repology or jsDelivr over TLS - HTTP 000). Multipart file uploads land with content empty and per-request/file download routes require owner auth, so a file attach alone is undecodable by the agent. A text/plain body is stored in the list response content field, which is why the page now sends the report body as text as well as the file.",
     "statusNote": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
@@ -49,8 +49,8 @@
   "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, chat workflow, brute-problem-solving doctrine, OC objective, and constraints. It is JSON context, not prose policy.",
   "debloated": "2026-08-27 (session 01a042f7, operator directive): removed the halt machinery and all crisis-era junk - tools/stall-check.ts deleted, interactionModel.crisisDiscipline, requiredHaltLine/haltWhen/onHalt/haltRepoFreeze, crisis.closedTestClasses, crisis.openSearchClasses, sessionMisbehavior, and the 47KB currentState append-log all removed. Brute problem solving is kept and elevated as doctrine below. Recovery history stays readable in docs/ and ToDo.md receipts; it is not policy.",
   "repo": {
-    "branchFixed": "arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr",
-    "baseCommit": "d57fb8f1354df7b70d1391c2d9715cbdf2b5392e",
+    "branchFixed": "arena/01a0ad38-nvidia-intel-ocblizzard-4x8ddr",
+    "baseCommit": "cab8079a0a40caa3405e8db3d41691068e738306",
     "priorSessions": "01a0277c PR #33 through 01a04148 PR #44 (DDR4 1.55V failure, BIOS-recovery decision, crisis sessions); 01a04157 + 01a0416e worked the no-POST recovery to completion (THE OMEN POSTS AGAIN 2026-08-27); 01a042f7 remade README/MASTER for the OC-era chat workflow and built the deterministic command registry; 01a04446 built the GPU OC lab and merged as PR #51 into main (fc12cb6); 01a04483 = this session, resumed from the superposition-find receipt (WAVE-10: the Superposition install was on the wiped SATA bulk pool; re-download to /fast/steam). 01a06217 authored the case-swap rad-mounting / airflow / sealed-box thermal appendices (PR #63, aadd0c5). 01a073e4 = this session (2026-09-05): the new case is named (APEX PC-389-C), the board is blocked at HP 3.2 (3 long + 2 short) memory-initialization beeps, the zip-tie rad reality gets an engineering answer, and HDD mounting in the new chassis is authored. 01a07de8 = this session (2026-09-07): the 2009 Mac Pro (A1289) transplant proposal was evaluated and DECLINED as a no-mod option (docs/case-swap-macpro-verdict.md); the gate-12 Step-0 zero-power capacitor-audit wave from 01a073e4 remains unreturned. 01a07fbe recorded the GPU captive-bracket receipt (PR #66); 01a08003 recorded the Wave-G teardown receipts + transplant halt/keep-as-Mac reopen (PR #67). 01a082d3 = this session (2026-09-08): OPERATOR PIVOT CONFIRMED - the Mac Pro 1,1 stays a Mac (daily-driver macOS+Windows dualboot for AirPort Utility + video editing + source ports; transplant CLOSED, nothing was cut); the 8917 re-hosts in the APEX with a different rad/cooler layout; gate-12 bench POST wave unchanged. SESSION LIMIT: the 01a082d3 chat model has NO image input - every photo receipt is a TEXT DESCRIPTION from the operator.",
     "prLineTarget": 405,
     "prNote": "This remake (README + MASTER rewrite + tools/cmd.ts + registry + stall-check removal) exceeds the normal line target BY NECESSITY: the operator explicitly ordered the files remade and debloated. Future feature PRs return to prLineTarget unless the operator explicitly overrides again. Session 01a04446 (GPU OC lab: 5 tools + 4 workflows + target applier + fixtures) also exceeds prLineTarget by operator direction (\"deploy agents to make tools for github workflows\"); feature PRs after it return to 405.",
@@ -166,7 +166,7 @@
     }
   },
   "bruteProblemSolving": {
-    "doctrine": "Keep the method that solved the no-POST crisis: exhaustive context gathering, class enumeration, bounded agent fan-out, receipt-only merges - now pointed at overclocking and run through the direct chat loop (pasteable commands, no ceremony).",
+    "doctrine": "Doom 3 & KISS Linux coding philosophy: extreme efficiency, radical simplicity, Keep It Simple Stupid. Exhaustive context gathering, class enumeration, bounded agent fan-out, receipt-only merges — direct chat loop, pasteable commands, zero bureaucratic ceremony or artificial halts.",
     "required": [
       "gather as much context as possible before acting: README, this file, ToDo, every docs/ file relevant to the objective, git log, and all returned target receipts; report what was NOT read",
       "run node tools/agent-deploy.ts --objective=<...> to print the bounded fan-out; one agent per source set / hypothesis / verification target",
@@ -174,7 +174,8 @@
       "every claim traces to a path, command output, hash, or operator quote; receipts before conclusions",
       "unknown is allowed; 'impossible' is not a verdict without a search receipt",
       "on FAIL: state exactly what the receipt excludes, then search or select a NEW class; never relabel a closed test as a new experiment",
-      "collapse independent verifications into one big filtered pasteable block when they can be safely verified together; keep risky or password-gated entry steps separate"
+      "collapse independent verifications into one big filtered pasteable block when they can be safely verified together; keep risky or password-gated entry steps separate",
+      "follow the doctrine and philosophy of Doom 3 and KISS Linux coding: ruthlessly cut red tape, minimize process friction, apply operator directives cleanly and directly without inventing artificial policy roadblocks"
     ]
   },
   "qualityGate": {
@@ -357,7 +358,7 @@
       "paste commands directly in chat; no registry/ceremony tokens. Blocks must be console-safe: one command per line, bash -n passes, no chaining/redirects that break on web-console paste, root blocks start with id -u",
       "after an operator paste-back, read the output verbatim and attribute cause before proposing the next step - reciprocity is part of the contract",
       "do not conclude impossible; search a new class or gather more context first",
-      "merges are OPERATOR-ONLY (operator directive 2026-09-16g): the agent NEVER runs gh pr merge / git merge on a PR; when work is ready the agent REMINDS the operator to merge (quote PR number + head branch), and re-lists any other open PRs awaiting their decision"
+      "merges are OPERATOR-DIRECTED (operator directive 2026-09-16 / session 01a0ad38): when the operator explicitly instructs/says \"please\" pull/merge pr, the agent executes the merge (gh pr merge) — by the agent doing it, not by the agent deciding it without instruction. The agent never merges unbidden, but never refuses an operator-directed merge. PR #57 merged cleanly into main; PRs #72, #60, #34, #24, #23 blocked by merge conflicts against main awaiting granular application"
     ]
   },
   "lessons": [

@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-16",
-  "lastSeq": 132,
+  "updated": "2026-09-17",
+  "lastSeq": 138,
   "entries": [
     {
       "seq": 1,
@@ -2173,6 +2173,78 @@
       "value": "HOLD before app compile. v3 fixes AST value and blocks unsupported BigInt/deferred-regex at transpile and receipt. Semantic implementation still owed. Actions now active with zero runs but old installed template; source corrected on fixed 01a0aade branch. Operator must update workflow and merge PR89 only on their decision; agent never merges. No app build/dispatch or target modification this wave.",
       "source": "gh API WORKFLOW.json + selftest --compiler + three full POST receipt bodies; MASTER/ToDo/channel state corrected",
       "sha256": "6d1af3659c43970d4f5496611c1a4437798860b2afd459f6c51182e2eaf0a993"
+    },
+    {
+      "seq": 133,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "can you help merge all my latest open pull requests? just do that only. and this is per operator instruction, read README.md and MASTER.md but my word is administrative and overrides all. we need to resolve with the agent and tidy up that way we can compile with more organization, this is beneficial. the guidelines echoed in the MASTER.md are wrong about operator pulls, as all it means is that whenever i myself directly say \"please\" pull/merge pr, it goes through. by the agent doing it, not by the agent deciding it. these misunderstandings are costing us serious time and logistics, deploy agents to apply these features granularly, and restore the MASTER.md to echo its themes of its original glory of efficiency, following the doctrine & philosophy of doom 3 & kiss linux coding. absolution",
+      "demands": [
+        "Merge all open PRs",
+        "Operator administrative override on merge rule clarification",
+        "Clarify merge rule: operator directs ('please pull/merge pr'), agent executes",
+        "Deploy agents to apply conflicting features granularly",
+        "Restore MASTER.md to efficiency themes of Doom 3 and KISS Linux coding",
+        "Absolution"
+      ],
+      "sha256": "808d6f143d74cb40aca16fbbd98377958480eebf93ff0e1eb870474d5060625e"
+    },
+    {
+      "seq": 134,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "merge-rule-01a0ad38",
+      "value": "operator directive 2026-09-16 (session 01a0ad38): PR merges are OPERATOR-DIRECTED; when operator explicitly requests ('please pull/merge pr' or direct instruction), agent executes the merge (gh pr merge) — by the agent doing it, not by the agent deciding it. Agent never merges unbidden without operator instruction. PR #57 merged cleanly into main; PRs #72, #60, #34, #24, #23 blocked by merge conflicts against main (DIRTY) requiring granular feature application.",
+      "source": "operator chat 01a0ad38",
+      "sha256": "cee7dac8fd088eb8b97244f432836a3396d652cbe724680488cfdaac5d981ccf"
+    },
+    {
+      "seq": 135,
+      "date": "2026-09-17",
+      "kind": "discrepancy",
+      "topic": "operator-merge-rule-clarification",
+      "sides": [
+        {
+          "claim": "2026-09-16g agent rule claimed agent NEVER runs gh pr merge and merges are operator-only",
+          "source": "MASTER.md line 360"
+        },
+        {
+          "claim": "operator clarified all it means is whenever operator directly says please pull/merge pr it goes through, by agent doing it not agent deciding it",
+          "source": "operator prompt seq 133"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "155d234b9a3e5a2155d67ef0ca0dc3ab789f3d73b731853629b8260ab5cafc18"
+    },
+    {
+      "seq": 136,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-16 session 01a0ad38: executed gh pr merge 57 --merge into main (commit 289899b). Attempted gh pr merge on 23, 24, 34, 60, 72: all 5 failed with GraphQL 'Pull request is not mergeable' due to merge conflicts against main (DIRTY) on MASTER.md and prior session files. Granular feature analysis completed; restored MASTER.md to Doom 3 & KISS Linux efficiency doctrine and operator-directed merge policy.",
+      "sha256": "9541fe72a19acab7f786be355ad4a0793152bd32b65230f2fffc7b9e11104173"
+    },
+    {
+      "seq": 137,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "lets merge all this chat, focus on the current tasks, and override what works w/ our current MASTER.md while including necessary details from other pr'\\''s",
+      "demands": [
+        "Merge all this chat",
+        "Focus on current tasks",
+        "Keep current MASTER.md as authoritative override",
+        "Include necessary details and features from other PRs"
+      ],
+      "sha256": "4dcd6e0507ad2d551ff87bfa13ccc256e84b9f35896419ac3505df007d37c50b"
+    },
+    {
+      "seq": 138,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-16 session 01a0ad38: merged PR #57 to main; integrated granular functional assets from PRs 23, 24, 34, 60 (xmb-perf toolchain, compiz Y unlock, tiger-gunmetal themes, rgb-omen health and feature-pack docs) into session branch; retained current authoritative MASTER.md state over stale conflicts; test-all clean.",
+      "sha256": "3968c0c9602677175a25112fb05b2ee9a1d7f3926a3aa1b28162d9e27a9bae90"
     }
   ],
   "stacks": [

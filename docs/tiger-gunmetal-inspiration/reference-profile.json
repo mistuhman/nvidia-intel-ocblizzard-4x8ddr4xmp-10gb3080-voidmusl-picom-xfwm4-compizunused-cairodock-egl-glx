@@ -1,0 +1,108 @@
+{
+  "schema": "image-read.v1",
+  "profiles": [
+    {
+      "file": "/tmp/insp/candidate-3.png",
+      "width": 640,
+      "height": 320,
+      "meanLuma": 73.2,
+      "lumaP05": 1,
+      "lumaP50": 52,
+      "lumaP95": 202,
+      "darkShare": 0.4,
+      "midShare": 0.5,
+      "brightShare": 0.1,
+      "specularShare": 0.1,
+      "topLightBias": 5.1,
+      "anisotropyHorizontal": 5.5,
+      "saturation": 0,
+      "blueShare": 0,
+      "vGradientBands": [
+        126.6,
+        115.4,
+        99.9,
+        83.6,
+        63.8,
+        48.7,
+        30.8,
+        16.7
+      ],
+      "hGradientBands": [
+        10.9,
+        46,
+        95.4,
+        128.6,
+        129.6,
+        101.2,
+        56.8,
+        17
+      ],
+      "palette": [
+        {
+          "rgb": [
+            6,
+            6,
+            6
+          ],
+          "share": 0.2
+        },
+        {
+          "rgb": [
+            23,
+            23,
+            23
+          ],
+          "share": 0.1
+        },
+        {
+          "rgb": [
+            38,
+            38,
+            40
+          ],
+          "share": 0.1
+        },
+        {
+          "rgb": [
+            54,
+            54,
+            56
+          ],
+          "share": 0.1
+        },
+        {
+          "rgb": [
+            70,
+            70,
+            72
+          ],
+          "share": 0.1
+        },
+        {
+          "rgb": [
+            86,
+            86,
+            88
+          ],
+          "share": 0.1
+        },
+        {
+          "rgb": [
+            102,
+            102,
+            104
+          ],
+          "share": 0
+        },
+        {
+          "rgb": [
+            118,
+            118,
+            121
+          ],
+          "share": 0
+        }
+      ]
+    }
+  ]
+}
