@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 166,
+  "lastSeq": 167,
   "entries": [
     {
       "seq": 1,
@@ -2598,6 +2598,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 (2026-09-17i): OPERATOR CORRECTED ME TWICE AND WAS RIGHT BOTH TIMES. (1) I said the two frames were identical; operator: 'both screenshots are different, one has the kingstons partition selected and the drive selected'. I misjudged two near-identical Lion screenshots - the correct method is to read the distinguishing UI region (tab bar / info-panel field labels), not overall similarity. Standing lesson: when two screenshots look alike, diff the specific region that encodes the difference before asserting sameness. (2) Operator already performed the erase + repartition - previous steps are DONE, not pending. Evidence in-frame: volume renamed KINGSTON -> Kingston, mount /Volumes/KINGSTON -> /Volumes/Kingston. (3) Operator: 'itll always have folders used space on the kingston indent... appeared each time, its nothing wrong'. VERIFIED CORRECT: a freshly formatted HFS+ volume is never 0 used - journal (sized to volume, not the fixed 8MB newfs_hfs default), catalog + extents overflow B-trees, allocation bitmap, and hidden .fseventsd/.Spotlight-V100/.Trashes. Computed: 312,352,768 of 239,713,435,648 bytes = 0.1303% = ~1/767th of the disk. Byte-identical repeats across erases are EXPECTED (deterministic format), not a fault. Recorded in BAY2_NOTES. REMAINING GAP: partition map scheme still unconfirmed because it only renders on the DISK row (volume row shows Mount Point/Format/Owners/Folders; disk row shows Partition Map Scheme + Disk Identifier + Media Name). Fastest settle = 'diskutil list', row 0 prints GUID_partition_scheme directly. Nothing armed.",
       "sha256": "93830f0e77cf8600160954e67cabd7f346d2e5abd2fbea3548bb6f54c2760e25"
+    },
+    {
+      "seq": 167,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17i): operator reported 'a lot of misbehavior' and directed: 'just create and merge the pr while logging this image'. GUID CONFIRMED from the diskutil list photo - LAST PRE-CLONE GATE CLEARED. disk0 row0 = GUID_partition_scheme, disk0s1 = EFI 209.7MB (EFI only exists on GUID = independent corroboration), disk0s2 = Apple_HFS Kingston 239.7GB. Receipt written: receipts/absolution/R6/diskutil-list-2026-09-17.md (full transcription + 8 findings). Raid X confirmed degraded-as-expected: exactly TWO Apple_RAID members (disk1s2, disk2s2), third is the pulled Bay 2 WD, both survivors intact. MX500 disk3s2 'start disk clone' untouched. NEW FINDING: source has Recovery HD disk3s3 Apple_Boot 650MB - a plain CCC volume clone does NOT copy it; CCC clones Recovery HD as a separate explicit step; worth carrying since the destination is a single disk (the abandoned RAID 0 could never have had one). Non-blocking. HAZARD: device numbers are not bay numbers and shift across boots - re-read diskutil list before any destructive command. PR created and MERGED per operator direction (operator-directed merge, not unbidden). Manifest final: KEEP 64/2.75GB, DROP 87/6.69GB, ASK 0. Nothing armed.",
+      "sha256": "1b76be1645f282cba32ec1e82b69dcbcdbcec931e43a2e3595b4e5f465725f7d"
     }
   ],
   "stacks": [

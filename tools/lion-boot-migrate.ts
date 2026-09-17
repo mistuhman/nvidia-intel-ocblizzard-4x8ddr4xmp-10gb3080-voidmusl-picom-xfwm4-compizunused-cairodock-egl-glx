@@ -169,6 +169,22 @@ export const BAY2_STEPS: string[] = [
 ];
 
 export const BAY2_NOTES: string[] = [
+  'GUID CONFIRMED 2026-09-17 - THE LAST PRE-CLONE GATE IS CLEARED. diskutil list row 0 of disk0 reads '
+    + 'GUID_partition_scheme, and disk0s1 is a 209.7 MB EFI partition, which only exists on a GUID disk. '
+    + 'disk0s2 is Apple_HFS "Kingston" 239.7 GB. The Kingston can boot an Intel Mac. Receipt: '
+    + 'receipts/absolution/R6/diskutil-list-2026-09-17.md',
+  'RAID X STATE CONFIRMED DEGRADED-AS-EXPECTED: exactly TWO Apple_RAID members remain (disk1s2, disk2s2). '
+    + 'The third is the WD pulled from Bay 2. Both survivors are intact. Never Erase/Create/Rebuild/Demote '
+    + 'disk1 or disk2 - they are live members of a no-redundancy stripe.',
+  'RECOVERY HD EXISTS ON THE SOURCE (disk3s3, Apple_Boot, 650 MB) AND IS WORTH CARRYING OVER. A plain CCC '
+    + 'volume clone copies the volume, NOT the recovery partition; CCC clones Recovery HD as a separate '
+    + 'explicit step. Because the destination is a single disk rather than the abandoned RAID 0 (which '
+    + 'could not have had one at all), a Recovery HD is possible here - it gives Disk Utility, Terminal '
+    + 'and reinstall with no external media. Not blocking: the clone boots without it, and it can be '
+    + 'added afterwards.',
+  'DEVICE NUMBERS ARE NOT BAY NUMBERS AND ARE NOT STABLE. disk0 is the new Kingston, disk3 is the MX500 '
+    + 'boot disk. Identifiers are assigned at boot and shift when drives move. Re-read diskutil list '
+    + 'immediately before any destructive command - never reuse a remembered disk number.',
   'THE PARTITION MAP IS THE ONE THING A VOLUME-ROW SCREENSHOT CANNOT PROVE. With the VOLUME selected the '
     + 'info panel shows Mount Point / Format / Owners Enabled / Number of Folders. With the physical DISK '
     + 'selected it instead shows Partition Map Scheme, plus Disk Identifier and Media Name. So the GUID '

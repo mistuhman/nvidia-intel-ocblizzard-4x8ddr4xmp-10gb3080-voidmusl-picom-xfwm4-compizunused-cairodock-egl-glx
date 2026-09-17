@@ -180,6 +180,21 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
     - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
       the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
       member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
+  - 2026-09-17i (session 01a0ae24) **✅ GUID CONFIRMED — LAST PRE-CLONE GATE CLEARED.**
+    Receipt: `receipts/absolution/R6/diskutil-list-2026-09-17.md` (operator Terminal photo).
+    - `disk0` row 0 = **`GUID_partition_scheme`**, `disk0s1` = **EFI 209.7 MB** (only exists on GUID),
+      `disk0s2` = `Apple_HFS Kingston 239.7 GB`. **The Kingston can boot an Intel Mac. Clone may go.**
+    - **Raid X degraded exactly as expected** — only two `Apple_RAID` members left (`disk1s2`,
+      `disk2s2`); the third is the WD pulled from Bay 2. Both survivors intact. **Never
+      Erase/Create/Rebuild/Demote `disk1` or `disk2`.**
+    - MX500 boot volume `disk3s2 "start disk clone"` untouched, as intended.
+    - 🆕 **Source has a Recovery HD** (`disk3s3`, Apple_Boot, 650 MB). A plain CCC volume clone does
+      **not** copy it — CCC clones Recovery HD as a separate explicit step. Worth doing: the
+      destination is a single disk, so unlike the abandoned RAID 0 a Recovery HD **is** possible here.
+      Non-blocking; can be added after the fact.
+    - ⚠️ **Device numbers ≠ bay numbers and are not stable.** `disk0` = Kingston, `disk3` = MX500.
+      Re-read `diskutil list` immediately before any destructive command.
+    - Operator-directed: PR created and merged this turn.
   - 2026-09-17g (session 01a0ae24) **KINGSTON IS IN THE MACHINE (Disk Utility photo) + all 7 ASK
     items ruled. ⚠️ ERASE-SCREEN HAZARD CAUGHT.**
     - Photo confirms: `240.06 GB KINGSTON S…` present, volume `KINGSTON` mounted at `/Volumes/KINGSTON`,
