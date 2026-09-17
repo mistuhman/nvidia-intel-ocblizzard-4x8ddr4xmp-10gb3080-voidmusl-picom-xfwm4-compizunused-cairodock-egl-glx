@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 151,
+  "lastSeq": 152,
   "entries": [
     {
       "seq": 1,
@@ -2420,6 +2420,15 @@
         "textures and icons live in account Downloads - do not delete those"
       ],
       "sha256": "02892fe78238f29dbe5367f7bab273ad1262f5bdc0a3aeb7b75a7b067f758550"
+    },
+    {
+      "seq": 152,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionKeeperAccount",
+      "value": "2026-09-17d operator verbatim: 'el is the only keeper, samael is nick for el'. KEEPER=el (Samael is the nickname, not the short name or necessarily the RealName). Tertiary accounts to remove: jazzyempire, revo. Guest and Shared excluded. revo holds 54G Downloads which is HARVESTED to /Users/Shared/absolution-harvest/revo/Downloads before any record deletion.",
+      "source": "operator chat 2026-09-17d + receipts/absolution/R1/burn-2026-09-17.txt",
+      "sha256": "2f0a76dda746003f9a46c90cdf4df9383121ca423a6ae32ed2588e3332305dc7"
     }
   ],
   "stacks": [

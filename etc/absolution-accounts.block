@@ -1,68 +1,76 @@
 id -u
-# absolution-accounts.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). Account removal, self-resolving and double-gated. Harvests files BEFORE deleting.
+# absolution-accounts.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). Tertiary account removal. Harvests files BEFORE deleting. Double-gated.
 # Wave: 2026-09-17 clear + harden the Lion SSD. Policy source: tools/lion-clean-plan.ts
 # HARD RULE (operator "without wiping drives"): no eraseDisk, no eraseVolume, no partitionDisk,
 # no asr, no rm of an app. Removal is a reversible MOVE to a quarantine folder on the same volume.
-# Operator directive 2026-09-17c: "delete the tertiary accounts, not mine, which is Samael/admin".
-# The agent does NOT know which short name is Samael: the R1 burn showed Guest/el/jazzyempire/revo
-# and no literal samael, while the live user was 'el' and the 54G Downloads belong to 'revo'.
-# So this block RESOLVES the keeper on the machine and REFUSES to act unless exactly one account
-# matches. It never hardcodes a victim.
-# Keeper test: short name or RealName matches samael/admin AND the account is in the admin group.
-# HARVEST FIRST: every doomed account's Downloads, icons, textures and Winamp skins are MOVED to
-# /Users/Shared/absolution-harvest/<user>/ before the account record is touched. Same volume, so
-# it is a rename: instant, needs no free space, and nothing the operator named is destroyed.
-# Rollback: the home folder is moved to /Users/Shared/absolution-quarantine/<user>, never rm-ed.
-# Space is reclaimed only by the SEPARATE purge line this block prints at the end.
+# Operator directive 2026-09-17d, verbatim: "el is the only keeper, samael is nick for el".
+# So the keeper is DECLARED, not guessed: KEEPER=el. The earlier samael/RealName heuristic is kept
+# only as a printed cross-check, because it would ABORT if el's RealName is not literally Samael.
+# Doomed = every /Users entry except the keeper, Shared and Guest.
+# HARVEST FIRST: each doomed account's Downloads + icons/textures/Winamp skins are MOVED to
+# /Users/Shared/absolution-harvest/<user>/ before the record is touched. Same volume = rename:
+# instant, needs no free space (the boot volume is 97% full), destroys nothing the operator named.
+# Rollback: the home folder is MOVED to /Users/Shared/absolution-quarantine/<user>, never rm-ed.
+# Space is reclaimed only by the separate purge line printed at the end.
 cat > /tmp/absolution-accounts.sh <<'ACCTSH'
 #!/bin/sh
+KEEPER="el"
 HARVEST="/Users/Shared/absolution-harvest"
 QUAR="/Users/Shared/absolution-quarantine"
-echo "== ACCOUNT MAP"
+echo "== KEEPER (operator-declared): $KEEPER"
+if [ ! -d "/Users/$KEEPER" ]; then
+  echo "ABORT: /Users/$KEEPER does not exist. Nothing changed."
+  exit 1
+fi
 ADMINS=$(dscl . -read /Groups/admin GroupMembership 2>/dev/null | cut -d: -f2-)
 echo "admin group:$ADMINS"
-KEEPER=""
-KCOUNT=0
+KEEPADMIN=no
+for a in $ADMINS; do
+  [ "$a" = "$KEEPER" ] && KEEPADMIN=yes
+done
+if [ "$KEEPADMIN" != yes ]; then
+  echo "ABORT: keeper $KEEPER is NOT in the admin group."
+  echo "Deleting the other accounts could leave this Mac with no administrator. Nothing changed."
+  exit 1
+fi
+echo "cross-check RealName: $(dscl . -read /Users/$KEEPER RealName 2>/dev/null | tail -1 | sed -e 's/^ *//')"
+echo
+echo "== ACCOUNT MAP"
+DOOMED=""
 for u in $(ls /Users 2>/dev/null | grep -v Shared | grep -v '^Guest$'); do
   RN=$(dscl . -read "/Users/$u" RealName 2>/dev/null | tail -1 | sed -e 's/^ *//')
   UIDN=$(dscl . -read "/Users/$u" UniqueID 2>/dev/null | awk '{print $2}')
-  ISADMIN=no
-  for a in $ADMINS; do
-    [ "$a" = "$u" ] && ISADMIN=yes
-  done
   SZ=$(du -hs "/Users/$u" 2>/dev/null | awk '{print $1}')
-  echo "ACCT $u | uid=$UIDN | admin=$ISADMIN | size=$SZ | real=$RN"
-  MATCH=no
-  echo "$u" | grep -qi samael && MATCH=yes
-  echo "$RN" | grep -qi samael && MATCH=yes
-  if [ "$MATCH" = yes ] && [ "$ISADMIN" = yes ]; then
-    KEEPER="$u"
-    KCOUNT=$((KCOUNT+1))
+  if [ "$u" = "$KEEPER" ]; then
+    echo "KEEP   $u | uid=$UIDN | size=$SZ | real=$RN"
+  else
+    echo "REMOVE $u | uid=$UIDN | size=$SZ | real=$RN"
+    DOOMED="$DOOMED $u"
   fi
 done
-echo
-if [ "$KCOUNT" -ne 1 ]; then
-  echo "ABORT: matched $KCOUNT accounts for Samael/admin, need exactly 1."
-  echo "Nothing was harvested, deleted or changed. Paste this whole output back."
-  echo "The agent will name the keeper from the table above instead of guessing."
-  exit 1
-fi
-echo "KEEPER (never touched): $KEEPER"
-DOOMED=""
-for u in $(ls /Users 2>/dev/null | grep -v Shared | grep -v '^Guest$'); do
-  [ "$u" = "$KEEPER" ] && continue
-  DOOMED="$DOOMED $u"
-done
-echo "TERTIARY (to remove):$DOOMED"
 if [ -z "$DOOMED" ]; then
   echo "NOTHING TO DO - only the keeper exists"
   exit 0
 fi
+echo "TERTIARY:$DOOMED"
 echo
-echo "== WHAT WOULD BE HARVESTED (textures, icons, skins, Downloads)"
+echo "== LOGIN SAFETY"
+who
+LOGGEDIN=$(who 2>/dev/null | awk '{print $1}' | sort -u)
+for u in $DOOMED; do
+  for l in $LOGGEDIN; do
+    if [ "$l" = "$u" ]; then
+      echo "ABORT: $u is currently logged in. Log it out first. Nothing changed."
+      exit 1
+    fi
+  done
+done
+echo "no doomed account is logged in"
+echo
+echo "== WHAT WOULD BE HARVESTED (Downloads, icons, textures, Winamp skins)"
 for u in $DOOMED; do
   echo "-- $u"
-  du -hs "/Users/$u/Downloads" 2>/dev/null
+  du -hs "/Users/$u/Downloads" 2>/dev/null || echo "   no Downloads"
   find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | wc -l | sed 's/^/   theme files: /'
 done
 if [ "$CONFIRM" != "ACCOUNTS" ]; then
@@ -72,25 +80,25 @@ if [ "$CONFIRM" != "ACCOUNTS" ]; then
   exit 0
 fi
 echo
-echo "== HARVEST (move, same volume, no space needed)"
+echo "== HARVEST (same-volume move: instant, frees nothing, loses nothing)"
 mkdir -p "$HARVEST"
 mkdir -p "$QUAR"
 for u in $DOOMED; do
   mkdir -p "$HARVEST/$u"
   if [ -d "/Users/$u/Downloads" ]; then
     mv "/Users/$u/Downloads" "$HARVEST/$u/Downloads"
-    echo "harvested $u Downloads"
+    echo "harvested Downloads: $u"
   fi
   mkdir -p "$HARVEST/$u/themes"
   find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | while read -r f; do
     mv "$f" "$HARVEST/$u/themes/" 2>/dev/null
   done
-  echo "harvested $u theme files"
+  echo "harvested theme files: $u"
 done
 echo
-echo "== REMOVE DIRECTORY RECORDS (home folders are MOVED, never deleted)"
+echo "== REMOVE RECORDS (home folders are MOVED, never deleted)"
 for u in $DOOMED; do
-  dscl . -delete "/Users/$u" 2>/dev/null && echo "record removed: $u" || echo "record MISSING (already gone): $u"
+  dscl . -delete "/Users/$u" 2>/dev/null && echo "record removed: $u" || echo "record already absent: $u"
   if [ -d "/Users/$u" ]; then
     mv "/Users/$u" "$QUAR/$u"
     echo "home quarantined: $QUAR/$u"
@@ -99,9 +107,9 @@ done
 echo
 echo "== RESULT"
 ls /Users
-echo "-- harvested --"
+echo "-- harvested (KEPT for you) --"
 du -hs "$HARVEST"/* 2>/dev/null
-echo "-- quarantined homes (still using disk) --"
+echo "-- quarantined homes (still occupying disk) --"
 du -hs "$QUAR"/* 2>/dev/null
 df -h /
 echo
