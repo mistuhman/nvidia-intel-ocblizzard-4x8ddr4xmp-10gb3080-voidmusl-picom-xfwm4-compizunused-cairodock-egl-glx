@@ -47,6 +47,8 @@ run('node', ['tools/lion-mirror-sl-test.ts']);
 run('node', ['tools/lion-one-test.ts']);
 run('node', ['tools/lion-arcticfox-test.ts']);
 run('node', ['tools/mac-es5-passthrough.ts', 'selftest']);
+// image-sight verification instrument (per-session capability gate, receipts/vision-check/)
+run('node', ['tools/vision-check.ts', 'selftest']);
 run('python3', ['-m', 'json.tool', 'docs/lion-workflow.json']);
 // Mac art pass-compiler: fact ledger, scene IR and the imaging pass loop
 run('python3', ['-m', 'json.tool', 'docs/macpro-storage-facts.json']);

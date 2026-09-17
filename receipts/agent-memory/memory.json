@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 155,
+  "lastSeq": 156,
   "entries": [
     {
       "seq": 1,
@@ -2473,6 +2473,13 @@
         }
       ],
       "sha256": "dad21ebd407e3e3cd76e02d1f8dabd87f3975215df6b0292cd876a9863802b70"
+    },
+    {
+      "seq": 156,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17): operator directive 'deploy agents to read ToDo.md, README.md and MASTER.md then verify model image sight capability before continuing at further user prompt'. All three read in full. IMAGE SIGHT VERIFIED LIVE for this session's model: tools/vision-check.ts blind sealed-key test A = PASS 11/11 exact (code 47780 readable only from pixels; key_sha fe59fbe45bee264c sealed before read). Test B real iFixit photo described correctly AND identified as wrong subject (MacBook Pro 15 unibody, not Mac Pro 3,1 tower). Prior VISION-VERIFICATION.md belongs to session 01a0ad71 and was NOT inherited. Receipt: receipts/vision-check/SESSION-01a0ae24-VISION.md. HOLDING for further operator prompt per directive; no gate advanced.",
+      "sha256": "47a67b6b956da30adbede7cbd49a7b0bb176ee194e329cf1950ab4313c407bdd"
     }
   ],
   "stacks": [

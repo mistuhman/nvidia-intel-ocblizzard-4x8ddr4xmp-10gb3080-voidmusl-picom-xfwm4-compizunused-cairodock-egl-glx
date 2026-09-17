@@ -1,0 +1,9 @@
+{
+  "_note": "Blind reading: written from PNG pixels only, BEFORE /tmp/vision-key-a.json was opened.",
+  "image": "receipts/vision-check/session-01a0ae24-test-a.png",
+  "image_sha": "52bc6bcfb0783e31d7d28f1855847b5602b9ad90196c37ebe26fdacb0f325f69",
+  "width": 760, "height": 460, "background": "BLACK",
+  "word": "ZFSBOOT", "code": "47780",
+  "shape": "CIRCLE", "shape_count": 3, "shape_color": "YELLOW",
+  "word_color": "RED", "code_color": "CYAN", "bar_count": 5
+}
