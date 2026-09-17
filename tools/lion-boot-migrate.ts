@@ -19,7 +19,7 @@
 //   cables the operator has confirmed he does not own, and their bootability is DISPUTED in
 //   the sources. Every resolution to this is an operator decision, not an agent action.
 //
-// Usage: node tools/lion-boot-migrate.ts <check|plan|endstate|selftest>
+// Usage: node tools/lion-boot-migrate.ts <check|plan|bay2|endstate|selftest>
 
 // ---------------------------------------------------------------- measured inputs (receipts)
 const GiB = 1024 ** 3, GB = 1000 ** 3;
@@ -104,6 +104,77 @@ export const END_STATES: Config[] = [
 ];
 export const bayDemand = (): number => FACTS.kingstonCount + 1 + FACTS.wdCount; // kingstons + MX500 + WDs
 export const endStateConflict = (): boolean => bayDemand() > FACTS.bays;
+
+// ================================================================ BAY 2 SWAP (operator decision 2026-09-17f)
+// "lets just swap out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston"
+// This is Option B (single Kingston, no stripe) and it lands on end state E3 - the only layout
+// that keeps Raid X alive. Two physical facts have to be understood first.
+
+export const BAY2_MOUNT = {
+  problem: 'A 2.5" SSD does not screw into a 3,1 sled. The sled screw holes are 3.5" spacing, and '
+    + 'the OWC 2.5" Mac Pro sled (MMP35T25) is explicitly 2009-2012 only - it does NOT fit a 3,1.',
+  operatorHasNoAdapter: true, // receipts/inventory/macpro31.md item 6: "i have no conversion cables or anything"
+  workaround: 'The bay is cable-free direct-attach, so the SSD can be pushed straight onto the backplane '
+    + 'connector with NO sled at all. This is widely done on classic Mac Pros: the drive is light enough '
+    + 'that the connector holds it. Support the underside (a non-conductive shim) so nothing hangs on the port.',
+  properFix: 'NewerTech AdaptaDrive 2.5-to-3.5 bracket (~$11) fits ALL classic Mac Pro sleds including the 3,1. '
+    + 'Not required to proceed - it is the tidy version, orderable later.',
+  sources: [
+    'discussions.apple.com/thread/7553566 (3,1: no 2.5" sled exists; AdaptaDrive works; sled-less install reported)',
+    'bhphotovideo OWCMMP35T25 (explicitly NOT compatible with MacPro3,1)',
+    'discussions.apple.com/thread/2507049 (pushed connector-with-SSD straight onto the backplane, "works great")',
+  ],
+};
+
+// The move that makes this work. Bay 2 is a Raid X member, so the Kingston cannot simply LIVE there.
+export const BAY2_STEPS: string[] = [
+  'STEP 1 - KNOW WHAT YOU ARE PULLING. Bay 2 holds a WD Green that is one of the three Raid X members. '
+    + 'The moment it comes out, the 3 TB Raid X volume goes OFFLINE. That is expected and is NOT data loss. '
+    + 'Data loss only happens if something erases or re-initialises a member while the set is broken. '
+    + 'Label the drive with its bay as it comes out and set it somewhere safe.',
+  'STEP 2 - SHUT DOWN FULLY. Not sleep. Unplug mains. The bays are hot-swap-capable electrically but '
+    + 'there is no reason whatsoever to take that risk with a RAID member.',
+  'STEP 3 - FIT THE KINGSTON IN BAY 2. If you have no 2.5-to-3.5 bracket (you said you have no adapters), '
+    + 'push the bare SSD directly onto the Bay 2 backplane connector and support it from underneath. '
+    + 'Do not force it and do not let the drive hang off the connector.',
+  'STEP 4 - BOOT FROM THE MX500 AS NORMAL. Nothing about the boot disk changed. Confirm in Disk Utility '
+    + 'that you can see: the MX500 (boot), the new Kingston, and a Raid X set showing as damaged/offline '
+    + 'with a missing member. Seeing Raid X broken here is CORRECT. Do not let Disk Utility "fix" it. '
+    + 'Never click Erase, Create, Rebuild or Demote on anything WD.',
+  'STEP 5 - ERASE THE KINGSTON ONLY. Disk Utility, select the Kingston by its hardware name, erase as '
+    + 'Mac OS Extended (Journaled), GUID Partition Table. GUID matters - an Intel Mac will not boot from '
+    + 'an APM-formatted disk. Name it something you will recognise at the Option-boot screen.',
+  'STEP 6 - SELECTIVE COPY WITH CARBON COPY CLONER. Source = the MX500 boot volume, destination = the '
+    + 'Kingston, with /Users/revo, /Users/jazzyempire and the DROP list excluded. '
+    + 'See: node tools/lion-migrate-manifest.ts plan',
+  'STEP 7 - BLESS AND TEST. System Preferences > Startup Disk > the Kingston. Reboot. Verify el logs in, '
+    + 'Flavours themes render, CandyBar icons are present, Final Cut opens, audio devices enumerate. '
+    + 'If anything is wrong, Option-boot straight back to the MX500 - it is untouched in Bay 1.',
+  'STEP 8 - RUN IT FOR A WHILE. Several clean boots and a real editing session before you trust it. '
+    + 'The MX500 stays in Bay 1 as a complete, bootable rollback for as long as you want it there.',
+  'STEP 9 - THE ENDGAME MOVE (this is the step that saves Raid X). When the Kingston is trusted: '
+    + 'shut down, REMOVE THE MX500 FROM BAY 1, MOVE THE KINGSTON FROM BAY 2 INTO BAY 1, and put the '
+    + 'WD Green back into Bay 2. Boot. Apple boots by blessed volume, not by bay, so moving the Kingston '
+    + 'costs nothing (re-pick it in Startup Disk if the machine hesitates). Raid X now has all three '
+    + 'members back and remounts as a healthy 3 TB volume. Final layout: Bay 1 Kingston boot, Bays 2-4 '
+    + 'the three WDs. That is end state E3.',
+  'STEP 10 - ONLY THEN THE MX500. Once it is out of the machine it is just a 1 TB SSD on the bench. '
+    + 'Wipe it externally, keep it as a cold backup of the old system, or re-use it. Nothing is urgent '
+    + 'and nothing is irreversible until you erase it - so harvest anything you still want FIRST.',
+];
+
+export const BAY2_NOTES: string[] = [
+  'WHY THE KINGSTON CANNOT JUST STAY IN BAY 2: Bay 2 belongs to Raid X. Leaving the Kingston there '
+    + 'means Raid X never gets its third member back and the 3 TB volume stays dead. Bay 1 is the only '
+    + 'bay that is not a RAID member, so the boot disk has to end up in Bay 1. That is why STEP 9 exists.',
+  'NO STRIPE, AND THAT IS FINE. One 240 gives ~209 GiB usable for a ~16 GB system. The bays are SATA II '
+    + '(~250-270 MB/s real) and a single V300 already saturates that, so the second drive would have '
+    + 'bought you very little. Keep Kingston B as a cold spare - sensible for a 9-year-old drive.',
+  'SMART FIRST. These are ~9 years old with unknown power-on hours. Check SMART on the Kingston before '
+    + 'you trust it as a boot disk, not after.',
+  'RAID X IS OFFLINE FROM STEP 1 TO STEP 9. If you need anything off the 3 TB volume, copy it BEFORE '
+    + 'you pull the Bay 2 drive.',
+];
 
 // ---------------------------------------------------------------- external constraints
 export type Constraint = { id: string; verdict: string; detail: string; source: string };
@@ -244,10 +315,33 @@ function selftest(): void {
   ok('the end state as stated overflows the bays', endStateConflict());
   ok('exactly one end state preserves Raid X', END_STATES.filter((c) => /ALIVE/.test(c.raidX)).length === 1);
   ok('the no-TRIM-on-Apple-RAID fact is recorded', SSD_NOTES.some((n) => /NO TRIM/.test(n)));
+  // bay-2 swap assertions
+  ok('bay2 plan ends with the Kingston in Bay 1 (E3)', /MOVE THE KINGSTON FROM BAY 2 INTO BAY 1/.test(BAY2_STEPS.join(' ')));
+  ok('bay2 plan warns Raid X goes offline at step 1', /OFFLINE/.test(BAY2_STEPS[0]));
+  ok('bay2 plan forbids erasing a WD', /[Nn]ever click Erase/.test(BAY2_STEPS.join(' ')));
+  ok('bay2 plan specifies GUID, not APM', /GUID/.test(BAY2_STEPS.join(' ')));
+  ok('the sled-fit problem is recorded with a no-purchase workaround', BAY2_MOUNT.workaround.length > 40);
+  ok('bay2 plan wipes the MX500 only after it leaves the machine', /STEP 10/.test(BAY2_STEPS[9]));
   const body = planSteps().join('\n');
   ok('plan never tells the operator to erase the running disk', !/erase the (running|boot)/i.test(body));
   console.log(fail === 0 ? 'LION_BOOT_MIGRATE_SELFTEST=PASS' : `LION_BOOT_MIGRATE_SELFTEST=FAIL failures=${fail}`);
   if (fail > 0) process.exit(1);
+}
+
+function bay2(): void {
+  console.log('BAY 2 SWAP - single Kingston V300 as the new boot disk (operator decision)\n');
+  console.log('  Chosen: pull the WD in Bay 2 (next to the Crucial in Bay 1), fit a 240 GB Kingston.');
+  console.log('  This is Option B, and it lands on end state E3 - the ONLY layout that keeps Raid X alive.\n');
+  console.log('  MOUNTING REALITY');
+  console.log(`    problem : ${BAY2_MOUNT.problem}`);
+  console.log(`    you have no adapter : ${BAY2_MOUNT.operatorHasNoAdapter}`);
+  console.log(`    workaround : ${BAY2_MOUNT.workaround}`);
+  console.log(`    tidy fix : ${BAY2_MOUNT.properFix}\n`);
+  console.log('  ORDERED STEPS\n');
+  for (const st of BAY2_STEPS) console.log(`    ${st}\n`);
+  console.log('  NOTES\n');
+  for (const n of BAY2_NOTES) console.log(`    - ${n}\n`);
+  console.log('  NOTHING IS ARMED. No erase, clone or Startup Disk change is authored by this tool.');
 }
 
 function endstate(): void {
@@ -270,6 +364,7 @@ function endstate(): void {
 const cmd = process.argv[2] ?? 'check';
 if (cmd === 'check') check();
 else if (cmd === 'plan') plan();
+else if (cmd === 'bay2') bay2();
 else if (cmd === 'endstate') endstate();
 else if (cmd === 'selftest') selftest();
-else { console.log('usage: node tools/lion-boot-migrate.ts <check|plan|endstate|selftest>'); process.exit(1); }
+else { console.log('usage: node tools/lion-boot-migrate.ts <check|plan|bay2|endstate|selftest>'); process.exit(1); }

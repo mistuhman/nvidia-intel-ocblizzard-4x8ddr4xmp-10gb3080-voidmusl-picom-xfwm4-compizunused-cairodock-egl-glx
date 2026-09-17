@@ -180,6 +180,29 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
     - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
       the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
       member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
+  - 2026-09-17f (session 01a0ae24) **DECIDED: single Kingston into Bay 2.** Operator: "lets just swap
+    out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston". This is Option B, and
+    it lands on **end state E3 — the only layout that keeps Raid X alive.** No stripe, no purchase,
+    no second SSD in the machine. Full ordered plan: `node tools/lion-boot-migrate.ts bay2`.
+    - ⚠️ **MOUNTING:** a 2.5" SSD does **not** screw into a 3,1 sled (3.5" hole spacing), and the OWC
+      2.5" Mac Pro sled is **2009-2012 only — not 3,1**. Operator has no adapters (inventory item 6).
+      **Workaround, no purchase:** the bays are cable-free direct-attach, so push the bare SSD onto
+      the Bay 2 backplane connector with no sled and shim it from underneath. Tidy fix later:
+      NewerTech AdaptaDrive 2.5→3.5 (~$11), which *does* fit classic Mac Pros.
+    - ⚠️ **THE KINGSTON CANNOT STAY IN BAY 2.** Bay 2 belongs to Raid X. Bay 1 is the only non-RAID
+      bay, so the boot disk must **end up in Bay 1**. Hence the endgame move at step 9: once the
+      Kingston is trusted, pull the MX500 from Bay 1, **move the Kingston into Bay 1**, and return the
+      WD Green to Bay 2 → Raid X gets all three members back and remounts healthy. Apple boots by
+      blessed volume, not bay, so the move is free.
+    - Sequence: pull Bay 2 WD (**Raid X goes offline — expected, not data loss**) → full shutdown →
+      fit Kingston → boot MX500 unchanged → erase **Kingston only**, JHFS+ **GUID** (APM won't boot an
+      Intel Mac) → CCC selective copy → Startup Disk → soak → step-9 bay shuffle → MX500 last.
+    - **Never click Erase / Create / Rebuild / Demote on any WD** while the set is broken. Unplugging
+      loses nothing; re-initialising a degraded member loses everything.
+    - Raid X is **offline from step 1 to step 9** — copy anything needed off the 3 TB volume first.
+    - ⚠️ **Check SMART on the Kingston before trusting it** (~9 years old, power-on hours unknown).
+    - Kingston B stays a **cold spare** — sensible for a drive this age, and a single V300 already
+      saturates the SATA II bay, so the stripe was buying very little.
   - 2026-09-17e (session 01a0ae24) **KINGSTON SKU RESOLVED FROM LABEL PHOTO — and it exposes a
     bay-arithmetic conflict in the stated end state.** (`node tools/lion-boot-migrate.ts endstate`)
     - Both drives read directly off the labels: **Kingston SSDNow V300 `SV300S37A/240G`**, Kingston

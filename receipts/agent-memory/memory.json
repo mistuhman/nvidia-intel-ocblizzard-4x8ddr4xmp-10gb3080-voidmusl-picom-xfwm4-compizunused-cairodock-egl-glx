@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 161,
+  "lastSeq": 162,
   "entries": [
     {
       "seq": 1,
@@ -2563,6 +2563,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 (2026-09-17e): operator supplied the Kingston label photo, both drives, replying 'all good'. SKU RESOLVED - Kingston SSDNow V300 SV300S37A/240G, Kingston PN 9904447-745.F03G, firmware 608ABBF0, lot 1607 (2016 wk07), Taiwan, DC+5.0V 1A, WWN 50026B7762054B94 + 50026B7762054FB2, LSI SandForce SF-2281. MATCHED PAIR (same PN/firmware/lot, near-consecutive serials) = best case for a stripe. V300 sync->async NAND controversy is MOOT here: 3,1 bays are SATA II ~300MB/s raw, at/below the async ceiling. NO TRIM (Apple software RAID never passes it; Lion has none anyway, trimforce=10.10.4) but ~96% empty drives make GC a non-issue. AGE ~9yr, SMART unchecked - flagged. NEW FINDING - BAY CONFLICT: the stated end state (keep other ssd installed + both Kingstons + 3 WDs back) = 6 drives in 4 bays, IMPOSSIBLE. Added END_STATES E1-E4 + 'endstate' command to tools/lion-boot-migrate.ts; E3 (1 Kingston boot + 3 WD) is the ONLY end state that keeps Raid X alive. Updated receipts/inventory/macpro31.md item 7 (SKU no longer UNKNOWN) and its photo request list. AWAITING: operator picks E2/E3/E4 + answers the 7 ASK apps.",
       "sha256": "bdd3036baaa836175549b83177c67994da38860b2ec5cd169a93de1804aa4bb4"
+    },
+    {
+      "seq": 162,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17f): operator DECIDED - 'lets just swap out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston'. = Option B single Kingston, no stripe, lands on end state E3, the ONLY layout keeping Raid X alive. Added BAY2_MOUNT + BAY2_STEPS (10) + BAY2_NOTES + 'bay2' command to tools/lion-boot-migrate.ts, 6 new selftest assertions. GOTCHA 1 MOUNTING: 2.5in SSD does NOT screw into a 3,1 sled (3.5in spacing); OWC MMP35T25 2.5in sled is 2009-2012 ONLY, not 3,1; operator has no adapters. No-purchase workaround = push bare SSD onto the cable-free direct-attach backplane connector with no sled, shim underneath (widely reported on classic Mac Pros). Tidy fix = NewerTech AdaptaDrive ~1, fits classic Mac Pros. GOTCHA 2 BAY TOPOLOGY: Kingston cannot STAY in Bay 2 because Bay 2 is a Raid X member and Bay 1 is the only non-RAID bay - so step 9 is the endgame move: pull MX500 from Bay 1, move Kingston Bay2->Bay1, return WD to Bay 2, Raid X remounts healthy. Apple boots by blessed volume not bay so the move is free. Erase KINGSTON ONLY, JHFS+ GUID (APM will not boot Intel). Raid X offline steps 1-9. Never Erase/Create/Rebuild/Demote a WD while degraded. SMART check flagged (~9yr). MX500 handled last, on the bench. AWAITING: the 7 ASK app rulings.",
+      "sha256": "bc39b9c7d0e0c12768bf8989bdb977ef75b411267f6cf669dc87101fa74d98ac"
     }
   ],
   "stacks": [
