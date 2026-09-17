@@ -1,0 +1,26 @@
+#!/bin/sh
+# xmb-perf-install: install the Phase 6 read-only measurement toolchain into
+# ~/.local/bin from a repo checkout, with byte-identity hash gates. Changes no
+# settings, restarts no services; uninstall is two rm's.
+#
+# Usage, from the repo checkout root on the TARGET:
+#   sh scripts/xmb-perf-install
+set -u
+SRC=$(dirname "$0"); DEST="$HOME/.local/bin"; RC=0
+mkdir -p "$DEST" || exit 2
+install_one() {
+  n="$1"
+  [ -r "$SRC/$n" ] || { echo "install: SKIP  $n missing"; return 0; }
+  cp -a "$SRC/$n" "$DEST/$n.tmp" && chmod 0755 "$DEST/$n.tmp" && mv -f "$DEST/$n.tmp" "$DEST/$n" || { echo "install: FAIL $n"; RC=1; return 1; }
+  [ -x "$DEST/$n" ] && echo "install: OK  $(sha256sum "$DEST/$n" | cut -c1-16)...  $DEST/$n" || { echo "install: FAIL  $n not exec"; RC=1; }
+}
+echo "== xmb-perf-install =="
+install_one xmb-perf
+install_one xmb-perf-frametime
+echo
+echo "-- repo hashes (compare) --"
+for f in xmb-perf xmb-perf-frametime; do [ -r "$SRC/$f" ] && echo "  $(sha256sum "$SRC/$f" | cut -c1-16)...  $f"; done
+echo
+echo "uninstall: rm -f $DEST/xmb-perf $DEST/xmb-perf-frametime"
+[ "$RC" = 0 ] && echo "VERDICT: INSTALLED" || echo "VERDICT: PROBLEM"
+exit "$RC"

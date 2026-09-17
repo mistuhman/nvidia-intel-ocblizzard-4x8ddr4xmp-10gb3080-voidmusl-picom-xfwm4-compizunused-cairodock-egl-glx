@@ -1,0 +1,213 @@
+{
+  "schema": "image-read.v1",
+  "profiles": [
+    {
+      "file": "/tmp/fixture/emerald-out/pixmaps.top.active.middle.png",
+      "width": 12,
+      "height": 24,
+      "meanLuma": 67.8,
+      "lumaP05": 5,
+      "lumaP50": 45,
+      "lumaP95": 197,
+      "darkShare": 0.431,
+      "midShare": 0.452,
+      "brightShare": 0.117,
+      "specularShare": 0.052,
+      "topLightBias": 10.3,
+      "anisotropyHorizontal": 9.1,
+      "saturation": 0.012,
+      "blueShare": 0.016,
+      "deepBlueShare": 0.016,
+      "vGradientBands": [
+        213.5,
+        150.8,
+        97.8,
+        57.1,
+        29.4,
+        13.4,
+        5.7,
+        29.6
+      ],
+      "hGradientBands": [
+        56.3,
+        61,
+        69.2,
+        78.2,
+        75.2,
+        71.8,
+        63.6,
+        57
+      ],
+      "palette": [
+        {
+          "rgb": [
+            8,
+            8,
+            8
+          ],
+          "share": 0.27
+        },
+        {
+          "rgb": [
+            23,
+            23,
+            23
+          ],
+          "share": 0.161
+        },
+        {
+          "rgb": [
+            40,
+            40,
+            40
+          ],
+          "share": 0.093
+        },
+        {
+          "rgb": [
+            87,
+            87,
+            87
+          ],
+          "share": 0.069
+        },
+        {
+          "rgb": [
+            55,
+            55,
+            55
+          ],
+          "share": 0.056
+        },
+        {
+          "rgb": [
+            70,
+            70,
+            70
+          ],
+          "share": 0.052
+        },
+        {
+          "rgb": [
+            150,
+            150,
+            150
+          ],
+          "share": 0.044
+        },
+        {
+          "rgb": [
+            117,
+            117,
+            117
+          ],
+          "share": 0.044
+        }
+      ]
+    },
+    {
+      "file": "/tmp/fixture/gtk-out/gtk-3.0/tiger3d/menubar.png",
+      "width": 1024,
+      "height": 24,
+      "meanLuma": 76.6,
+      "lumaP05": 6,
+      "lumaP50": 52,
+      "lumaP95": 224,
+      "darkShare": 0.399,
+      "midShare": 0.432,
+      "brightShare": 0.168,
+      "specularShare": 0.091,
+      "topLightBias": 7.8,
+      "anisotropyHorizontal": 13.7,
+      "saturation": 0.032,
+      "blueShare": 0.042,
+      "deepBlueShare": 0.042,
+      "vGradientBands": [
+        214.7,
+        150.9,
+        97.4,
+        57.6,
+        31,
+        14.9,
+        6.9,
+        39.7
+      ],
+      "hGradientBands": [
+        75.4,
+        76.1,
+        79.2,
+        78.5,
+        75.8,
+        75.8,
+        76.8,
+        75.6
+      ],
+      "palette": [
+        {
+          "rgb": [
+            9,
+            9,
+            9
+          ],
+          "share": 0.235
+        },
+        {
+          "rgb": [
+            22,
+            22,
+            22
+          ],
+          "share": 0.164
+        },
+        {
+          "rgb": [
+            39,
+            39,
+            39
+          ],
+          "share": 0.083
+        },
+        {
+          "rgb": [
+            55,
+            55,
+            55
+          ],
+          "share": 0.061
+        },
+        {
+          "rgb": [
+            231,
+            231,
+            231
+          ],
+          "share": 0.051
+        },
+        {
+          "rgb": [
+            71,
+            71,
+            71
+          ],
+          "share": 0.05
+        },
+        {
+          "rgb": [
+            87,
+            87,
+            87
+          ],
+          "share": 0.048
+        },
+        {
+          "rgb": [
+            34,
+            97,
+            141
+          ],
+          "share": 0.042
+        }
+      ]
+    }
+  ]
+}

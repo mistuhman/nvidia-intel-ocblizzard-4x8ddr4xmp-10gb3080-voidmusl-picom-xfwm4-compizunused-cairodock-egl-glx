@@ -1,0 +1,14 @@
+id -u
+# rgb-preview.block - ROOT shell on the target (sudo -i first, then paste).
+# Why: preview0 never ran (target console appended a stray 0 to the last line - 3rd
+# occurrence), so the colors never cycled. Palette is now OPERATOR-REFINED (2026-08-30):
+# red FF0000 / green 1EFF00 / purple 9000FF / orange FF2600. Line 1 restores the blue
+# layout (the removed health loop's green statics are still painted from run 2).
+# Gate: WATCH the rig (~15 s) and note the winner; paste output back. Preview returns to
+# the applied color by itself; nothing persistent changes until you `apply`/`persist`.
+# NOTE: the block ends with a bare `true` line ON PURPOSE - the console corrupts the last
+# pasted line with a stray 0, so the terminator absorbs it (true0 = harmless not-found).
+df -h /
+sh /home/sd/oc-lab/scripts/rgb-omen apply 031CC0
+sh /home/sd/oc-lab/scripts/rgb-omen preview
+true
