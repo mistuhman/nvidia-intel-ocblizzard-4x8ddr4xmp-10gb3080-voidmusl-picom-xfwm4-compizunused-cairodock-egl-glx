@@ -141,9 +141,14 @@ export const BAY2_STEPS: string[] = [
     + 'that you can see: the MX500 (boot), the new Kingston, and a Raid X set showing as damaged/offline '
     + 'with a missing member. Seeing Raid X broken here is CORRECT. Do not let Disk Utility "fix" it. '
     + 'Never click Erase, Create, Rebuild or Demote on anything WD.',
-  'STEP 5 - ERASE THE KINGSTON ONLY. Disk Utility, select the Kingston by its hardware name, erase as '
-    + 'Mac OS Extended (Journaled), GUID Partition Table. GUID matters - an Intel Mac will not boot from '
-    + 'an APM-formatted disk. Name it something you will recognise at the Option-boot screen.',
+  'STEP 5 - ERASE THE KINGSTON ONLY, AND SELECT THE RIGHT ROW. In the Disk Utility sidebar the DISK is the '
+    + 'outer row ("240.06 GB KINGSTON S...") and the VOLUME is the indented row under it ("KINGSTON"). Erasing '
+    + 'the indented VOLUME only reformats the existing partition and LEAVES THE OLD PARTITION MAP IN PLACE. '
+    + 'If that map is APM or MBR the disk will format fine, accept the clone, and then simply not appear as a '
+    + 'boot option - a failure that shows up hours later at the Option screen. SELECT THE OUTER DISK ROW, then '
+    + 'use the PARTITION tab (not Erase): 1 Partition, Mac OS Extended (Journaled), and in OPTIONS choose '
+    + 'GUID Partition Table. Lion buries the scheme under Partition > Options; the Erase tab does not expose '
+    + 'it at all, which is exactly how people end up with an unbootable clone.',
   'STEP 6 - SELECTIVE COPY WITH CARBON COPY CLONER. Source = the MX500 boot volume, destination = the '
     + 'Kingston, with /Users/revo, /Users/jazzyempire and the DROP list excluded. '
     + 'See: node tools/lion-migrate-manifest.ts plan',
@@ -164,6 +169,13 @@ export const BAY2_STEPS: string[] = [
 ];
 
 export const BAY2_NOTES: string[] = [
+  'VERIFY THE MAP BEFORE CLONING, NOT AFTER. Select the outer Kingston disk row and read "Partition Map '
+    + 'Scheme" at the bottom of the Disk Utility window. It must say GUID Partition Table. If it says Apple '
+    + 'Partition Map or Master Boot Record, redo the Partition step - a clone onto the wrong map boots nothing.',
+  'THE PHOTOGRAPHED STATE IS SAFE: the Kingston arrived preformatted Mac OS Extended (Journaled), 239.71 GB, '
+    + '312.4 MB used, mounted at /Volumes/KINGSTON. Nothing on it matters. Both WD10EACS members still show '
+    + '"RAID Slice for Raid X", and the MX500 still shows "start disk clone" - the boot disk is untouched, '
+    + 'exactly as intended. Only ONE WD is visible where two were expected; the pulled member is the Bay 2 one.',
   'WHY THE KINGSTON CANNOT JUST STAY IN BAY 2: Bay 2 belongs to Raid X. Leaving the Kingston there '
     + 'means Raid X never gets its third member back and the 3 TB volume stays dead. Bay 1 is the only '
     + 'bay that is not a RAID member, so the boot disk has to end up in Bay 1. That is why STEP 9 exists.',

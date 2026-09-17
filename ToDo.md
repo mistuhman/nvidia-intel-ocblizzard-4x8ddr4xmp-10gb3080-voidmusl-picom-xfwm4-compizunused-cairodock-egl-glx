@@ -180,6 +180,34 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
     - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
       the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
       member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
+  - 2026-09-17g (session 01a0ae24) **KINGSTON IS IN THE MACHINE (Disk Utility photo) + all 7 ASK
+    items ruled. ⚠️ ERASE-SCREEN HAZARD CAUGHT.**
+    - Photo confirms: `240.06 GB KINGSTON S…` present, volume `KINGSTON` mounted at `/Volumes/KINGSTON`,
+      239.71 GB, 312.4 MB used, JHFS+. MX500 still `start disk clone`, WD still `RAID Slice for "Raid X"`.
+      **Boot disk untouched — the swap went exactly right.**
+    - ⚠️ **DO NOT CLICK ERASE ON THE SELECTED ROW.** The photo shows the indented **volume** `KINGSTON`
+      selected, not the outer **disk**. Erasing the volume reformats the partition but **leaves the old
+      partition map**. If that map is APM/MBR the clone will succeed and then simply *never appear as a
+      boot option* — a failure that surfaces hours later at the Option screen.
+      **Correct move:** select the **outer disk row** → **Partition** tab (not Erase) → 1 Partition,
+      Mac OS Extended (Journaled) → **Options… → GUID Partition Table**. Lion hides the scheme under
+      Partition ▸ Options; the Erase tab never exposes it. Then confirm "Partition Map Scheme: GUID
+      Partition Table" at the bottom of the window **before** cloning.
+    - **ASK items resolved** — operator: "if theres a professional and better alternative to those then
+      go with that instead. i only really use widgets for some of the desktop features":
+      - **DROP Mail / iCal / Address Book** — widgets cover the desktop use, and Lion's PIM apps can no
+        longer authenticate to modern Gmail/iCloud/CalDAV anyway. Dropping costs nothing.
+      - **KEEP Transmit** — it *is* the professional option; Cyberduck + ForkLift dropped as redundant.
+      - **KEEP Contour Shuttle** (2.6 M) — ShuttlePro is standard edit-bay kit; trivial to remove later.
+      - **DROP hueyPRO** — huey is a *consumer* colorimeter, untrustworthy for grading, and useless
+        without the puck. Pro path is an X-Rite i1Display Pro, which doesn't use this software.
+      - **DROP Mac Pro EFI Firmware Update** — one-shot installer, still hosted by Apple; carrying a
+        firmware flasher onto a fresh boot disk is pure downside.
+    - **NEW DATA RULE:** copy `widget-com.apple.widget-*.plist` + `/Library/Widgets` +
+      `~/Library/Widgets` — Dashboard is part of the OS, but installed widgets and their saved state
+      live in those paths. Miss them and Dashboard comes up empty.
+    - **Final tally: KEEP 64 / 2.75 GB · DROP 87 / 6.69 GB · ASK 0.** Projected boot ~16.1 GB vs
+      ~209 GiB usable → ~193 GiB spare on the single Bay-2 Kingston.
   - 2026-09-17f (session 01a0ae24) **DECIDED: single Kingston into Bay 2.** Operator: "lets just swap
     out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston". This is Option B, and
     it lands on **end state E3 — the only layout that keeps Raid X alive.** No stripe, no purchase,

@@ -104,9 +104,9 @@ export const APPS: App[] = [
   A('Network Utility', '1.5M', 'KEEP', 'Apple: AirPort work'),
   A('Bluetooth File Exchange', '1.6M', 'KEEP', 'Apple: small, part of the OS'),
   A('Safari', '36M', 'KEEP', 'Apple: dead for modern web but the OS integrates with it; ArcticFox is the real browser'),
-  A('Mail', '49M', 'ASK', 'Apple PIM. Keep only if this Mac handles mail - otherwise 49M of sync cruft'),
-  A('Address Book', '20M', 'ASK', 'Apple PIM - keep only if actually used'),
-  A('iCal', '33M', 'ASK', 'Apple PIM - keep only if actually used'),
+  A('Mail', '49M', 'DROP', 'operator uses Dashboard widgets for desktop PIM, not the Apple apps (2026-09-17g). Lion Mail cannot do modern OAuth/TLS anyway - it can no longer log into Gmail/iCloud, so it is dead weight, not a downgrade'),
+  A('Address Book', '20M', 'DROP', 'operator ruling 2026-09-17g: widgets cover the desktop use. No pro alternative needed - contacts are not part of the A/V workflow'),
+  A('iCal', '33M', 'DROP', 'operator ruling 2026-09-17g: the Dashboard Calendar widget covers this. Lion iCal cannot sync to modern CalDAV endpoints'),
 
   // --- explicitly swept by the operator ---
   A('Winamp', '9.5M', 'DROP', 'operator: "sweep winamp" (seq 151) - replaced by a classic source port with CD + skins'),
@@ -163,7 +163,7 @@ export const APPS: App[] = [
   A('Transmission', '11M', 'DROP', 'torrent client - not professional A/V'),
   A('CrushFTP4', '8.4M', 'DROP', 'FTP server daemon - not needed on a workstation'),
   A('Cyberduck', '23M', 'DROP', 'FTP client; Transmit is the kept one'),
-  A('Transmit', '20M', 'ASK', 'FTP client - keep ONE file-transfer tool if you move media to a server'),
+  A('Transmit', '20M', 'KEEP', 'operator ruling 2026-09-17g asked for the professional option - Transmit (Panic) IS it. Cyberduck and ForkLift are the amateur/redundant ones and are dropped. Keep exactly one transfer tool and make it this'),
   A('ForkLift', '14M', 'DROP', 'file manager/FTP - redundant with Transmit'),
   A('Cocktail', '9.1M', 'DROP', 'maintenance app for Leopard, wrong OS version'),
   A('Leopard Cache Cleaner', '29M', 'DROP', 'maintenance app for Leopard, wrong OS version'),
@@ -180,8 +180,8 @@ export const APPS: App[] = [
   A('Adobe Media Player', '3.0M', 'DROP', 'dead Adobe product'),
   A('Adobe AIR Application Installer', '888K', 'DROP', 'dead runtime'),
   A('Adobe AIR Uninstaller', '57M', 'DROP', 'dead runtime'),
-  A('hueyPRO', '30M', 'ASK', 'display colour calibrator - KEEP if you still have the huey hardware, else drop'),
-  A('Contour Shuttle', '2.6M', 'ASK', 'jog/shuttle edit controller - KEEP if you still have the Shuttle device'),
+  A('hueyPRO', '30M', 'DROP', 'operator ruling 2026-09-17g: go professional instead. huey is a CONSUMER colorimeter and its readings are not trustworthy for grading. Without the USB puck the app does nothing at all. Pro path = X-Rite i1Display Pro, which does not use this software. Dropping loses nothing'),
+  A('Contour Shuttle', '2.6M', 'KEEP', 'operator ruling 2026-09-17g: this IS the professional tool - the ShuttlePro v2 is a standard FCP edit-bay controller and 2.6M is nothing. Keep the driver; if the puck is gone, delete it in five seconds later'),
   A('Uninstall Contour Shuttle', '200K', 'DROP', 'uninstaller stub'),
   A('LCC Uninstaller', '680K', 'DROP', 'Logitech uninstaller stub'),
   A('LCC Connection Utility', '792K', 'DROP', 'Logitech mouse/kb utility'),
@@ -200,12 +200,20 @@ export const APPS: App[] = [
   A('App Store', '9.6M', 'DROP', 'the 10.7 store catalog is dead (R5: update chatter disabled)'),
   A('Batch Monitor', '5.4M', 'KEEP', 'Compressor companion - part of Final Cut Studio'),
   A('ATI Radeon HD 2600 XT Firmware Update', '1.6M', 'DROP', 'firmware updater for a card not in this machine (GTX 285 is installed)'),
-  A('Mac Pro EFI Firmware Update', '3.1M', 'ASK', 'EFI updater - keep only if an EFI update is actually planned; risky to run casually'),
+  A('Mac Pro EFI Firmware Update', '3.1M', 'DROP', 'operator ruling 2026-09-17g: a one-shot installer, not a tool. Apple still hosts it; re-download if an EFI update is ever actually planned. Carrying a firmware flasher onto a fresh boot disk is pure downside'),
 ];
 
 // ---------------------------------------------------------------- user data rules
 export type DataRule = { path: string; action: string; why: string };
 export const DATA_RULES: DataRule[] = [
+  {
+    action: 'COPY IN FULL',
+    path: '/Users/el/Library/Preferences/widget-com.apple.widget-*.plist + /Library/Widgets + /Users/el/Library/Widgets',
+    why: 'operator 2026-09-17g: "i only really use widgets for some of the desktop features". Dashboard is '
+      + 'part of the OS and needs no app, but the INSTALLED WIDGETS and their saved state (which cities, '
+      + 'which stocks, which stickies) live here. Miss these and Dashboard comes up empty on the new disk.',
+  },
+
   { path: '/Users/el (Samael, admin, uid 502, 1.3G)', action: 'COPY IN FULL', why: 'operator account - "the only account ive used since downloading lion" (seq 153)' },
   { path: '/Users/el/Downloads (256 .icns, 82 images, 351M)', action: 'COPY IN FULL', why: 'operator: "use the icons and img textures i downloaded on my el admin account" (seq 153); "keep themes/icons/downloads dirs" (seq 142)' },
   { path: '/Users/el/Library/Application Support/Flavours/My Flavours', action: 'COPY IN FULL', why: 'the live .flavour themes - Natural Wood + one UUID theme (R5 receipt)' },
@@ -243,8 +251,8 @@ function size(): void {
   console.log(`  /Users/el        1.30 GB   (R5 receipt)`);
   console.log(`  OS + libraries  ~12.0 GB   (ESTIMATE - Lion system, not measured on this disk)`);
   console.log(`  ------------------------------------`);
-  console.log(`  projected boot  ~${total.toFixed(1)} GB  vs ~425 GB usable on the 2x240 stripe`);
-  console.log(`  => fits with ~${(425 - total).toFixed(0)} GB to spare. Even a single 240 would hold this.`);
+  console.log(`  projected boot  ~${total.toFixed(1)} GB  vs ~209 GiB usable on ONE 240 GB Kingston (Bay 2)`);
+  console.log(`  => fits with ~${(209 - total).toFixed(0)} GiB to spare on the single Bay-2 Kingston. No stripe needed.`);
   console.log('\n  NOTE: the 12 GB OS figure is an estimate. Confirm with the identity probe before the clone.');
 }
 
@@ -318,7 +326,11 @@ function selftest(): void {
     ok(`all ${burn.length} burn apps classified`, missing.length === 0);
     if (missing.length) console.log(`     unclassified: ${missing.join(', ')}`);
   } catch { ok('burn receipt readable for coverage check', false); }
-  ok('ASK items exist and are not silently decided', byCls('ASK').length > 0);
+  // All 7 ASK items were ruled on by the operator 2026-09-17g, so ASK must now be EMPTY.
+  // Anything landing back in ASK means a new undecided app crept in - that must fail.
+  ok('no undecided apps remain (all 7 ASK ruled 2026-09-17g)', APPS.filter((a) => a.cls === 'ASK').length === 0);
+  ok('Transmit kept as the one professional transfer tool', APPS.some((a) => a.name === 'Transmit' && a.cls === 'KEEP'));
+  ok('Dashboard widget state is copied', DATA_RULES.some((r) => /[Ww]idget/.test(r.path)));
   const body = plan.toString();
   ok('plan warns Raid X goes offline', /RAID X GOES OFFLINE/.test(body));
   ok('plan keeps MX500 as rollback', /Option-boot returns you to the old system/.test(body));

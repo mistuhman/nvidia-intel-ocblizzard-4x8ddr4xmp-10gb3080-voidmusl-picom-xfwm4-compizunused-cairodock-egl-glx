@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 162,
+  "lastSeq": 163,
   "entries": [
     {
       "seq": 1,
@@ -2570,6 +2570,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 (2026-09-17f): operator DECIDED - 'lets just swap out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston'. = Option B single Kingston, no stripe, lands on end state E3, the ONLY layout keeping Raid X alive. Added BAY2_MOUNT + BAY2_STEPS (10) + BAY2_NOTES + 'bay2' command to tools/lion-boot-migrate.ts, 6 new selftest assertions. GOTCHA 1 MOUNTING: 2.5in SSD does NOT screw into a 3,1 sled (3.5in spacing); OWC MMP35T25 2.5in sled is 2009-2012 ONLY, not 3,1; operator has no adapters. No-purchase workaround = push bare SSD onto the cable-free direct-attach backplane connector with no sled, shim underneath (widely reported on classic Mac Pros). Tidy fix = NewerTech AdaptaDrive ~1, fits classic Mac Pros. GOTCHA 2 BAY TOPOLOGY: Kingston cannot STAY in Bay 2 because Bay 2 is a Raid X member and Bay 1 is the only non-RAID bay - so step 9 is the endgame move: pull MX500 from Bay 1, move Kingston Bay2->Bay1, return WD to Bay 2, Raid X remounts healthy. Apple boots by blessed volume not bay so the move is free. Erase KINGSTON ONLY, JHFS+ GUID (APM will not boot Intel). Raid X offline steps 1-9. Never Erase/Create/Rebuild/Demote a WD while degraded. SMART check flagged (~9yr). MX500 handled last, on the bench. AWAITING: the 7 ASK app rulings.",
       "sha256": "bc39b9c7d0e0c12768bf8989bdb977ef75b411267f6cf669dc87101fa74d98ac"
+    },
+    {
+      "seq": 163,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17g): Kingston PHYSICALLY INSTALLED - Disk Utility photo shows '240.06 GB KINGSTON S...' disk + volume KINGSTON at /Volumes/KINGSTON, 239.71GB, 312.4MB used, JHFS+, 12 folders/57 files. MX500 still 'start disk clone', WD still 'RAID Slice for Raid X' => boot disk untouched, swap correct. Only ONE WD visible = the Bay 2 member is the one pulled. HAZARD CAUGHT: photo shows the INDENTED VOLUME row selected on the Erase tab. Erasing the volume leaves the existing PARTITION MAP intact; if APM/MBR the clone succeeds then never appears as a boot option (fails hours later at Option screen). Correct: select OUTER DISK row -> PARTITION tab (not Erase) -> 1 Partition, JHFS+, Options... -> GUID Partition Table; Lion hides scheme under Partition>Options, Erase tab never exposes it. Verify 'Partition Map Scheme: GUID Partition Table' before cloning. ALL 7 ASK RULED (operator: 'if theres a professional and better alternative to those then go with that instead. i only really use widgets for some of the desktop features'): DROP Mail/iCal/Address Book (widgets cover it; Lion PIM cannot auth to modern Gmail/iCloud/CalDAV); KEEP Transmit (IS the pro option, Cyberduck+ForkLift dropped); KEEP Contour Shuttle (ShuttlePro = standard edit-bay kit, 2.6M); DROP hueyPRO (consumer colorimeter, untrustworthy for grading, dead without puck; pro = X-Rite i1Display Pro which does not use it); DROP Mac Pro EFI Firmware Update (one-shot installer, re-downloadable, pure downside on a fresh disk). NEW DATA RULE: copy widget plists + /Library/Widgets + ~/Library/Widgets or Dashboard comes up empty. TALLY KEEP 64/2.75GB, DROP 87/6.69GB, ASK 0. Projected boot ~16.1GB vs ~209GiB usable. AWAITING: GUID repartition + paste-back of the Partition Map Scheme line.",
+      "sha256": "ba67b11b279ae6c083b19a580f0cc51945cc8d709ec3a19fe640c393bc36c980"
     }
   ],
   "stacks": [
