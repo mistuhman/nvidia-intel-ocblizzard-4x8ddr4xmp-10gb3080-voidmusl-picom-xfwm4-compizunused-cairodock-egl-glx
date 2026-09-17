@@ -1,6 +1,6 @@
 {
-  "updated": "2026-09-17l (session 01a0af07, KISS/DOOM3 one-thing-one-job, One top is current Bay-2 CCC)",
-  "session": "01a0af07",
+  "updated": "2026-09-17m (session 01a0af84, KISS/DOOM3 one-thing-one-job, One top is current Bay-2 CCC)",
+  "session": "01a0af84",
   "machine": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
   "nextAction": "2026-09-17l KISS DOOM3: One page stripped to Command mirror (Reload+textarea, etc/lion-command.txt) + Report (Browse .txt) + Burn — single job, no bloat split. Bay-2 CCC wave docs/lion-ccc-selective-wave.md remains current, Kingston GUID verified, Raid X degraded expected, start disk clone intact, preflight 12:37 PASS (LIONONE1), desk mode. NEXT at desk: CCC Path A (source start disk clone → Kingston, Backup everything, delete DROP from /Volumes/Kingston only), then Reload Command for post-clone verification (df/du/ls) before any Startup Disk bless. Command file for mirror: lion-command-mirror.command (top download, also etc/lion-command.txt). Stage prepared for new chat pickup.",
