@@ -180,6 +180,28 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
     - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
       the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
       member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
+  - 2026-09-17e (session 01a0ae24) **KINGSTON SKU RESOLVED FROM LABEL PHOTO — and it exposes a
+    bay-arithmetic conflict in the stated end state.** (`node tools/lion-boot-migrate.ts endstate`)
+    - Both drives read directly off the labels: **Kingston SSDNow V300 `SV300S37A/240G`**, Kingston
+      P/N `9904447-745.F03G`, firmware `608ABBF0`, lot `1607` (2016 wk 07), Taiwan, DC +5.0 V 1 A,
+      WWN `50026B7762054B94` / `50026B7762054FB2`, LSI SandForce SF-2281.
+      **MATCHED PAIR** — same PN, same firmware, same lot, near-consecutive serials. A stripe runs at
+      its slowest member's pace, so a mismatch would have mattered. There is none. Best case.
+    - The notorious V300 sync→async NAND switch is **moot here**: the 3,1 bays are SATA II, capped
+      ~300 MB/s raw / ~250-270 MB/s real — at or below the async drive's own ceiling.
+    - **No TRIM**, and it costs nothing: Apple software RAID never passes TRIM to members, and Lion
+      10.7 has no third-party TRIM anyway (`trimforce` arrived in 10.10.4). At ~16 GB on 447 GB the
+      drives sit ~96 % empty — enormous effective over-provisioning for SandForce GC.
+    - ⚠️ **Age ~9 years, power-on hours unknown. Check SMART on both before trusting either.**
+    - ⚠️ **BAY CONFLICT — the stated end state cannot exist.** "keep the other ssd installed" + both
+      Kingstons + all three WDs back = **6 drives in 4 bays**. Four end states, one decision:
+      - **E1** 2 Kingston + MX500 + 3 WD — **IMPOSSIBLE** (6 bays needed).
+      - **E2** 2 Kingston stripe + 2 WD — fits; **Raid X dead**, MX500 to the shelf.
+      - **E3** 1 Kingston boot + 3 WD — fits; **only end state that keeps Raid X alive**. Boot ~16 GB
+        in ~209 GB usable; Kingston B becomes a cold spare (arguably right for a 9-year-old drive).
+      - **E4** 2 Kingston stripe + MX500 + 1 WD — fits; Raid X dead, two WDs out.
+    - The temporary swap is unaffected — it's a migration vehicle, not a final layout. But the final
+      layout must be chosen **before the MX500 is wiped**.
   - 2026-09-17c (session 01a0ae24) **OPERATOR PLAN: 2× 240 GB Kingston RAID 0 → migrate boot →
     then wipe the MX500.** Bay layout confirmed by operator: Bay 1 = MX500 boot, Bays 2-4 = the
     three Raid X members. Verdict from `node tools/lion-boot-migrate.ts check`: **the plan is sound

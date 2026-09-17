@@ -19,7 +19,7 @@
 //   cables the operator has confirmed he does not own, and their bootability is DISPUTED in
 //   the sources. Every resolution to this is an operator decision, not an agent action.
 //
-// Usage: node tools/lion-boot-migrate.ts <check|plan|selftest>
+// Usage: node tools/lion-boot-migrate.ts <check|plan|endstate|selftest>
 
 // ---------------------------------------------------------------- measured inputs (receipts)
 const GiB = 1024 ** 3, GB = 1000 ** 3;
@@ -29,6 +29,7 @@ export const FACTS = {
   revoHomeGiB: 775,        // receipts/absolution/R5/identity-and-space.md : revo home = 775G
   kingstonCount: 2,        // operator 2026-09-17 + receipts/inventory/macpro31.md seq 82 item 7
   kingstonGB: 240,
+  wdCount: 3,              // three WD Green members in Raid X
   bays: 4,                 // iFixit 25114: Mac Pro Early 2008 = four internal bays
   baysUsed: 4,             // Bay1 MX500 boot + Bays 2-4 = three Raid X members (operator layout)
   headroom: 0.95,          // HFS+ slack + SSD over-provisioning
@@ -40,6 +41,69 @@ export const usedAfterReclaimGiB = (): number => FACTS.bootUsedGiB - FACTS.revoH
 export const fitsNow = (): boolean => FACTS.bootUsedGiB <= stripeUsableGiB();
 export const fitsAfterReclaim = (): boolean => usedAfterReclaimGiB() <= stripeUsableGiB();
 export const freeBays = (): number => FACTS.bays - FACTS.baysUsed;
+
+// ------------------------------------------------- VERIFIED SSD identity (operator label photo, 2026-09-17)
+// Both Kingston labels photographed and read directly. This CLOSES the "SKU UNKNOWN" gap in
+// receipts/inventory/macpro31.md item 7. Read off the labels, not inferred:
+export const SSD_IDENTITY = {
+  model: 'Kingston SSDNow V300',
+  partNumber: 'SV300S37A/240G',       // identical on BOTH drives
+  kingstonPN: '9904447-745.F03G',     // identical on BOTH drives
+  firmware: '608ABBF0',               // identical on BOTH drives
+  dateCode: '1607',                   // 2016 week 07 - identical lot on BOTH drives
+  assembledIn: 'TAIWAN',
+  power: 'DC +5.0V 1A',
+  wwn: ['50026B7762054B94', '50026B7762054FB2'], // near-consecutive: same production run
+  controller: 'LSI SandForce SF-2281',           // V300 series controller
+  matched: true,  // same PN + same firmware + same lot = the ideal case for a stripe
+};
+
+// What the verified SKU actually changes:
+export const SSD_NOTES: string[] = [
+  'MATCHED PAIR CONFIRMED: identical part number, identical firmware 608ABBF0, identical 1607 lot, ' +
+    'near-consecutive WWNs. A stripe runs at the slower member\'s pace, so a mismatch would have been a ' +
+    'real problem. There is no mismatch. This is the best case.',
+  'THE V300 NAND CONTROVERSY IS MOOT HERE. Kingston silently switched the V300 from synchronous to ' +
+    'slower asynchronous Micron NAND (anandtech 7763); async units read ~180-250 MB/s on incompressible ' +
+    'data instead of the advertised 450. But the Mac Pro 3,1 drive bays are SATA II, hard-capped at ' +
+    '300 MB/s raw / ~250-270 MB/s real (everymac mac-pro-how-to-replace-hard-drive-install-ssd). The bay ' +
+    'ceiling is at or below the async drive\'s ceiling, so the downgrade costs almost nothing in THIS machine.',
+  'STRIPING STILL HELPS: each bay is its own SATA channel, so two drives aggregate past the single-bay ' +
+    'ceiling. This is the one place the stripe earns its risk.',
+  'NO TRIM - AND IT DOES NOT MATTER HERE. Apple software RAID never passes TRIM to members (its RAID ' +
+    'driver predates TRIM), and Lion 10.7 has no TRIM for third-party SSDs anyway - trimforce only ' +
+    'arrived in 10.10.4 (macrumors 2015/07/01). So the stripe loses nothing Lion was going to give. ' +
+    'More to the point: ~16 GB on a 447 GB stripe leaves the drives ~96% empty, which is enormous ' +
+    'effective over-provisioning. SandForce garbage collection has all the free blocks it could want.',
+  'AGE: 1607 date code = ~9 years old. Unknown power-on hours. Check SMART before trusting either one, ' +
+    'and remember a 2-drive RAID 0 doubles the chance of a boot-disk failure.',
+];
+
+// ------------------------------------------------- END-STATE BAY ARITHMETIC (the thing the swap hides)
+// The temporary swap works fine. The problem is what happens when the WDs go back.
+export type Config = { id: string; layout: string; bays: number; raidX: string; verdict: string };
+export const END_STATES: Config[] = [
+  {
+    id: 'E1', layout: '2 Kingston stripe + MX500 kept + 3 WD returned',
+    bays: 6, raidX: 'n/a', verdict: 'IMPOSSIBLE - needs 6 bays, the machine has 4. This is literally what was asked for.',
+  },
+  {
+    id: 'E2', layout: '2 Kingston stripe + 2 WD',
+    bays: 4, raidX: 'DEAD - a 3-member set cannot run on 2 members',
+    verdict: 'Fits the bays. Costs you Raid X permanently and the MX500 goes on the shelf.',
+  },
+  {
+    id: 'E3', layout: '1 Kingston boot + 3 WD Raid X returned',
+    bays: 4, raidX: 'ALIVE - all three members back',
+    verdict: 'THE ONLY END STATE THAT KEEPS RAID X. Boot is ~16 GB in 209 GB usable. Kingston B becomes a cold spare - which, for a 9-year-old drive, is arguably where the second one belongs anyway.',
+  },
+  {
+    id: 'E4', layout: '2 Kingston stripe + MX500 + 1 WD',
+    bays: 4, raidX: 'DEAD', verdict: 'Fits, keeps the MX500 installed as asked, but abandons Raid X and two WDs.',
+  },
+];
+export const bayDemand = (): number => FACTS.kingstonCount + 1 + FACTS.wdCount; // kingstons + MX500 + WDs
+export const endStateConflict = (): boolean => bayDemand() > FACTS.bays;
 
 // ---------------------------------------------------------------- external constraints
 export type Constraint = { id: string; verdict: string; detail: string; source: string };
@@ -174,14 +238,38 @@ function selftest(): void {
   ok('a zero-purchase option exists', BAY_OPTIONS.some((o) => o.cost === 'no purchase' && o.risk === 'LOW'));
   ok('plan puts the reclaim first', /STEP 0/.test(planSteps()[0]) && /revo/.test(planSteps()[0]));
   ok('plan wipes the MX500 only at the end', /STEP 6/.test(planSteps()[6]) && /wiping it/.test(planSteps()[6]));
+  // verified-hardware + end-state assertions
+  ok('Kingston SKU is verified from a label photo, not guessed', SSD_IDENTITY.partNumber === 'SV300S37A/240G');
+  ok('the pair is matched (same PN, firmware and lot)', SSD_IDENTITY.matched);
+  ok('the end state as stated overflows the bays', endStateConflict());
+  ok('exactly one end state preserves Raid X', END_STATES.filter((c) => /ALIVE/.test(c.raidX)).length === 1);
+  ok('the no-TRIM-on-Apple-RAID fact is recorded', SSD_NOTES.some((n) => /NO TRIM/.test(n)));
   const body = planSteps().join('\n');
   ok('plan never tells the operator to erase the running disk', !/erase the (running|boot)/i.test(body));
   console.log(fail === 0 ? 'LION_BOOT_MIGRATE_SELFTEST=PASS' : `LION_BOOT_MIGRATE_SELFTEST=FAIL failures=${fail}`);
   if (fail > 0) process.exit(1);
 }
 
+function endstate(): void {
+  console.log('END-STATE BAY ARITHMETIC - what happens when the WDs go back\n');
+  console.log(`  VERIFIED HARDWARE: ${SSD_IDENTITY.model} ${SSD_IDENTITY.partNumber}, firmware `
+    + `${SSD_IDENTITY.firmware}, lot ${SSD_IDENTITY.dateCode} - MATCHED PAIR (operator label photo)\n`);
+  for (const n of SSD_NOTES) console.log(`  - ${n}\n`);
+  console.log(`  Bays available: ${FACTS.bays}. Bays the stated end state needs: ${bayDemand()} `
+    + `(${FACTS.kingstonCount} Kingston + 1 MX500 + ${FACTS.wdCount} WD).`);
+  console.log(`  CONFLICT: ${endStateConflict() ? 'YES - over by ' + (bayDemand() - FACTS.bays) + ' bays' : 'no'}\n`);
+  for (const c of END_STATES) {
+    console.log(`  ${c.id}. ${c.layout}`);
+    console.log(`      bays ${c.bays}/${FACTS.bays} | Raid X: ${c.raidX}`);
+    console.log(`      ${c.verdict}\n`);
+  }
+  console.log('  The temporary swap is unaffected - it is a migration vehicle, not a final layout.');
+  console.log('  But the final layout is an OPERATOR DECISION and it has to be made before the MX500 is wiped.');
+}
+
 const cmd = process.argv[2] ?? 'check';
 if (cmd === 'check') check();
 else if (cmd === 'plan') plan();
+else if (cmd === 'endstate') endstate();
 else if (cmd === 'selftest') selftest();
-else { console.log('usage: node tools/lion-boot-migrate.ts <check|plan|selftest>'); process.exit(1); }
+else { console.log('usage: node tools/lion-boot-migrate.ts <check|plan|endstate|selftest>'); process.exit(1); }

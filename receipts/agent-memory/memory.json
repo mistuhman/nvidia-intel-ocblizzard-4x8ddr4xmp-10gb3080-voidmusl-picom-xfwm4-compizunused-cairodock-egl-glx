@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 160,
+  "lastSeq": 161,
   "entries": [
     {
       "seq": 1,
@@ -2556,6 +2556,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 step 3 (2026-09-17d): operator approved temporary HDD->SSD swap + selective copy. REFRAME: selective COPY not delete - MX500 untouched/bootable as rollback, revo 775G simply not copied, which dissolves the capacity blocker. tools/lion-migrate-manifest.ts classifies all 150 R1-burn apps (coverage-gated) + CandyBar (lives in ~/Downloads NOT /Applications - naive copy would miss it). KEEP 62/2.73GB (full Final Cut Studio, GarageBand+Audio MIDI Setup, CandyBar/Flavours/ArcticFox/AirPort, iTunes=CD burn path, Aperture/FxFactory/LooksBuilder/ScreenFlow/Blackmagic/HandBrake/VLC/QT7). DROP 82/6.56GB (Winamp swept, games incl Kid Pix 2.0G + Mavis 717M, dead browsers, consumer iPhoto/iMovie/iDVD superseded by kept pro equivalents). ASK 7: Mail, iCal, Address Book, Transmit, hueyPRO, Contour Shuttle, EFI updater. CRITICAL CATCH: Carbon Copy Cloner was CANDIDATE=delete in the old sweep but it PERFORMS the migration - now KEEP. Projected boot ~16.2GB vs 425GB usable. RISK: Raid X = 3-member no-redundancy stripe, goes offline while members are out, needs all three back (reassembles by UUID). Selftest caught 2 real bugs (NaN size parse on CandyBar em-dash, short reason strings). AWAITING operator answers on the 7 ASK items.",
       "sha256": "d984a2d1a9bb33e84b877d2dc1e65eb03f7958a88584d0dc9e78223e4ced35c3"
+    },
+    {
+      "seq": 161,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17e): operator supplied the Kingston label photo, both drives, replying 'all good'. SKU RESOLVED - Kingston SSDNow V300 SV300S37A/240G, Kingston PN 9904447-745.F03G, firmware 608ABBF0, lot 1607 (2016 wk07), Taiwan, DC+5.0V 1A, WWN 50026B7762054B94 + 50026B7762054FB2, LSI SandForce SF-2281. MATCHED PAIR (same PN/firmware/lot, near-consecutive serials) = best case for a stripe. V300 sync->async NAND controversy is MOOT here: 3,1 bays are SATA II ~300MB/s raw, at/below the async ceiling. NO TRIM (Apple software RAID never passes it; Lion has none anyway, trimforce=10.10.4) but ~96% empty drives make GC a non-issue. AGE ~9yr, SMART unchecked - flagged. NEW FINDING - BAY CONFLICT: the stated end state (keep other ssd installed + both Kingstons + 3 WDs back) = 6 drives in 4 bays, IMPOSSIBLE. Added END_STATES E1-E4 + 'endstate' command to tools/lion-boot-migrate.ts; E3 (1 Kingston boot + 3 WD) is the ONLY end state that keeps Raid X alive. Updated receipts/inventory/macpro31.md item 7 (SKU no longer UNKNOWN) and its photo request list. AWAITING: operator picks E2/E3/E4 + answers the 7 ASK apps.",
+      "sha256": "bdd3036baaa836175549b83177c67994da38860b2ec5cd169a93de1804aa4bb4"
     }
   ],
   "stacks": [
