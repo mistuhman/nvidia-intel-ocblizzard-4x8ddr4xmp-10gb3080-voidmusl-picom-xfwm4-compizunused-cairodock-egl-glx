@@ -169,6 +169,18 @@ export const BAY2_STEPS: string[] = [
 ];
 
 export const BAY2_NOTES: string[] = [
+  'DO NOT SETTLE THE GUID QUESTION FROM A SCREENSHOT - ASK diskutil. Screenshots of two similar rows '
+    + 'are easy to misread in both directions. "diskutil list" prints the scheme on each disk header '
+    + 'line: GUID_partition_scheme means done, Apple_partition_scheme (APM) or FDisk_partition_scheme '
+    + '(MBR) means redo it. This is read-only and settles it in one line.',
+  'SECOND INDEPENDENT TELL - THE BOTTOM INFO PANEL. A VOLUME selection shows Mount Point / Format / '
+    + 'Owners Enabled / Number of Folders. A DISK selection shows Disk Description / Connection Bus / '
+    + 'Total Capacity / Partition Map Scheme. If the panel says "Mount Point", a volume is selected '
+    + 'and the Partition tab is not reachable from there.',
+  'A SUCCESSFUL REPARTITION IS VISIBLE IN THE NUMBERS. Erasing or repartitioning empties the volume: '
+    + 'Used drops to a few MB and Number of Files drops to single digits. If Used and Number of Files '
+    + 'are byte-identical to before, the data is still there and no erase has run - regardless of what '
+    + 'the volume is now called. Renaming a volume changes the name only.',
   'HOW TO TELL WHICH ROW IS SELECTED WITHOUT GUESSING - LOOK AT THE TAB BAR. With a VOLUME selected '
     + 'Disk Utility shows exactly four tabs: First Aid, Erase, RAID, Restore. With the physical DISK '
     + 'selected a fifth tab appears: PARTITION. So if you cannot see a Partition tab, you are on the '
