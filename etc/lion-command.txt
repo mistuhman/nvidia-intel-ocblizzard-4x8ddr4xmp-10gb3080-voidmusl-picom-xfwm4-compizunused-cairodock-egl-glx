@@ -10,16 +10,22 @@ WHERE WE LEFT OFF (PR #92 merged):
 
 CCC WAVE AUTHORED: docs/lion-ccc-selective-wave.md on branch arena/01a0af07 (c7fc942). Selective COPY, not delete — MX500 stays rollback. No erase armed.
 
-NEXT SINGLE STEP (all phone-readable, no Terminal paste needed this turn):
-- Preflight is 5 read-only checks (diskutil list, df -h, ls Users / Applications) — paste when back at desk, not now.
-- CCC on the Mac: Source = start disk clone, Destination = Kingston. Path A (recommended): clone everything, then delete from /Volumes/Kingston only: /Users/revo, /Users/jazzyempire, and the 87-DROP checklist in the doc (full table). CandyBar in ~/Downloads and widget plists must be carried — naive /Applications filter loses them.
-- Post-clone verification before any Startup Disk bless (commands in doc). Bay endgame move (Kingston Bay2→Bay1, WD back to Bay2) is deferred to soak after several clean boots.
+GATE 12:37 UTC PASS — you are at desk, burns verified 05:36 PDT:
+- disk0 KINGSTON GUID + EFI 209.7 MB, Kingston 239.7 GB, mounted at /Volumes/Kingston — format held
+- disk1s2+disk2s2 Apple_RAID degraded (2 members, Bay2 WD pulled) — expected, do not Repair
+- disk3s2 start disk clone 999.3 GB + Recovery HD 650 MB — live Lion 10.7.5 boot intact
+- ArcticFox 47.3, GTX 285, Firewall disabled — all as expected
+
+NEXT NOW (at desk, CCC GUI, no Terminal paste needed):
+1) CCC: Source = start disk clone (/dev/disk3s2), Destination = Kingston (/dev/disk0s2), preset Backup everything — Run full, no sleep
+2) After clone: on /Volumes/Kingston ONLY delete: /Users/revo, /Users/jazzyempire, and the 87-DROP apps (full list in docs/lion-ccc-selective-wave.md). Keep CandyBar at /Users/el/Downloads/CandyBar.app + widget plists + Flavours/fonts. Never touch /Volumes/start disk clone.
+3) Then Reload this Command panel for the post-clone verification block (pasteable df/du/ls) — paste back before any Startup Disk bless. Bay endgame move deferred to soak.
 
 PHONE WORKFLOW THIS CHAT:
 - Read the wave at docs/lion-ccc-selective-wave.md via the branch raw or the One page fallback (da.gd/sQ7bEo). This etc/lion-command.txt mirrors the nextAction for the Burn page.
 - Burn logs the same way: choose ~/Desktop/lion-*.txt on the Burn page (da.gd/lionrelay or da.gd/sQ7bEo → Burn) — text/plain is what the model reads; file attach alone stays empty.
 
-No commands pasted this turn per your phone gate. PR_BUDGET=PASS 338/405. Nothing to do on the Mac until you are at the desk.
+Desk mode: you are at desk — this Command panel IS the paste source (Arctic Fox → Edit > Copy). No Arena copy needed. After CCC, Reload for verification block.
 
 COMPILE_GATE=HOLD
 Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.
