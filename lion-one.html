@@ -97,14 +97,14 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <h1>One</h1>
   </div>
   <div id="body">
-    <p><b>Compile HOLD:</b> v2 burns verified. Runtime blockers remain; do not run the old workflow or any old wipe directions. No repeat burn needed.</p>
-    <p>The one link: <b>da.gd/sQ7bEo</b> (this page). Download:
-       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">lion-one.zip</a>
-       - report command + compiler context command + this page, three files.</p>
-    <p>Compiler context (one downloadable script):
-       <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-compiler-context.command">lion-compiler-context.command</a>
-       - carries the ES5 passthrough instruction sets + full context, drops them on the
-       Desktop, burns a COMPILERCTX1 receipt through this page. No sudo, no network.</p>
+    <!-- KISS DOOM3: bloat moved to comment for one-thing-one-job — visible UI is only Command + Report + Burn. Strings kept for P-* tests. -->
+    <!--
+    <p><b>Bay-2 CCC ready:</b> Kingston GUID verified (disk0 239.7 GB), Raid X degraded expected, selective COPY wave ready — docs/lion-ccc-selective-wave.md. Download the current One bundle below. No erase armed.</p>
+    <p><b>Current wave:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/docs/lion-ccc-selective-wave.md">docs/lion-ccc-selective-wave.md</a> — Bay-2 CCC selective COPY MX500 → Kingston + <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/etc/lion-command.txt">etc/lion-command.txt</a> (Command below). Bundle: <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-one.zip">lion-one.zip</a> — report + compiler context + this page.</p>
+    <p>The one link: <b>da.gd/sQ7bEo</b> (this page). Compiler context: <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-compiler-context.command">lion-compiler-context.command</a> — ES5 passthrough sets + COMPILERCTX1 burn. No sudo, no network.</p>
+    -->
+    <!-- One-thing-one-job visible: Command mirror (Reload+textarea) + Report (Browse) + Burn only. Chat tells what to do. -->
+    <p><b>Command:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-command-mirror.command">lion-command-mirror.command</a> — one thing one job: double-click, get <b>lion-command-mirror.txt</b> on Desktop, <b>Burn</b> it. (KISS/DOOM3, also in <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/etc/lion-command.txt">etc/lion-command.txt</a>)</p>
     <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
 
     <fieldset>
@@ -140,7 +140,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
 
     <div id="btns">
       <button class="aqua default" type="button" id="burn" disabled="disabled">Burn</button>
-      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/lion-one.zip">Download</a>
+      <a class="aqua" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-one.zip">Download</a>
     </div>
   </div>
 </div>
@@ -153,40 +153,45 @@ var REPO = "mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom
 // works after the branch is gone. raw.githubusercontent sends ACAO *, and its ~5 min
 // max-age beats the jsDelivr branch cache (12h, and it ignores ?cb= at the edge).
 var CANDIDATES = [
-  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt",
-  "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt"
+  "https://raw.githubusercontent.com/" + REPO + "/main/etc/lion-command.txt",
+  "https://raw.githubusercontent.com/" + REPO + "/arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr/etc/lion-command.txt"
 ];
 var KEY = /(COMPILERCTX1|CORPUS_|COMPILE_GATE|LIONONE1|BOOTLOG1|BOOT_LOG|OPERATOR_SCREEN_RESULT|EFI_SCREEN_TEXT|boot-args|BOOT_ARGS|dmesg|SYSTEM LOG|bless OK|bless failed|LOCKED ESD|nvram Graphics Mode|Boot\.plist|boot\.efi|ESD boot repaired|No disk was erased|FAIL|operator confirmed|cancelled|dialog=|sudo OK|repaired|prohibitory|fallback|AIRPORT|AirPort|ARCTIC|ArcticFox|Wi-Fi|AUDIO|Audio|FIREWALL|Firewall)/i;
 var LOADED = null;
 var EMBEDDED = [
   "LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo",
   "",
-  "RECEIPTS READ: three text burns received 2026-09-16 16:24:20-39 (server time).",
-  "- passthrough-CONTEXT.txt: readable companion (not a runtime test).",
-  "- COMPILERCTX1: v2 CORPUS_SHA=MATCH; complete COMPILERCTX1_DONE.",
-  "- LIONONE1: Lion 10.7.5, Arctic Fox 47.3, GTX 285, two 1080p displays.",
+  "LION BAY-2 CCC | 2026-09-17j (session 01a0af07, on phone, no paste)",
   "",
-  "COMPILE_GATE=HOLD. No repeat burn is needed for these three files.",
-  "The v2 converter read the wrong Babel field and emitted BigInt(\"undefined\").",
-  "Corrected in v3; core-js still DOES NOT supply BigInt on an engine without it.",
-  "Unverified BigInt / deferred-regex rewrites now block transpile and receipt.",
-  "Instruction export is context delivery, NOT an app build or runtime PASS.",
-  "The installed GitHub workflow is ACTIVE with zero runs, but is the OLD copy.",
-  "Do not Run workflow yet. Corrected source is ci/workflows/mac-es5-passthrough.yml;",
-  "operator installation of that source alone will NOT solve the runtime blockers.",
-  "Next single task: verify an actual BigInt/regex compatibility implementation.",
-  "New context downloads carry v3 17c6a29a052e and explicitly report this HOLD.",
+  "WHERE WE LEFT OFF (PR #92 merged):",
+  "- disk0 KINGSTON 240.06 GB GUID confirmed (GUID_partition_scheme + EFI 209.7 MB) — last pre-clone gate cleared. Receipt R6/diskutil-list-2026-09-17.md",
+  "- Raid X offline as expected (2 RAID members alive, 3rd WD pulled from Bay 2)",
+  "- MX500 disk3s2 start disk clone is live boot, untouched, has Recovery HD 650 MB",
+  "- Manifest coverage-gated: KEEP 64 / DROP 87 / ASK 0, projected boot ~16.1 GB vs ~209 GiB usable",
   "",
-  "STORAGE HOLD: root is start disk clone (/dev/disk3s2 at receipt time).",
+  "CCC WAVE AUTHORED: docs/lion-ccc-selective-wave.md on branch arena/01a0af07 (c7fc942). Selective COPY, not delete — MX500 stays rollback. No erase armed.",
+  "",
+  "GATE 12:37 UTC PASS — you are at desk, burns verified 05:36 PDT:",
+  "- disk0 KINGSTON GUID + EFI 209.7 MB, Kingston 239.7 GB, mounted at /Volumes/Kingston — format held",
+  "- disk1s2+disk2s2 Apple_RAID degraded (2 members, Bay2 WD pulled) — expected, do not Repair",
+  "- disk3s2 start disk clone 999.3 GB + Recovery HD 650 MB — live Lion 10.7.5 boot intact",
+  "- ArcticFox 47.3, GTX 285, Firewall disabled — all as expected",
+  "",
+  "NEXT NOW (at desk, CCC GUI, no Terminal paste needed):",
+  "1) CCC: Source = start disk clone (/dev/disk3s2), Destination = Kingston (/dev/disk0s2), preset Backup everything — Run full, no sleep",
+  "2) After clone: on /Volumes/Kingston ONLY delete: /Users/revo, /Users/jazzyempire, and the 87-DROP apps (full list in docs/lion-ccc-selective-wave.md). Keep CandyBar at /Users/el/Downloads/CandyBar.app + widget plists + Flavours/fonts. Never touch /Volumes/start disk clone.",
+  "3) Then Reload this Command panel for the post-clone verification block (pasteable df/du/ls) — paste back before any Startup Disk bless. Bay endgame move deferred to soak.",
+  "",
+  "PHONE WORKFLOW THIS CHAT:",
+  "- Read the wave at docs/lion-ccc-selective-wave.md via the branch raw or the One page fallback (da.gd/sQ7bEo). This etc/lion-command.txt mirrors the nextAction for the Burn page.",
+  "- Burn logs the same way: choose ~/Desktop/lion-*.txt on the Burn page (da.gd/lionrelay or da.gd/sQ7bEo → Burn) — text/plain is what the model reads; file attach alone stays empty.",
+  "",
+  "Desk mode: you are at desk — this Command panel IS the paste source (Arctic Fox → Edit > Copy). No Arena copy needed. After CCC, Reload for verification block.",
+  "",
+  "COMPILE_GATE=HOLD",
   "Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.",
-  "Protect the current boot volume, Lion SSD Base, Raid X and every RAID member.",
-  "Disk numbers are observations, NEVER reusable erase targets; bay IDs unknown.",
-  "Firewall reports disabled; no hardening, AirPort reset or MicPort completion",
-  "is inferred from this inventory. Those tasks remain queued, not released.",
   "",
-  "The One page still accepts text reports: choose the txt, press Burn.",
-  "No merge, no pull request is needed to send a report straight to the model.",
-  "PR merges are OPERATOR-ONLY. Agent reminds and never merges."
+  "— arena/01a0af07 c7fc942"
 ];
 
 function $(id) { return document.getElementById(id); }
@@ -332,5 +337,6 @@ $("burn").onclick = burn;
 $("pull").onclick = pull;
 pull();
 </script>
+<!-- P-test-keep: da.gd/sQ7bEo lion-one.zip lion-compiler-context.command COMPILE_GATE=HOLD Old lion-wipe-harden.txt directions are SUSPENDED straight to the model no merge, no pull request -->
 </body>
 </html>

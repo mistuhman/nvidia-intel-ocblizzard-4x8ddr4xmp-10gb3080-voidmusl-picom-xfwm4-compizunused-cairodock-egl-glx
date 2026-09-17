@@ -42,6 +42,23 @@ function load(): Workflow {
   return JSON.parse(readFileSync(WORKFLOW, 'utf8')) as Workflow;
 }
 
+// KISS DOOM3 fine-tune: mirror is one job — print the single next pasteable block (etc/lion-command.txt) + inbox, no verbose split.
+// Discriminates previous prompts: phoneWorkflow vs desk, Bay-2 CCC vs compile HOLD, main vs branch mirror. Fine-tuned while in use.
+function printMirror(w: Workflow): void {
+  // One thing one job: command mirror + log dropbox + burn — no bloat split
+  const lines: string[] = [];
+  const p = (s: string) => lines.push(s);
+  p('LION_MIRROR_KISS');
+  p(`mirror: ${w.links.logInbox.url}`);
+  try {
+    const cmd = pathlib_exists('etc/lion-command.txt') ? readFileSync('etc/lion-command.txt', 'utf8').split('\n').slice(0, 20).join('\n') : w.nextAction.slice(0, 400);
+    p('commandPreview: ' + cmd.split('\n')[0]);
+  } catch {}
+  p(`nextAction: ${w.nextAction}`);
+  process.stdout.write(lines.join('\n') + '\n');
+}
+function pathlib_exists(p: string): boolean { try { return existsSync(p); } catch { return false; } }
+
 function printStatus(w: Workflow): void {
   const lines: string[] = [];
   const p = (s: string) => lines.push(s);
@@ -156,9 +173,10 @@ function main(): void {
   const w = load();
   const mode = process.argv[2] ?? 'print';
   if (mode === 'selftest') selftest(w);
+  else if (mode === 'mirror' || mode === 'kiss') printMirror(w);
   else if (mode === 'print' || mode === undefined) printStatus(w);
   else {
-    console.error('usage: node tools/lion-status.ts [print|selftest]');
+    console.error('usage: node tools/lion-status.ts [print|selftest|mirror|kiss]');
     process.exit(2);
   }
 }
