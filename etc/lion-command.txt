@@ -1,28 +1,25 @@
-LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo
+LION BAY-2 CCC | 2026-09-17j (session 01a0af07, on phone, no paste)
 
-RECEIPTS READ: three text burns received 2026-09-16 16:24:20-39 (server time).
-- passthrough-CONTEXT.txt: readable companion (not a runtime test).
-- COMPILERCTX1: v2 CORPUS_SHA=MATCH; complete COMPILERCTX1_DONE.
-- LIONONE1: Lion 10.7.5, Arctic Fox 47.3, GTX 285, two 1080p displays.
+WHERE WE LEFT OFF (PR #92 merged):
+- disk0 KINGSTON 240.06 GB GUID confirmed (GUID_partition_scheme + EFI 209.7 MB) — last pre-clone gate cleared. Receipt R6/diskutil-list-2026-09-17.md
+- Raid X offline as expected (2 RAID members alive, 3rd WD pulled from Bay 2)
+- MX500 disk3s2 start disk clone is live boot, untouched, has Recovery HD 650 MB
+- Manifest coverage-gated: KEEP 64 / DROP 87 / ASK 0, projected boot ~16.1 GB vs ~209 GiB usable
 
-COMPILE_GATE=HOLD. No repeat burn is needed for these three files.
-The v2 converter read the wrong Babel field and emitted BigInt("undefined").
-Corrected in v3; core-js still DOES NOT supply BigInt on an engine without it.
-Unverified BigInt / deferred-regex rewrites now block transpile and receipt.
-Instruction export is context delivery, NOT an app build or runtime PASS.
-The installed GitHub workflow is ACTIVE with zero runs, but is the OLD copy.
-Do not Run workflow yet. Corrected source is ci/workflows/mac-es5-passthrough.yml;
-operator installation of that source alone will NOT solve the runtime blockers.
-Next single task: verify an actual BigInt/regex compatibility implementation.
-New context downloads carry v3 17c6a29a052e and explicitly report this HOLD.
+CCC WAVE AUTHORED: docs/lion-ccc-selective-wave.md on branch arena/01a0af07 (c7fc942). Selective COPY, not delete — MX500 stays rollback. No erase armed.
 
-STORAGE HOLD: root is start disk clone (/dev/disk3s2 at receipt time).
+NEXT SINGLE STEP (all phone-readable, no Terminal paste needed this turn):
+- Preflight is 5 read-only checks (diskutil list, df -h, ls Users / Applications) — paste when back at desk, not now.
+- CCC on the Mac: Source = start disk clone, Destination = Kingston. Path A (recommended): clone everything, then delete from /Volumes/Kingston only: /Users/revo, /Users/jazzyempire, and the 87-DROP checklist in the doc (full table). CandyBar in ~/Downloads and widget plists must be carried — naive /Applications filter loses them.
+- Post-clone verification before any Startup Disk bless (commands in doc). Bay endgame move (Kingston Bay2→Bay1, WD back to Bay2) is deferred to soak after several clean boots.
+
+PHONE WORKFLOW THIS CHAT:
+- Read the wave at docs/lion-ccc-selective-wave.md via the branch raw or the One page fallback (da.gd/sQ7bEo). This etc/lion-command.txt mirrors the nextAction for the Burn page.
+- Burn logs the same way: choose ~/Desktop/lion-*.txt on the Burn page (da.gd/lionrelay or da.gd/sQ7bEo → Burn) — text/plain is what the model reads; file attach alone stays empty.
+
+No commands pasted this turn per your phone gate. PR_BUDGET=PASS 338/405. Nothing to do on the Mac until you are at the desk.
+
+COMPILE_GATE=HOLD
 Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.
-Protect the current boot volume, Lion SSD Base, Raid X and every RAID member.
-Disk numbers are observations, NEVER reusable erase targets; bay IDs unknown.
-Firewall reports disabled; no hardening, AirPort reset or MicPort completion
-is inferred from this inventory. Those tasks remain queued, not released.
 
-The One page still accepts text reports: choose the txt, press Burn.
-No merge, no pull request is needed to send a report straight to the model.
-PR merges are OPERATOR-ONLY. Agent reminds and never merges.
+— arena/01a0af07 c7fc942

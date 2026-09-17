@@ -1,6 +1,6 @@
 {
   "schema": "arena-master-context.v2",
-  "updated": "2026-09-17j (session 01a0af07, CCC wave authored)",
+  "updated": "2026-09-17k (session 01a0af07, phone workflow persistence)",
   "lionMac": {
     "handoff": "docs/lion-ssd-handoff.md",
     "workflow": "docs/lion-workflow.json",
@@ -30,7 +30,24 @@
     "relay": "lion.html rev 2 turns a burn into an agent-readable log: the page reads ~/Desktop/lion-mirror.txt or ~/Desktop/lion-boot-log.txt with FileReader and POSTs the whole report as text/plain (plus a ?log= verdict query and the old multipart file). Read it at docs/lion-workflow.json links.logRead with fetch_page, never curl.",
     "openItem": "Shell and Node direct egress cannot reach shorteners reliably, but fetch_page reaches da.gd. The reproducible workflow is Node URL-encode exact destination -> fetch da.gd/?url=...&shorturl=... -> fetch da.gd/<slug>+ and compare coshorten output. Current slugs are da.gd/lionrelay and da.gd/lionzip; never use TinyURL.",
     "commands": "etc/lion-command.txt is the inbound channel the page renders; a push to the session branch is visible in ~5 min via raw, so short commands never have to be typed on the Mac again.",
-    "session": "01a0af07"
+    "session": "01a0af07",
+    "phoneWorkflow": {
+      "when": "operator is on phone \u2014 cannot paste bash blocks; verbatim operator signal is 'im on my phone' or 'no commands though'",
+      "mirror": "etc/lion-command.txt is the canonical command mirror. It is rendered by the Burn/One pages. Operator types the shortened link on the Mac and reads the mirror there \u2014 no Terminal paste from chat.",
+      "shortLinks": [
+        "da.gd/sQ7bEo \u2014 ONE LINK (primary, htmlpreview of lion-one.html, three-file zip) \u2014 type this when unsure",
+        "da.gd/lionrelay \u2014 relay page (htmlpreview of lion.html, commands panel + log relay)",
+        "da.gd/lionzip \u2014 bundle (raw lion-mirror2.zip, helper + page)",
+        "da.gd/absolution \u2014 permanent ABSOLUTION launcher (reads ABSOLUTION.json at runtime, retargets per rollout; one slug forever)",
+        "da.gd/lzr / da.gd/lmz \u2014 legacy, do not use for new waves"
+      ],
+      "run": "download the command file referenced by the mirror (lion-mirror.command, lion-boot-log.command, lion-arcticfox-harden.command, absolution.command etc.) and double-click to run on the Mac. Each creates a report: ~/Desktop/lion-mirror.txt or ~/Desktop/lion-boot-log.txt or ~/Desktop/lion-arcticfox.txt etc., plus optional /<name>.txt \u2014 never curl, never Terminal paste when on phone.",
+      "burn": "on the SAME page, choose the created ~/Desktop/<name>.txt and press Burn. The page POSTs text/plain (plus multipart) to links.logInbox (webhook.site). Agent reads ONLY via fetch_page on docs/lion-workflow.json links.logRead (NOT curl \u2014 sandbox curl to webhook.site/da.gd filtered to HTTP 000). Multipart file attach alone is unreadable (content empty, owner-auth download route) \u2014 the text/plain body is the readable channel, which is why the page sends both.",
+      "persistence": "PERSISTENCE IS MANDATORY. This workflow has been re-explained multiple times because new chats overlooked it and broke it by sending pasteable bash when on phone. It lives HERE in MASTER (this phoneWorkflow block) and in docs/lion-workflow.json links + etc/lion-command.txt. Every new chat MUST read MASTER.md in full at step 1 (README Start protocol) before touching anything; orient + lion-status must be run; when operator signals phone, agent MUST NOT send bash blocks \u2014 instead write the next wave to etc/lion-command.txt and tell operator to reload the shortened link. Breaking this is a gate failure.",
+      "operatorVerb": "just download the command from the shortened link mirror, run it, it creates a txt log, and i burn it \u2014 verbatim user usage sentence preserved here as the canonical phone path",
+      "mirrorFile": "etc/lion-command.txt \u2014 single source of truth for phone-visible next steps; pushed to branch arena/01a0af07, visible via raw.githubusercontent after ~5 min and via htmlpreview immediately for the current branch",
+      "logInbox": "https://webhook.site/token/a078e138-e87d-4369-9868-0c0c1f3500d6/requests?limit=5 \u2014 read with fetch_page, newest entry whose content begins with LION* or ABSOLUTION* is the report"
+    }
   },
   "macArt": {
     "tool": "node tools/mac-storage-art.ts",
@@ -126,7 +143,8 @@
         "4. one wave at a time until receipt returns"
       ],
       "reciprocation": "every command sent expects its receipt returned before the next wave ships",
-      "oneWaveAtATime": "hard rule from operator 2026-08-21: never send a second wave of target commands until the first wave output has arrived"
+      "oneWaveAtATime": "hard rule from operator 2026-08-21: never send a second wave of target commands until the first wave output has arrived",
+      "phoneAlternative": "WHEN OPERATOR IS ON PHONE: do NOT send pasteable bash blocks (user will say 'im on my phone' / 'no commands though'). Instead write next steps to etc/lion-command.txt, push to the fixed branch, and tell operator to reload the shortened link mirror (da.gd/sQ7bEo). The Mac workflow then is: download command from mirror \u2192 double-click \u2192 creates ~/Desktop/<name>.txt \u2192 burn via same page (text/plain). Agent reads via fetch_page on links.logRead. This persists via MASTER.lionMac.phoneWorkflow \u2014 every new chat must read it before acting."
     },
     "permission": {
       "agentOwned": [
@@ -359,7 +377,8 @@
       "paste commands directly in chat; no registry/ceremony tokens. Blocks must be console-safe: one command per line, bash -n passes, no chaining/redirects that break on web-console paste, root blocks start with id -u",
       "after an operator paste-back, read the output verbatim and attribute cause before proposing the next step - reciprocity is part of the contract",
       "do not conclude impossible; search a new class or gather more context first",
-      "merges are OPERATOR-DIRECTED (operator directive 2026-09-16 / session 01a0ad38): when the operator explicitly instructs/says \"please\" pull/merge pr, the agent executes the merge (gh pr merge) \u2014 by the agent doing it, not by the agent deciding it without instruction. The agent never merges unbidden, but never refuses an operator-directed merge. PR #57 merged cleanly into main; PRs #72, #60, #34, #24, #23 blocked by merge conflicts against main awaiting granular application"
+      "merges are OPERATOR-DIRECTED (operator directive 2026-09-16 / session 01a0ad38): when the operator explicitly instructs/says \"please\" pull/merge pr, the agent executes the merge (gh pr merge) \u2014 by the agent doing it, not by the agent deciding it without instruction. The agent never merges unbidden, but never refuses an operator-directed merge. PR #57 merged cleanly into main; PRs #72, #60, #34, #24, #23 blocked by merge conflicts against main awaiting granular application",
+      "when operator signals phone (\"im on my phone\" / \"no commands though\"): do NOT send pasteable bash blocks; write next steps to etc/lion-command.txt and mirror via shortened link (da.gd/sQ7bEo). Workflow: download command from mirror \u2192 run \u2192 creates ~/Desktop/<name>.txt \u2192 burn on same page \u2192 agent reads via fetch_page on links.logRead"
     ]
   },
   "lessons": [
@@ -393,7 +412,8 @@
     "read where the short link actually lands before building on it: da.gd/lmz resolved to an older arena branch, not main and not this session branch, so a zip change on main is invisible to the Burn click. A write-once redirect is a frozen dependency - verify its destination ref, and prefer a link printed inside a page you control.",
     "the Burn bundle is pinned to a git TAG, not a branch or main: jsDelivr serves @main with HTTP 500 on this repo, branch paths cache ~12h, and a cache-buster query is ignored at the edge - only @tag resolves instantly and immutably, so updates move the tag rather than the file.",
     "a tool file that mixes ESM import syntax with CJS require() silently breaks under node module-syntax detection: the file classifies as ESM where require is undefined, and try/catch turns that into a fake DEPS-MISSING - bind createRequire(import.meta.url) at the top (mac-es5-passthrough.ts fix 2026-09-16g; would have hit the first CI run too).",
-    "npm i --no-save without a package.json PRUNES node_modules to exactly the named set each call - install all needed deps in ONE command or the previous install vanishes (2026-09-16g sandbox compile)."
+    "npm i --no-save without a package.json PRUNES node_modules to exactly the named set each call - install all needed deps in ONE command or the previous install vanishes (2026-09-16g sandbox compile).",
+    "PHONE WORKFLOW PERSISTENCE \u2014 operator has re-explained the phone mirror+burn workflow multiple times because new chats overlooked MASTER and broke it by sending pasteable bash when on phone. The workflow (download command from shortened link mirror \u2192 run \u2192 creates txt log \u2192 burn on same page \u2192 agent reads via fetch_page) is now canonically persisted in MASTER.md lionMac.phoneWorkflow and in docs/lion-workflow.json links + etc/lion-command.txt. Every new chat MUST read MASTER.md fully at step 1 (README Start protocol) and honor phoneWorkflow when operator signals phone; breaking it is a gate failure, not a style choice."
   ],
   "parked": [
     "phase7 leftovers (operator direction only): doas hardening / sudo removal decision (base-system + testdisk reverse-depend sudo), durable machine logging, network control/interception",
