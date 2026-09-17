@@ -47,7 +47,7 @@ const SHORT = `https://da.gd/${NAME}`;
 // ---------------------------------------------------------------- rollout identity
 // Printed in the chat, stamped into the page, and echoed into the log, so a receipt can always be
 // traced back to the exact bytes that produced it.
-export const ROLLOUT = 'R4';
+export const ROLLOUT = 'R5';
 const BRANCH = 'arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr';
 const PR = 91;
 const SESSION = '01a0ad71';
@@ -228,6 +228,9 @@ var TAG = "${TAG}";
 var ROLLOUT = "${ROLLOUT}";
 var BODY = null;
 
+function $(id){ return document.getElementById(id); }
+function setStatus(t, cls){ var e = $("st"); if (e) { e.innerHTML = t; e.className = cls ? cls : "note"; } }
+
 // The short link is write-once, so this page must never be the thing that goes stale. It reads
 // ${POINTER} at load - main first, then the authoring branch - and retargets its own downloads,
 // stamp and log tag to whatever rollout is current. Baked-in values above are only the fallback
@@ -237,44 +240,54 @@ var POINTERS = [
   "https://raw.githubusercontent.com/${REPO}/${BRANCH}/${POINTER}"
 ];
 
+function setHref(id, v){ var e = $(id); if (e && v) { e.href = v; } }
+function setText(id, v){ var e = $(id); if (e && v) { e.innerHTML = v; } }
+
 function applyPointer(p){
   if (!p || !p.rollout) { return false; }
-  if (p.command) { $("dl-cmd").href = p.command; }
-  if (p.zip) { $("dl-zip").href = p.zip; }
-  if (p.accounts) { $("dl-acct").href = p.accounts; }
-  if (p.rollout) { $("s-rollout").innerHTML = p.rollout; ROLLOUT = p.rollout; }
-  if (p.branch) { $("s-branch").innerHTML = p.branch; }
-  if (p.prUrl) { $("s-pr").href = p.prUrl; $("s-pr").innerHTML = "PR #" + p.pr; }
-  if (p.session) { $("s-session").innerHTML = p.session; }
-  if (p.date) { $("s-date").innerHTML = p.date; }
-  if (p.tag) { $("s-tag").innerHTML = p.tag; TAG = p.tag; }
+  setHref("dl-cmd", p.command);
+  setHref("dl-zip", p.zip);
+  setHref("dl-acct", p.accounts);
+  setText("s-rollout", p.rollout);
+  ROLLOUT = p.rollout;
+  setText("s-branch", p.branch);
+  setHref("s-pr", p.prUrl);
+  if (p.pr) { setText("s-pr", "PR #" + p.pr); }
+  setText("s-session", p.session);
+  setText("s-date", p.date);
+  if (p.tag) { setText("s-tag", p.tag); TAG = p.tag; }
   if (p.inbox) { INBOX = p.inbox; }
   return true;
 }
 
+function setLive(t){ var e = $("s-live"); if (e) { e.innerHTML = t; } }
+
 function loadPointer(i){
   if (i >= POINTERS.length) {
-    $("s-live").innerHTML = "using built-in rollout " + ROLLOUT;
+    setLive("using built-in rollout " + ROLLOUT);
     return;
   }
-  var x = new XMLHttpRequest();
-  x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
-  x.onreadystatechange = function(){
-    if (x.readyState !== 4) { return; }
-    var ok = false;
-    if (x.status === 200) {
-      try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e) { ok = false; }
-    }
-    if (ok) { $("s-live").innerHTML = "live rollout " + ROLLOUT; }
-    else { loadPointer(i + 1); }
-  };
-  try { x.send(null); } catch (e) { loadPointer(i + 1); }
+  // EVERYTHING here is inside one try. On Arctic Fox 47 a blocked cross-origin
+  // XMLHttpRequest throws at open(), not at send() - that threw at page load, killed the
+  // script before the picker was wired, and left Burn permanently greyed out. The burn UI
+  // must never depend on this call succeeding.
+  try {
+    var x = new XMLHttpRequest();
+    x.onreadystatechange = function(){
+      if (x.readyState !== 4) { return; }
+      var ok = false;
+      if (x.status === 200) {
+        try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e2) { ok = false; }
+      }
+      if (ok) { setLive("live rollout " + ROLLOUT); }
+      else { loadPointer(i + 1); }
+    };
+    x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
+    x.send(null);
+  } catch (e) {
+    loadPointer(i + 1);
+  }
 }
-
-function $(id){ return document.getElementById(id); }
-function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls ? cls : "note"; }
-
-loadPointer(0);
 
 function acceptText(text, label){
   BODY = String(text || "");
@@ -341,6 +354,10 @@ $("burn").onclick = function(){
   if (a || b) { setStatus("BURNED - say burned in the chat", "ok"); }
   else { setStatus("burn failed - paste the text into chat instead", "bad"); }
 };
+
+// LAST, and guarded: the rollout pointer is a nice-to-have. The burn UI above is already
+// live by this point, so even a hard failure here cannot disable the picker or Burn.
+try { loadPointer(0); } catch (e) { setLive("using built-in rollout " + ROLLOUT); }
 </script>
 </body></html>
 `;
@@ -615,6 +632,62 @@ function selftest(): void {
   // R4: the R3 picker was unusable on the Mac. Mozilla 671172 - on macOS an accept filter greys out
   // files and the native panel gives no way back to "All Files" on FF-52-class builds. So: no accept
   // attribute, and a paste box that can always deliver the report even if the picker is dead.
+  // R5 REGRESSION GATE. R4 shipped a page whose burn UI never got wired: loadPointer(0) ran before
+  // the handlers and x.open() sat outside the try, so Arctic Fox's cross-origin SecurityError killed
+  // the script at load. The operator's photo showed a file attached, "no file chosen", Burn greyed.
+  // Structural order is asserted, then the failure is executed against the real page script.
+  const iDollar = page.indexOf('function $(id)');
+  const iPick = page.indexOf('$("pick").onchange');
+  const iBurn = page.indexOf('$("burn").onclick');
+  const iLoad = page.lastIndexOf('loadPointer(0)');
+  check('page defines $() before any use', iDollar > 0 && iDollar < iPick);
+  check('page wires the picker BEFORE any network call', iPick < iLoad);
+  check('page wires Burn BEFORE any network call', iBurn < iLoad);
+  check('pointer bootstrap is itself wrapped in try/catch', /try \{ loadPointer\(0\); \} catch/.test(page));
+  check('xhr open() is inside the try, not after it',
+    page.indexOf('try {\n    var x = new XMLHttpRequest();') < page.indexOf('x.open("GET", POINTERS[i]'));
+
+  // executable proof: block the pointer exactly the way Arctic Fox does, then paste and burn
+  const burnSim = (() => {
+    const ids = ['dl-cmd', 'dl-zip', 'dl-acct', 's-rollout', 's-branch', 's-pr', 's-session', 's-date',
+      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st', 'paste'];
+    const els: Record<string, Record<string, unknown>> = {};
+    for (const id of ids) els[id] = { innerHTML: '', href: '', disabled: true, value: '', files: null };
+    const scriptBody = (page.split('<script type="text/javascript">')[1] || '').split('</script>')[0];
+    const harness = `
+      var sent = [];
+      var document = { getElementById: function(id){ return ELS[id]; } };
+      var FileReader = function(){};
+      var setTimeout = function(f){ f(); };
+      var XMLHttpRequest = function(){
+        var self = this;
+        this.open = function(m,u){ if (u.indexOf("raw.githubusercontent") !== -1) { throw new Error("SecurityError"); } self._m=m; self._u=u; };
+        this.setRequestHeader = function(){};
+        this.send = function(b){ sent.push(self._m); };
+      };
+      ${scriptBody}
+      ELS['paste'].value = REPORT;
+      if (ELS['paste'].onkeyup) { ELS['paste'].onkeyup(); }
+      var enabled = ELS['burn'].disabled === false;
+      if (enabled && ELS['burn'].onclick) { ELS['burn'].onclick(); }
+      RESULT = { enabled: enabled, posts: sent.join(","), status: ELS['st'].innerHTML };
+    `;
+    const ctx: Record<string, unknown> = { ELS: els, REPORT: `${TAG} test\nline two\n${DONE}`, RESULT: null, Date, encodeURIComponent };
+    try {
+      const vm = require('node:vm');
+      vm.runInNewContext(harness, ctx, { timeout: 5000 });
+      return ctx.RESULT as Record<string, unknown> | null;
+    } catch {
+      return null;
+    }
+  })();
+  check('burn survives a blocked rollout pointer', burnSim !== null);
+  if (burnSim) {
+    check('  -> Burn becomes enabled after paste', burnSim.enabled === true);
+    check('  -> clicking Burn actually POSTs', String(burnSim.posts).indexOf('POST') === 0);
+    check('  -> status reports BURNED', String(burnSim.status).indexOf('BURNED') === 0);
+  }
+
   check('page file input has NO accept filter (Mozilla 671172)', !/id="pick"[^>]*accept=/.test(page));
   check('page has a paste fallback', page.includes('id="paste"') && page.includes('acceptText'));
   check('paste box is wired to change+keyup+paste',

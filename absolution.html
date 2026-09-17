@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>absolution R4</title>
+<html><head><meta charset="utf-8"><title>absolution R5</title>
 <style type="text/css">
 body{background:#191b1d;color:#e8e8e8;font:13px "Lucida Grande",Helvetica,sans-serif;margin:0;padding:18px}
 .card{max-width:700px;margin:0 auto;background:#26292c;border:1px solid #111;border-radius:8px;padding:16px}
@@ -20,7 +20,7 @@ iframe{display:none}
 </style></head>
 <body><div class="card">
 <h1>absolution</h1>
-<div class="stamp" id="stamp">rollout <b id="s-rollout">R4</b> &middot; branch <span id="s-branch">arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr</span> &middot; <a class="link" id="s-pr" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session <span id="s-session">01a0ad71</span> &middot; <span id="s-date">2026-09-17</span><br>
+<div class="stamp" id="stamp">rollout <b id="s-rollout">R5</b> &middot; branch <span id="s-branch">arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr</span> &middot; <a class="link" id="s-pr" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session <span id="s-session">01a0ad71</span> &middot; <span id="s-date">2026-09-17</span><br>
 permanent link https://da.gd/absolution &middot; log tag <span id="s-tag">ABSOLUTION1</span> &middot; <span id="s-live">checking for a newer rollout&hellip;</span></div>
 <p class="note">READ-ONLY context probe. Nothing is erased, moved or deleted by this page or by
 absolution.command. The report travels as <b>text</b>, the only form the agent can read back.</p>
@@ -56,8 +56,11 @@ Cmd+A, Cmd+C, then click in the box below and Cmd+V. The Burn button enables eit
 // ES5 only: Arctic Fox 47 is Firefox 52 class. No fetch, no arrows, no template literals, no const/let.
 var INBOX = "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6";
 var TAG = "ABSOLUTION1";
-var ROLLOUT = "R4";
+var ROLLOUT = "R5";
 var BODY = null;
+
+function $(id){ return document.getElementById(id); }
+function setStatus(t, cls){ var e = $("st"); if (e) { e.innerHTML = t; e.className = cls ? cls : "note"; } }
 
 // The short link is write-once, so this page must never be the thing that goes stale. It reads
 // ABSOLUTION.json at load - main first, then the authoring branch - and retargets its own downloads,
@@ -68,44 +71,54 @@ var POINTERS = [
   "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/ABSOLUTION.json"
 ];
 
+function setHref(id, v){ var e = $(id); if (e && v) { e.href = v; } }
+function setText(id, v){ var e = $(id); if (e && v) { e.innerHTML = v; } }
+
 function applyPointer(p){
   if (!p || !p.rollout) { return false; }
-  if (p.command) { $("dl-cmd").href = p.command; }
-  if (p.zip) { $("dl-zip").href = p.zip; }
-  if (p.accounts) { $("dl-acct").href = p.accounts; }
-  if (p.rollout) { $("s-rollout").innerHTML = p.rollout; ROLLOUT = p.rollout; }
-  if (p.branch) { $("s-branch").innerHTML = p.branch; }
-  if (p.prUrl) { $("s-pr").href = p.prUrl; $("s-pr").innerHTML = "PR #" + p.pr; }
-  if (p.session) { $("s-session").innerHTML = p.session; }
-  if (p.date) { $("s-date").innerHTML = p.date; }
-  if (p.tag) { $("s-tag").innerHTML = p.tag; TAG = p.tag; }
+  setHref("dl-cmd", p.command);
+  setHref("dl-zip", p.zip);
+  setHref("dl-acct", p.accounts);
+  setText("s-rollout", p.rollout);
+  ROLLOUT = p.rollout;
+  setText("s-branch", p.branch);
+  setHref("s-pr", p.prUrl);
+  if (p.pr) { setText("s-pr", "PR #" + p.pr); }
+  setText("s-session", p.session);
+  setText("s-date", p.date);
+  if (p.tag) { setText("s-tag", p.tag); TAG = p.tag; }
   if (p.inbox) { INBOX = p.inbox; }
   return true;
 }
 
+function setLive(t){ var e = $("s-live"); if (e) { e.innerHTML = t; } }
+
 function loadPointer(i){
   if (i >= POINTERS.length) {
-    $("s-live").innerHTML = "using built-in rollout " + ROLLOUT;
+    setLive("using built-in rollout " + ROLLOUT);
     return;
   }
-  var x = new XMLHttpRequest();
-  x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
-  x.onreadystatechange = function(){
-    if (x.readyState !== 4) { return; }
-    var ok = false;
-    if (x.status === 200) {
-      try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e) { ok = false; }
-    }
-    if (ok) { $("s-live").innerHTML = "live rollout " + ROLLOUT; }
-    else { loadPointer(i + 1); }
-  };
-  try { x.send(null); } catch (e) { loadPointer(i + 1); }
+  // EVERYTHING here is inside one try. On Arctic Fox 47 a blocked cross-origin
+  // XMLHttpRequest throws at open(), not at send() - that threw at page load, killed the
+  // script before the picker was wired, and left Burn permanently greyed out. The burn UI
+  // must never depend on this call succeeding.
+  try {
+    var x = new XMLHttpRequest();
+    x.onreadystatechange = function(){
+      if (x.readyState !== 4) { return; }
+      var ok = false;
+      if (x.status === 200) {
+        try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e2) { ok = false; }
+      }
+      if (ok) { setLive("live rollout " + ROLLOUT); }
+      else { loadPointer(i + 1); }
+    };
+    x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
+    x.send(null);
+  } catch (e) {
+    loadPointer(i + 1);
+  }
 }
-
-function $(id){ return document.getElementById(id); }
-function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls ? cls : "note"; }
-
-loadPointer(0);
 
 function acceptText(text, label){
   BODY = String(text || "");
@@ -172,5 +185,9 @@ $("burn").onclick = function(){
   if (a || b) { setStatus("BURNED - say burned in the chat", "ok"); }
   else { setStatus("burn failed - paste the text into chat instead", "bad"); }
 };
+
+// LAST, and guarded: the rollout pointer is a nice-to-have. The burn UI above is already
+// live by this point, so even a hard failure here cannot disable the picker or Burn.
+try { loadPointer(0); } catch (e) { setLive("using built-in rollout " + ROLLOUT); }
 </script>
 </body></html>
