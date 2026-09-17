@@ -1,0 +1,9 @@
+{
+  "_note": "Blind reading: written from PNG pixels only, BEFORE /tmp/vision-01a0af07-key.json was opened.",
+  "image": "receipts/vision-check/session-01a0af07-test-a.png",
+  "image_sha": "99e5d2fb67d9a24c59c246b466f27d62d134fecbd26c22da2f0a28a55a9901c7",
+  "width": 760, "height": 460, "background": "DARK GREEN",
+  "word": "BLIZZARD", "code": "40584",
+  "shape": "TRIANGLE", "shape_count": 5, "shape_color": "YELLOW",
+  "word_color": "CYAN", "code_color": "MAGENTA", "bar_count": 2
+}
