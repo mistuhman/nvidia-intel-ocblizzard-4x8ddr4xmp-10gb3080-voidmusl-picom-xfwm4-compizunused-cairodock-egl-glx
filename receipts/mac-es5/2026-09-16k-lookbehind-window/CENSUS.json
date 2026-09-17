@@ -1,0 +1,88 @@
+{
+  "task": "bounded-width lookbehind windows + character-class range rules",
+  "date": "2026-09-16k",
+  "branch": "arena/01a0ab3d-nvidia-intel-ocblizzard-4x8ddr",
+  "app": {
+    "name": "vencord-web",
+    "version": "1.15.6",
+    "bytes": 739330,
+    "sha256": "325bb7568d1fdc790d996387c51f6155edb2ee7ffd4dc710681d9dfcea44210d",
+    "ref": "8a2b56ed722781381cdf93e62f1096f6358817c1"
+  },
+  "command": "node tools/mac-es5-passthrough.ts transpile --in=<dir> --out=<dir>  (exit 4 = BLOCKED)",
+  "census": {
+    "before_16j": {
+      "hazards": 181,
+      "byKind": {
+        "regex-clone-unsafe": 76,
+        "regex-lookbehind-position": 51,
+        "regex-lookbehind-width": 41,
+        "regex-lookbehind-capture": 11,
+        "regex-unicode-property": 2
+      }
+    },
+    "after_16k": {
+      "hazards": 181,
+      "byKind": {
+        "regex-clone-unsafe": 90,
+        "regex-lookbehind-position": 51,
+        "regex-lookbehind-width": 20,
+        "regex-lookbehind-capture": 18,
+        "regex-unicode-property": 2
+      }
+    },
+    "counts": {
+      "bigintLiterals": 209,
+      "bigintLowered": 209,
+      "bigintOperators": 2018,
+      "regexLiterals": 595,
+      "regexRewritten": 3
+    }
+  },
+  "reading": "the total is flat; 21 patterns left regex-lookbehind-width and reappeared under the reason that actually blocks them (a capture inside the lookbehind body, or a value that flows to String#matchAll / is stored where the pass cannot follow it). The app is blocked by USE, not by capability: the same patterns rewrite through a safe sink - see REPORT.md.",
+  "firstCutDefect": "the initial class-range rule also refused [\\u{e0061}-\\u{e0066}]/u, a real class in this app, as regex-unparseable; the census caught it and the rule was reduced to range order (both modes) + endpoint kind (u only)",
+  "files": {
+    "tools/lib/es5-compat-runtime.js": "ba6d1a08197902725a16784e5ff1f97c340c15616b203eae4813488ac63445cc",
+    "tools/lib/es5-compat.ts": "1b87bd3e62376ebb25bac20c4c505ff6239076f8f4350fd5263629f1a6e14a04",
+    "tools/mac-es5-passthrough.ts": "cfee9ef3a31ea19cf0577118639af1df6d722fda5a8d5330391e130f03186371",
+    "lion-one.command": "129661266dbc113748257c9c12c186fe351fccaffbb7db7de5fe9c1d3d3f3e4b",
+    "lion-one.html": "1c710e0e64d4e2709df619653cc2ffb41049f4851f18446636723332ac983610",
+    "lion-one.zip": "090707066dfb3912d2a72aacda71d4495f8465bc671274caf327342b838bb0e6",
+    "lion-one.zip.bytes": 14687
+  },
+  "compat_sha256": "ba6d1a08197902725a16784e5ff1f97c340c15616b203eae4813488ac63445cc",
+  "previous_compat_sha256": "8f3bbc53d268304ff5b363a4ee30ffd20b5700b59be3b5b13d1da21f070a4bab",
+  "compatibility_json_sha256": "e57f9db32536a475e4dfb98dd57373c6d8eba6bd6f92d87c91a2c154ea342cba",
+  "corpus": {
+    "version": "2026-09-16k-v7",
+    "sha256": "f72ecd4662bc351cc3bb3c69c666520574e41965fa025adb425616a6571d033c",
+    "zipEntries": 3,
+    "verify": "CORPUS_SYNC=PASS zip-in-step",
+    "instructions_sha256_in_compatibility_json": "f72ecd4662bc"
+  },
+  "verification": {
+    "classMatrix": "0 mismatches / 384 cells (48 class shapes x 8 flag sets vs V8)",
+    "patternMatrix": "0 mismatches / 840 cells (60 patterns x 14 flag sets vs V8)",
+    "propertyFuzz": "48000/48000 over 8 seeds x 6000; 18431 byte-compared vs native RegExp, 23346 refused, 1872 native-reject agreements asserted",
+    "regexFixtures": "99/99",
+    "vocabulary": "18 kinds listed = 18 emitted (bidirectional)",
+    "bigint": "3166/3166 (no BigInt change this wave)",
+    "testAll": "PASS",
+    "oneTest": "PASS",
+    "es5FloorAuditOnRuntime": "clean (compat_audit [])",
+    "classCases": "0 mismatches / 18 targeted class cases in both directions (file-fed probe, /tmp/cases.cjs)"
+  },
+  "newRefusals": [
+    "regex-lookbehind-width now means \"no usable window\": unbounded, or wider than RX_MAX_WINDOW=4096 code units",
+    "regex-lookbehind-body: a lookbehind containing a nested lookahead/lookbehind - its truth depends on what follows the match, and an exact-window test truncates that view"
+  ],
+  "bugsFoundByDifferentialFixtures": [
+    "consNode dropped the new wm key, so bounded windows degraded to zero-width exact checks - caught by 5 fixture DIFFs after the scratch probe passed, because the probe serialised payloads itself instead of going through the emitter",
+    "this.unicode did not exist (the flag lives in this.flags), so a whole first cut of u-mode class rules was dead code that node --check accepted"
+  ],
+  "nextSingleTask": "capture-in-lookbehind renumbering (18 hazards), or hand the operator a publish:false CI dispatch plus the Mac burn - one of the two",
+  "gate": "COMPILE_GATE=HOLD: no dispatch, no publication, no install, no target receipt; Firefox 52 has executed nothing here, which is the only reason the gate is HOLD; merges and da.gd repoint stay operator-only",
+  "censusAfterGuards": "re-run after the \\u{...}-in-class and [a-\\B] fixes: 181 hazards, identical per-kind breakdown, instructions_sha256 = the v7 corpus sha - the new strictness costs the app nothing",
+  "escapingTrap": "two probes had been built inside shell node -e double quotes, which strip backslashes and produced fake mismatch counts; all class/matrix numbers here come from probe files. Four real over-lenient cells found this way and fixed: [\\u{41}-\\u{42}] and [\\u{e0061}-\\u{e0066}] without u (code point escape in a class needs u), and [a-\\B] plain (backwards 97..66).",
+  "compatibility_json_form": "compact, one line, byte-identical payload to the tool output except formatting; hazards quoted verbatim"
+}

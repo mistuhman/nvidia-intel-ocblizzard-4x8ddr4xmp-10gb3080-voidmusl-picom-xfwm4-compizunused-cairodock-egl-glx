@@ -635,6 +635,10 @@
   **                                                    f: constraint flags }] | null }]
   **                     a constraint must hold (or, when negated, must NOT hold) of the w code units
   **                     ENDING at the match start - which is what a leading lookbehind asserts.
+  **                     wm instead of w means the body's width is only bounded: the matcher then searches
+  **                     the last wm code units for a match that ends at the position, which is exactly the
+  **                     question "does the body match ending here at some width <= wm" (min width is the
+  **                     body's own business), for the positive form, and its negation for the negative one.
   **                     Several branches = the alternation was split because the constraints differ
   **                     per branch; the leftmost match wins and ties keep branch order, which is
   **                     exactly how native alternation preference works.
@@ -652,7 +656,11 @@
       var checks = [];
       if (b.c) {
         for (j = 0; j < b.c.length; j += 1) {
-          checks.push({ n: b.c[j].n, w: b.c[j].w, re: new RegExp('^(?:' + b.c[j].s + ')$', b.c[j].f) });
+          var cc = b.c[j];
+          /* exact window: the body must fill it, so both ends are anchored. bounded window: only the end
+          ** is anchored, and the search starts wherever the body can start inside the last wm units. */
+          var head = cc.wm === undefined ? '^' : '';
+          checks.push({ n: cc.n, w: cc.w, wm: cc.wm, re: new RegExp(head + '(?:' + cc.s + ')' + '$', cc.f) });
         }
       }
       scanners.push({ scan: new RegExp(b.s, sflags), checks: checks, sticky: b.f.indexOf('y') >= 0 });
@@ -660,7 +668,13 @@
     function holds(sc, s, at) {
       for (var k = 0; k < sc.checks.length; k += 1) {
         var c = sc.checks[k], hit = false;
-        if (at >= c.w) { hit = c.re.test(s.slice(at - c.w, at)); }
+        if (c.wm !== undefined) {
+          /* clip at the string start: a body that needs more room than exists simply does not match, and
+          ** that is what the engine does too when the lookbehind runs at index 0 */
+          hit = c.re.test(s.slice(at > c.wm ? at - c.wm : 0, at));
+        } else if (at >= c.w) {
+          hit = c.re.test(s.slice(at - c.w, at));
+        }
         if (c.n ? hit : !hit) { return false; }
       }
       return true;

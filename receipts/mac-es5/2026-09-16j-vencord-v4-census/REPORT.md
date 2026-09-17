@@ -143,6 +143,12 @@ through the 40/78 regex regression, because the dep-free half looked like full c
 
 ## Next single task
 
+> **DONE 2026-09-16k** in `receipts/mac-es5/2026-09-16k-lookbehind-window/`. The window landed, but not by
+> enumerating widths: one end-anchored search `(?:BODY)$` over the last `min(RX_MAX_WINDOW, hi)` code units is
+> exact and cheap (exec per candidate, not per width). Effect on this census: `regex-lookbehind-width` 41 -> 20,
+> total hazards still 181, because 21 patterns reappear under the reason that really blocks them (capture in the
+> lookbehind body, or a value that escapes to `String#matchAll`). The app is blocked by USE, not by capability.
+
 Implement the bounded-width lookbehind window (`(?<=A.{0,40}?)B` -> enumerate the legal window widths and test
 each at the candidate offset), which is what 41 of the 181 hazards need, and which would make Vencord's
 source-scraping patterns expressible. Everything else in the hazard table is either a refusal to widen

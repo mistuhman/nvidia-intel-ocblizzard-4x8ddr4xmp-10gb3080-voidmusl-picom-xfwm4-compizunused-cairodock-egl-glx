@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 136,
+  "lastSeq": 140,
   "entries": [
     {
       "seq": 1,
@@ -2215,6 +2215,50 @@
       "value": "HOLD unchanged. The two HOLD blockers (real BigInt, FF52 regex) are implemented, verified differentially AND adjudicated against real app source; the app stays BLOCKED by 181 enumerated refusals, not by missing tooling. Nothing dispatched, published, merged or installed. Next: bounded-width lookbehind windows, then operator dispatch + Mac burn.",
       "source": "transpile exit 4 on Vencord 1.15.6 (ref 8a2b56ed); selftest --compiler PASS; TEST_ALL=PASS; ONE_TEST=PASS; CORPUS_SYNC=PASS",
       "sha256": "950fd662bffa8c5304409e627c9a194340bdcbf8c5cee7756b2dd918939d7031"
+    },
+    {
+      "seq": 137,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-16k (01a0ab3d): bounded-width lookbehind windows are implemented and the FF52 refusal is now 'no usable window', not 'variable width'. __rx tests /(?:BODY)$/ over s.slice(max(0,at-RX_MAX_WINDOW),at) with the end anchor as the only constraint (a lookbehind asks 'does the body match somewhere ending here', not 'exactly w wide'); exact-window mode kept for min==max, RX_MAX_WINDOW=4096 code units bounds the scan, unbounded bodies and mid-pattern lookbehind still refuse. Window mode is sound only at a branch start where truth depends solely on (subject, match-start) - witness for the refusal: /(?:xy|x)(?<=x)y/ on \"xyy\", native backtracks to the shorter alternative while match-then-filter drops a legal match. Class ranges: order check in both modes ([a-\\x41], [a-\\Z], [a-\\.] are backwards ranges every engine rejects) + u-mode endpoint-kind rule ([a-\\d]u, [\\d-a]u, [\\p{L}-a]u refuse) while character escapes stay legal either side. V8's ES2018 reserved-punctuator taste ([\\{-a]u, [\\|-a]u) is NOT mirrored - FF52 parses them and a false refusal costs publication. Verification: class matrix 0/384, pattern matrix 0/840, property fuzz 48000/48000 (8 seeds x 6000, 18431 byte-compared vs native RegExp, 1872 native-reject agreements), VERIFY_REGEX 99/99, vocabulary 18/18, bigint 3166/3166, TEST_ALL/ONE_TEST/CORPUS_SYNC PASS. Runtime changed so compat_sha256 = ba6d1a081979 (ES5 floor audit clean, compat_audit []); corpus 2026-09-16k-v6 sha e2a8f096aa46, zip rebuilt (14556 B). Census on the same pinned Vencord bytes: 181 hazards = clone-unsafe 90 + position 51 + width 20 + capture 18 + unicode-property 2, BigInt 209/209 through 2018 sites, regexRewritten 3, exit 4 BLOCKED by USE not capability. NOT done: no dispatch, no publication, no target receipt; FF52 has still executed nothing; RX_MAX_WINDOW perf on a 2016 engine is unmeasured. Next single task: capture-in-lookbehind renumbering (18) or operator dispatch of a publish:false run + Mac burn. Receipts: receipts/mac-es5/2026-09-16k-lookbehind-window/.",
+      "sha256": "b0729ecfbe313fd9ca3b7e582cfcaf26126707f4bb3b038b0abe4b087e3ba4c2"
+    },
+    {
+      "seq": 138,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "census-catches-over-strictness",
+      "value": "a first cut of the u-mode class rule refused Vencord's real [\\u{e0061}-\\u{e0066}] colour class as regex-unparseable; no fixture of mine would have, one census run did. Rule: refuse what the target forbids, never what only the measuring engine dislikes (V8 also refuses [\\{-a]u and [\\|-a]u out of ES2018 taste - deliberately not mirrored). Re-run the app census after every grammar change.",
+      "source": "receipts/mac-es5/2026-09-16k-lookbehind-window/REPORT.md",
+      "sha256": "b237b62ed0ee4441c05163e41995fee248f6739002b46f04a930a57f96f83d78"
+    },
+    {
+      "seq": 139,
+      "date": "2026-09-17",
+      "kind": "discrepancy",
+      "topic": "probe-the-emitter-not-a-reimplementation",
+      "sides": [
+        {
+          "claim": "emitter drops new payload keys",
+          "source": "consNode in tools/lib/es5-compat.ts hand-lists n,w,wm,s,f; wm was added to Cons but not to consNode, so every bounded window silently became a zero-width exact check and VERIFY_REGEX showed 5 DIFFs (/(?<=a{0,2}b)c/ returned null from exec)"
+        },
+        {
+          "claim": "a scratch probe that serialises the payload itself proves nothing",
+          "source": "/tmp probe JSON.stringify-ed the whole Cons so wm survived and the probe agreed with native while the build was broken"
+        }
+      ],
+      "status": "RESOLVED",
+      "owner": "agent",
+      "sha256": "21f73b3d39efd23f86745578d8931c335eb49114b5e82de8045d259a1869386e"
+    },
+    {
+      "seq": 140,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "shell-node-e-eats-backslashes",
+      "value": "any regex/class probe fed through node -e \"...\" in double quotes silently loses backslashes, so the measured mismatch table describes patterns that were never sent. Twice this session a mangled probe produced fake results (a 13-cell and a 122-cell class regression) and one real bug hid in the noise. Rule: write the case list to a .cjs file, run it from the repo, never build a matrix with -e.",
+      "source": "receipts/mac-es5/2026-09-16k-lookbehind-window/REPORT.md",
+      "sha256": "4d59c360a028a1634de8e80135b74525fbdfddf70ee7c60c27302d2865909a7b"
     }
   ],
   "stacks": [

@@ -63,6 +63,62 @@ export function newCompatState(): CompatState {
 type Width = { min: number; max: number };
 const U_ESCAPE_OK = '^$\\.*+?()[]{}|/dDwWsSbBnrtvfxuckpP0123456789';
 const BIG = 1e9;
+/* Widest variable-width lookbehind window this pass will scan, in code units, per candidate position.
+   A bound is a performance decision about a 2016 engine, not a correctness one: beyond it the rewrite is
+   refused instead of silently quadratic. */
+export const RX_MAX_WINDOW = 4096;
+
+/* Two rules for `a-b` inside a character class, both measured against the engine rather than recalled
+** (2026-09-16k), and both scoped so they never refuse a pattern the target would run.
+**
+** 1. ORDER (both modes). A range whose start is above its end is a SyntaxError on every engine, FF52
+** included. [a-\x41] is 0x61 down to 0x41 and throws; so does [a-\Z] in Annex B mode, where \Z is the
+** literal 'Z'. Most of what looked like V8 idiosyncrasy turned out to be exactly this - the engine was not
+** being picky about escapes, the ranges were backwards. Refusing them is protective: the target rejects the
+** literal at parse time, and a bundle that parses around it would ship a broken pattern anyway.
+**
+** 2. ENDPOINT KIND (unicode mode only). \d and friends, \p{...}, \B and a decimal backreference are sets or
+** references rather than characters, and a u-mode range needs characters on both sides ([\d-a]/u, [a-\d]/u,
+** [\d-\w]/u all throw). Escapes that ARE characters may bound a range in either direction: [\u{41}-\u{42}]/u,
+** [\x41-a]/u, [\cA-\cZ]/u, [\0-\x10]/u, [\b-\f]/u all parse - which is why Vencord's colour matcher class
+** [\u{e0061}-\u{e0066}] must NOT be refused (a first cut of this rule refused it, and the app census caught
+** that within one run). Outside unicode mode nothing is refused on kind: the grammar there allows it, and
+** refusing what the target accepts costs publication for no safety. V8's ES2018 reserved-punctuator taste
+** ([\{-a]/u, [\|-a]/u) is likewise not an FF52 fact and is deliberately not mirrored. */
+const U_CLASS_BAD_END = 'dDwWsSB';
+function uClassRangeEndBad(esc: string): boolean {
+  if (esc === 'p' || esc === 'P' || esc === 'u{}' || esc === 'x' || esc === 'u' || esc === 'c') { return false; }
+  if (/^[1-9]$/.test(esc)) { return true; }
+  return esc.length === 1 && U_CLASS_BAD_END.indexOf(esc) >= 0;
+}
+
+/* The code point a class atom stands for, or null when it is a set, a reference, or anything whose value the
+** order check cannot know. Unknown never fails the check, so this cannot refuse a legal pattern. */
+function classAtomValue(text: string, uni: boolean): number | null {
+  if (text.length === 1) { return text.codePointAt(0) as number; }
+  if (text[0] !== '\\') { return null; }
+  const n = text[1];
+  if (n === 'x') { return /^\\x[0-9A-Fa-f]{2}$/.test(text) ? parseInt(text.slice(2), 16) : null; }
+  if (n === 'u') {
+    if (/^\\u[0-9A-Fa-f]{4}$/.test(text)) { return parseInt(text.slice(2), 16); }
+    if (/^\\u\{[0-9A-Fa-f]+\}$/.test(text)) { return parseInt(text.slice(3, -1), 16); }
+    return null;
+  }
+  if (n === 'c' && text.length === 3 && /[A-Za-z]/.test(text[2])) { return text.toUpperCase().charCodeAt(2) - 64; }
+  /* outside unicode mode \u{...} is not one escape at all - Annex B reads it as 'u' then '{41}' - so the
+  ** order check has nothing to compare and stays out of the way */
+  if (n === 'u' && text[2] === '{' && !uni) { return null; }
+  const simple: Record<string, number> = { '0': 0, b: 8, t: 9, n: 10, v: 11, f: 12, r: 13 };
+  if (text.length === 2 && simple[n] !== undefined) { return simple[n]; }
+  if (text.length === 2 && !/[A-Za-z0-9_]/.test(n)) { return n.charCodeAt(0); }   /* \. \) \] \} \/ \\ ... */
+  /* an identity escape of a letter IS that letter outside the recognised-escape set (Annex B), which is why
+  ** [a-\Z] is a backwards range and [a-\i] is not; \p{..} and \k<..> are longer than two characters */
+  /* outside unicode mode \B is not a set escape, it is the letter 'B' (0x42), so [a-\B] is the backwards
+  ** range 97..66 that every engine rejects - and in unicode mode the endpoint-kind rule already refused it. */
+  if (text.length === 2 && /^[A-Za-z]$/.test(n) && 'dDwWsSbnrtvfcxupP'.indexOf(n) < 0) { return n.charCodeAt(0); }
+  return null;
+}
+
 type GroupKind = 'cap' | 'noncap' | 'name' | 'la' | 'nla' | 'lb' | 'nlb';
 type Node =
   | { t: 'alt'; alts: Node[]; at: number; end: number }
@@ -333,7 +389,67 @@ class Pattern {
       }
       this.i += 1;
     }
+    this.classGrammar(at + 1, this.s[this.i - 1] === ']' ? this.i - 1 : this.i);
     return { t: 'class', text: this.s.slice(at, this.i), at, end: this.i };
+  }
+
+  /* This parser keeps unicode strictness on the flag itself (see atom() and quantifier()); classes read it the same way. */
+  private get uni(): boolean { return this.flags.indexOf('u') >= 0; }
+
+  /* Class validation: range order in both modes, range endpoint kind in unicode mode, and the unicode
+  ** identity-escape rule. The long comment above uClassRangeEndBad carries the measurements and the reasons
+  ** for not mirroring the measuring engine where the target is more permissive. The dash handling was checked
+  ** against the engine on the shapes that look ambiguous: [a--b], [b--a], [a---b], [a-\-] and [--a] all
+  ** throw there and here (a bare '-' really can be the right side of a range), while [a-], [-a-], [a-b-],
+  ** [--], [---] and [^-a] parse both ways (a trailing dash has no atom after it, so it is never a range). */
+  private classGrammar(from: number, to: number): void {
+    const s = this.s;
+    type Atom = { at: number; text: string; esc: string | null };
+    const atoms: Atom[] = [];
+    let i = from;
+    while (i < to) {
+      if (s[i] !== '\\') { atoms.push({ at: i, text: s[i], esc: null }); i += 1; continue; }
+      const n = s[i + 1];
+      if (n === undefined) { this.fail(i, 'trailing backslash in class'); return; }
+      if ((n === 'p' || n === 'P') && s[i + 2] === '{') {
+        const end = s.indexOf('}', i + 3);
+        if (end < 0) { this.fail(i, 'unterminated \\p{ in class'); return; }
+        atoms.push({ at: i, text: s.slice(i, end + 1), esc: n }); i = end + 1; continue;
+      }
+      if (n === 'u' && s[i + 2] === '{') {
+        /* A code point escape INSIDE a class belongs to the unicode-mode production: [\u{41}-\u{42}] throws
+        ** with and without /i, while the same escape outside a class parses (Annex B reads it as the letter 'u'
+        ** followed by {41}). Refusing it inside a class is the protective direction and costs the app nothing:
+        ** Vencord uses [\u{e0061}-\u{e0066}] with the u flag, where it must and does parse. */
+        if (!this.uni) { this.fail(i, 'a \\u{...} code point escape inside a character class needs the unicode flag'); return; }
+        const end = s.indexOf('}', i + 3);
+        if (end < 0) { this.fail(i, 'unterminated \\u{ in class'); return; }
+        atoms.push({ at: i, text: s.slice(i, end + 1), esc: 'u{}' }); i = end + 1; continue;
+      }
+      if (n === 'x' && /^[0-9A-Fa-f]{2}/.test(s.slice(i + 2, i + 4))) { atoms.push({ at: i, text: s.slice(i, i + 4), esc: 'x' }); i += 4; continue; }
+      if (n === 'u' && /^[0-9A-Fa-f]{4}/.test(s.slice(i + 2, i + 6))) { atoms.push({ at: i, text: s.slice(i, i + 6), esc: 'u' }); i += 6; continue; }
+      if (n === 'c' && /[A-Za-z]/.test(s[i + 2] || '')) { atoms.push({ at: i, text: s.slice(i, i + 3), esc: 'c' }); i += 3; continue; }
+      if (this.uni && /^[A-Za-z]$/.test(n) && 'dDwWsSbBnrtvfxuckpP'.indexOf(n) < 0) {
+        this.fail(i, 'invalid escape in unicode character class'); return;
+      }
+      atoms.push({ at: i, text: s.slice(i, i + 2), esc: n }); i += 2;
+    }
+    for (let k = 1; k + 1 < atoms.length; k += 1) {
+      if (atoms[k].text !== '-') { continue; }
+      const left = atoms[k - 1], right = atoms[k + 1];
+      k += 2;                                       /* a range consumes all three atoms: a-b-c is [a-b] - c */
+      /* a bare '-' may be the RIGHT side of a range (that is what makes [a--b] an out-of-order range, and a
+      ** trailing dash before ']' is never a range because there is no atom after it) */
+      if (this.uni && (uClassRangeEndBad(right.esc === null ? '' : right.esc) || uClassRangeEndBad(left.esc === null ? '' : left.esc))) {
+        this.fail(right.at, 'a unicode class range needs characters on both sides, and ' + (uClassRangeEndBad(right.esc || '') ? right.text : left.text) + ' is a set or a reference');
+        return;
+      }
+      const lo = classAtomValue(left.text, this.uni), hi = classAtomValue(right.text, this.uni);
+      if (lo !== null && hi !== null && lo > hi) {
+        this.fail(left.at, 'class range ' + left.text + '-' + right.text + ' is out of order (' + lo + ' > ' + hi + '), which the target rejects too');
+        return;
+      }
+    }
   }
 
   private finishGroup(kind: GroupKind, name: string | undefined, at: number, openEnd: number): Node {
@@ -436,7 +552,10 @@ function width(n: Node | undefined, flags: string): Width {
   }
 }
 
-type Cons = { n: 0 | 1; w: number; s: string; f: string };
+/* A constraint on the text ending at the match start. w is the exact window in code units; when the
+   body's width is only bounded, wm carries the maximum and the matcher searches the widest window for a
+   match that ENDS at the position (an unanchored start is what "some width in [min,max] exists" means). */
+type Cons = { n: 0 | 1; w: number; wm?: number; s: string; f: string };
 type Branch = { s: string; f: string; c: Cons[] | null };
 export type Rewrite =
   | { ok: true; noop: true }
@@ -556,21 +675,35 @@ export function rewritePattern(pattern: string, flags: string, opts: { indicesRe
     for (const g of lead) {
       const bodyText = pattern.slice(g.body.at, g.body.end);
       const w = width(g.body, flags);
-      if (w.min !== w.max) {
-        return { ok: false, kind: 'regex-lookbehind-width', detail: `(? ${g.kind === 'nlb' ? '!' : '<='}${bodyText}) is not fixed width in code units (${w.min}..${w.max >= BIG ? 'inf' : w.max}): the window to test is unknown` };
+      /* Fixed width is the cheap case: the window is exactly w code units and the body must match all of
+      ** it. A BOUNDED range is still decidable, because a lookbehind asks whether the body matches SOMEWHERE
+      ** ending at the match start - one end-anchored search over the widest legal window is that question,
+      ** for both the positive and the negative form. Only up to RX_MAX_WINDOW, so the target never pays an
+      ** unbounded scan per candidate. */
+      if (w.min !== w.max && (w.max >= BIG || w.max > RX_MAX_WINDOW)) {
+        return { ok: false, kind: 'regex-lookbehind-width', detail: `(? ${g.kind === 'nlb' ? '!' : '<='}${bodyText}) has no usable window (${w.min}..${w.max >= BIG ? 'inf' : w.max} code units, limit ${RX_MAX_WINDOW}): the scan would be unbounded on the target` };
       }
       const sub = analyzePattern(bodyText, flags);
       if (!sub.ok) return { ok: false, kind: 'regex-lookbehind-body', detail: `lookbehind body ${sub.error?.why}` };
       const subPost = post52(sub.features).filter((f) => f !== 'dotAllFlag');
       if (subPost.length) return { ok: false, kind: 'regex-lookbehind-body', detail: `lookbehind body uses ${subPost.join(',')} which the constraint matcher cannot express either` };
       if (collect(g.body, (n) => n.t === 'assert').length) return { ok: false, kind: 'regex-lookbehind-anchor', detail: 'lookbehind body uses ^ $ or \\b: they would re-anchor inside the constraint slice' };
+      /* A lookaround inside the body reads FORWARD from wherever it sits, and the constraint matcher only
+      ** hands the body the slice up to the match start. /(?<=a(?=b))b/ is the witness: native passes it on
+      **"ab" (the b at the end is inside the lookbehind's view), a slice ending at index 1 cannot see it. So a
+      ** body with a nested lookaround is refused instead of being judged on truncated context. */
+      if (collect(g.body, (n) => n.t === 'group' && (n.kind === 'la' || n.kind === 'nla' || n.kind === 'lb' || n.kind === 'nlb')).length) {
+        return { ok: false, kind: 'regex-lookbehind-body', detail: `lookbehind body ${bodyText} of /${pattern}/ contains a nested lookaround: it reads past the end of the window the constraint matcher can see (witness: /(?<=a(?=b))b/ matches "ab" natively)` };
+      }
       if (collect(g.body, (n) => n.t === 'group' && (n.kind === 'cap' || n.kind === 'name')).length) {
         return { ok: false, kind: 'regex-lookbehind-capture', detail: `lookbehind body captures; removing it would renumber /${pattern}/` };
       }
       let cbody = flags.indexOf('s') >= 0 ? expandDotAll(bodyText) : bodyText;
       const csub = analyzePattern(cbody, flags);
       if (csub.namedGroups.length) cbody = applyEdits(cbody, csub.namedGroups.map((ng) => ({ at: ng.at + 1, end: ng.end, text: '' })));
-      cons.push({ n: g.kind === 'nlb' ? 1 : 0, w: w.min, s: cbody, f: constraintFlags(flags) });
+      cons.push(w.min === w.max
+        ? { n: g.kind === 'nlb' ? 1 : 0, w: w.min, s: cbody, f: constraintFlags(flags) }
+        : { n: g.kind === 'nlb' ? 1 : 0, w: 0, wm: w.max, s: cbody, f: constraintFlags(flags) });
       edits.push({ at: g.at, end: g.end, text: '' });                // strip from the whole pattern
     }
     perBranch.push({ groups: lead, cons, src: applyEdits(pattern.slice(branch.at, branch.end), editsWithin(branch, pattern, flags, lead)) });
@@ -579,13 +712,13 @@ export function rewritePattern(pattern: string, flags: string, opts: { indicesRe
   const fullCheck = check52(fullSrc, outFlags);
   if (fullCheck) return fullCheck;
   const shared = perBranch.every((b) => b.cons.length === perBranch[0].cons.length
-    && b.cons.every((c, i) => c.n === perBranch[0].cons[i].n && c.w === perBranch[0].cons[i].w && c.s === perBranch[0].cons[i].s && c.f === perBranch[0].cons[i].f));
+    && b.cons.every((c, i) => c.n === perBranch[0].cons[i].n && c.w === perBranch[0].cons[i].w && c.wm === perBranch[0].cons[i].wm && c.s === perBranch[0].cons[i].s && c.f === perBranch[0].cons[i].f));
   if (shared) {
     return {
       ok: true, src: fullSrc, flags: outFlags,
       branches: [{ s: fullSrc, f: outFlags, c: perBranch[0].cons.length ? perBranch[0].cons : null }],
       cons: null, names: Object.keys(names).length ? names : null,
-      notes: notes.concat('leading lookbehind(s) enforced at the match start by __rx'),
+      notes: notes.concat('leading lookbehind(s) enforced at the match start by __rx (exact window, or end-anchored search over the bounded window)'),
     };
   }
   if (a.captures) {
@@ -917,9 +1050,13 @@ export function regexPlugin(state: CompatState): unknown {
   return function ({ types: t }: any) {
     let indicesRead = false;
     let cloneProne = '';
+    /* every key the runtime reads off a constraint has to be emitted here: dropping wm silently turns the
+    ** bounded-window mode into an exact-window check of zero width, which is what the differential fixtures
+    ** below catch and a unit test of rewritePattern cannot. */
     const consNode = (c: Cons): any => t.objectExpression([
       t.objectProperty(t.identifier('n'), t.numericLiteral(c.n)),
       t.objectProperty(t.identifier('w'), t.numericLiteral(c.w)),
+      ...(c.wm === undefined ? [] : [t.objectProperty(t.identifier('wm'), t.numericLiteral(c.wm))]),
       t.objectProperty(t.identifier('s'), t.stringLiteral(c.s)),
       t.objectProperty(t.identifier('f'), t.stringLiteral(c.f)),
     ]);
@@ -1258,7 +1395,7 @@ export const REGEX_FIXTURES: RegexFixture[] = [
   { src: 'x|(?<=a)b', flags: '', inputs: ['xb yb', 'x', ''], expect: 'rewritten' },
   { src: 'a(?<=b)c', flags: '', inputs: ['abc ac', ''], expect: 'blocked', why: 'mid-pattern lookbehind' },
   { src: '(?<=a*)b', flags: '', inputs: ['aaab b', ''], expect: 'blocked', why: 'variable-width lookbehind' },
-  { src: '(?<=.)x', flags: 'u', inputs: ['a\u{1f600}x ax', ''], expect: 'blocked', why: 'width 1..2 under the u flag' },
+  { src: '(?<=.)x', flags: 'u', inputs: ['a\u{1f600}x ax', '', '\ud83dx'], expect: 'rewritten' },
   { src: '(?<=a)b', flags: 'm', inputs: ['a\nb ab'], expect: 'blocked', why: 'multiline + lookbehind' },
   { src: '(?<=\\p{L})a', flags: 'u', inputs: ['xa za'], expect: 'blocked', why: 'unicode property escape' },
   { src: '(?<=a$)b', flags: '', inputs: ['a\nb ab'], expect: 'blocked', why: 'anchor inside a lookbehind' },
@@ -1267,6 +1404,17 @@ export const REGEX_FIXTURES: RegexFixture[] = [
   { src: '(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])', flags: '', inputs: ['camelCaseWord hello World', ''], expect: 'rewritten' },
   { src: '\\w+(?=\\s)(?<=\\d)', flags: '', inputs: ['a1 b2 c', ''], expect: 'blocked', why: 'mid-pattern lookbehind' },
   { src: '(?<=a)b', flags: 'gim', inputs: ['ab AB'], expect: 'blocked', why: 'multiline + lookbehind' },
+  {src: '(?<=a{0,2}b)c',flags: '',inputs: ['abc bc c aaabc xbc','c'],expect: 'rewritten'},
+  {src: '(?<!a{0,2}b)c',flags: '',inputs: ['abc bc c dc xbc','c'],expect: 'rewritten'},
+  {src: '(?<=x?)y',flags: '',inputs: ['xy y xxy yy','y'],expect: 'rewritten'},
+  {src: '(?<=a|ab)b',flags: '',inputs: ['ab aab b abb','b'],expect: 'rewritten'},
+  {src: '(?<=\\d{0,3})-',flags: 'g',inputs: ['123-456 9- a- ---','-'],expect: 'rewritten'},
+  {src: '(?<=forceOpen:.{0,4}?ariaHidden:!0,)X',flags: '',inputs: ['forceOpen:a,b,cariaHidden:!0,X ariaHidden:!0,X X','X'],expect: 'rewritten'},
+  {src: '(?<=a{1,3}b)(?<!x)y',flags: '',inputs: ['aaby by xaby ab y','y'],expect: 'rewritten'},
+  {src: '(?<=a{0,3})b',flags: 'y',inputs: ['aaab ab b','b'],expect: 'rewritten'},
+  {src: '(?<=a{2,4})b',flags: 'g',inputs: ['aab ab aaaab aaaaab b','b'],expect: 'rewritten'},
+  {src: '(?<=a(?=b))b',flags: '',inputs: ['ab'],expect: 'blocked',why: 'nested lookaround reads past the window'},
+  {src: '(?<=x{0,9000})y',flags: '',inputs: ['xy'],expect: 'blocked',why: 'window wider than RX_MAX_WINDOW'},
   { src: 'plain[a-z]+', flags: 'gi', inputs: ['abc ABC'], expect: 'untouched' },
   { src: '(?=a)b', flags: '', inputs: ['ab', 'b'], expect: 'untouched' },
   { src: '(?!a)b', flags: 'g', inputs: ['ab cb'], expect: 'untouched' },
