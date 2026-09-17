@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-17i (session 01a0ae24)",
-  "session": "01a0ae24",
+  "updated": "2026-09-17j (session 01a0af07, CCC wave authored)",
+  "session": "01a0af07",
   "machine": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-17i session 01a0ae24: GUID CONFIRMED - LAST PRE-CLONE GATE CLEARED, and the PR was created and merged on operator direction. Receipt receipts/absolution/R6/diskutil-list-2026-09-17.md transcribes the operator's Terminal photo: disk0 row 0 = GUID_partition_scheme, disk0s1 = EFI 209.7 MB (an EFI partition only exists on a GUID disk, so this corroborates independently), disk0s2 = Apple_HFS 'Kingston' 239.7 GB. The Kingston can boot an Intel Mac; the repartition was done correctly and the clone may proceed. RAID X CONFIRMED DEGRADED-AS-EXPECTED: exactly two Apple_RAID members remain (disk1s2, disk2s2) because the third is the WD pulled from Bay 2; both survivors intact; never Erase/Create/Rebuild/Demote disk1 or disk2. MX500 boot volume disk3s2 'start disk clone' untouched. NEW FINDING: the SOURCE has a Recovery HD (disk3s3, Apple_Boot, 650 MB). A plain CCC volume clone copies the volume NOT the recovery partition - CCC clones Recovery HD as a separate explicit step. Worth carrying over because the destination is a single disk, so unlike the abandoned RAID 0 (which could never have had one) a Recovery HD is possible here, giving Disk Utility + Terminal + reinstall with no external media. Non-blocking; can be added afterwards. HAZARD RECORDED: device numbers are NOT bay numbers and are NOT stable across boots - disk0 is the Kingston, disk3 is the MX500; re-read diskutil list immediately before any destructive command. NEXT SINGLE STEP = author the CCC selective-copy wave (source disk3s2, destination disk0s2 'Kingston', excluding /Users/revo, /Users/jazzyempire and the 87 DROP apps; copying the widget plists + /Library/Widgets + ~/Library/Widgets; and CandyBar.app from ~/Downloads). Manifest is final: KEEP 64 / 2.75 GB, DROP 87 / 6.69 GB, ASK 0. Nothing armed; no erase authored.",
+  "nextAction": "2026-09-17j session 01a0af07: CCC selective-copy wave AUTHORED as docs/lion-ccc-selective-wave.md \u2014 the last pre-clone gate (GUID) was already cleared in 01a0ae24 and the Kingston is ready (disk0 GUID + EFI + 239.7 GB JHFS+, receipt receipts/absolution/R6/diskutil-list-2026-09-17.md). Raid X degraded-as-expected (2 RAID members alive). Manifest final KEEP 64/2.75GB DROP 87/6.69GB ASK 0, projected boot ~16.1 GB vs ~209 GiB usable on the single Bay-2 Kingston. Wave docs the exact CCC Source/Destination, two equivalent execution paths (clone-all then delete DROP from /Volumes/Kingston only, OR filter in CCC), the 87-DROP checklist, and the CandyBar/widget/font exceptions that a naive /Applications filter would have lost. Preflight + post-clone verification commands are pasteable and read-only; the MX500 stays untouched as rollback, and the bay-endgame move (Kingston Bay2\u2192Bay1, WD back to Bay2) is explicitly deferred to a later wave after soak. Nothing armed by the doc alone \u2014 the operator must paste the preflight, run CCC on the Mac, and paste verification before any Startup Disk blessing; the PR for this doc is awaiting operator-directed merge.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -19,19 +19,19 @@
       "name": "start disk clone",
       "role": "CURRENT BOOT: mounted at /, Lion 10.7.5; old wipe authorization suspended | 2026-09-17b PHOTO: this volume lives on the CT1000MX500SSD - the ONLY SSD in the machine. The ToDo item-3 'spare SSD' does not exist; the wipe target and the boot disk are the same physical device.",
       "lastNode": "/dev/disk3s2",
-      "location": "Mac Pro 3,1 bay UNKNOWN, but media IS the 1 TB CT1000MX500SSD (operator Disk Utility photo 2026-09-17)",
+      "location": "Mac Pro 3,1 Bay 1, media CT1000MX500SSD 1 TB \u2014 live Lion boot, 931Gi",
       "erase": "NEVER (current boot)"
     },
     {
       "name": "Raid X",
-      "role": "3.0 TB logical HFS journaled volume mounted at /Volumes/Raid X; RAID mode/health not measured",
+      "role": "3.0 TB logical HFS journaled volume \u2014 currently OFFLINE (one member removed from Bay 2, as intended). Data not lost; reassembles when all three WDs return. Mount point /Volumes/Raid X when healthy.",
       "lastNode": "/dev/disk4",
       "erase": "NEVER (live data)"
     },
     {
       "name": "Apple_RAID members",
-      "role": "disk0s2, disk1s2, disk2s2 each ~999.9 GB; membership health and physical bays not measured",
-      "lastNode": "/dev/disk0s2,/dev/disk1s2,/dev/disk2s2",
+      "role": "Two survivors of the 3-member Raid X stripe (~999.9 GB each); third member is the WD pulled from Bay 2. Never Erase/Create/Rebuild/Demote \u2014 degraded but intact.",
+      "lastNode": "/dev/disk1s2,/dev/disk2s2 (third member pulled from Bay 2, offline)",
       "erase": "NEVER"
     },
     {
