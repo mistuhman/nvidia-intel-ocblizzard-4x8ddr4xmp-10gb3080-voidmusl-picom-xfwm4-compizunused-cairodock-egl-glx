@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 156,
+  "lastSeq": 157,
   "entries": [
     {
       "seq": 1,
@@ -2480,6 +2480,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 (2026-09-17): operator directive 'deploy agents to read ToDo.md, README.md and MASTER.md then verify model image sight capability before continuing at further user prompt'. All three read in full. IMAGE SIGHT VERIFIED LIVE for this session's model: tools/vision-check.ts blind sealed-key test A = PASS 11/11 exact (code 47780 readable only from pixels; key_sha fe59fbe45bee264c sealed before read). Test B real iFixit photo described correctly AND identified as wrong subject (MacBook Pro 15 unibody, not Mac Pro 3,1 tower). Prior VISION-VERIFICATION.md belongs to session 01a0ad71 and was NOT inherited. Receipt: receipts/vision-check/SESSION-01a0ae24-VISION.md. HOLDING for further operator prompt per directive; no gate advanced.",
       "sha256": "47a67b6b956da30adbede7cbd49a7b0bb176ee194e329cf1950ab4313c407bdd"
+    },
+    {
+      "seq": 157,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 step 1 (2026-09-17): operator 'now lets work on wiping the ssd and progressing through the ToDo.md one step at a time starting from where we left off w the typescript tooling and linkage'. BLOCKING FINDING: ToDo item 3 wipe target 'the superseded Bay 3 start-disk clone media' collides by NAME with the LIVE BOOT volume - burn 2026-09-17 shows /dev/disk3s2 on / (hfs) 931Gi 899Gi 97% 'start disk clone'. lion-ssd-wipe.block matches crucial|mx500|ssd; 0 Solid State receipts for any Mac disk; only MX500 receipt (ata-CT1000MX500SSD1) is in the OMEN/Void = different machine. All receipted Mac disks are never-erase (disk3s2 boot, disk0s2/1s2/2s2 Apple_RAID, disk4 Raid X) => wipe wave has NO proven target, stays UN-ARMED. Shipped tools/lion-disk-plan.ts (guards-as-data + read-only probe, refuses to emit erase, selftest PASS) + etc/lion-disk-identity.block. Linkage updated: lion-workflow.json nextAction/session/volume role, ToDo item-3 status line, test-all gate. Commit 5422b8e. AWAITING operator paste-back of the identity probe before any erase.",
+      "sha256": "5fd0d2d395a1e6ed8772ef11856d67b4ef8390d8bc9f6c469e451e2a85665086"
     }
   ],
   "stacks": [
