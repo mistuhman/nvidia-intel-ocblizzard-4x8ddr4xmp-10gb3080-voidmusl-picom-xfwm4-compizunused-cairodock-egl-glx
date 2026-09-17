@@ -19,7 +19,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { runInNewContext } from 'node:vm';
 import {
-  RUNTIME_FILE, auditEs5, bigIntPlugin, newCompatState, regexPlugin, runtimeSource, verifyBigInt, verifyRegex,
+  BIGINT_REFUSAL_KINDS, REFUSAL_KINDS, RUNTIME_FILE, auditEs5, bigIntPlugin, newCompatState, regexPlugin, runtimeSource, verifyBigInt, verifyRegex,
   verifyRegexProperty, verifyRuntime,
 } from './lib/es5-compat.ts';
 
@@ -39,7 +39,7 @@ const APPS: Record<string, { entry: string; note: string }> = {
 // receipt cites the exact corpus version. Growth rule: new hazard or shim = new entry HERE with a
 // receipt citation (CI log or da.gd/lionone burn); no silent behavior changes, ever.
 const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, string[]> } = {
-  version: "2026-09-16i-v4",
+  version: "2026-09-16j-v5",
   common: [
     "target floor: firefox 52 (Arctic Fox 47 Goanna parse class) via @babel/preset-env, modules:false - syntax lowering only, no module wrapping",
     "polyfill prelude: core-js-bundle full build loads FIRST in loader.html (polyfill.js before every es5-*.js); order is load-bearing",
@@ -57,6 +57,8 @@ const INSTRUCTIONS: { version: string; common: string[]; apps: Record<string, st
     "present on FF52, no action needed: fetch, WebSocket, localStorage, IndexedDB, Promise, Map/Set",
     "SRI integrity attributes and CSP meta from discovered shells are NOT ported to loader.html by design (local same-origin bundle)",
     "script order = discovery order (webpack chunk dependencies); never sort assets alphabetically",
+    "FF52 web-compat regex grammar rules implemented in the analyzer (2026-09-16j): a brace that does not form a quantifier is a LITERAL outside unicode mode, identity escapes are restricted only in unicode mode, duplicate group names and dangling numeric/named backrefs are refused, and the matchAll / RegExp(re) clone hazard is decided per regex object by where that object flows - not by whether the file mentions matchAll. On the real Vencord bundle these two rules were 219 of 279 reported hazards, i.e. tooling strictness, not FF52 limits.",
+    "first v4 census of a real app (2026-09-16j, run in-sandbox against the exact 2026-09-16g source bytes: Vencord 1.15.6 Vencord.user.js sha256 325bb7568d1fdc790d996387c51f6155edb2ee7ffd4dc710681d9dfcea44210d): 209/209 BigInt literals lowered through 2018 operator sites, 595 regex literals, 3 rewritten, 181 hazards left = 51 mid-pattern lookbehind + 41 variable-width lookbehind + 11 capture inside lookbehind + 2 unicode-property + 76 clone-visible. App publication stays BLOCKED; the next implementation step is bounded-range lookbehind windows (?<=x.{0,40}y) which clears the 41 class. Receipt: receipts/mac-es5/2026-09-16j-vencord-v4-census/",
     "corpus is versioned and sha256-hashed into RECEIPT-INDEX.json (instructions_sha256); every new hazard/shim lands as an entry here with its receipt citation",
   ],
   apps: {
@@ -387,6 +389,24 @@ function compilerTests(ok: (id: string, cond: boolean) => void, cases = 220): vo
   const rtv = verifyRuntime();
   ok('verify-runtime', rtv.passed === rtv.ran && rtv.failures.length === 0);
   if (rtv.failures.length) console.error(rtv.failures.join('\n'));
+  // The refusal vocabulary is the contract every receipt quotes. An unlisted kind turns a legitimate
+  // refusal into a fuzzer failure; a listed kind the analyzer can no longer emit makes a receipt claim a
+  // limit the code does not have. Both directions are checked against the analyzer source itself.
+  ok('refusal-vocabulary', (() => {
+    const src = readFileSync(new URL('./lib/es5-compat.ts', import.meta.url), 'utf8');
+    const used = new Set();
+    /* only refusal sites count - the parser also uses a "kind" field for pattern nodes, and a node kind is
+       not a vocabulary entry */
+    for (const m of src.matchAll(/hazards\.push\(\{\s*kind: '([A-Za-z0-9-]+)'/g)) used.add(m[1]);
+    for (const m of src.matchAll(/return \{ ok: false, kind: '([A-Za-z0-9-]+)'/g)) used.add(m[1]);
+    const listed = REFUSAL_KINDS.concat(BIGINT_REFUSAL_KINDS);
+    const missing = [...used].filter((k) => listed.indexOf(k) < 0);
+    const dead = listed.filter((k) => !used.has(k));
+    for (const k of missing) console.error('VOCAB_UNLISTED ' + k);
+    for (const k of dead) console.error('VOCAB_DEAD ' + k);
+    console.log('VERIFY_VOCABULARY ' + listed.length + ' kinds listed (' + REFUSAL_KINDS.length + ' regex + ' + BIGINT_REFUSAL_KINDS.length + ' bigint), ' + used.size + ' emitted');
+    return missing.length === 0 && dead.length === 0;
+  })());
   const bv = verifyBigInt(babel, cases);
   ok('verify-bigint-differential', bv.passed === bv.ran);
   console.log(`VERIFY_BIGINT ${bv.passed}/${bv.ran}`);

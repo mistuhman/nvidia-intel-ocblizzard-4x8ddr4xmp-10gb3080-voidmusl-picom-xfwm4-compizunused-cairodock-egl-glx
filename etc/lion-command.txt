@@ -14,7 +14,7 @@ The installed GitHub workflow is ACTIVE with zero runs, but is the OLD copy.
 Do not Run workflow yet. Corrected source is ci/workflows/mac-es5-passthrough.yml;
 operator installation of that source alone will NOT solve the runtime blockers.
 Next single task: verify an actual BigInt/regex compatibility implementation.
-New context downloads carry v4 271318b1ef24 and explicitly report this HOLD.
+New context downloads carry v5 d94486672b9a and explicitly report this HOLD.
 
 STORAGE HOLD: root is start disk clone (/dev/disk3s2 at receipt time).
 Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.

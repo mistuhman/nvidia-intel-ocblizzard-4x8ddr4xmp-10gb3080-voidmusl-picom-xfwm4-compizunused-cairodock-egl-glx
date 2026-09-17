@@ -1,8 +1,8 @@
 {
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
-  "updated": "2026-09-16",
-  "lastSeq": 133,
+  "updated": "2026-09-17",
+  "lastSeq": 136,
   "entries": [
     {
       "seq": 1,
@@ -2180,6 +2180,41 @@
       "kind": "note",
       "text": "2026-09-16i (01a0ab3d): the two HOLD blockers are implemented and verified OFF-target. tools/lib/es5-compat-runtime.js (__bi BigInt + __rx regex, ES5, 33,695 B, sha 8f3bbc53d268) ships as compat.js in every bundle between polyfill.js and es5-*; tools/lib/es5-compat.ts holds the FF52 table, parser, rewritePattern, bigIntPlugin, regexPlugin, acorn auditEs5 and 4 verifiers. Evidence: bigint 3166/3166 default, 14946/14946 at CI preflight --cases=12000 (2m26s), 119568/119568 over 8 seeds x 12000; regex 78/78 fixtures (10 assert refusal) + 39556/39556 property fuzz over 7 seeds (12423 byte-compared against native RegExp, 24459 refused, 15 refusal kinds). Fuzz found the real bugs: (-1n)**(2^53+1) parity through a double, per-branch dotAll loss in branch-mode rewrites, split not routing through overridden exec, \\k<n>1 splice, matchAll species clone. TEST_ALL=PASS, ONE_TEST=PASS, corpus 2026-09-16i-v4 sha 271318b1ef24, zip f0ffceb2536a, MASTER + CI ref repinned to arena/01a0ab3d (lion-one-test now reads the page pin from MASTER instead of a literal). NOT done: no dispatch, no publish, no target receipt; 209/184 Vencord counts unrecomputable in sandbox (raw.githubusercontent HTTP 000, gh api 401) - they need the CI COMPATIBILITY.json. COMPILE_GATE=HOLD stands.",
       "sha256": "03e8a5d5e7b1aebc3cd7b16434e5341ce26c6ff30552ace83d9c89c8f8d48eea"
+    },
+    {
+      "seq": 134,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-16j (01a0ab3d): the v4 compat layer ran against real app bytes. gh api CAN read third-party repos with this token (the 16i note saying 401 was wrong), so the exact 2026-09-16g Vencord bundle (739330 B, sha 325bb7568d1f, ref 8a2b56ed, HEAD build is 77 B larger so the ref is pinned) compiled locally: 209/209 BigInt literals lowered through 2018 operator sites, 595 regex literals, 3 rewritten, 181 hazards, exit 4 = publication BLOCKED, compat_sha256 8f3bbc53d268 unchanged (runtime untouched). First run reported 279 hazards; 219 were analyzer defects, not FF52 limits: (a) Annex-B web-compat grammar - outside u mode a brace that does not form a quantifier is a literal (/a{b/, /a{2/, /x{}/) and identity escapes are legal (/a\\i/ matches ai), refusing them manufactured 156 hazards; u stays strict; added duplicate group names, dangling \\k<name>, u-mode numeric backrefs; (b) matchAll/RegExp(re) clone safety now decided PER regex object by following where the value flows (safe: replace/replaceAll/split/match/search args, test/exec receivers, .lastIndex; unsafe: matchAll species clone, RegExp(re), .source/.flags/.constructor reads; untracked flow fails closed only if the file has such a sink) - the old file-level scan blacklisted 63 unrelated patterns. Verification is now bidirectional and CI-enforced: property fuzzer asserts engine agreement both ways (PARSER-STRICT / PARSER-LENIENT) over a web-compat atom bucket, and selftest --compiler audits REFUSAL_KINDS + BIGINT_REFUSAL_KINDS against the analyzer source in both directions (it caught regex-dynamic-unsafe missing and regex-lookbehind-quantified listed with no emitting code). Totals: matrix 0 mismatches of 636 (63 patterns x 12 flag sets), property 24000/24000 (4 seeds x 6000, 8305 byte-compared vs native RegExp, 12631 refused, 925 native-rejects agreed), bigint 44838/44838, VERIFY_REGEX 78/78, VERIFY_VOCABULARY 18/18. New tool tools/lion-corpus-sync.ts (verify wired into test-all) keeps the burned artifact byte-identical to the corpus and rebuilds the zip deterministically; test-all now runs selftest --compiler when the pinned deps resolve and prints a loud SKIP otherwise, because the dep-free half reported TEST_ALL=PASS while fixtures were 40/78. Corpus 2026-09-16j-v5 sha d94486672b9a, lion-one.zip 13737 B. TEST_ALL=PASS, ONE_TEST=PASS, CORPUS_SYNC=PASS. STILL HOLD: no dispatch, no publication, no target receipt, no FF52 ever executed anything; gate HOLD is target-side only. Next single task: bounded-width lookbehind windows (?<=x.{0,40}y) clearing 41 of 181. Receipts: receipts/mac-es5/2026-09-16j-vencord-v4-census/.",
+      "sha256": "456e18863d973fea8f8dc9023be03fd3a7f9bfc567264a902727ac1b24e6f6b8"
+    },
+    {
+      "seq": 135,
+      "date": "2026-09-17",
+      "kind": "discrepancy",
+      "topic": "vencord-post-ff52-regex-hazard-count",
+      "sides": [
+        {
+          "claim": "Operator claim: Vencord has 209 BigInt literals and 184 post-FF52 regex hazards",
+          "source": "2026-09-16 prompt, ToDo.md, receipts/mac-es5/2026-09-16h-burn-verification/REPORT.md"
+        },
+        {
+          "claim": "Measured with the v4 analyzer on the exact pinned bundle: BigInt 209/209 confirmed exactly; regex hazards 279 on the first run of which 219 were analyzer over-strictness and file-granularity defects, 181 remain after the fixes and none of them reproduce the 184 set",
+          "source": "receipts/mac-es5/2026-09-16j-vencord-v4-census/CENSUS.json + COMPATIBILITY.json"
+        }
+      ],
+      "status": "RESOLVED",
+      "owner": "agent",
+      "sha256": "e508fe146d415e88f1a199812b7ae24f9ab91cfa6630f3679ecfef30985acafa"
+    },
+    {
+      "seq": 136,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "compiler-gate-2026-09-16j",
+      "value": "HOLD unchanged. The two HOLD blockers (real BigInt, FF52 regex) are implemented, verified differentially AND adjudicated against real app source; the app stays BLOCKED by 181 enumerated refusals, not by missing tooling. Nothing dispatched, published, merged or installed. Next: bounded-width lookbehind windows, then operator dispatch + Mac burn.",
+      "source": "transpile exit 4 on Vencord 1.15.6 (ref 8a2b56ed); selftest --compiler PASS; TEST_ALL=PASS; ONE_TEST=PASS; CORPUS_SYNC=PASS",
+      "sha256": "950fd662bffa8c5304409e627c9a194340bdcbf8c5cee7756b2dd918939d7031"
     }
   ],
   "stacks": [

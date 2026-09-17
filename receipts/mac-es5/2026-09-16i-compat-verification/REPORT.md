@@ -74,6 +74,13 @@ Recorded because it is the argument for the method, not a list of shames:
 
 ## Artifact hashes (this turn)
 
+> Superseded for the corpus/artifact rows by
+> `receipts/mac-es5/2026-09-16j-vencord-v4-census/`: the corpus moved to `2026-09-16j-v5`
+> (`d94486672b9a`) after the analyzer fixes the real-bundle census required, so the zip and page shas below
+> are the state as of this receipt, not as of now. `tools/lib/es5-compat-runtime.js` is unchanged
+> (`8f3bbc53d268`) and the fixture/fuzz totals below predate the web-compat grammar rules. The compat
+> runtime and its ES5-floor audit are unaffected.
+
 | File | sha256 |
 |---|---|
 | `lion-one.zip` | `f0ffceb2536a5646df48480567f10f1f0c0b6327def8e559bd30d4bf92ce90dd` |

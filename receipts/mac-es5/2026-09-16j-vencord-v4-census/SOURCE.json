@@ -1,0 +1,9 @@
+{
+  "fetchedAt": "2026-09-16",
+  "command": "gh api -H \"Accept: application/vnd.github.raw\" \"repos/Vencord/builds/contents/Vencord.user.js?ref=8a2b56ed722781381cdf93e62f1096f6358817c1\" > <dir>/vencord-web/src-00-Vencord.user.js",
+  "bytes": 739330,
+  "sha256": "325bb7568d1fdc790d996387c51f6155edb2ee7ffd4dc710681d9dfcea44210d",
+  "gitBlobSha1": "5f30565e641567a8788e71f050c167c6bf975612",
+  "matchesProvenanceOf": "receipts/mac-es5/2026-09-16g-vencord-local/FETCH.json",
+  "note": "the current HEAD build of Vencord/builds is 739407 bytes; the ref is pinned so this census stays reproducible"
+}

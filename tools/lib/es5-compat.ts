@@ -61,6 +61,7 @@ export function newCompatState(): CompatState {
 ** Anything it cannot parse is reported as a hazard; it never guesses. */
 
 type Width = { min: number; max: number };
+const U_ESCAPE_OK = '^$\\.*+?()[]{}|/dDwWsSbBnrtvfxuckpP0123456789';
 const BIG = 1e9;
 type GroupKind = 'cap' | 'noncap' | 'name' | 'la' | 'nla' | 'lb' | 'nlb';
 type Node =
@@ -82,7 +83,7 @@ export type Analysis = {
   features: Set<string>;
   lookbehinds: { node: Extract<Node, { t: 'group' }>; branch: number; itemIndex: number }[];
   namedGroups: { name: string; index: number; at: number; end: number }[];
-  namedBackrefs: { name: string; at: number; end: number }[];
+  namedBackrefs: { name: string; at: number; end: number }[];  numBackrefs?: { n: number; at: number }[];
   captures: number;
 };
 
@@ -107,7 +108,35 @@ class Pattern {
   }
 
   parse(): Analysis {
+    /* in unicode mode a numeric backref must point at an existing group; the capture count is only final
+    ** after the walk, so this cannot live in escape() */
+    const post = (): void => {
+      if (!this.a.ok) return;
+      /* in unicode mode \k<name> is always a named reference, even when the pattern declares no named
+      ** groups at all; outside it, Annex B falls back to a literal "k<name>" unless a group exists */
+      if (this.a.namedGroups.length || this.flags.indexOf('u') >= 0) {
+        for (const b of this.a.namedBackrefs) {
+          if (this.a.namedGroups.some((g) => g.name === b.name)) continue;
+          this.a.ok = false;
+          this.a.error = this.a.error || { at: b.at, why: 'invalid named reference: no group named ' + b.name };
+          return;
+        }
+      }
+      if (this.flags.indexOf('u') < 0) return;
+      /* unicode mode is the strict one: a numeric backref must land on a group that exists (the capture
+      ** count is only final after the walk, which is why this is not in escape()), and \k<name> must
+      ** name a declared group. Both are SyntaxErrors in V8; accepting them would let the rewrite ship a
+      ** literal that throws at module init, and rejecting them would block code that runs - both are bugs. */
+      for (const b of this.a.numBackrefs || []) {
+        if (b.n <= this.cap) continue;
+        this.a.ok = false;
+        this.a.error = this.a.error || { at: b.at, why: 'invalid decimal escape in unicode pattern' };
+        return;
+      }
+
+    };
     const tree = this.alt();
+    post();
     if (!this.a.ok) return this.a;
     if (this.i < this.s.length) { this.fail(this.i, 'unbalanced )'); return this.a; }
     this.a.tree = tree;
@@ -159,7 +188,23 @@ class Pattern {
     const c = this.s[this.i];
     if (c !== '*' && c !== '+' && c !== '?' && c !== '{') return atom;
     const q = this.quantifier();
-    if (!q) { this.i = save; return atom; }
+    if (!q) {
+      /* '{' that does not form a quantifier: literal brace in web-compat mode (restore the index and let
+      ** the sequence read it as an atom), SyntaxError in unicode mode. V8 agrees on both halves. */
+      if (c === '{' && this.flags.indexOf('u') >= 0) this.fail(save, 'invalid quantifier in unicode pattern');
+      this.i = save;
+      return atom;
+    }
+    const g = atom.t === 'group' ? atom.kind : '';
+    const assertion = g === 'lb' || g === 'nlb' || g === 'la' || g === 'nla' || atom.t === 'assert';
+    if (assertion && (g === 'lb' || g === 'nlb' || this.flags.indexOf('u') >= 0)) {
+      /* V8: /(?=b)+/ compiles (Annex B allows quantifying a lookahead) but /(?<=a)+/ throws, and in
+      ** unicode mode no assertion may be quantified. Accepting what the target rejects would ship a
+      ** literal that throws at module init, which is the exact failure this gate exists to stop. */
+      this.fail(save, 'assertion cannot be quantified here');
+      this.i = save;
+      return atom;
+    }
     if (this.s[this.i] === '?') this.i += 1;
     else if (this.s[this.i] === '+') { this.fail(this.i, 'possessive quantifier (not ECMAScript)'); return atom; }
     return { t: 'quant', body: atom, min: q.min, max: q.max, text: this.s.slice(save, this.i), at: save, end: this.i };
@@ -187,8 +232,29 @@ class Pattern {
     if (c === '[') return this.cls();
     if (c === '.') { this.i += 1; return { t: 'dot', at, end: this.i }; }
     if (c === '^' || c === '$') { this.i += 1; return { t: 'assert', text: c, at, end: this.i }; }
-    if (c === '\\') return this.escape();
-    if (c === '*' || c === '+' || c === '?' || c === '{' || c === '}') { this.fail(at, 'nothing to repeat'); return { t: 'char', text: c, at, end: at + 1, units: 1 }; }
+    if (c === '\\') {
+      if (this.flags.indexOf('u') >= 0) {
+        /* outside a class, unicode mode permits only SyntaxCharacter, '/', and the named escapes:
+        ** /\-/u and /\ /u are SyntaxErrors while /[\-]/u is fine - cls() parses classes on its own, so
+        ** the gate lives at this call site and not inside escape(). V8 and the FF52 grammar agree here;
+        ** a parser that accepts what the target rejects ships a literal that throws at module init. */
+        const e = this.s[at + 1];
+        if (e !== undefined && U_ESCAPE_OK.indexOf(e) < 0) { this.fail(at, 'invalid escape in unicode pattern'); return { t: 'esc', text: '\\' + e, at, end: at + 2, units: 1 }; }
+      }
+      return this.escape();
+    }
+    if (c === '*' || c === '+' || c === '?') { this.fail(at, 'nothing to repeat'); return { t: 'char', text: c, at, end: at + 1, units: 1 }; }
+    if (c === '{' || c === '}') {
+      // Annex B: outside unicode mode a brace that is not a quantifier is a LITERAL brace. 156 of the
+      // 279 hazards reported on the real Vencord bundle were this rule missing - patterns like
+      // /#{intl::X}/ and /}=.+/ parse fine on FF52 and on V8. A parser stricter than the target does not
+      // make a bundle safer, it blocks publication of code that would have run.
+      const u = this.flags.indexOf('u') >= 0;
+      const quantifierShape = c === '{' && /^\{\d+(,\d*)?\}/.test(this.s.slice(at));
+      if (u || quantifierShape) { this.fail(at, 'nothing to repeat'); return { t: 'char', text: c, at, end: at + 1, units: 1 }; }
+      this.i += 1;
+      return { t: 'char', text: c, at, end: this.i, units: 1 };
+    }
     this.i += 1;
     return { t: 'char', text: c, at, end: this.i, units: 1 };
   }
@@ -222,6 +288,8 @@ class Pattern {
       return { t: 'esc', text: this.s.slice(at, this.i), at, end: this.i, units: parseInt(hex, 16) > 0xffff ? 2 : 1 };
     }
     if (/[1-9]/.test(c)) {
+      const num = Number(/^(\d+)/.exec(this.s.slice(this.i))![1]);
+      (this.a.numBackrefs || (this.a.numBackrefs = [])).push({ n: num, at });
       let j = this.i;
       while (j < this.s.length && /\d/.test(this.s[j])) j += 1;
       this.i = j;
@@ -302,6 +370,9 @@ class Pattern {
         if (end < 0) { this.fail(this.i, 'unterminated group name'); return { t: 'group', kind: 'noncap', body: { t: 'seq', items: [], at: this.i, end: this.i }, at, end: this.i, openEnd: this.i }; }
         name = this.s.slice(this.i + 2, end);
         if (!NAME_OK.test(name)) { this.fail(this.i, 'invalid group name ' + JSON.stringify(name)); return { t: 'group', kind: 'noncap', body: { t: 'seq', items: [], at: this.i, end: this.i }, at, end: this.i, openEnd: this.i }; }
+        /* every engine rejects a repeated group name, and the rewrite would have to invent an index for
+        ** it - refuse the pattern rather than pick one (V8: "Duplicate capture group name") */
+        if (this.a.namedGroups.some((g) => g.name === name)) { this.fail(this.i, 'duplicate capture group name ' + JSON.stringify(name)); return { t: 'group', kind: 'noncap', body: { t: 'seq', items: [], at: this.i, end: this.i }, at, end: this.i, openEnd: this.i }; }
         kind = 'name';
         openEnd = end + 1;
         this.a.features.add('namedGroup');
@@ -770,12 +841,82 @@ export function bigIntPlugin(state: CompatState): unknown {
 ** FF52 does the same), so a clone of a wrapped RegExp loses the __rx constraint enforcement and
 ** would quietly match WITHOUT the lookbehind. Any file that both needs a rewrite and reaches for
 ** matchAll is therefore refused, not shipped on an optimistic reading of the polyfill. */
+/* A __rx wrapper only enforces its constraints while the object the app calls IS the wrapper.
+** String#matchAll clones through SpeciesConstructor, RegExp(re) copies source+flags, and any store,
+** return or hand-off to unknown code lets the pattern be rebuilt around the patch. Which of those apply
+** is a property of ONE regex object and where it flows - not of whether the file mentions matchAll:
+** the file-level rule cost 63 unrelated refusals on the real Vencord bundle, a single 739 KB file. */
 const REGEX_CLONE_UNSAFE = ['matchAll'];
+const WRAPPER_SAFE_METHODS = ['replace', 'replaceAll', 'split', 'match', 'search'];
+/* reads that hand the pattern or its flags back: from there a RegExp can be rebuilt bare */
+const REGEX_PATTERN_READS = ['source', 'flags', 'global', 'ignoreCase', 'multiline', 'sticky', 'unicode', 'dotAll', 'hasIndices', 'namedGroups', 'constructor'];
+
+/* Does one regex object leave __rx's control? '' means every use routes through the
+  ** wrapper; 'untracked' means the object was stored somewhere this pass cannot follow (property,
+  ** return, closure); anything else is the reason it escapes. */
+function unsafeUse(ref: any, isOwnDef: boolean): string {
+  const parent = ref.parentPath;
+  if (!parent) { return 'the regex object is not consumed by anything analysable'; }
+  if (parent.type === 'NewExpression' || (parent.type === 'CallExpression' && parent.node.callee && parent.node.callee.type === 'Identifier' && parent.node.callee.name === 'RegExp')) {
+    return 'RegExp(re) rebuilds it from source and flags, and the rebuild has no constraints';
+  }
+  if (parent.type === 'CallExpression') {
+    const callee = parent.node.callee;
+    const isArg = (parent.node.arguments || []).indexOf(ref.node) >= 0;
+    if (isArg) {
+      const name = callee.type === 'MemberExpression' && !callee.computed && callee.property ? callee.property.name : '';
+      if (WRAPPER_SAFE_METHODS.indexOf(name) >= 0) { return ''; }
+      if (name === 'matchAll') { return 'String#matchAll clones it via SpeciesConstructor, and the clone matches without the constraints'; }
+      if (name === 'compile' || name === 'execAll') { return 'it is handed to ' + name + ', which consumes the pattern outside the wrapper'; }
+      return 'untracked';
+    }
+    if (callee.type === 'MemberExpression' && !callee.computed && callee.object === ref.node) {
+      const name = callee.property && callee.property.name;
+      if (name === 'test' || name === 'exec') { return ''; }
+      return 'its ' + String(name) + ' is called on the raw object';
+    }
+    return 'it is called as a function';
+  }
+  if (parent.type === 'MemberExpression' && parent.node.object === ref.node) {
+    if (parent.node.computed) { return 'untracked'; }
+    const name = parent.node.property && parent.node.property.name;
+    if (name === 'lastIndex') { return ''; }
+    if (REGEX_PATTERN_READS.indexOf(name) >= 0) { return 'its ' + String(name) + ' is read, which lets the pattern be rebuilt without the constraints'; }
+    return 'untracked';
+  }
+  if (isOwnDef && (parent.type === 'VariableDeclarator' || parent.type === 'AssignmentExpression')) { return ''; }
+  if (parent.type === 'VariableDeclarator' || parent.type === 'AssignmentExpression') { return 'untracked'; }
+  if (parent.type === 'ObjectProperty' || parent.type === 'Property' || parent.type === 'ArrayExpression'
+      || parent.type === 'ReturnStatement' || parent.type === 'ClassProperty') { return 'untracked'; }
+  return 'the object flows into ' + parent.type + ' syntax this pass does not track';
+}
+
+function escapesWrapper(exprPath: any, cloneProne: string): string {
+  const holder = exprPath.parentPath;
+  let name = '';
+  if (holder && holder.type === 'VariableDeclarator' && holder.node.id && holder.node.id.type === 'Identifier') { name = holder.node.id.name; }
+  else if (holder && holder.type === 'AssignmentExpression' && holder.node.left && holder.node.left.type === 'Identifier' && holder.node.right === exprPath.node) { name = holder.node.left.name; }
+  const untracked = (why: string): string => (why === 'untracked'
+    ? (cloneProne ? 'it is stored where this pass cannot follow it, and the file uses ' + cloneProne : '')
+    : why);
+  if (!name) { return untracked(unsafeUse(exprPath, false)); }
+  const binding = exprPath.scope && exprPath.scope.getBinding(name);
+  if (!binding) { return 'stored in ' + name + ', which this pass cannot resolve to a binding'; }
+  for (const ref of (binding.referencePaths || [])) {
+    const why = unsafeUse(ref, false);
+    if (why) { return why === 'untracked' ? untracked(why) : name + ' is used where ' + why; }
+  }
+  for (const viol of (binding.constantViolations || [])) {
+    const why = unsafeUse(viol, true);
+    if (why) { return name + ' is reassigned where ' + why; }
+  }
+  return '';
+}
 
 export function regexPlugin(state: CompatState): unknown {
   return function ({ types: t }: any) {
     let indicesRead = false;
-    let cloneUnsafe = false;
+    let cloneProne = '';
     const consNode = (c: Cons): any => t.objectExpression([
       t.objectProperty(t.identifier('n'), t.numericLiteral(c.n)),
       t.objectProperty(t.identifier('w'), t.numericLiteral(c.w)),
@@ -806,12 +947,18 @@ export function regexPlugin(state: CompatState): unknown {
         Program: {
           enter(path: any): void {
             indicesRead = false;
-            cloneUnsafe = false;
+            cloneProne = '';
             path.traverse({
               MemberExpression(p: any) {
                 const name = p.node.property && p.node.property.name;
-                if (!p.node.computed && name === 'indices') indicesRead = true;
-                if (!p.node.computed && name && REGEX_CLONE_UNSAFE.indexOf(name) >= 0) cloneUnsafe = true;
+                if (p.node.computed) return;
+                if (name === 'indices') indicesRead = true;
+                if (name && REGEX_CLONE_UNSAFE.indexOf(name) >= 0 && !cloneProne) cloneProne = 'String#' + name;
+              },
+              CallExpression(p: any) {
+                if (cloneProne && cloneProne.indexOf('RegExp(') >= 0) return;
+                const c = p.node.callee;
+                if (c && c.type === 'Identifier' && c.name === 'RegExp' && p.node.arguments.length === 1) cloneProne = cloneProne || 'RegExp(re)';
               },
             });
           },
@@ -826,8 +973,9 @@ export function regexPlugin(state: CompatState): unknown {
             state.hazards.push({ kind: r.kind, detail: `/${pattern}/${flags}: ${r.detail}` });
             return;
           }
-          if (cloneUnsafe && (r.cons || r.branches)) {
-            state.hazards.push({ kind: 'regex-clone-unsafe', detail: `/${pattern}/${flags} needs constraint enforcement, but matchAll clones through SpeciesConstructor: the clone would match without the lookbehind` });
+          const escape = (r.cons || r.branches) ? escapesWrapper(path, cloneProne) : '';
+          if (escape) {
+            state.hazards.push({ kind: 'regex-clone-unsafe', detail: `/${pattern}/${flags} needs constraint enforcement, but ${escape}` });
             return;
           }
           state.counts.regexRewritten += 1;
@@ -857,8 +1005,9 @@ export function regexPlugin(state: CompatState): unknown {
             state.hazards.push({ kind: r.kind, detail: `new RegExp(${JSON.stringify(pattern)}, "${flags}"): ${r.detail}` });
             return;
           }
-          if (cloneUnsafe && (r.cons || r.branches)) {
-            state.hazards.push({ kind: 'regex-clone-unsafe', detail: `/${pattern}/${flags} needs constraint enforcement, but matchAll clones through SpeciesConstructor: the clone would match without the lookbehind` });
+          const escape2 = (r.cons || r.branches) ? escapesWrapper(path, cloneProne) : '';
+          if (escape2) {
+            state.hazards.push({ kind: 'regex-clone-unsafe', detail: `new RegExp(${JSON.stringify(pattern)}, "${flags}") needs constraint enforcement, but ${escape2}` });
             return;
           }
           state.counts.regexRewritten += 1;
@@ -1168,11 +1317,16 @@ var __probe = function (re, s) {
 */
 export const REFUSAL_KINDS = ['regex-unparseable', 'regex-unicode-property', 'regex-hasIndices', 'regex-named-backref',
   'regex-lookbehind-multiline', 'regex-lookbehind-position', 'regex-lookbehind-width', 'regex-lookbehind-body',
-  'regex-lookbehind-anchor', 'regex-lookbehind-capture', 'regex-lookbehind-branch-capture', 'regex-lookbehind-quantified',
-  'regex-named-backref-ambiguity', 'regex-clone-unsafe', 'regex-rewrite-incomplete'];
+  'regex-lookbehind-anchor', 'regex-lookbehind-capture', 'regex-lookbehind-branch-capture',
+  'regex-named-backref-ambiguity', 'regex-clone-unsafe', 'regex-dynamic-unsafe', 'regex-rewrite-incomplete'];
+
+/* BigInt refusals are their own vocabulary: the regex fuzzer's "engine agrees" assertions can only speak
+   about regex kinds, and the bigint kinds are asserted instead by the differential BigInt run. */
+export const BIGINT_REFUSAL_KINDS = ['bigint-literal-unreadable', 'bigint-static-unsupported', 'bigint-runtime-collision'];
 
 const RX_SAFE_ATOMS = ['a', 'b', 'c', '1', '0', ' ', '\\d', '\\w', '\\s', '[abc]', '[^a]', '.', 'x?', 'y*', 'z+', '(q)', '(?:r)', '(?=t)', '(?!u)'];
 const RX_HAZARD_ATOMS = ['(?<=a)', '(?<!b)', '(?<=ab)', '(?<=\\d)', '(?<n>a)', '(?<m>[bc])', '\\k<m>', 'a.b', '(?<=a|b)'];
+const RX_WEBCOMPAT_ATOMS = ['{', '}', '}=', 'a{b', 'a{2', 'x{}', 'a{}b', '\\i', '\\_', '\\-', '\\/', '\\8', '[a{]', '[\\\\-]', '(?=b)+', 'a{1,2,3}', '#\\{intl::X\\}', 'a\\-b', '\\b', '\\.', '\\xA9'];
 const RX_LEADING_ATOMS = ['(?<=a)', '(?<!b)', '(?<=ab)', '(?<=\\d)', '(?<=a|b)', '(?<=.)', '(?<=x?)', '(?<n>a)', '(?<m>[bc])'];
 const RX_FLAG_SETS = ['', 'g', 'i', 'm', 's', 'd', 'gi', 'gs', 'gim'];
 
@@ -1189,12 +1343,27 @@ export function verifyRegexProperty(babel: any, cases: number, seed = 0x9e3779b9
     ** biasing the generator here is what turns "compared" up from a trickle into real coverage */
     if (rand() < 0.6) src += pick(RX_LEADING_ATOMS);
     if (rand() < 0.25) src += pick(RX_LEADING_ATOMS);
-    for (let k = 0; k < n; k += 1) src += rand() < 0.4 ? pick(RX_HAZARD_ATOMS) : pick(RX_SAFE_ATOMS);
+    for (let k = 0; k < n; k += 1) {
+      const roll = rand();
+      src += roll < 0.28 ? pick(RX_HAZARD_ATOMS) : roll < 0.46 ? pick(RX_WEBCOMPAT_ATOMS) : pick(RX_SAFE_ATOMS);
+    }
     if (rand() < 0.25) src += '|' + pick(RX_SAFE_ATOMS);
     const flags = pick(RX_FLAG_SETS);
-    try { void new RegExp(src, flags); } catch { skipped += 1; continue; }   // native rejects the generated pattern
+    let nativeRejects = false;
+    try { void new RegExp(src, flags); } catch { nativeRejects = true; }
+    /* strictness and leniency are both bugs, so the engine's own accept/reject decision is asserted in
+    ** both directions - not just used to skip. A parser that rejects what FF52 accepts silently blocks
+    ** publication (it cost 156 of 279 hazards on the real Vencord bundle); one that accepts what FF52
+    ** rejects ships a literal that throws at module init. */
     ran += 1;
-    const r = rewritePattern(src, flags, { indicesRead: false });
+    const probe = rewritePattern(src, flags, { indicesRead: false });
+    if (nativeRejects) {
+      if (probe.ok) failures.push(`PARSER-LENIENT /${src}/${flags} parses on no engine but was accepted`);
+      else { skipped += 1; passed += 1; if (REFUSAL_KINDS.indexOf(probe.kind) < 0) failures.push(`UNLISTED-REFUSAL ${probe.kind} for /${src}/${flags}: ${probe.detail}`); }
+      continue;
+    }
+    if (!probe.ok && probe.kind === 'regex-unparseable') { failures.push(`PARSER-STRICT /${src}/${flags} is valid on the target but the analyzer rejected it: ${probe.detail}`); continue; }
+    const r = probe;
     if (!r.ok) {
       refused += 1;
       if (REFUSAL_KINDS.indexOf(r.kind) < 0) failures.push(`UNLISTED-REFUSAL ${r.kind} for /${src}/${flags}: ${r.detail}`);
@@ -1228,7 +1397,7 @@ export function verifyRegexProperty(babel: any, cases: number, seed = 0x9e3779b9
     if (nativeOut === shimOut || bothError) passed += 1;
     else failures.push(`PROPERTY-DIFFER input=${JSON.stringify(input)} /${src}/${flags} -> /${r.src}/${r.flags}\n  native=${nativeOut}\n  shim  =${shimOut}`);
   }
-  return { ran, passed, failures, census: `ran=${ran} compared=${compared} refused=${refused} skipped=${skipped}` };
+  return { ran, passed, failures, census: `ran=${ran} compared=${compared} refused=${refused} engine-rejects-agreed=${skipped}` };
 }
 
 export function verifyRegex(babel: any): VerifyResult {

@@ -2,6 +2,12 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
+
+const require2 = createRequire(import.meta.url);
+function resolveDeps(): boolean {
+  try { require2.resolve('@babel/core'); require2.resolve('core-js-bundle'); require2.resolve('acorn'); return true; } catch { return false; }
+}
 
 function run(command: string, args: string[]): void {
   console.log(`$ ${command} ${args.join(' ')}`);
@@ -45,8 +51,13 @@ run('bash', ['-n', 'lion-one.command']);
 run('bash', ['-n', 'lion-arcticfox-harden.command']);
 run('node', ['tools/lion-mirror-sl-test.ts']);
 run('node', ['tools/lion-one-test.ts']);
+run('node', ['tools/lion-corpus-sync.ts', 'verify']);
 run('node', ['tools/lion-arcticfox-test.ts']);
 run('node', ['tools/mac-es5-passthrough.ts', 'selftest']);
+// the compat verifiers diff against native BigInt/RegExp and need the CI-pinned deps: run them when they
+// resolve, and say so out loud when they do not, instead of letting the dep-free half look like full coverage
+if (resolveDeps()) run('node', ['tools/mac-es5-passthrough.ts', 'selftest', '--compiler']);
+else console.log('SKIP tools/mac-es5-passthrough.ts selftest --compiler (@babel/core + core-js-bundle + acorn not installed)');
 run('python3', ['-m', 'json.tool', 'docs/lion-workflow.json']);
 // Mac art pass-compiler: fact ledger, scene IR and the imaging pass loop
 run('python3', ['-m', 'json.tool', 'docs/macpro-storage-facts.json']);

@@ -1,0 +1,108 @@
+{
+  "id": "2026-09-16j-vencord-v4-census",
+  "date": "2026-09-16",
+  "mode": "off-target, local; no workflow dispatch, no publication, no target run",
+  "gate": "COMPILE_GATE=HOLD (unchanged)",
+  "app": "vencord-web",
+  "source": {
+    "repo": "Vencord/builds",
+    "file": "Vencord.user.js",
+    "ref": "8a2b56ed722781381cdf93e62f1096f6358817c1",
+    "appVersion": "1.15.6",
+    "bytes": 739330,
+    "sha256": "325bb7568d1fdc790d996387c51f6155edb2ee7ffd4dc710681d9dfcea44210d",
+    "gitBlobSha1": "5f30565e641567a8788e71f050c167c6bf975612",
+    "provenance": "receipts/mac-es5/2026-09-16g-vencord-local/FETCH.json (same bytes, re-verified)"
+  },
+  "compiler": {
+    "command": "node tools/mac-es5-passthrough.ts transpile --in=<dir> --out=<dir>",
+    "exitCode": 4,
+    "status": "BLOCKED",
+    "runtime": "es5-compat (__bi BigInt implementation + __rx regex compat layer)",
+    "compat_sha256": "8f3bbc53d268304ff5b363a4ee30ffd20b5700b59be3b5b13d1da21f070a4bab",
+    "compat_audit": [],
+    "corpus": "2026-09-16j-v5",
+    "corpus_sha256": "d94486672b9a93cda8b7845a7129c929b51c03f90b7bbf2bcf7e1d66327487b0"
+  },
+  "counts": {
+    "bigintLiterals": 209,
+    "bigintLowered": 209,
+    "bigintOperators": 2018,
+    "regexLiterals": 595,
+    "regexRewritten": 3
+  },
+  "claimCheck": {
+    "bigintLiteralsClaimed": 209,
+    "bigintLiteralsMeasured": 209,
+    "bigintLiteralsLowered": 209,
+    "regexHazardsClaimed": 184,
+    "regexHazardsFirstRun": 279,
+    "regexHazardsFirstRunToolDefects": 219,
+    "regexHazardsAfterParserFixes": 181,
+    "verdict": "the BigInt count is exact; the regex count was not reproducible as stated - 219 of 279 were analyzer strictness/granularity defects (fixed in this wave), and the 181 that remain are enumerated FF52 limits or per-object clone-escape refusals"
+  },
+  "hazardKinds": {
+    "regex-clone-unsafe": 76,
+    "regex-lookbehind-capture": 11,
+    "regex-lookbehind-position": 51,
+    "regex-lookbehind-width": 41,
+    "regex-unicode-property": 2
+  },
+  "examples": {
+    "regex-clone-unsafe": [
+      "/(?<!<)https?:\\/\\/(?:\\w+\\.)?discord(?:app)?\\.com\\/channels\\/(?:\\d{17,20}|@me)\\/(\\d{17,20})\\/(\\d{17,20})/g needs constraint enforcement, but Mv is used where String#matchAll clones it via SpeciesConstructor, and the clone",
+      "/(?<=,channel:\\i,message:\\i\\}\\)\\.then\\().+?(?=\\i\\.content!==this\\.props\\.message\\.content&&\\i\\((.+?)\\)\\})/ needs constraint enforcement, but it is stored where this pass cannot follow it, and the file uses String#matchAl"
+    ],
+    "regex-lookbehind-capture": [
+      "/(?<=(\\i)\\.isNSFW\\(\\);)switch\\(\\i\\.type\\).{0,15}\\.GUILD_ANNOUNCEMENT/: lookbehind body captures; removing it would renumber /(?<=(\\i)\\.isNSFW\\(\\);)switch\\(\\i\\.type\\).{0,15}\\.GUILD_ANNOUNCEMENT/",
+      "/(?<=\\.\\.\\.\\i,folderNode:(\\i),expanded:)\\i(?=,)/: lookbehind body captures; removing it would renumber /(?<=\\.\\.\\.\\i,folderNode:(\\i),expanded:)\\i(?=,)/"
+    ],
+    "regex-lookbehind-position": [
+      "/,checkElevated:!1}\\),\\i\\.\\i\\)}(?<=getCurrentUser\\(\\);return.+?)/: lookbehind at index 30 of /,checkElevated:!1}\\),\\i\\.\\i\\)}(?<=getCurrentUser\\(\\);return.+?)/ is not at a branch start: FF52 cannot tell where inside the m",
+      "/!__OVERLAY__&&\\((?<=selectVoiceChannel\\((\\i)\\.id\\).+?)/: lookbehind at index 16 of /!__OVERLAY__&&\\((?<=selectVoiceChannel\\((\\i)\\.id\\).+?)/ is not at a branch start: FF52 cannot tell where inside the match to test it"
+    ],
+    "regex-lookbehind-width": [
+      "/(?<=,editorRef:(\\i),.{0,200}textValue:(\\i),editorHeight:\\i,channelId:\\i\\.id\\}\\)),\\i/: (? <=,editorRef:(\\i),.{0,200}textValue:(\\i),editorHeight:\\i,channelId:\\i\\.id\\}\\)) is not fixed width in code units (56..256): the win",
+      "/(?<=\"data-mana-component\":\"layer-modal\"[^}]*?)style:\\i,/: (? <=\"data-mana-component\":\"layer-modal\"[^}]*?) is not fixed width in code units (35..inf): the window to test is unknown"
+    ],
+    "regex-unicode-property": [
+      "/[^\\p{Letter}\\p{Number}\\p{Punctuation}\\s]/gu: /\\p{...}/\\P{...} in this pattern needs Unicode property tables the target engine has no access to (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_e",
+      "/[^\\p{Script=Latin}\\p{Number}\\p{Punctuation}\\s]/gu: /\\p{...}/\\P{...} in this pattern needs Unicode property tables the target engine has no access to (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Reg"
+    ]
+  },
+  "verification": {
+    "differentialMatrix": "63 patterns x 12 flag sets, analyzer accept/reject vs native RegExp throw: 0 mismatches of 636",
+    "regexPropertyFuzz": "4 seeds x 6000: 24000/24000 passed, 8305 byte-compared against native RegExp, 12631 refused with listed kinds, 925 native-rejects agreement-asserted",
+    "bigintFuzz": "3 seeds x 12000: 44838/44838",
+    "fixtures": "VERIFY_REGEX 78/78 (10 of them assert refusal)",
+    "vocabulary": "VERIFY_VOCABULARY 18 kinds listed (15 regex + 3 bigint) / 18 emitted, both directions",
+    "suites": {
+      "testAll": "TEST_ALL=PASS",
+      "lionOne": "ONE_TEST=PASS",
+      "corpusSync": "CORPUS_SYNC=PASS corpus=2026-09-16j-v5 sha=d94486672b9a zip-in-step"
+    }
+  },
+  "artifactShas": {
+    "lion-compiler-context.command": "95e9ee2283b56990f0a171b68d7d9b3ad581cb0a0fc49c87c84ea724d0081396",
+    "lion-one.command": "129661266dbc113748257c9c12c186fe351fccaffbb7db7de5fe9c1d3d3f3e4b",
+    "lion-one.html": "d9bead10983ec7a235ac8c71ced25803dd0a22b869c23f78e55a9f1c6a77571e",
+    "etc/lion-command.txt": "7496aee1e93bc79c8ee2b6a308e6c2e5fe717ebe2e37bb36d4e6c071c901547c",
+    "tools/lib/es5-compat.ts": "9503a78213b941cb0cb45789e7e3b875ac48a02cffcf7143a6c480a2e6053f77",
+    "tools/lib/es5-compat-runtime.js": "8f3bbc53d268304ff5b363a4ee30ffd20b5700b59be3b5b13d1da21f070a4bab",
+    "tools/lion-corpus-sync.ts": "6e1a7ece84fb81876f3effd5bee5884e613204a80c80caf845c12460ba56c3bc"
+  },
+  "notClaimed": [
+    "no Firefox 52 execution anywhere; acceptance here is V8 plus the acorn ES5 floor audit",
+    "no bundle emitted for the app (transpile refuses before writing any output)",
+    "new RegExp(<dynamic>, flags) pattern bodies are not analysed (recorded as a note in COMPATIBILITY.json)",
+    "mid-pattern lookbehind is refused rather than approximated; bounded-width windows are the next implementation step"
+  ],
+  "files": {
+    "COMPATIBILITY.json": "cccf4eb4d91f1d89ba51bac37c11e9c2d8b4386d898fc8c1d72e7fc42f77c8ee",
+    "REPORT.md": "d6da0babd85498443c2307927251c898fad41d036ed242f2b6a69bfe92ac7401",
+    "SOURCE.json": "5176df6d464dc7f7296079ced80a95af652e6e783b27da944e3fd0ef4a534c31"
+  },
+  "notes": [
+    "COMPATIBILITY.json is stored compact (single line) on purpose: tools/pr-budget.ts counts lines, and a 181-row audit table should not spend 1300 of the 405-line budget; the bytes hash below is the authority, and the file is the tool verbatim output modulo re-serialisation"
+  ]
+}
