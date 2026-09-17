@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 138,
+  "lastSeq": 155,
   "entries": [
     {
       "seq": 1,
@@ -2245,6 +2245,234 @@
       "kind": "note",
       "text": "2026-09-16 session 01a0ad38: merged PR #57 to main; integrated granular functional assets from PRs 23, 24, 34, 60 (xmb-perf toolchain, compiz Y unlock, tiger-gunmetal themes, rgb-omen health and feature-pack docs) into session branch; retained current authoritative MASTER.md state over stale conflicts; test-all clean.",
       "sha256": "3968c0c9602677175a25112fb05b2ee9a1d7f3926a3aa1b28162d9e27a9bae90"
+    },
+    {
+      "seq": 139,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "deploy agents to read ToDo.md, README.md, and MASTER.md then verify model image sight capability before continuing at further user prompt",
+      "demands": [
+        "read ToDo.md",
+        "read README.md",
+        "read MASTER.md",
+        "deploy bounded agents for the reads",
+        "verify model image sight capability",
+        "HOLD before continuing until further user prompt"
+      ],
+      "sha256": "48c572c047723640a89326f2970171d68c70f9664be6bb0c37d43f7ea3d64206"
+    },
+    {
+      "seq": 140,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/vision-check/vision-test-a.png",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "blind synthetic vision test read 7/7 exact: code 6322, word BLIZZARD, 4 yellow triangles, black background, 720x420",
+          "source": "agent viewed PNG, answer key withheld until after reading"
+        }
+      ],
+      "sha256": "4a32cacc7d607fffe6c8569a48e9ac785007a47f83faea1a5405efd55b3d73a7"
+    },
+    {
+      "seq": 141,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "visionCapability",
+      "value": "LIVE-VERIFIED session 01a0ad71 2026-09-17: image sight PASS (test A 7/7 blind synthetic sha 89523f59, test B real photo sha 7ea8cd41). Supersedes the 01a082d3 no-image-input session limit. Photo receipts can be uploaded directly again.",
+      "source": "receipts/vision-check/VISION-VERIFICATION.md",
+      "sha256": "cf1ff36a8c8a4e3198ca721a64622e9b31de97fcfe01c667127f77e349ecdc5f"
+    },
+    {
+      "seq": 142,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "lets work on clearing the lion ssd and hardening it (candybar flavours + keep themes/icons/downloads dir, wipe apps excluding candybar and flavours and airport arctic etc then clean and repair disk without wiping drives)",
+      "demands": [
+        "clear lion ssd",
+        "harden it",
+        "keep candybar+flavours",
+        "keep themes/icons/downloads dirs",
+        "wipe apps excluding candybar flavours airport arctic etc",
+        "clean and repair disk",
+        "WITHOUT wiping drives"
+      ],
+      "sha256": "56fb28b917aecf65e702cabbcc9c57b1c2ab052358e850a7f5bc4b11224ab947"
+    },
+    {
+      "seq": 143,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-17 lion clean+harden wave authored: tools/lion-clean-plan.ts emits etc/lion-clean-inventory.block (read-only), etc/lion-app-sweep.block (CONFIRM-gated reversible MOVE to /Users/Shared/lion-quarantine), etc/lion-clean-repair.block (caches+repairPermissions+verifyVolume). OLD etc/lion-ssd-wipe.block is the WRONG tool for this directive (eraseDisk violates 'without wiping drives' + STORAGE HOLD) and stays un-armed. Two bugs caught by gates: unquoted case pattern with space = POSIX syntax error (sh -n gate added); fully-quoted \"CandyBar*\" makes * literal so keepers classified CANDIDATE (classification simulation gate added). repairVolume / cannot run on booted startup volume - verify live, escalate to Command-S /sbin/fsck -fy.",
+      "sha256": "e87572f04e1ff985182b8609f1ca313952b0d2bffe06c4a1b4ed26d2e9bf8924"
+    },
+    {
+      "seq": 144,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "thats it. use the typescript burn and write link tool so we can get any missing context before running a final wipe",
+      "demands": [
+        "confirm keep-list complete (thats it)",
+        "use the typescript burn tool",
+        "use the write-link tool",
+        "capture any missing context",
+        "BEFORE running a final wipe"
+      ],
+      "sha256": "863f96516675cb053e43ab276242bf51a39d784d89c660a5702d0826deea2108"
+    },
+    {
+      "seq": 145,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionCleanBurnChannel",
+      "value": "2026-09-17 session 01a0ad71: tools/lion-burn-link.ts emits lion-clean-probe.command + lion-clean.html + lion-clean.zip on branch arena/01a0ad71. Page URL and probe raw URL both VERIFIED LIVE with fetch_page after push. Inbox a078e138-e87d-4369-9868-0c0c1f3500d6 verified readable (returned the 2026-09-16 LIONONE1 burn). curl to webhook.site and da.gd = HTTP 000 so fetch_page is the only read path; no new da.gd slug minted (write-once + unreachable). Tag LIONCLEAN1 / LIONCLEAN1_DONE; parse refuses INCOMPLETE burns.",
+      "source": "tools/lion-burn-link.ts",
+      "sha256": "71a0cd61b86d712a2245ec5b9d1159c62b3f3e9411c03894611e3bed10afa171"
+    },
+    {
+      "seq": 146,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "burn page has to be shortened (no TinyURL), use the typescript repo tooling to make it reproducible and persistent on the same link, with clear indication of which branch and pr its on, and which rollout it is. one name for the command in this chat, one name for it in the page and the log. organized and streamlined. absolution",
+      "demands": [
+        "shorten the burn page link",
+        "NO TinyURL",
+        "use typescript repo tooling",
+        "reproducible",
+        "persistent on the SAME link",
+        "show which branch",
+        "show which PR",
+        "show which rollout",
+        "ONE name in chat",
+        "ONE name in page and log",
+        "organized and streamlined",
+        "name it absolution"
+      ],
+      "sha256": "333d7b00e2240b1ffffcdc0e0c1f925202c48d410ba9adf8c7569b73235c23f3"
+    },
+    {
+      "seq": 147,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "absolutionChannel",
+      "value": "2026-09-17 ABSOLUTION R1: https://da.gd/absolution minted + coshorten-verified, branch-pinned to arena/01a0ad71 (safe: delete_branch_on_merge=false), PR #91. ONE NAME absolution for command/page/zip/log tag ABSOLUTION1. tools/absolution.ts emit is byte-reproducible incl. a hand-built deterministic zip (system zip binary stamps mtimes and failed reproducibility). parse refuses INCOMPLETE burns and rollout MISMATCH.",
+      "source": "tools/absolution.ts",
+      "sha256": "2e95ba15ec29837dd3d6743dc83321bb907b7a04435f4c6f9c3358b72f1e57be"
+    },
+    {
+      "seq": 148,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-17 ABSOLUTION persistence CORRECTED after operator repeated the directive verbatim (signal that the prior delivery missed it). Defect: da.gd/absolution was pinned to session branch arena/01a0ad71, so the write-once slug would serve R1 forever - the documented da.gd/lmz failure. Fix: absolution.html is now a LAUNCHER reading ABSOLUTION.json at runtime (main first, then branch, cache-busted) and retargeting downloads/stamp/PR/tag/inbox. Verified live: page renders 'live rollout R1' (only printed when the pointer chain resolves) and ABSOLUTION.json is reachable on raw. Selftest runs the real page script in a VM against a FUTURE R7 pointer and asserts retarget. Rejected minting a second main-pinned slug: violates one-name and 404s until PR #91 merges.",
+      "sha256": "9136b759fac82989a442476c815ed9c08c1799c83c1a4ad935ff2c02f6d61907"
+    },
+    {
+      "seq": 149,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/absolution/R1/burn-2026-09-17.txt",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "ABSOLUTION1 R1 burn complete: 150 apps, 67 protected, 83 candidates totalling 5.47GB; boot /dev/disk3s2 start disk clone 931Gi 97% FULL (32Gi free); users Guest/el/jazzyempire/revo; el has CandyBar 39M + Flavours 2.9M + Downloads 350M; revo Downloads 54G; volume verify OK; firewall+stealth disabled, guest UNSET",
+          "source": "webhook POST uuid 983feb04 read via fetch_page"
+        }
+      ],
+      "sha256": "917b3388f55ef80e8a42e6910d5d5f633f710a5661dbe6a7aa2e9eb95a6e00d1"
+    },
+    {
+      "seq": 150,
+      "date": "2026-09-17",
+      "kind": "discrepancy",
+      "topic": "lion accounts and app state vs recorded claims",
+      "sides": [
+        {
+          "claim": "ToDo 2026-09-15 says new admin account with no other accounts",
+          "source": "ToDo.md Mac Pro buildup item 2"
+        },
+        {
+          "claim": "ABSOLUTION1 R1 burn shows FOUR home dirs Guest el jazzyempire revo, and the running user is el not samael",
+          "source": "receipts/absolution/R1/burn-2026-09-17.txt"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "9e1d965a152095ca479c2eb14dc55ece0b7bf0c1b12aba843aa2e7b753f72ed8"
+    },
+    {
+      "seq": 151,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "sweep winamp, i want to use a classic source port of it w cd features and the winamp skins so i can use them from archive. the other accounts, delete them, games currently, delete, all software thats not professional software and absolutely necessary for video editing and audio interfacing then delete it. ... (candybar,arctic,softwares,themes,flavours,some account stuff,airport) + delete the tertiary accounts, not mine, which is Samael/admin",
+      "demands": [
+        "sweep Winamp (replacing with classic source port for CD+skins)",
+        "delete the other/tertiary accounts BUT NOT the operator account",
+        "operator account is Samael/admin",
+        "delete games",
+        "delete all software not professional/necessary for video editing and audio interfacing",
+        "KEEP candybar arctic flavours airport themes softwares",
+        "textures and icons live in account Downloads - do not delete those"
+      ],
+      "sha256": "02892fe78238f29dbe5367f7bab273ad1262f5bdc0a3aeb7b75a7b067f758550"
+    },
+    {
+      "seq": 152,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionKeeperAccount",
+      "value": "2026-09-17d operator verbatim: 'el is the only keeper, samael is nick for el'. KEEPER=el (Samael is the nickname, not the short name or necessarily the RealName). Tertiary accounts to remove: jazzyempire, revo. Guest and Shared excluded. revo holds 54G Downloads which is HARVESTED to /Users/Shared/absolution-harvest/revo/Downloads before any record deletion.",
+      "source": "operator chat 2026-09-17d + receipts/absolution/R1/burn-2026-09-17.txt",
+      "sha256": "2f0a76dda746003f9a46c90cdf4df9383121ca423a6ae32ed2588e3332305dc7"
+    },
+    {
+      "seq": 153,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "make sure you just build the command with the typescript shortened link tool. and that we're using the icons and img textures i downloaded on my el admin account. since thats the only account ive used since downloading lion",
+      "demands": [
+        "build the command WITH the typescript shortened-link tool (not a separate paste-only path)",
+        "use the icons and img textures from the el admin account",
+        "el is the only account used since installing Lion"
+      ],
+      "sha256": "2c01b7840a363681a4f7a8d98a73df4b6903c52e84fef15d25ea86bbbd2df38c"
+    },
+    {
+      "seq": 154,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionTextureSource",
+      "value": "2026-09-17e operator: the icons and img textures were downloaded on the el admin account, the only account used since Lion was installed. Therefore textures are on the KEEPER and are protected by construction - absolution-accounts never touches /Users/el. revo's 54G Downloads is NOT the texture source; it is harvested only as an uninventoried-data precaution. Harvest target moved from /Users/Shared to /Users/el/absolution-harvest and chowned to el.",
+      "source": "tools/lib/absolution-accounts.ts",
+      "sha256": "88a9b88195d8c967858d023cb1c69fdcca5b0206cc4e1c2b69556e61393b468f"
+    },
+    {
+      "seq": 155,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/absolution/R5/identity-and-space.md",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "dscl RealName confirms el = Samael and admin group is root+el, so KEEPER=el is verified not guessed; jazzyempire and revo are non-admin",
+          "source": "ABSOLUTION1 R5 burn uuid 4f787751"
+        },
+        {
+          "claim": "/Users/revo is 775G - the real cause of the 97% full boot volume, not the 5.09GB app sweep",
+          "source": "same burn, per-user du"
+        },
+        {
+          "claim": "/Users/el/Downloads holds 256 icns + 82 images + CandyBar/Flavours installers; Flavours themes live in el Library Application Support - all on the keeper, protected by construction",
+          "source": "same burn, downloads + deep theme scan"
+        }
+      ],
+      "sha256": "dad21ebd407e3e3cd76e02d1f8dabd87f3975215df6b0292cd876a9863802b70"
     }
   ],
   "stacks": [

@@ -1,17 +1,20 @@
-https://da.gd/sQ7bEo
-THE ONE LINK (current session arena/01a0aade).
-2026-09-16h: three new text burns READ; COMPILERCTX1 v2 reports CORPUS_SHA=MATCH.
-This proves context delivery, not compilation or runtime compatibility.
-COMPILE_GATE=HOLD: v2 BigInt AST bug corrected; BigInt/regex implementation
-still unverified. Active installed workflow is OLD with zero runs.
-Do not run it yet; source ci/workflows/mac-es5-passthrough.yml is corrected
-but installing that source alone does not remove the runtime blockers.
-No repeat burns needed. Current downloads carry v3 17c6a29a052e with HOLD.
-Bundle: lion-one.command + lion-compiler-context.command + lion-one.html.
-No sudo or network from scripts; reports sent only by the page Burn action.
-STORAGE: start disk clone is now the boot volume. Old wipe wave SUSPENDED.
-Protect boot + all RAID members; no erase, reboot, hardening or install wave.
-Receipt details: receipts/mac-es5/2026-09-16h-burn-verification/VERIFICATION.json.
-PR merges OPERATOR-ONLY; agent reminds, never merges.
-Legacy da.gd/lionone still burns to the same inbox, but its page is frozen.
-Withdrawn: da.gd/lionfix, da.gd/lup, TinyURL. Do not use the stale phone generator.
+https://da.gd/absolution
+ABSOLUTION - rollout R1 - branch arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr - PR #91.
+ONE NAME everywhere: command absolution.command, page absolution.html, bundle
+absolution.zip, log tag ABSOLUTION1 / ABSOLUTION1_DONE. Say "absolution" in chat.
+Wave: clear + harden the Lion SSD WITHOUT wiping drives (operator 2026-09-17).
+Step 1 (now): open the link in Arctic Fox, download absolution.command, double-click.
+Step 2: attach ~/Desktop/absolution.txt on the same page, press Burn, say "burned".
+The probe is READ-ONLY: no sudo, no erase, no move, no delete, no network.
+App removal (later, separate, CONFIRM-gated) is a REVERSIBLE MOVE to
+/Users/Shared/lion-quarantine/<stamp>/ - never rm, never eraseDisk.
+KEEP: CandyBar, Flavours, AirPort, Arctic Fox, iTunes, Audacity/AU Lab/GarageBand/
+Logic, Utilities, plus themes/icons/Downloads. Apple bundles protected by class.
+STORAGE HOLD stands: boot volume is "start disk clone"; old wipe wave SUSPENDED,
+its CONFIRM line is never reused. Protect boot + all RAID members.
+PERSISTENT BY POINTER: the page reads ABSOLUTION.json at load (main, then branch) and
+retargets itself, so this ONE link serves every future rollout. Never mint a second slug.
+Next wave = edit ROLLOUT/BRANCH/PR in tools/absolution.ts, run emit, push. Link unchanged.
+Regenerate byte-identically: node tools/absolution.ts emit ; links ; parse FILE
+Legacy da.gd/sQ7bEo and da.gd/lionone burn to the same inbox but are frozen pages.
+Withdrawn: da.gd/lionfix, da.gd/lup, TinyURL.

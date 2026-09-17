@@ -3,7 +3,7 @@
   "session": "01a0aade",
   "machine": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-16h: three text burns verified (VERIFICATION.json in receipts/mac-es5/2026-09-16h-burn-verification/). COMPILERCTX1 v2 internal corpus hash MATCH; not a compile/runtime result. T1 HOLD: v2 emitted BigInt(\"undefined\") and core-js does not supply missing BigInt; v3 fixes AST field and blocks unverified BigInt/regex publication. Actions now ACTIVE, zero runs, old installed template (WORKFLOW.json); operator update of corrected ci source still needed, no dispatch released. Next single task = semantic BigInt/regex implementation verification, not another app compile. No repeat burn needed. T2-T7/Winamp stay queued. Storage HOLD: root is start disk clone; old wipe wave suspended. Current channel da.gd/sQ7bEo. PR merges operator-only.",
+  "nextAction": "2026-09-17 ABSOLUTION R1 (PR #91): Lion clear+harden wave authored, no drive is wiped. Channel = https://da.gd/absolution (permanent, branch-pinned, coshorten-verified). Operator runs absolution.command and burns ~/Desktop/absolution.txt; agent reads the inbox with fetch_page then node tools/absolution.ts parse to decide the sweep. Sweep = reversible MOVE to /Users/Shared/lion-quarantine, CONFIRM-gated, Apple+KEEP classes protected. Old etc/lion-ssd-wipe.block stays un-armed (eraseDisk violates the no-wipe directive and the STORAGE HOLD).",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -132,6 +132,16 @@
       "url": "https://da.gd/lionwipeh",
       "dest": "https://cdn.jsdelivr.net/gh/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx@87e8741d5105479dc75c680cfa8dcad255aa7da5/lion-wipe-harden.txt",
       "job": "SUSPENDED 2026-09-16h: start disk clone is the current boot volume. Historical pinned transcript only; do not execute or reuse its CONFIRM line."
+    },
+    "absolution": {
+      "type": "da.gd/absolution",
+      "url": "https://da.gd/absolution",
+      "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.html",
+      "job": "CURRENT CHANNEL, PERMANENT. ABSOLUTION rollout R1, branch arena/01a0ad71, PR #91. ONE name for command/page/zip/log (tag ABSOLUTION1). Minted + coshorten-verified 2026-09-17. The page is a LAUNCHER: it reads ABSOLUTION.json at runtime (main first, then branch, cache-busted) and retargets downloads/stamp/PR/tag/inbox, so this single write-once slug serves every future rollout. Ship a new wave by editing ROLLOUT/BRANCH/PR in tools/absolution.ts and re-running emit - never mint a second slug.",
+      "rollout": "R1",
+      "branch": "arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr",
+      "pr": 91,
+      "pointer": "ABSOLUTION.json"
     }
   },
   "helper": {

@@ -1,0 +1,40 @@
+id -u
+# lion-clean-repair.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). Clean caches + repair permissions + verify filesystem. No drive is erased.
+# Wave: 2026-09-17 clear + harden the Lion SSD. Policy source: tools/lion-clean-plan.ts
+# HARD RULE (operator "without wiping drives"): no eraseDisk, no eraseVolume, no partitionDisk,
+# no asr, no rm of an app. Removal is a reversible MOVE to a quarantine folder on the same volume.
+# Receipts: "diskutil repairPermissions /" works on a booted Lion volume (MacRumors 1305738, Lion+RAID).
+# Live Verification works on journaled HFS+ while booted, but a REPAIR of the startup volume cannot run
+# from itself (Apple/sterlingit: "You can't repair your startup volume while your computer is started
+# from it"). So: verify here; if it reports problems, the fix is the operator-gated single-user pass
+# Command-S then /sbin/fsck -fy, which repairs in place and erases nothing.
+# Rollback: caches and logs regenerate on demand; permissions repair has no inverse and needs none.
+cat > /tmp/lion-clean-repair.sh <<'REPSH'
+#!/bin/sh
+echo "== PRE SPACE"
+df -h /
+echo "== CLEAN: caches, logs, trash. Keeps every profile, theme, icon and Download."
+for u in $(ls /Users | grep -v Shared); do
+  rm -rf "/Users/$u/Library/Caches"/* 2>/dev/null
+  rm -rf "/Users/$u/.Trash"/* 2>/dev/null
+done
+rm -rf /Library/Caches/* 2>/dev/null
+rm -rf /private/var/folders/*/*/-Caches- 2>/dev/null
+find /private/var/log -name "*.gz" -delete 2>/dev/null
+find /private/var/log -name "*.bz2" -delete 2>/dev/null
+echo "== KEEP DIRS STILL PRESENT (proof the clean did not touch them)"
+for u in $(ls /Users | grep -v Shared); do
+  du -hs "/Users/$u/Downloads" 2>/dev/null
+  du -hs "/Users/$u/Library/Application Support/CandyBar" 2>/dev/null
+  du -hs "/Users/$u/Library/Application Support/Flavours" 2>/dev/null
+done
+echo "== REPAIR PERMISSIONS (supported on the booted Lion volume)"
+diskutil repairPermissions /
+echo "== VERIFY FILESYSTEM (read-only live verify)"
+diskutil verifyVolume /
+echo "== POST SPACE"
+df -h /
+echo "== IF VERIFY REPORTED PROBLEMS: reboot holding Command-S, then run /sbin/fsck -fy"
+REPSH
+sh /tmp/lion-clean-repair.sh
+date
