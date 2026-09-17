@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 143,
+  "lastSeq": 145,
   "entries": [
     {
       "seq": 1,
@@ -2308,6 +2308,30 @@
       "kind": "note",
       "text": "2026-09-17 lion clean+harden wave authored: tools/lion-clean-plan.ts emits etc/lion-clean-inventory.block (read-only), etc/lion-app-sweep.block (CONFIRM-gated reversible MOVE to /Users/Shared/lion-quarantine), etc/lion-clean-repair.block (caches+repairPermissions+verifyVolume). OLD etc/lion-ssd-wipe.block is the WRONG tool for this directive (eraseDisk violates 'without wiping drives' + STORAGE HOLD) and stays un-armed. Two bugs caught by gates: unquoted case pattern with space = POSIX syntax error (sh -n gate added); fully-quoted \"CandyBar*\" makes * literal so keepers classified CANDIDATE (classification simulation gate added). repairVolume / cannot run on booted startup volume - verify live, escalate to Command-S /sbin/fsck -fy.",
       "sha256": "e87572f04e1ff985182b8609f1ca313952b0d2bffe06c4a1b4ed26d2e9bf8924"
+    },
+    {
+      "seq": 144,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "thats it. use the typescript burn and write link tool so we can get any missing context before running a final wipe",
+      "demands": [
+        "confirm keep-list complete (thats it)",
+        "use the typescript burn tool",
+        "use the write-link tool",
+        "capture any missing context",
+        "BEFORE running a final wipe"
+      ],
+      "sha256": "863f96516675cb053e43ab276242bf51a39d784d89c660a5702d0826deea2108"
+    },
+    {
+      "seq": 145,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionCleanBurnChannel",
+      "value": "2026-09-17 session 01a0ad71: tools/lion-burn-link.ts emits lion-clean-probe.command + lion-clean.html + lion-clean.zip on branch arena/01a0ad71. Page URL and probe raw URL both VERIFIED LIVE with fetch_page after push. Inbox a078e138-e87d-4369-9868-0c0c1f3500d6 verified readable (returned the 2026-09-16 LIONONE1 burn). curl to webhook.site and da.gd = HTTP 000 so fetch_page is the only read path; no new da.gd slug minted (write-once + unreachable). Tag LIONCLEAN1 / LIONCLEAN1_DONE; parse refuses INCOMPLETE burns.",
+      "source": "tools/lion-burn-link.ts",
+      "sha256": "71a0cd61b86d712a2245ec5b9d1159c62b3f3e9411c03894611e3bed10afa171"
     }
   ],
   "stacks": [
