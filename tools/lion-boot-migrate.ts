@@ -169,13 +169,19 @@ export const BAY2_STEPS: string[] = [
 ];
 
 export const BAY2_NOTES: string[] = [
+  'HOW TO TELL WHICH ROW IS SELECTED WITHOUT GUESSING - LOOK AT THE TAB BAR. With a VOLUME selected '
+    + 'Disk Utility shows exactly four tabs: First Aid, Erase, RAID, Restore. With the physical DISK '
+    + 'selected a fifth tab appears: PARTITION. So if you cannot see a Partition tab, you are on the '
+    + 'wrong row - full stop. That is the whole diagnostic. Click the outer "240.06 GB KINGSTON S..." '
+    + 'row and the Partition tab will appear; that is where GUID lives, under Options...',
   'VERIFY THE MAP BEFORE CLONING, NOT AFTER. Select the outer Kingston disk row and read "Partition Map '
     + 'Scheme" at the bottom of the Disk Utility window. It must say GUID Partition Table. If it says Apple '
     + 'Partition Map or Master Boot Record, redo the Partition step - a clone onto the wrong map boots nothing.',
-  'THE PHOTOGRAPHED STATE IS SAFE: the Kingston arrived preformatted Mac OS Extended (Journaled), 239.71 GB, '
-    + '312.4 MB used, mounted at /Volumes/KINGSTON. Nothing on it matters. Both WD10EACS members still show '
-    + '"RAID Slice for Raid X", and the MX500 still shows "start disk clone" - the boot disk is untouched, '
-    + 'exactly as intended. Only ONE WD is visible where two were expected; the pulled member is the Bay 2 one.',
+  'THE PHOTOGRAPHED STATE IS SAFE: the Kingston is preformatted Mac OS Extended (Journaled), 239.71 GB, '
+    + '312.4 MB used, 12 folders / 57 files. TWO WD10EACS disks are visible, each still showing '
+    + '"RAID Slice for Raid X" - correct, because the third member is the one pulled out of Bay 2. '
+    + 'The MX500 still shows "start disk clone". The boot disk is untouched, exactly as intended. '
+    + '(CORRECTION to an earlier note in this session that said only one WD was visible - two are.)',
   'WHY THE KINGSTON CANNOT JUST STAY IN BAY 2: Bay 2 belongs to Raid X. Leaving the Kingston there '
     + 'means Raid X never gets its third member back and the 3 TB volume stays dead. Bay 1 is the only '
     + 'bay that is not a RAID member, so the boot disk has to end up in Bay 1. That is why STEP 9 exists.',
