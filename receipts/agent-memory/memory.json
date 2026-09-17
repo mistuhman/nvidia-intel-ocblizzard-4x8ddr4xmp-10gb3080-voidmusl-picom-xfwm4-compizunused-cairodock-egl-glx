@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 138,
+  "lastSeq": 141,
   "entries": [
     {
       "seq": 1,
@@ -2245,6 +2245,45 @@
       "kind": "note",
       "text": "2026-09-16 session 01a0ad38: merged PR #57 to main; integrated granular functional assets from PRs 23, 24, 34, 60 (xmb-perf toolchain, compiz Y unlock, tiger-gunmetal themes, rgb-omen health and feature-pack docs) into session branch; retained current authoritative MASTER.md state over stale conflicts; test-all clean.",
       "sha256": "3968c0c9602677175a25112fb05b2ee9a1d7f3926a3aa1b28162d9e27a9bae90"
+    },
+    {
+      "seq": 139,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "deploy agents to read ToDo.md, README.md, and MASTER.md then verify model image sight capability before continuing at further user prompt",
+      "demands": [
+        "read ToDo.md",
+        "read README.md",
+        "read MASTER.md",
+        "deploy bounded agents for the reads",
+        "verify model image sight capability",
+        "HOLD before continuing until further user prompt"
+      ],
+      "sha256": "48c572c047723640a89326f2970171d68c70f9664be6bb0c37d43f7ea3d64206"
+    },
+    {
+      "seq": 140,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/vision-check/vision-test-a.png",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "blind synthetic vision test read 7/7 exact: code 6322, word BLIZZARD, 4 yellow triangles, black background, 720x420",
+          "source": "agent viewed PNG, answer key withheld until after reading"
+        }
+      ],
+      "sha256": "4a32cacc7d607fffe6c8569a48e9ac785007a47f83faea1a5405efd55b3d73a7"
+    },
+    {
+      "seq": 141,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "visionCapability",
+      "value": "LIVE-VERIFIED session 01a0ad71 2026-09-17: image sight PASS (test A 7/7 blind synthetic sha 89523f59, test B real photo sha 7ea8cd41). Supersedes the 01a082d3 no-image-input session limit. Photo receipts can be uploaded directly again.",
+      "source": "receipts/vision-check/VISION-VERIFICATION.md",
+      "sha256": "cf1ff36a8c8a4e3198ca721a64622e9b31de97fcfe01c667127f77e349ecdc5f"
     }
   ],
   "stacks": [
