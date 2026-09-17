@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 141,
+  "lastSeq": 143,
   "entries": [
     {
       "seq": 1,
@@ -2284,6 +2284,30 @@
       "value": "LIVE-VERIFIED session 01a0ad71 2026-09-17: image sight PASS (test A 7/7 blind synthetic sha 89523f59, test B real photo sha 7ea8cd41). Supersedes the 01a082d3 no-image-input session limit. Photo receipts can be uploaded directly again.",
       "source": "receipts/vision-check/VISION-VERIFICATION.md",
       "sha256": "cf1ff36a8c8a4e3198ca721a64622e9b31de97fcfe01c667127f77e349ecdc5f"
+    },
+    {
+      "seq": 142,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "lets work on clearing the lion ssd and hardening it (candybar flavours + keep themes/icons/downloads dir, wipe apps excluding candybar and flavours and airport arctic etc then clean and repair disk without wiping drives)",
+      "demands": [
+        "clear lion ssd",
+        "harden it",
+        "keep candybar+flavours",
+        "keep themes/icons/downloads dirs",
+        "wipe apps excluding candybar flavours airport arctic etc",
+        "clean and repair disk",
+        "WITHOUT wiping drives"
+      ],
+      "sha256": "56fb28b917aecf65e702cabbcc9c57b1c2ab052358e850a7f5bc4b11224ab947"
+    },
+    {
+      "seq": 143,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-17 lion clean+harden wave authored: tools/lion-clean-plan.ts emits etc/lion-clean-inventory.block (read-only), etc/lion-app-sweep.block (CONFIRM-gated reversible MOVE to /Users/Shared/lion-quarantine), etc/lion-clean-repair.block (caches+repairPermissions+verifyVolume). OLD etc/lion-ssd-wipe.block is the WRONG tool for this directive (eraseDisk violates 'without wiping drives' + STORAGE HOLD) and stays un-armed. Two bugs caught by gates: unquoted case pattern with space = POSIX syntax error (sh -n gate added); fully-quoted \"CandyBar*\" makes * literal so keepers classified CANDIDATE (classification simulation gate added). repairVolume / cannot run on booted startup volume - verify live, escalate to Command-S /sbin/fsck -fy.",
+      "sha256": "e87572f04e1ff985182b8609f1ca313952b0d2bffe06c4a1b4ed26d2e9bf8924"
     }
   ],
   "stacks": [

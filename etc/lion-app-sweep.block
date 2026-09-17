@@ -1,0 +1,48 @@
+id -u
+# lion-app-sweep.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). REVERSIBLE app removal, double-gated. Run ONLY after the inventory receipt is read.
+# Wave: 2026-09-17 clear + harden the Lion SSD. Policy source: tools/lion-clean-plan.ts
+# HARD RULE (operator "without wiping drives"): no eraseDisk, no eraseVolume, no partitionDisk,
+# no asr, no rm of an app. Removal is a reversible MOVE to a quarantine folder on the same volume.
+# Why a MOVE and not a delete: the operator said "without wiping drives"; a quarantine folder on the
+# same volume keeps a real inverse (mv it back). Space is reclaimed by the separate purge step, only
+# after the operator confirms every kept app still launches.
+# Gate: first run MAPS and erases nothing. It prints a CONFIRM line; paste that exact line to act.
+# Rollback: mv "/Users/Shared/lion-quarantine/<stamp>/<App>.app" /Applications
+cat > /tmp/lion-app-sweep.sh <<'SWEEPSH'
+#!/bin/sh
+STAMP=$(date +%Y%m%d-%H%M%S)
+Q="/Users/Shared/lion-quarantine/$STAMP"
+echo "quarantine_dir=$Q"
+LIST=""
+for a in /Applications/*.app /Applications/Utilities/*.app; do
+  [ -e "$a" ] || continue
+  B=$(defaults read "$a/Contents/Info" CFBundleIdentifier 2>/dev/null)
+  N=$(basename "$a" .app)
+  case "$B" in com.apple.*) echo "protect APPLE $a"; continue;; esac
+  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"CandyBar"*|"Flavours"*|"GarageBand"*|"Logic"*|"Utilities"|"iTunes"*) echo "protect KEEP  $a"; continue;; esac
+  echo "candidate     $a"
+  LIST="$LIST
+$a"
+done
+COUNT=$(printf "%b" "$LIST" | grep -c . )
+echo "candidates=$COUNT"
+if [ "$COUNT" -eq 0 ]; then echo "NOTHING TO SWEEP - inventory already clean"; exit 0; fi
+if [ "$CONFIRM" != "SWEEP" ]; then
+  echo "NOTHING MOVED. To proceed, paste exactly:"
+  echo "CONFIRM=SWEEP sh /tmp/lion-app-sweep.sh"
+  exit 0
+fi
+mkdir -p "$Q"
+printf "%b" "$LIST" | grep . | while read -r a; do
+  echo "move $a"
+  mv "$a" "$Q"/
+done
+echo "== RESULT - kept apps must all still be present"
+ls /Applications
+ls /Applications/Utilities
+echo "== QUARANTINED (restore with mv back to /Applications)"
+ls "$Q"
+df -h /
+SWEEPSH
+sh /tmp/lion-app-sweep.sh
+date
