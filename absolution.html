@@ -19,16 +19,16 @@ iframe{display:none}
 </style></head>
 <body><div class="card">
 <h1>absolution</h1>
-<div class="stamp">rollout R1 &middot; branch arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr &middot; <a class="link" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session 01a0ad71 &middot; 2026-09-17<br>
-permanent link https://da.gd/absolution &middot; log tag ABSOLUTION1</div>
+<div class="stamp" id="stamp">rollout <b id="s-rollout">R1</b> &middot; branch <span id="s-branch">arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr</span> &middot; <a class="link" id="s-pr" href="https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91">PR #91</a> &middot; session <span id="s-session">01a0ad71</span> &middot; <span id="s-date">2026-09-17</span><br>
+permanent link https://da.gd/absolution &middot; log tag <span id="s-tag">ABSOLUTION1</span> &middot; <span id="s-live">checking for a newer rollout&hellip;</span></div>
 <p class="note">READ-ONLY context probe. Nothing is erased, moved or deleted by this page or by
 absolution.command. The report travels as <b>text</b>, the only form the agent can read back.</p>
 
 <fieldset><legend>1 &mdash; get it</legend>
 <p class="note">Download, then double-click <b>absolution.command</b>. It writes
 <b>~/Desktop/absolution.txt</b> and opens it.</p>
-<p><a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.command">absolution.command</a>
-&nbsp;&middot;&nbsp; <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.zip">absolution.zip</a></p>
+<p><a class="link" id="dl-cmd" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.command">absolution.command</a>
+&nbsp;&middot;&nbsp; <a class="link" id="dl-zip" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.zip">absolution.zip</a></p>
 </fieldset>
 
 <fieldset><legend>2 &mdash; attach it</legend>
@@ -52,8 +52,52 @@ var TAG = "ABSOLUTION1";
 var ROLLOUT = "R1";
 var BODY = null;
 
+// The short link is write-once, so this page must never be the thing that goes stale. It reads
+// ABSOLUTION.json at load - main first, then the authoring branch - and retargets its own downloads,
+// stamp and log tag to whatever rollout is current. Baked-in values above are only the fallback
+// for when neither pointer can be fetched.
+var POINTERS = [
+  "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/ABSOLUTION.json",
+  "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/ABSOLUTION.json"
+];
+
+function applyPointer(p){
+  if (!p || !p.rollout) { return false; }
+  if (p.command) { $("dl-cmd").href = p.command; }
+  if (p.zip) { $("dl-zip").href = p.zip; }
+  if (p.rollout) { $("s-rollout").innerHTML = p.rollout; ROLLOUT = p.rollout; }
+  if (p.branch) { $("s-branch").innerHTML = p.branch; }
+  if (p.prUrl) { $("s-pr").href = p.prUrl; $("s-pr").innerHTML = "PR #" + p.pr; }
+  if (p.session) { $("s-session").innerHTML = p.session; }
+  if (p.date) { $("s-date").innerHTML = p.date; }
+  if (p.tag) { $("s-tag").innerHTML = p.tag; TAG = p.tag; }
+  if (p.inbox) { INBOX = p.inbox; }
+  return true;
+}
+
+function loadPointer(i){
+  if (i >= POINTERS.length) {
+    $("s-live").innerHTML = "using built-in rollout " + ROLLOUT;
+    return;
+  }
+  var x = new XMLHttpRequest();
+  x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
+  x.onreadystatechange = function(){
+    if (x.readyState !== 4) { return; }
+    var ok = false;
+    if (x.status === 200) {
+      try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e) { ok = false; }
+    }
+    if (ok) { $("s-live").innerHTML = "live rollout " + ROLLOUT; }
+    else { loadPointer(i + 1); }
+  };
+  try { x.send(null); } catch (e) { loadPointer(i + 1); }
+}
+
 function $(id){ return document.getElementById(id); }
 function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls ? cls : "note"; }
+
+loadPointer(0);
 
 $("pick").onchange = function(){
   var f = this.files && this.files[0];

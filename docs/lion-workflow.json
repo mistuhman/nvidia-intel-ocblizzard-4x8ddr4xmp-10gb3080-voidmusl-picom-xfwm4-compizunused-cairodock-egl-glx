@@ -137,10 +137,11 @@
       "type": "da.gd/absolution",
       "url": "https://da.gd/absolution",
       "dest": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.html",
-      "job": "CURRENT CHANNEL. ABSOLUTION rollout R1, branch arena/01a0ad71, PR #91. One name for command/page/zip/log (tag ABSOLUTION1). Minted + coshorten-verified 2026-09-17. Branch-pinned and permanent: repo delete_branch_on_merge=false. Regenerate byte-identically with node tools/absolution.ts emit.",
+      "job": "CURRENT CHANNEL, PERMANENT. ABSOLUTION rollout R1, branch arena/01a0ad71, PR #91. ONE name for command/page/zip/log (tag ABSOLUTION1). Minted + coshorten-verified 2026-09-17. The page is a LAUNCHER: it reads ABSOLUTION.json at runtime (main first, then branch, cache-busted) and retargets downloads/stamp/PR/tag/inbox, so this single write-once slug serves every future rollout. Ship a new wave by editing ROLLOUT/BRANCH/PR in tools/absolution.ts and re-running emit - never mint a second slug.",
       "rollout": "R1",
       "branch": "arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr",
-      "pr": 91
+      "pr": 91,
+      "pointer": "ABSOLUTION.json"
     }
   },
   "helper": {

@@ -29,6 +29,8 @@
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 import { KEEP, APPLE_PREFIX } from './lion-clean-plan.ts';
 
 // ---------------------------------------------------------------- the one name
@@ -50,6 +52,11 @@ const SESSION = '01a0ad71';
 const WAVE_DATE = '2026-09-17';
 
 const REPO = 'mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx';
+// POINTER = the one file that says which rollout is current. The page reads it at RUNTIME, main
+// first then this branch, so the frozen short link always serves the newest wave. Without this the
+// slug would be welded to R1 forever - the exact failure already recorded for da.gd/lmz in
+// docs/lion-workflow.json (froze to a dead session branch, unfixable because da.gd is write-once).
+const POINTER = 'ABSOLUTION.json';
 const RAW = (f: string) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${f}`;
 const PR_URL = `https://github.com/${REPO}/pull/${PR}`;
 const PAGE_URL = `https://htmlpreview.github.io/?https://github.com/${REPO}/blob/${BRANCH}/${PAGE}`;
@@ -148,16 +155,16 @@ iframe{display:none}
 </style></head>
 <body><div class="card">
 <h1>${NAME}</h1>
-<div class="stamp">rollout ${ROLLOUT} &middot; branch ${BRANCH} &middot; <a class="link" href="${PR_URL}">PR #${PR}</a> &middot; session ${SESSION} &middot; ${WAVE_DATE}<br>
-permanent link ${SHORT} &middot; log tag ${TAG}</div>
+<div class="stamp" id="stamp">rollout <b id="s-rollout">${ROLLOUT}</b> &middot; branch <span id="s-branch">${BRANCH}</span> &middot; <a class="link" id="s-pr" href="${PR_URL}">PR #${PR}</a> &middot; session <span id="s-session">${SESSION}</span> &middot; <span id="s-date">${WAVE_DATE}</span><br>
+permanent link ${SHORT} &middot; log tag <span id="s-tag">${TAG}</span> &middot; <span id="s-live">checking for a newer rollout&hellip;</span></div>
 <p class="note">READ-ONLY context probe. Nothing is erased, moved or deleted by this page or by
 ${COMMAND}. The report travels as <b>text</b>, the only form the agent can read back.</p>
 
 <fieldset><legend>1 &mdash; get it</legend>
 <p class="note">Download, then double-click <b>${COMMAND}</b>. It writes
 <b>~/Desktop/${NAME}.txt</b> and opens it.</p>
-<p><a class="link" href="${RAW(COMMAND)}">${COMMAND}</a>
-&nbsp;&middot;&nbsp; <a class="link" href="${RAW(ZIP)}">${ZIP}</a></p>
+<p><a class="link" id="dl-cmd" href="${RAW(COMMAND)}">${COMMAND}</a>
+&nbsp;&middot;&nbsp; <a class="link" id="dl-zip" href="${RAW(ZIP)}">${ZIP}</a></p>
 </fieldset>
 
 <fieldset><legend>2 &mdash; attach it</legend>
@@ -181,8 +188,52 @@ var TAG = "${TAG}";
 var ROLLOUT = "${ROLLOUT}";
 var BODY = null;
 
+// The short link is write-once, so this page must never be the thing that goes stale. It reads
+// ${POINTER} at load - main first, then the authoring branch - and retargets its own downloads,
+// stamp and log tag to whatever rollout is current. Baked-in values above are only the fallback
+// for when neither pointer can be fetched.
+var POINTERS = [
+  "https://raw.githubusercontent.com/${REPO}/main/${POINTER}",
+  "https://raw.githubusercontent.com/${REPO}/${BRANCH}/${POINTER}"
+];
+
+function applyPointer(p){
+  if (!p || !p.rollout) { return false; }
+  if (p.command) { $("dl-cmd").href = p.command; }
+  if (p.zip) { $("dl-zip").href = p.zip; }
+  if (p.rollout) { $("s-rollout").innerHTML = p.rollout; ROLLOUT = p.rollout; }
+  if (p.branch) { $("s-branch").innerHTML = p.branch; }
+  if (p.prUrl) { $("s-pr").href = p.prUrl; $("s-pr").innerHTML = "PR #" + p.pr; }
+  if (p.session) { $("s-session").innerHTML = p.session; }
+  if (p.date) { $("s-date").innerHTML = p.date; }
+  if (p.tag) { $("s-tag").innerHTML = p.tag; TAG = p.tag; }
+  if (p.inbox) { INBOX = p.inbox; }
+  return true;
+}
+
+function loadPointer(i){
+  if (i >= POINTERS.length) {
+    $("s-live").innerHTML = "using built-in rollout " + ROLLOUT;
+    return;
+  }
+  var x = new XMLHttpRequest();
+  x.open("GET", POINTERS[i] + "?cb=" + (new Date()).getTime(), true);
+  x.onreadystatechange = function(){
+    if (x.readyState !== 4) { return; }
+    var ok = false;
+    if (x.status === 200) {
+      try { ok = applyPointer(JSON.parse(x.responseText)); } catch (e) { ok = false; }
+    }
+    if (ok) { $("s-live").innerHTML = "live rollout " + ROLLOUT; }
+    else { loadPointer(i + 1); }
+  };
+  try { x.send(null); } catch (e) { loadPointer(i + 1); }
+}
+
 function $(id){ return document.getElementById(id); }
 function setStatus(t, cls){ var e = $("st"); e.innerHTML = t; e.className = cls ? cls : "note"; }
+
+loadPointer(0);
 
 $("pick").onchange = function(){
   var f = this.files && this.files[0];
@@ -408,12 +459,23 @@ function deterministicZip(entries: Array<[string, string]>): Buffer {
 }
 
 // ---------------------------------------------------------------- commands
+export function pointerJson(): string {
+  return JSON.stringify({
+    name: NAME, rollout: ROLLOUT, branch: BRANCH, pr: PR, session: SESSION, date: WAVE_DATE,
+    tag: TAG, done: DONE, shortLink: SHORT,
+    command: RAW(COMMAND), zip: RAW(ZIP), page: PAGE_URL, prUrl: PR_URL, inbox: INBOX_POST,
+    note: 'Current ABSOLUTION rollout. The page reads this at runtime; update it to retarget the permanent short link without minting a new slug.',
+  }, null, 2) + '\n';
+}
+
 function emit(): void {
+  writeFileSync(POINTER, pointerJson());
   writeFileSync(COMMAND, commandScript());
   spawnSync('chmod', ['+x', COMMAND]);
   writeFileSync(PAGE, pageHtml());
   const zip = deterministicZip([[COMMAND, commandScript()], [PAGE, pageHtml()]]);
   writeFileSync(ZIP, zip);
+  console.log(`WROTE ${POINTER}  rollout=${ROLLOUT} branch=${BRANCH} pr=${PR}`);
   console.log(`WROTE ${COMMAND}  sha256=${sha(commandScript()).slice(0, 16)}`);
   console.log(`WROTE ${PAGE}     sha256=${sha(pageHtml()).slice(0, 16)}`);
   console.log(`WROTE ${ZIP}      sha256=${createHash('sha256').update(zip).digest('hex').slice(0, 16)} (deterministic)`);
@@ -524,6 +586,56 @@ function selftest(): void {
 
   check('keep-list shared with lion-clean-plan', KEEP.length > 0 && KEEP_CASE.includes('"CandyBar"*'));
   check('command embeds shared keep patterns', cmd.includes(KEEP_CASE));
+
+  // PERSISTENCE. The short link is write-once, so the page must resolve the CURRENT rollout at
+  // runtime or the slug welds itself to R1 forever - the documented da.gd/lmz failure. These checks
+  // prove the indirection exists and actually retargets.
+  const ptr = JSON.parse(pointerJson());
+  check('pointer names the rollout', ptr.rollout === ROLLOUT);
+  check('pointer carries command+zip+pr', !!ptr.command && !!ptr.zip && !!ptr.prUrl);
+  check('page reads the pointer at runtime', page.includes(POINTER) && page.includes('loadPointer(0)'));
+  check('page tries main BEFORE the session branch',
+    page.indexOf(`/main/${POINTER}`) < page.indexOf(`/${BRANCH}/${POINTER}`));
+  check('page cache-busts the pointer', page.includes('"?cb=" + (new Date()).getTime()'));
+
+  // Simulate the browser: feed applyPointer a FUTURE rollout and assert every surface retargets.
+  const sim = (() => {
+    const els: Record<string, Record<string, string>> = {};
+    const el = (id: string) => (els[id] = els[id] || { innerHTML: '', href: '' });
+    // every id the page script touches, including the picker/burn handlers it installs at load
+    for (const id of ['dl-cmd', 'dl-zip', 's-rollout', 's-branch', 's-pr', 's-session', 's-date',
+      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st']) el(id);
+    const body = (page.split('<script type="text/javascript">')[1] || '').split('</script>')[0];
+    const harness = `
+      var document = { getElementById: function(id){ return ELS[id]; } };
+      var XMLHttpRequest = function(){ this.open=function(){}; this.send=function(){}; };
+      ${body}
+      applyPointer(FUTURE);
+      RESULT = { cmd: ELS['dl-cmd'].href, rollout: ELS['s-rollout'].innerHTML,
+                 pr: ELS['s-pr'].href, tag: ELS['s-tag'].innerHTML, TAGVAR: TAG, INBOXVAR: INBOX };
+    `;
+    const ctx: Record<string, unknown> = {
+      ELS: els,
+      FUTURE: { rollout: 'R7', branch: 'arena/future', pr: 999, prUrl: 'https://example.invalid/pr/999',
+        session: 'ffffffff', date: '2027-01-01', tag: 'ABSOLUTION1', command: 'https://example.invalid/absolution.command',
+        zip: 'https://example.invalid/absolution.zip', inbox: 'https://example.invalid/inbox' },
+      RESULT: null,
+    };
+    try {
+      const vm = require('node:vm');
+      vm.runInNewContext(harness, ctx, { timeout: 5000 });
+      return ctx.RESULT as Record<string, string> | null;
+    } catch (e) {
+      return null;
+    }
+  })();
+  check('page script executes in isolation', sim !== null);
+  if (sim) {
+    check('runtime retarget: download url', sim.cmd === 'https://example.invalid/absolution.command');
+    check('runtime retarget: rollout shown', sim.rollout === 'R7');
+    check('runtime retarget: PR link', sim.pr === 'https://example.invalid/pr/999');
+    check('runtime retarget: inbox', sim.INBOXVAR === 'https://example.invalid/inbox');
+  }
 
   // the bundle must be byte-identical across runs, or "same link, reproducible" is a false claim.
   // The system `zip` binary fails this (it stamps live mtimes) - measured, which is why the

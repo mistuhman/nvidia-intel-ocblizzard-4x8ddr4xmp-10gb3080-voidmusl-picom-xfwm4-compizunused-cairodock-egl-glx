@@ -12,6 +12,9 @@ KEEP: CandyBar, Flavours, AirPort, Arctic Fox, iTunes, Audacity/AU Lab/GarageBan
 Logic, Utilities, plus themes/icons/Downloads. Apple bundles protected by class.
 STORAGE HOLD stands: boot volume is "start disk clone"; old wipe wave SUSPENDED,
 its CONFIRM line is never reused. Protect boot + all RAID members.
+PERSISTENT BY POINTER: the page reads ABSOLUTION.json at load (main, then branch) and
+retargets itself, so this ONE link serves every future rollout. Never mint a second slug.
+Next wave = edit ROLLOUT/BRANCH/PR in tools/absolution.ts, run emit, push. Link unchanged.
 Regenerate byte-identically: node tools/absolution.ts emit ; links ; parse FILE
 Legacy da.gd/sQ7bEo and da.gd/lionone burn to the same inbox but are frozen pages.
 Withdrawn: da.gd/lionfix, da.gd/lup, TinyURL.

@@ -118,16 +118,23 @@ That exact stamp is (1) the first line the command writes, (2) rendered in the p
 PR hyperlinked, and (3) parsed back out of the burn. `parse` prints
 `GATE: rollout MISMATCH` and refuses the plan if a stale `absolution.command` is used.
 
-### Persistence: why the link never has to change
+### Persistence: one frozen link, every future rollout
 
-- `https://da.gd/absolution` minted 2026-09-17 and coshorten-verified (`da.gd/absolution+` returns
-  the exact destination). da.gd slugs are write-once, so it is permanently fixed.
-- It points at the page on THIS session branch. Safe because the repo has
-  `delete_branch_on_merge=false` (verified via `gh api`), so the branch and the link survive the
-  merge of PR #91.
-- `node tools/absolution.ts emit` regenerates all three files **byte-identically**, so refreshing
-  content never requires a new slug. Same link, new bytes, same name.
-- No TinyURL, per directive and the standing MASTER `never` list.
+The short link is **write-once at da.gd and unreachable from the sandbox**, so it can never be
+repointed later. Pinning it straight at a session branch therefore welds it to R1 forever. That is
+not hypothetical: `docs/lion-workflow.json` records `da.gd/lmz` freezing to a dead session branch,
+"unfixable because push is restricted to this branch, and da.gd is write-once".
+
+So the page is a **launcher, not a snapshot**. At load it fetches `ABSOLUTION.json` - `main` first,
+then the authoring branch, cache-busted - and retargets its own download links, rollout stamp, PR
+link, log tag and inbox to whatever that pointer says. Baked-in values are only the offline fallback.
+
+Consequence: a future wave ships by editing `ROLLOUT`/`BRANCH`/`PR` in `tools/absolution.ts` and
+re-running `emit`. The link, the name and the operator's muscle memory never change.
+
+Proven by the selftest, which runs the real page script in a VM with a stubbed DOM, feeds it a
+**future R7 pointer on a different branch and PR**, and asserts the download URL, rollout text, PR
+href and inbox all retarget. It also asserts `main` is tried before the session branch.
 
 ### Reproducibility is proven, not claimed
 
