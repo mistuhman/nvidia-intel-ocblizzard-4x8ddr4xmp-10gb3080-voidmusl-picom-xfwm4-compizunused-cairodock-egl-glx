@@ -88,3 +88,40 @@ Correct emitted form: `case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|... ) CLASS="
 - Emptying `~/.Trash` is irreversible by nature. It is in the clean phase because "clearing" implies
   it; say so if it should be skipped.
 - Quarantine is not purged by any block here. Reclaiming that space is a separate, later, gated step.
+
+## Burn channel (added 2026-09-17, same session)
+
+Operator directive: "use the typescript burn and write link tool so we can get any missing context
+before running a final wipe". `tools/lion-burn-link.ts` is that tool.
+
+The sweep list must be computed from the machine, not from memory. The agent cannot log into the
+Mac, so context arrives through the proven burn loop.
+
+| Piece | What it is |
+|---|---|
+| `lion-clean-probe.command` | READ-ONLY Mac-side probe. Writes `~/Desktop/lion-clean.txt`, opens it. Selftest asserts no sudo/rm/mv/erase/asr/bless/nvram/curl on any executable line, and `sh -n` parses it. |
+| `lion-clean.html` | ES5-only burn page (Arctic Fox 47 = FF52 class). FileReader + XMLHttpRequest; refuses to burn a file lacking the `LIONCLEAN1` tag. |
+| `lion-clean.zip` | both of the above, one download |
+| `parse` subcommand | turns the burned text into a decided sweep plan |
+
+Channel facts, measured this session, not assumed:
+- `curl https://webhook.site` and `curl https://da.gd` both return **HTTP 000** (TLS blocked from the
+  sandbox). Confirms MASTER `lionMac.logChannel`. The agent reads the inbox **only** with `fetch_page`.
+- The inbox is **live**: `fetch_page` on the token URL returned the 2026-09-16 `LIONONE1` burn
+  (uuid `292c1de5`, and POST uuid `1c474145`), so the read path is proven working before use.
+- webhook.site stores a `text/plain` POST body in `content` and a GET `?log=` in `query.log`; both are
+  readable. Multipart file attachments are NOT (content empty, per-file routes need owner auth).
+  That is why the page sends the report as TEXT, twice (POST body + capped querystring fallback).
+
+Keep-list is IMPORTED from `tools/lion-clean-plan.ts` (`KEEP`, `APPLE_PREFIX`), so the probe's
+classifier and the sweep block can never drift apart. Selftest asserts the probe embeds the exact
+shared pattern string.
+
+Parser gate: a burn missing the `LIONCLEAN1_DONE` trailer is reported INCOMPLETE and the plan prints
+`GATE: burn INCOMPLETE - do not sweep.` A truncated burn can therefore never authorize a wipe.
+
+### Why no new da.gd short link was minted
+da.gd is unreachable from the sandbox (HTTP 000) and its slugs are write-once, so the agent cannot
+mint or verify one. The raw GitHub + htmlpreview URLs printed by `links` work as-is. If a short slug
+is wanted for typing on the Mac, the operator mints it from a browser aimed at the page URL; the
+existing `da.gd/sQ7bEo` page still burns to the same inbox but is frozen to an older branch.

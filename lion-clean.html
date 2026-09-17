@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Lion clear + harden - Burn</title>
+<style type="text/css">
+body{background:#1d1f21;color:#e8e8e8;font:13px "Lucida Grande",Helvetica,sans-serif;margin:0;padding:18px}
+.card{max-width:720px;margin:0 auto;background:#2b2e31;border:1px solid #111;border-radius:8px;padding:16px}
+h1{font-size:17px;margin:0 0 4px}
+.note{color:#9aa0a6;font-size:11px}
+fieldset{border:1px solid #3a3d41;border-radius:6px;margin:12px 0;padding:10px}
+legend{color:#b8bcc0;font-size:11px;padding:0 4px}
+.aqua{background:#4a90d9;color:#fff;border:1px solid #2a70b9;border-radius:12px;padding:5px 14px;font-size:12px;cursor:pointer}
+.aqua[disabled]{background:#555;border-color:#444;cursor:default}
+a.link{color:#7fb2e5}
+pre{background:#202225;border:1px solid #3a3d41;border-radius:4px;padding:8px;font:11px Monaco,monospace;white-space:pre-wrap;max-height:220px;overflow:auto}
+iframe{display:none}
+</style></head>
+<body><div class="card">
+<h1>Lion clear + harden &mdash; context burn</h1>
+<p class="note">Read-only probe. Nothing is erased, moved or deleted by this page or its script.
+The report travels as <b>text</b>, which is the only form the agent can read back.</p>
+
+<fieldset><legend>1. Get the probe</legend>
+<p class="note">Download, then double-click <b>lion-clean-probe.command</b>. It writes
+<b>~/Desktop/lion-clean.txt</b> and opens it.</p>
+<p><a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/lion-clean-probe.command">lion-clean-probe.command</a>
+&nbsp;|&nbsp; <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/lion-clean.zip">lion-clean.zip</a></p>
+</fieldset>
+
+<fieldset><legend>2. Attach the report</legend>
+<div><input type="file" id="pick" accept=".txt,text/plain"></div>
+<p id="pv" class="note">no file chosen</p>
+<pre id="prev"></pre>
+</fieldset>
+
+<fieldset><legend>3. Burn it to the agent</legend>
+<button class="aqua" type="button" id="burn" disabled="disabled">Burn</button>
+<span class="note" id="st"></span>
+</fieldset>
+
+<p class="note">Inbox: https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6</p>
+</div>
+<iframe name="dropframe"></iframe>
+<script type="text/javascript">
+// ES5 only: Arctic Fox 47 is Firefox 52 class. No fetch, no arrows, no template literals.
+var INBOX = "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6";
+var TAG = "LIONCLEAN1";
+var BODY = null;
+
+function $(id){ return document.getElementById(id); }
+
+function setStatus(t){ $("st").innerHTML = t; }
+
+$("pick").onchange = function(){
+  var f = this.files && this.files[0];
+  if (!f) { return; }
+  var r = new FileReader();
+  r.onload = function(){
+    BODY = String(r.result || "");
+    var lines = BODY.split("\n").length;
+    $("pv").innerHTML = "loaded " + f.name + " - " + BODY.length + " bytes, " + lines + " lines";
+    $("prev").innerHTML = BODY.substring(0, 1500).replace(/</g, "&lt;");
+    $("burn").disabled = BODY.indexOf(TAG) === -1;
+    if (BODY.indexOf(TAG) === -1) { setStatus("that file is not a " + TAG + " report"); }
+    else { setStatus("ready to burn"); }
+  };
+  r.readAsText(f);
+};
+
+function postText(body){
+  try {
+    var x = new XMLHttpRequest();
+    x.open("POST", INBOX, true);
+    x.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+    x.send(body);
+    return true;
+  } catch (e) { return false; }
+}
+
+function postQuery(body){
+  try {
+    var x = new XMLHttpRequest();
+    x.open("GET", INBOX + "?log=" + encodeURIComponent(body), true);
+    x.send(null);
+    return true;
+  } catch (e) { return false; }
+}
+
+$("burn").onclick = function(){
+  if (!BODY) { return; }
+  var head = TAG + " size=" + BODY.length + " lines=" + BODY.split("\n").length + " page=clean\n";
+  var full = head + "----- report follows -----\n" + BODY;
+  var a = postText(full);
+  // querystring copy is capped: it is the fallback the agent reads if the POST body is missing
+  var b = postQuery(head + BODY.substring(0, 1200));
+  if (a || b) { setStatus("BURNED - tell the agent it is burned"); }
+  else { setStatus("burn failed - copy the text into chat instead"); }
+};
+</script>
+</body></html>

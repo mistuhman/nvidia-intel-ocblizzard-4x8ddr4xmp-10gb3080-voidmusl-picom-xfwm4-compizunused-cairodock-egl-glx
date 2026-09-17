@@ -12,14 +12,14 @@
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-type Keep = { app: string; prefix: string; wild: boolean; why: string };
+export type Keep = { app: string; prefix: string; wild: boolean; why: string };
 
 // KEEP = never a sweep candidate. Each entry carries the receipt that put it here.
 // `glob` is the sh case pattern. Trailing * is deliberate: it absorbs name variants the agent has
 // NOT verified on the target (Arctic Fox vs ArcticFox, Logic Pro vs Logic Express, version suffixes
 // like "Audacity 2.4.2"). Over-matching here keeps an extra app; under-matching quarantines one the
 // operator named. Those are not symmetric, so the glob always errs toward KEEP.
-const KEEP: Keep[] = [
+export const KEEP: Keep[] = [
   { app: 'CandyBar', prefix: 'CandyBar', wild: true, why: 'operator named 2026-09-17; icon/theme tool' },
   { app: 'Flavours', prefix: 'Flavours', wild: true, why: 'operator named 2026-09-17; theming companion' },
   { app: 'AirPort Utility', prefix: 'AirPort', wild: true, why: 'operator named "airport"; 6.3.1, docs/lion-airport-triage.md, T1/T5 AirPort resets' },
@@ -35,7 +35,7 @@ const KEEP: Keep[] = [
 // Apple-shipped bundles are PROTECTED as a class, not by name. Receipt: the 10.7 store catalog is
 // dead (etc/lion-harden.block "UPDATE CHATTER OFF - 10.7 store catalog is dead"), so a deleted
 // Apple app on Lion is UNRECOVERABLE without a full OS reinstall. Classifier = CFBundleIdentifier.
-const APPLE_PREFIX = 'com.apple.';
+export const APPLE_PREFIX = 'com.apple.';
 
 // sh case patterns are emitted as "Literal"* - quotes around the literal, wildcard OUTSIDE them.
 // Both halves are load-bearing and each was proven by a failing test:
@@ -336,7 +336,9 @@ function selftest(): void {
   if (fail > 0) process.exit(1);
 }
 
+const invokedDirectly = process.argv[1] !== undefined && /lion-clean-plan\.ts$/.test(process.argv[1]);
 const cmd = process.argv[2] ?? 'selftest';
+if (invokedDirectly) {
 if (cmd === 'emit') {
   for (const [path, gen] of OUTPUTS) {
     writeFileSync(path, gen());
@@ -349,4 +351,5 @@ if (cmd === 'emit') {
 } else {
   console.log('usage: node tools/lion-clean-plan.ts <emit|keep|selftest>');
   process.exit(1);
+}
 }
