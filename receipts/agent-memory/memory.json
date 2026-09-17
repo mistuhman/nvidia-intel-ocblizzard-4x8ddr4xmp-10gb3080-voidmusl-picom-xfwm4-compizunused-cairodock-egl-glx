@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 155,
+  "lastSeq": 156,
   "entries": [
     {
       "seq": 1,
@@ -2473,6 +2473,13 @@
         }
       ],
       "sha256": "dad21ebd407e3e3cd76e02d1f8dabd87f3975215df6b0292cd876a9863802b70"
+    },
+    {
+      "seq": 156,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-17 OPERATOR-DIRECTED MERGE: PR #91 merged to main as 3e44bff. main now carries ABSOLUTION.json, absolution.html/.command/.zip, absolution-accounts.command, tools/absolution.ts, tools/lib/absolution-accounts.ts, etc/absolution-accounts.block and the R1/R5 receipts. Verified live: raw main/ABSOLUTION.json returns rollout R5, so the page's PRIMARY pointer (main) now resolves and https://da.gd/absolution survives this session branch. NEXT CHAT = the final command wave: (1) absolution-accounts.command map then sudo CONFIRM=ACCOUNTS (KEEP el, REMOVE jazzyempire+revo, harvest first), (2) the 58-app sweep incl Winamp, (3) clean+repair, (4) etc/lion-harden.block. Boot volume still 97% full; /Users/revo is 775G and is the only material space.",
+      "sha256": "4d498afe84626b03185434add952f09ad588707d4e45a7c2e936e6f75187a219"
     }
   ],
   "stacks": [
