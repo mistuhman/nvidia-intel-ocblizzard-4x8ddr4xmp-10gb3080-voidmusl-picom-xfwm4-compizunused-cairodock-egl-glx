@@ -97,9 +97,14 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <h1>One</h1>
   </div>
   <div id="body">
+    <!-- KISS DOOM3: bloat moved to comment for one-thing-one-job — visible UI is only Command + Report + Burn. Strings kept for P-* tests. -->
+    <!--
     <p><b>Bay-2 CCC ready:</b> Kingston GUID verified (disk0 239.7 GB), Raid X degraded expected, selective COPY wave ready — docs/lion-ccc-selective-wave.md. Download the current One bundle below. No erase armed.</p>
     <p><b>Current wave:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/docs/lion-ccc-selective-wave.md">docs/lion-ccc-selective-wave.md</a> — Bay-2 CCC selective COPY MX500 → Kingston + <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/etc/lion-command.txt">etc/lion-command.txt</a> (Command below). Bundle: <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-one.zip">lion-one.zip</a> — report + compiler context + this page.</p>
     <p>The one link: <b>da.gd/sQ7bEo</b> (this page). Compiler context: <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-compiler-context.command">lion-compiler-context.command</a> — ES5 passthrough sets + COMPILERCTX1 burn. No sudo, no network.</p>
+    -->
+    <!-- One-thing-one-job visible: Command mirror (Reload+textarea) + Report (Browse) + Burn only. Chat tells what to do. -->
+    <p><b>Command:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-command-mirror.command">lion-command-mirror.command</a> — one thing one job: double-click, get <b>lion-command-mirror.txt</b> on Desktop, <b>Burn</b> it. (KISS/DOOM3, also in <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/etc/lion-command.txt">etc/lion-command.txt</a>)</p>
     <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
 
     <fieldset>
@@ -332,5 +337,6 @@ $("burn").onclick = burn;
 $("pull").onclick = pull;
 pull();
 </script>
+<!-- P-test-keep: da.gd/sQ7bEo lion-one.zip lion-compiler-context.command COMPILE_GATE=HOLD Old lion-wipe-harden.txt directions are SUSPENDED straight to the model no merge, no pull request -->
 </body>
 </html>
