@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 147,
+  "lastSeq": 148,
   "entries": [
     {
       "seq": 1,
@@ -2363,6 +2363,13 @@
       "value": "2026-09-17 ABSOLUTION R1: https://da.gd/absolution minted + coshorten-verified, branch-pinned to arena/01a0ad71 (safe: delete_branch_on_merge=false), PR #91. ONE NAME absolution for command/page/zip/log tag ABSOLUTION1. tools/absolution.ts emit is byte-reproducible incl. a hand-built deterministic zip (system zip binary stamps mtimes and failed reproducibility). parse refuses INCOMPLETE burns and rollout MISMATCH.",
       "source": "tools/absolution.ts",
       "sha256": "2e95ba15ec29837dd3d6743dc83321bb907b7a04435f4c6f9c3358b72f1e57be"
+    },
+    {
+      "seq": 148,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "2026-09-17 ABSOLUTION persistence CORRECTED after operator repeated the directive verbatim (signal that the prior delivery missed it). Defect: da.gd/absolution was pinned to session branch arena/01a0ad71, so the write-once slug would serve R1 forever - the documented da.gd/lmz failure. Fix: absolution.html is now a LAUNCHER reading ABSOLUTION.json at runtime (main first, then branch, cache-busted) and retargeting downloads/stamp/PR/tag/inbox. Verified live: page renders 'live rollout R1' (only printed when the pointer chain resolves) and ABSOLUTION.json is reachable on raw. Selftest runs the real page script in a VM against a FUTURE R7 pointer and asserts retarget. Rejected minting a second main-pinned slug: violates one-name and 404s until PR #91 merges.",
+      "sha256": "9136b759fac82989a442476c815ed9c08c1799c83c1a4ad935ff2c02f6d61907"
     }
   ],
   "stacks": [
