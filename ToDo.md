@@ -151,6 +151,27 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] 1. **AirPort Base Station / Time Capsule Factory Reset**: Perform pinhole hard factory reset on the Time Capsules and AirPort Express so AirPort Utility can configure them cleanly without password prompts. (6.3.1 installed on Lion per operator 2026-09-15; resets still open.)
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
+  - 2026-09-17 (session 01a0ae24, later) **IDENTITY RESOLVED BY OPERATOR PHOTO — THE COLLISION IS
+    CLOSED AND THE ANSWER IS: THERE IS NO SPARE SSD.** Operator Disk Utility screenshot (chat-only
+    bytes, perception receipt agent-memory seq 158) enumerates the ENTIRE sidebar: `1 TB WDC
+    WD10EACS-0…`, `1 TB WDC WD10EAVS-0…`, `1 TB WDC WD10EACS-0…` (each carrying `RAID Slice for
+    "Raid X"`), `1 TB CT1000MX500SSD…` → `start disk clone`, `3 TB Raid X` → `Raid X`, plus a
+    SuperDrive holding a CD `Peaks And Troughs`. The Mac Pro 3,1 has FOUR bays and all four are
+    full. **The one and only SSD is the CT1000MX500SSD and its volume is `start disk clone`, which
+    the ABSOLUTION burn proves is the LIVE BOOT disk** (`/dev/disk3s2 on /`, 931Gi, 899Gi used,
+    97%). So "wipe the SSD" has no executable target — the only SSD is the running system. That is
+    arithmetic, not a policy refusal. Verified by `node tools/lion-disk-plan.ts guards`.
+    Also learned: `3 TB Raid X` over three 1 TB members = a STRIPE with **NO redundancy** (a mirror
+    would read 1 TB, RAID 5 would read 2 TB); any single WD failure loses all 3 TB.
+    **Operator decision required before any erase** — (a) add/attach new media, then wipe the old
+    SSD once boot no longer lives on it; (b) migrate boot OFF the MX500 first, then wipe it;
+    (c) treat "wipe the SSD" as satisfied by the reversible `revo` 775 G reclaim (R5) + harden and
+    strike the erase. `?(lion-ssd-wipe)` stays UN-ARMED — but **its safety gates were tested, not
+    assumed**: replaying its discovery logic against a mock of the photographed disk set prints
+    `skip disk3 (BOOT) CT1000MX500SSD1` then `ABORT: selection is 0 SSD candidate disks`, exit 1.
+    So the block correctly refuses and cannot erase the boot disk. (An earlier draft of this entry
+    claimed the opposite; the simulation disproved it and the claim was corrected rather than
+    shipped. Receipt: `node tools/lion-disk-plan.ts sim`.)
   - 2026-09-17 (session 01a0ae24) **SSD WIPE IS BLOCKED — NAME COLLISION, NOT A REFUSAL.** Item 3
     names the wipe target "the superseded Bay 3 start-disk clone media", but the ABSOLUTION burn of
     2026-09-17 proves `start disk clone` is the LIVE BOOT VOLUME: `/dev/disk3s2 on / (hfs)`, 931Gi,

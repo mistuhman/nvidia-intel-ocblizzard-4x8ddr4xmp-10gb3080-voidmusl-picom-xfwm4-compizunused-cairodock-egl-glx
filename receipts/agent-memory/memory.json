@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 157,
+  "lastSeq": 158,
   "entries": [
     {
       "seq": 1,
@@ -2487,6 +2487,61 @@
       "kind": "note",
       "text": "Session 01a0ae24 step 1 (2026-09-17): operator 'now lets work on wiping the ssd and progressing through the ToDo.md one step at a time starting from where we left off w the typescript tooling and linkage'. BLOCKING FINDING: ToDo item 3 wipe target 'the superseded Bay 3 start-disk clone media' collides by NAME with the LIVE BOOT volume - burn 2026-09-17 shows /dev/disk3s2 on / (hfs) 931Gi 899Gi 97% 'start disk clone'. lion-ssd-wipe.block matches crucial|mx500|ssd; 0 Solid State receipts for any Mac disk; only MX500 receipt (ata-CT1000MX500SSD1) is in the OMEN/Void = different machine. All receipted Mac disks are never-erase (disk3s2 boot, disk0s2/1s2/2s2 Apple_RAID, disk4 Raid X) => wipe wave has NO proven target, stays UN-ARMED. Shipped tools/lion-disk-plan.ts (guards-as-data + read-only probe, refuses to emit erase, selftest PASS) + etc/lion-disk-identity.block. Linkage updated: lion-workflow.json nextAction/session/volume role, ToDo item-3 status line, test-all gate. Commit 5422b8e. AWAITING operator paste-back of the identity probe before any erase.",
       "sha256": "5fd0d2d395a1e6ed8772ef11856d67b4ef8390d8bc9f6c469e451e2a85665086"
+    },
+    {
+      "seq": 158,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "chat-photo-2026-09-17-disk-utility",
+      "tool": "chat view (bytes NOT persisted to sandbox; chat-only rule)",
+      "claims": [
+        {
+          "claim": "Disk Utility on Lion shows EXACTLY FOUR physical disks plus a SuperDrive",
+          "evidence": "sidebar enumerated in full: 3x 1TB WDC + 1x 1TB CT1000MX500SSD + SuperDrive + Flavours.dmg image",
+          "confidence": "high"
+        },
+        {
+          "claim": "The only SSD in the Mac Pro is 1 TB CT1000MX500SSD... and its child volume is start disk clone",
+          "evidence": "sidebar: 1 TB CT1000MX500SSD... with indented child start disk clone",
+          "confidence": "high"
+        },
+        {
+          "claim": "start disk clone is the LIVE BOOT volume /dev/disk3s2, therefore the MX500 is the boot disk = disk3",
+          "evidence": "photo child-volume name + receipts/absolution/R1/burn-2026-09-17.txt /dev/disk3s2 on / 931Gi 97%",
+          "confidence": "high"
+        },
+        {
+          "claim": "The three 1TB WD disks are WD10EACS, WD10EAVS, WD10EACS and each shows RAID Slice for Raid X",
+          "evidence": "three sidebar entries each with indented greyed RAID Slice for Raid X",
+          "confidence": "high"
+        },
+        {
+          "claim": "Raid X is 3 TB from 3x 1TB members = a STRIPE with NO redundancy",
+          "evidence": "sidebar 3 TB Raid X over three 1TB slices; mirror would be 1TB, RAID5 would be 2TB",
+          "confidence": "high"
+        },
+        {
+          "claim": "All four Mac Pro 3,1 drive bays are occupied; there is NO free disk and NO free bay",
+          "evidence": "4 physical disks enumerated, chassis has 4 bays",
+          "confidence": "high"
+        },
+        {
+          "claim": "A CD named Peaks And Troughs is in the SuperDrive",
+          "evidence": "SuperDrive entry with child Peaks And Troughs",
+          "confidence": "high"
+        },
+        {
+          "claim": "Disk Utility right pane reads Select a disk, volume, or image - nothing was selected, no operation staged",
+          "evidence": "empty detail pane text",
+          "confidence": "high"
+        },
+        {
+          "claim": "Behind Disk Utility is the absolution burn page showing step 2 attach it with absolution.txt chosen",
+          "evidence": "background window: 2 - attach it, Browse..., absolution.txt",
+          "confidence": "medium"
+        }
+      ],
+      "sha256": "4f3997cb16af79daba9d6b87f270b6b8225ceb85904065a072cd0606d2c37725"
     }
   ],
   "stacks": [
