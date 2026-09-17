@@ -89,39 +89,59 @@ Correct emitted form: `case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|... ) CLASS="
   it; say so if it should be skipped.
 - Quarantine is not purged by any block here. Reclaiming that space is a separate, later, gated step.
 
-## Burn channel (added 2026-09-17, same session)
+## ABSOLUTION - the burn channel (rollout R1)
 
-Operator directive: "use the typescript burn and write link tool so we can get any missing context
-before running a final wipe". `tools/lion-burn-link.ts` is that tool.
+Operator directive 2026-09-17: "burn page has to be shortened (no TinyURL), use the typescript repo
+tooling to make it reproducible and persistent on the same link, with clear indication of which
+branch and pr its on, and which rollout it is. one name for the command in this chat, one name for
+it in the page and the log."
 
-The sweep list must be computed from the machine, not from memory. The agent cannot log into the
-Mac, so context arrives through the proven burn loop.
+### One name, everywhere
 
-| Piece | What it is |
+The single string `absolution` names every surface. All of them derive from one `NAME` constant in
+`tools/absolution.ts`, and the selftest asserts each derivation, so they cannot drift apart.
+
+| Surface | Value |
 |---|---|
-| `lion-clean-probe.command` | READ-ONLY Mac-side probe. Writes `~/Desktop/lion-clean.txt`, opens it. Selftest asserts no sudo/rm/mv/erase/asr/bless/nvram/curl on any executable line, and `sh -n` parses it. |
-| `lion-clean.html` | ES5-only burn page (Arctic Fox 47 = FF52 class). FileReader + XMLHttpRequest; refuses to burn a file lacking the `LIONCLEAN1` tag. |
-| `lion-clean.zip` | both of the above, one download |
-| `parse` subcommand | turns the burned text into a decided sweep plan |
+| chat command | **absolution** |
+| short link | **https://da.gd/absolution** |
+| download | `absolution.command` |
+| page | `absolution.html` |
+| bundle | `absolution.zip` |
+| log tag | `ABSOLUTION1` ... `ABSOLUTION1_DONE` |
 
-Channel facts, measured this session, not assumed:
-- `curl https://webhook.site` and `curl https://da.gd` both return **HTTP 000** (TLS blocked from the
-  sandbox). Confirms MASTER `lionMac.logChannel`. The agent reads the inbox **only** with `fetch_page`.
-- The inbox is **live**: `fetch_page` on the token URL returned the 2026-09-16 `LIONONE1` burn
-  (uuid `292c1de5`, and POST uuid `1c474145`), so the read path is proven working before use.
-- webhook.site stores a `text/plain` POST body in `content` and a GET `?log=` in `query.log`; both are
-  readable. Multipart file attachments are NOT (content empty, per-file routes need owner auth).
-  That is why the page sends the report as TEXT, twice (POST body + capped querystring fallback).
+### Rollout identity, visible in all three places
 
-Keep-list is IMPORTED from `tools/lion-clean-plan.ts` (`KEEP`, `APPLE_PREFIX`), so the probe's
-classifier and the sweep block can never drift apart. Selftest asserts the probe embeds the exact
-shared pattern string.
+`ABSOLUTION1 rollout=R1 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91 session=01a0ad71 date=2026-09-17`
 
-Parser gate: a burn missing the `LIONCLEAN1_DONE` trailer is reported INCOMPLETE and the plan prints
-`GATE: burn INCOMPLETE - do not sweep.` A truncated burn can therefore never authorize a wipe.
+That exact stamp is (1) the first line the command writes, (2) rendered in the page header with the
+PR hyperlinked, and (3) parsed back out of the burn. `parse` prints
+`GATE: rollout MISMATCH` and refuses the plan if a stale `absolution.command` is used.
 
-### Why no new da.gd short link was minted
-da.gd is unreachable from the sandbox (HTTP 000) and its slugs are write-once, so the agent cannot
-mint or verify one. The raw GitHub + htmlpreview URLs printed by `links` work as-is. If a short slug
-is wanted for typing on the Mac, the operator mints it from a browser aimed at the page URL; the
-existing `da.gd/sQ7bEo` page still burns to the same inbox but is frozen to an older branch.
+### Persistence: why the link never has to change
+
+- `https://da.gd/absolution` minted 2026-09-17 and coshorten-verified (`da.gd/absolution+` returns
+  the exact destination). da.gd slugs are write-once, so it is permanently fixed.
+- It points at the page on THIS session branch. Safe because the repo has
+  `delete_branch_on_merge=false` (verified via `gh api`), so the branch and the link survive the
+  merge of PR #91.
+- `node tools/absolution.ts emit` regenerates all three files **byte-identically**, so refreshing
+  content never requires a new slug. Same link, new bytes, same name.
+- No TinyURL, per directive and the standing MASTER `never` list.
+
+### Reproducibility is proven, not claimed
+
+`emit` twice and diff: all three artifacts hash-identical. This needed a real fix - the system `zip`
+binary stamps each entry with the current mtime, so the bundle differed on every run. The container
+is now built in TypeScript with a fixed DOS timestamp and stored (uncompressed) entries. The
+selftest asserts byte-equality across two builds, `unzip -t` integrity, and that the extracted
+`.command` keeps mode 0755.
+
+### Operator loop (two taps)
+
+1. open **https://da.gd/absolution** in Arctic Fox, download **absolution.command**, double-click it
+2. back on the page: attach `~/Desktop/absolution.txt`, press **Burn**, say **burned** in chat
+
+The agent then reads the inbox with `fetch_page` and runs
+`node tools/absolution.ts parse <file>` to get the decided sweep plan. A burn missing the
+`ABSOLUTION1_DONE` trailer is reported INCOMPLETE and cannot authorize the wipe.

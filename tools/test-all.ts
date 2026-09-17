@@ -63,7 +63,7 @@ run('node', ['tools/uploads.ts', 'selftest']);
 run('node', ['tools/lion-status.ts']);
 run('node', ['tools/lion-status.ts', 'selftest']);
 run('node', ['tools/lion-clean-plan.ts', 'selftest']);
-run('node', ['tools/lion-burn-link.ts', 'selftest']);
+run('node', ['tools/absolution.ts', 'selftest']);
 run('node', ['tools/web-scrape.ts', '--max=80', 'README.md']);
 execFileSync('node tools/paste-proof.ts --target-console --root', { input: 'id -u\ndf -h /\nls -l MASTER.md\n', stdio: ['pipe', 'inherit', 'inherit'], shell: true });
 console.log('TEST_ALL=PASS');

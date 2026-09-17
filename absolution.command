@@ -1,10 +1,11 @@
 #!/bin/sh
-# lion-clean-probe.command - READ-ONLY context probe for the clear + harden wave (Lion 10.7, double-click).
-# Writes ONLY ~/Desktop/lion-clean.txt then opens it for the One page txt picker.
+# absolution.command - READ-ONLY context probe for the Lion clear + harden wave (Lion 10.7, double-click).
+# Rollout R1 | branch arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr | PR 91 | session 01a0ad71
+# Writes ONLY ~/Desktop/absolution.txt then opens it for the page picker.
 # No sudo, no network, no erase, no move, no delete. Every probe is best-effort.
-REPORT="$HOME/Desktop/lion-clean.txt"
+REPORT="$HOME/Desktop/absolution.txt"
 {
-echo "LIONCLEAN1 clear-and-harden context probe"
+echo "ABSOLUTION1 rollout=R1 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91 session=01a0ad71 date=2026-09-17"
 echo "date=$(date 2>/dev/null || echo UNKNOWN)"
 echo "host=$(hostname 2>/dev/null || echo UNKNOWN)"
 echo "user=$(whoami 2>/dev/null || echo UNKNOWN)"
@@ -46,7 +47,7 @@ echo "--- harden state ---"
 defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled 2>/dev/null || echo "guest UNSET"
 echo "--- filesystem ---"
 diskutil verifyVolume / 2>&1 | tail -6 || echo "verify UNKNOWN"
-echo "LIONCLEAN1_DONE No disk was erased."
+echo "ABSOLUTION1_DONE No disk was erased."
 } > "$REPORT" 2>&1
 open "$REPORT" 2>/dev/null || true
 echo "wrote $REPORT"

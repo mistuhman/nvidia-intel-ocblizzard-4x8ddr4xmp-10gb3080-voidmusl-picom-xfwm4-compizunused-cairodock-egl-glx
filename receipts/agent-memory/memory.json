@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 145,
+  "lastSeq": 147,
   "entries": [
     {
       "seq": 1,
@@ -2332,6 +2332,37 @@
       "value": "2026-09-17 session 01a0ad71: tools/lion-burn-link.ts emits lion-clean-probe.command + lion-clean.html + lion-clean.zip on branch arena/01a0ad71. Page URL and probe raw URL both VERIFIED LIVE with fetch_page after push. Inbox a078e138-e87d-4369-9868-0c0c1f3500d6 verified readable (returned the 2026-09-16 LIONONE1 burn). curl to webhook.site and da.gd = HTTP 000 so fetch_page is the only read path; no new da.gd slug minted (write-once + unreachable). Tag LIONCLEAN1 / LIONCLEAN1_DONE; parse refuses INCOMPLETE burns.",
       "source": "tools/lion-burn-link.ts",
       "sha256": "71a0cd61b86d712a2245ec5b9d1159c62b3f3e9411c03894611e3bed10afa171"
+    },
+    {
+      "seq": 146,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "burn page has to be shortened (no TinyURL), use the typescript repo tooling to make it reproducible and persistent on the same link, with clear indication of which branch and pr its on, and which rollout it is. one name for the command in this chat, one name for it in the page and the log. organized and streamlined. absolution",
+      "demands": [
+        "shorten the burn page link",
+        "NO TinyURL",
+        "use typescript repo tooling",
+        "reproducible",
+        "persistent on the SAME link",
+        "show which branch",
+        "show which PR",
+        "show which rollout",
+        "ONE name in chat",
+        "ONE name in page and log",
+        "organized and streamlined",
+        "name it absolution"
+      ],
+      "sha256": "333d7b00e2240b1ffffcdc0e0c1f925202c48d410ba9adf8c7569b73235c23f3"
+    },
+    {
+      "seq": 147,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "absolutionChannel",
+      "value": "2026-09-17 ABSOLUTION R1: https://da.gd/absolution minted + coshorten-verified, branch-pinned to arena/01a0ad71 (safe: delete_branch_on_merge=false), PR #91. ONE NAME absolution for command/page/zip/log tag ABSOLUTION1. tools/absolution.ts emit is byte-reproducible incl. a hand-built deterministic zip (system zip binary stamps mtimes and failed reproducibility). parse refuses INCOMPLETE burns and rollout MISMATCH.",
+      "source": "tools/absolution.ts",
+      "sha256": "2e95ba15ec29837dd3d6743dc83321bb907b7a04435f4c6f9c3358b72f1e57be"
     }
   ],
   "stacks": [
