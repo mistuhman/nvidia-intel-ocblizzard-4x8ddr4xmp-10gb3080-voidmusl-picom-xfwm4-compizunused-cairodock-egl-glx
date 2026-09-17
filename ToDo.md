@@ -151,6 +151,35 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] 1. **AirPort Base Station / Time Capsule Factory Reset**: Perform pinhole hard factory reset on the Time Capsules and AirPort Express so AirPort Utility can configure them cleanly without password prompts. (6.3.1 installed on Lion per operator 2026-09-15; resets still open.)
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
+  - 2026-09-17d (session 01a0ae24) **OPERATOR APPROVED: temporary HDD→SSD swap + SELECTIVE COPY.**
+    Verbatim: "i can temporarily replace the hdd's with the two ssd's. then we clean the boot drive,
+    copy only the essential boot items and what i specifically asked for last chat, keep the other
+    ssd installed. select which software to keep from there".
+    - **REFRAME THAT DISSOLVES THE CAPACITY BLOCKER:** this is a **selective COPY, not a delete**.
+      Nothing on the MX500 is destroyed by building the new boot disk — items simply aren't carried
+      over, and the MX500 stays bootable as rollback until explicitly wiped. So revo's 775 GiB does
+      **not** need deleting first; it just isn't copied.
+    - **MANIFEST** (`node tools/lion-migrate-manifest.ts keep|drop|ask|plan|size`): all **150 apps**
+      from the R1 burn classified — coverage-gated in selftest so nothing can be silently missed —
+      plus CandyBar, which lives in `~/Downloads`, **not** `/Applications` (a naive `/Applications`
+      copy would have missed an operator-named keep).
+    - **KEEP 62 apps / 2.73 GB**: complete Final Cut Studio (FCP, Motion, Compressor, DVD Studio Pro,
+      Cinema Tools, LiveType, Qmaster, Qadministrator); audio (GarageBand, Audio MIDI Setup, Podcast
+      Capture/Publisher); operator-named (CandyBar, Flavours, ArcticFox, AirPort Utility); iTunes as
+      the mp3→CD burn path; Aperture, FxFactory, LooksBuilder, ScreenFlow, Blackmagic ×3, HandBrake,
+      VLC, QuickTime 7.
+    - **DROP 82 apps / 6.56 GB**: Winamp (per the sweep), games (Chess, Braid, Machinarium, Kid Pix
+      2.0 G, Mavis 717 M), dead browsers (Chrome ×2, Firefox, Opera, Flock), consumer iPhoto/iMovie/
+      iDVD superseded by the kept pro equivalents, dead services, recipes/GPS/kids software.
+    - **ASK 7** — operator decides: Mail, iCal, Address Book, Transmit, hueyPRO, Contour Shuttle,
+      Mac Pro EFI Firmware Update.
+    - **CRITICAL CATCH:** Carbon Copy Cloner — the tool that *performs* the migration — was classed
+      `CANDIDATE=delete` by the old ABSOLUTION sweep. It is **KEEP** here.
+    - **Projected new boot ≈ 16.2 GB** (2.89 apps + 1.3 el home + ~12 OS *estimate*) vs ~425 GB
+      usable → fits with ~409 GB spare; would fit a **single** 240 too.
+    - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
+      the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
+      member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
   - 2026-09-17c (session 01a0ae24) **OPERATOR PLAN: 2× 240 GB Kingston RAID 0 → migrate boot →
     then wipe the MX500.** Bay layout confirmed by operator: Bay 1 = MX500 boot, Bays 2-4 = the
     three Raid X members. Verdict from `node tools/lion-boot-migrate.ts check`: **the plan is sound
