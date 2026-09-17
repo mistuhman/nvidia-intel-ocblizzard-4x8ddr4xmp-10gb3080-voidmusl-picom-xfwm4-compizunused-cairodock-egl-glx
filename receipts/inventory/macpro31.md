@@ -265,7 +265,32 @@ Operator demands (seq 82 numbered):
 4. "the four bays are only hard drives." — correct: 3.5" HDD bays, 3Gb/s, sleds with captive latch.
 5. "we need to put the 2.5in crucial boot ssd somewhere else." — intent = free bays for HDDs per original mac-guide 4x1TB Green plan.
 6. "i have no conversion cables or anything fyi" — inventory: no Molex→SATA power, no SATA data extension, no 2.5→3.5 adapter bracket.
-7. "i have 2 240gb kingston ssd's and the 1tb crucial boot drive" — SSD inventory: 1x Crucial 1TB (MX500 CT1000 class, Lion SSD Base, disk0s2, Bay1, NEVER erase) + 2x Kingston 240GB (models UNKNOWN, need label photos for exact SKU).
+7. "i have 2 240gb kingston ssd's and the 1tb crucial boot drive" — SSD inventory: 1x Crucial 1TB (MX500 CT1000 class, Lion SSD Base, disk0s2, Bay1, NEVER erase) + 2x Kingston 240GB.
+
+   **KINGSTON SKU RESOLVED 2026-09-17 (operator label photo, both drives, read directly — no longer UNKNOWN):**
+
+   | field | both drives |
+   |---|---|
+   | model | Kingston SSDNow V300 |
+   | part number | `SV300S37A/240G` |
+   | Kingston P/N | `9904447-745.F03G` |
+   | firmware | `608ABBF0` |
+   | date code | `1607` (2016 week 07) |
+   | assembled | TAIWAN |
+   | power | DC +5.0V 1A |
+   | WWN | `50026B7762054B94` and `50026B7762054FB2` |
+   | controller | LSI SandForce SF-2281 (V300 series) |
+
+   **MATCHED PAIR** — identical PN, identical firmware, identical lot, near-consecutive WWNs. A stripe
+   runs at its slowest member's pace, so a mismatch would have mattered; there is none. Best case.
+
+   Implications (see `node tools/lion-boot-migrate.ts endstate`):
+   - The infamous V300 sync→async NAND switch is **moot in this machine**: the 3,1 bays are SATA II,
+     capped ~300 MB/s raw / ~250-270 MB/s real, at or below the async drive's own ceiling.
+   - **No TRIM**, and it costs nothing: Apple software RAID never passes TRIM, and Lion 10.7 has no
+     third-party TRIM anyway (`trimforce` arrived in 10.10.4). At ~16 GB used on 447 GB the drives sit
+     ~96% empty, which is enormous effective over-provisioning for SandForce garbage collection.
+   - **Age ~9 years, power-on hours unknown.** Check SMART on both before trusting either.
 
 ### Where can the 2.5" SSDs live? (one change per power-on, purchase-gated)
 - **Current location**: Bay 1 sled = Crucial 1TB Lion SSD Base (installer-app path, 10.7 booting). Bay 3 = MX500 CT1000 start disk clone (superseded). Bay 4 = Install ESD SPARE. Bay 2 = UNKNOWN. All 2.5" SSDs are currently in 3.5" sleds (needs verification — photo request below). This works today.
@@ -278,7 +303,7 @@ Operator demands (seq 82 numbered):
 
 ### Updated photo requests (re-issued every turn until covered, per imaging-contract)
 1. Sled latch faces straight-on: bay numbers + drive per sled + red-sticker bay (claim 1) + which sled holds the Crucial 1TB vs Kingstons.
-2. SSD label photos: Crucial 1TB (model/firmware) + both Kingston 240GB (exact SKU, e.g. A400/SA400) — needed for power/trim/compatibility.
+2. ~~SSD label photos: both Kingston 240GB (exact SKU)~~ **DONE 2026-09-17 — SSDNow V300 SV300S37A/240G matched pair, see item 7.** Still wanted: Crucial 1TB label (model/firmware).
 3. Riser top-down: FB-DIMM count per riser (LOW, non-blocking) — operator says visible, bytes never persist.
 4. WD Green drive manifest: count + full models + target bays (needed before RAID-format wave names wipe target; Bay1 = destroys Lion, NEVER).
 5. Bar-screw replacement choice R1 vs R2 (+ thread measurement if R1) — owed before case-close daily use, NOT before bench test.

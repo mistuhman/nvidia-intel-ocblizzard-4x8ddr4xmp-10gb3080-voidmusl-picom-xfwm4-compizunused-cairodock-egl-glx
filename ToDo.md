@@ -151,6 +151,181 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] 1. **AirPort Base Station / Time Capsule Factory Reset**: Perform pinhole hard factory reset on the Time Capsules and AirPort Express so AirPort Utility can configure them cleanly without password prompts. (6.3.1 installed on Lion per operator 2026-09-15; resets still open.)
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
+  - 2026-09-17d (session 01a0ae24) **OPERATOR APPROVED: temporary HDD→SSD swap + SELECTIVE COPY.**
+    Verbatim: "i can temporarily replace the hdd's with the two ssd's. then we clean the boot drive,
+    copy only the essential boot items and what i specifically asked for last chat, keep the other
+    ssd installed. select which software to keep from there".
+    - **REFRAME THAT DISSOLVES THE CAPACITY BLOCKER:** this is a **selective COPY, not a delete**.
+      Nothing on the MX500 is destroyed by building the new boot disk — items simply aren't carried
+      over, and the MX500 stays bootable as rollback until explicitly wiped. So revo's 775 GiB does
+      **not** need deleting first; it just isn't copied.
+    - **MANIFEST** (`node tools/lion-migrate-manifest.ts keep|drop|ask|plan|size`): all **150 apps**
+      from the R1 burn classified — coverage-gated in selftest so nothing can be silently missed —
+      plus CandyBar, which lives in `~/Downloads`, **not** `/Applications` (a naive `/Applications`
+      copy would have missed an operator-named keep).
+    - **KEEP 62 apps / 2.73 GB**: complete Final Cut Studio (FCP, Motion, Compressor, DVD Studio Pro,
+      Cinema Tools, LiveType, Qmaster, Qadministrator); audio (GarageBand, Audio MIDI Setup, Podcast
+      Capture/Publisher); operator-named (CandyBar, Flavours, ArcticFox, AirPort Utility); iTunes as
+      the mp3→CD burn path; Aperture, FxFactory, LooksBuilder, ScreenFlow, Blackmagic ×3, HandBrake,
+      VLC, QuickTime 7.
+    - **DROP 82 apps / 6.56 GB**: Winamp (per the sweep), games (Chess, Braid, Machinarium, Kid Pix
+      2.0 G, Mavis 717 M), dead browsers (Chrome ×2, Firefox, Opera, Flock), consumer iPhoto/iMovie/
+      iDVD superseded by the kept pro equivalents, dead services, recipes/GPS/kids software.
+    - **ASK 7** — operator decides: Mail, iCal, Address Book, Transmit, hueyPRO, Contour Shuttle,
+      Mac Pro EFI Firmware Update.
+    - **CRITICAL CATCH:** Carbon Copy Cloner — the tool that *performs* the migration — was classed
+      `CANDIDATE=delete` by the old ABSOLUTION sweep. It is **KEEP** here.
+    - **Projected new boot ≈ 16.2 GB** (2.89 apps + 1.3 el home + ~12 OS *estimate*) vs ~425 GB
+      usable → fits with ~409 GB spare; would fit a **single** 240 too.
+    - **BIG RISK OF THE SWAP:** Raid X is a 3-member **no-redundancy** stripe. Pulling members takes
+      the 3 TB volume offline; it returns only when **all three** go back (Apple RAID reassembles by
+      member UUID, so bay order doesn't matter). **Never click Erase/Create on a WD** during this.
+  - 2026-09-17i (session 01a0ae24) **✅ GUID CONFIRMED — LAST PRE-CLONE GATE CLEARED.**
+    Receipt: `receipts/absolution/R6/diskutil-list-2026-09-17.md` (operator Terminal photo).
+    - `disk0` row 0 = **`GUID_partition_scheme`**, `disk0s1` = **EFI 209.7 MB** (only exists on GUID),
+      `disk0s2` = `Apple_HFS Kingston 239.7 GB`. **The Kingston can boot an Intel Mac. Clone may go.**
+    - **Raid X degraded exactly as expected** — only two `Apple_RAID` members left (`disk1s2`,
+      `disk2s2`); the third is the WD pulled from Bay 2. Both survivors intact. **Never
+      Erase/Create/Rebuild/Demote `disk1` or `disk2`.**
+    - MX500 boot volume `disk3s2 "start disk clone"` untouched, as intended.
+    - 🆕 **Source has a Recovery HD** (`disk3s3`, Apple_Boot, 650 MB). A plain CCC volume clone does
+      **not** copy it — CCC clones Recovery HD as a separate explicit step. Worth doing: the
+      destination is a single disk, so unlike the abandoned RAID 0 a Recovery HD **is** possible here.
+      Non-blocking; can be added after the fact.
+    - ⚠️ **Device numbers ≠ bay numbers and are not stable.** `disk0` = Kingston, `disk3` = MX500.
+      Re-read `diskutil list` immediately before any destructive command.
+    - Operator-directed: PR created and merged this turn.
+  - 2026-09-17g (session 01a0ae24) **KINGSTON IS IN THE MACHINE (Disk Utility photo) + all 7 ASK
+    items ruled. ⚠️ ERASE-SCREEN HAZARD CAUGHT.**
+    - Photo confirms: `240.06 GB KINGSTON S…` present, volume `KINGSTON` mounted at `/Volumes/KINGSTON`,
+      239.71 GB, 312.4 MB used, JHFS+. MX500 still `start disk clone`, WD still `RAID Slice for "Raid X"`.
+      **Boot disk untouched — the swap went exactly right.**
+    - ⚠️ **DO NOT CLICK ERASE ON THE SELECTED ROW.** The photo shows the indented **volume** `KINGSTON`
+      selected, not the outer **disk**. Erasing the volume reformats the partition but **leaves the old
+      partition map**. If that map is APM/MBR the clone will succeed and then simply *never appear as a
+      boot option* — a failure that surfaces hours later at the Option screen.
+      **Correct move:** select the **outer disk row** → **Partition** tab (not Erase) → 1 Partition,
+      Mac OS Extended (Journaled) → **Options… → GUID Partition Table**. Lion hides the scheme under
+      Partition ▸ Options; the Erase tab never exposes it. Then confirm "Partition Map Scheme: GUID
+      Partition Table" at the bottom of the window **before** cloning.
+    - **ASK items resolved** — operator: "if theres a professional and better alternative to those then
+      go with that instead. i only really use widgets for some of the desktop features":
+      - **DROP Mail / iCal / Address Book** — widgets cover the desktop use, and Lion's PIM apps can no
+        longer authenticate to modern Gmail/iCloud/CalDAV anyway. Dropping costs nothing.
+      - **KEEP Transmit** — it *is* the professional option; Cyberduck + ForkLift dropped as redundant.
+      - **KEEP Contour Shuttle** (2.6 M) — ShuttlePro is standard edit-bay kit; trivial to remove later.
+      - **DROP hueyPRO** — huey is a *consumer* colorimeter, untrustworthy for grading, and useless
+        without the puck. Pro path is an X-Rite i1Display Pro, which doesn't use this software.
+      - **DROP Mac Pro EFI Firmware Update** — one-shot installer, still hosted by Apple; carrying a
+        firmware flasher onto a fresh boot disk is pure downside.
+    - **NEW DATA RULE:** copy `widget-com.apple.widget-*.plist` + `/Library/Widgets` +
+      `~/Library/Widgets` — Dashboard is part of the OS, but installed widgets and their saved state
+      live in those paths. Miss them and Dashboard comes up empty.
+    - **Final tally: KEEP 64 / 2.75 GB · DROP 87 / 6.69 GB · ASK 0.** Projected boot ~16.1 GB vs
+      ~209 GiB usable → ~193 GiB spare on the single Bay-2 Kingston.
+  - 2026-09-17f (session 01a0ae24) **DECIDED: single Kingston into Bay 2.** Operator: "lets just swap
+    out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston". This is Option B, and
+    it lands on **end state E3 — the only layout that keeps Raid X alive.** No stripe, no purchase,
+    no second SSD in the machine. Full ordered plan: `node tools/lion-boot-migrate.ts bay2`.
+    - ⚠️ **MOUNTING:** a 2.5" SSD does **not** screw into a 3,1 sled (3.5" hole spacing), and the OWC
+      2.5" Mac Pro sled is **2009-2012 only — not 3,1**. Operator has no adapters (inventory item 6).
+      **Workaround, no purchase:** the bays are cable-free direct-attach, so push the bare SSD onto
+      the Bay 2 backplane connector with no sled and shim it from underneath. Tidy fix later:
+      NewerTech AdaptaDrive 2.5→3.5 (~$11), which *does* fit classic Mac Pros.
+    - ⚠️ **THE KINGSTON CANNOT STAY IN BAY 2.** Bay 2 belongs to Raid X. Bay 1 is the only non-RAID
+      bay, so the boot disk must **end up in Bay 1**. Hence the endgame move at step 9: once the
+      Kingston is trusted, pull the MX500 from Bay 1, **move the Kingston into Bay 1**, and return the
+      WD Green to Bay 2 → Raid X gets all three members back and remounts healthy. Apple boots by
+      blessed volume, not bay, so the move is free.
+    - Sequence: pull Bay 2 WD (**Raid X goes offline — expected, not data loss**) → full shutdown →
+      fit Kingston → boot MX500 unchanged → erase **Kingston only**, JHFS+ **GUID** (APM won't boot an
+      Intel Mac) → CCC selective copy → Startup Disk → soak → step-9 bay shuffle → MX500 last.
+    - **Never click Erase / Create / Rebuild / Demote on any WD** while the set is broken. Unplugging
+      loses nothing; re-initialising a degraded member loses everything.
+    - Raid X is **offline from step 1 to step 9** — copy anything needed off the 3 TB volume first.
+    - ⚠️ **Check SMART on the Kingston before trusting it** (~9 years old, power-on hours unknown).
+    - Kingston B stays a **cold spare** — sensible for a drive this age, and a single V300 already
+      saturates the SATA II bay, so the stripe was buying very little.
+  - 2026-09-17e (session 01a0ae24) **KINGSTON SKU RESOLVED FROM LABEL PHOTO — and it exposes a
+    bay-arithmetic conflict in the stated end state.** (`node tools/lion-boot-migrate.ts endstate`)
+    - Both drives read directly off the labels: **Kingston SSDNow V300 `SV300S37A/240G`**, Kingston
+      P/N `9904447-745.F03G`, firmware `608ABBF0`, lot `1607` (2016 wk 07), Taiwan, DC +5.0 V 1 A,
+      WWN `50026B7762054B94` / `50026B7762054FB2`, LSI SandForce SF-2281.
+      **MATCHED PAIR** — same PN, same firmware, same lot, near-consecutive serials. A stripe runs at
+      its slowest member's pace, so a mismatch would have mattered. There is none. Best case.
+    - The notorious V300 sync→async NAND switch is **moot here**: the 3,1 bays are SATA II, capped
+      ~300 MB/s raw / ~250-270 MB/s real — at or below the async drive's own ceiling.
+    - **No TRIM**, and it costs nothing: Apple software RAID never passes TRIM to members, and Lion
+      10.7 has no third-party TRIM anyway (`trimforce` arrived in 10.10.4). At ~16 GB on 447 GB the
+      drives sit ~96 % empty — enormous effective over-provisioning for SandForce GC.
+    - ⚠️ **Age ~9 years, power-on hours unknown. Check SMART on both before trusting either.**
+    - ⚠️ **BAY CONFLICT — the stated end state cannot exist.** "keep the other ssd installed" + both
+      Kingstons + all three WDs back = **6 drives in 4 bays**. Four end states, one decision:
+      - **E1** 2 Kingston + MX500 + 3 WD — **IMPOSSIBLE** (6 bays needed).
+      - **E2** 2 Kingston stripe + 2 WD — fits; **Raid X dead**, MX500 to the shelf.
+      - **E3** 1 Kingston boot + 3 WD — fits; **only end state that keeps Raid X alive**. Boot ~16 GB
+        in ~209 GB usable; Kingston B becomes a cold spare (arguably right for a 9-year-old drive).
+      - **E4** 2 Kingston stripe + MX500 + 1 WD — fits; Raid X dead, two WDs out.
+    - The temporary swap is unaffected — it's a migration vehicle, not a final layout. But the final
+      layout must be chosen **before the MX500 is wiped**.
+  - 2026-09-17c (session 01a0ae24) **OPERATOR PLAN: 2× 240 GB Kingston RAID 0 → migrate boot →
+    then wipe the MX500.** Bay layout confirmed by operator: Bay 1 = MX500 boot, Bays 2-4 = the
+    three Raid X members. Verdict from `node tools/lion-boot-migrate.ts check`: **the plan is sound
+    and it is the right shape — but the ORDER has one blocking prerequisite, and there is a
+    channel problem.**
+    - **BLOCKER 1 — capacity (arithmetic).** A 2×240 GB stripe is **447 GiB raw / ~425 GiB usable**.
+      The boot volume currently holds **899 GiB**. It does **not** fit — short by ~474 GiB. After the
+      ABSOLUTION R5 `revo` reclaim (775 GiB) the system is **~124 GiB**, which fits with ~300 GiB to
+      spare. **So the revo reclaim is not housekeeping — it is a structural prerequisite of the
+      operator's own migration plan**, and it may by itself satisfy "clean the SSD".
+    - **BLOCKER 2 — SATA channels.** 4 bays, 4 disks, **0 free**. Two Kingstons need two channels
+      that do not exist in the bay backplane. Options (operator decision): **A** break Raid X (HIGH
+      risk — it is a no-redundancy stripe, pulling a member destroys all 3 TB); **B** single Kingston
+      240 as boot, no stripe, in the bay the MX500 vacates (**no purchase, LOW risk** — 124 GiB fits
+      one 240 easily); **C** optical-bay hidden ODD SATA ports (needs SATA data + Molex→SATA power +
+      2.5" bracket, which the operator does not own, and ODD-port bootability is DISPUTED);
+      **D** redesign Raid X into a redundant set (fits the "new drives for raid" end-goal).
+    - **Method constraints, sourced:** RAID 0 boot IS supported on a Mac Pro 3,1; you **cannot**
+      create a RAID set on the running startup disk; **clone with Carbon Copy Cloner (already
+      installed, R1 receipt) — do NOT use the Lion installer**, which refuses RAID targets over the
+      Recovery HD; a RAID 0 boot set has no Recovery HD; and the Mac would then have **two** striped
+      sets with zero parity anywhere.
+    - Ordered plan (`node tools/lion-boot-migrate.ts plan`): reclaim revo → verify usage + Kingston
+      SKUs → decide bays → build stripe → CCC clone → Startup Disk + prove clean boots → **only then**
+      the MX500 is a non-boot disk and wiping it becomes a normal erase.
+  - 2026-09-17 (session 01a0ae24, later) **IDENTITY RESOLVED BY OPERATOR PHOTO — THE COLLISION IS
+    CLOSED AND THE ANSWER IS: THERE IS NO SPARE SSD.** Operator Disk Utility screenshot (chat-only
+    bytes, perception receipt agent-memory seq 158) enumerates the ENTIRE sidebar: `1 TB WDC
+    WD10EACS-0…`, `1 TB WDC WD10EAVS-0…`, `1 TB WDC WD10EACS-0…` (each carrying `RAID Slice for
+    "Raid X"`), `1 TB CT1000MX500SSD…` → `start disk clone`, `3 TB Raid X` → `Raid X`, plus a
+    SuperDrive holding a CD `Peaks And Troughs`. The Mac Pro 3,1 has FOUR bays and all four are
+    full. **The one and only SSD is the CT1000MX500SSD and its volume is `start disk clone`, which
+    the ABSOLUTION burn proves is the LIVE BOOT disk** (`/dev/disk3s2 on /`, 931Gi, 899Gi used,
+    97%). So "wipe the SSD" has no executable target — the only SSD is the running system. That is
+    arithmetic, not a policy refusal. Verified by `node tools/lion-disk-plan.ts guards`.
+    Also learned: `3 TB Raid X` over three 1 TB members = a STRIPE with **NO redundancy** (a mirror
+    would read 1 TB, RAID 5 would read 2 TB); any single WD failure loses all 3 TB.
+    **Operator decision required before any erase** — (a) add/attach new media, then wipe the old
+    SSD once boot no longer lives on it; (b) migrate boot OFF the MX500 first, then wipe it;
+    (c) treat "wipe the SSD" as satisfied by the reversible `revo` 775 G reclaim (R5) + harden and
+    strike the erase. `?(lion-ssd-wipe)` stays UN-ARMED — but **its safety gates were tested, not
+    assumed**: replaying its discovery logic against a mock of the photographed disk set prints
+    `skip disk3 (BOOT) CT1000MX500SSD1` then `ABORT: selection is 0 SSD candidate disks`, exit 1.
+    So the block correctly refuses and cannot erase the boot disk. (An earlier draft of this entry
+    claimed the opposite; the simulation disproved it and the claim was corrected rather than
+    shipped. Receipt: `node tools/lion-disk-plan.ts sim`.)
+  - 2026-09-17 (session 01a0ae24) **SSD WIPE IS BLOCKED — NAME COLLISION, NOT A REFUSAL.** Item 3
+    names the wipe target "the superseded Bay 3 start-disk clone media", but the ABSOLUTION burn of
+    2026-09-17 proves `start disk clone` is the LIVE BOOT VOLUME: `/dev/disk3s2 on / (hfs)`, 931Gi,
+    899Gi used, 97%, `Finished file system verification on disk3s2 start disk clone`. Two different
+    media share one name and the physical identity was never measured. `?(lion-ssd-wipe)` selects by
+    media name matching `crucial|mx500|ssd`; no receipt in this repo has ever printed a Solid State
+    flag for a Mac disk (0 hits under `receipts/`), and the only MX500 with a receipt
+    (`ata-CT1000MX500SSD1_…`) is in the OMEN running Void — a DIFFERENT MACHINE. Every disk with a
+    receipt here is never-erase (boot + 3 Apple_RAID members + Raid X), so the wave currently has NO
+    proven target. `?(lion-ssd-wipe)` stays UN-ARMED. Gate = `etc/lion-disk-identity.block`
+    (read-only, emitted by `node tools/lion-disk-plan.ts emit`; guards in `… guards`); the erase is
+    authored only after that output names a real free disk.
 - [ ] 4. **Build APEX OMEN PC** (deferred).
 
 ## 2026-09-16f operator tracks — ONE TASK AT A TIME, agentically (operator directive)

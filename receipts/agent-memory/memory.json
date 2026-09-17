@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 155,
+  "lastSeq": 167,
   "entries": [
     {
       "seq": 1,
@@ -2473,6 +2473,138 @@
         }
       ],
       "sha256": "dad21ebd407e3e3cd76e02d1f8dabd87f3975215df6b0292cd876a9863802b70"
+    },
+    {
+      "seq": 156,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17): operator directive 'deploy agents to read ToDo.md, README.md and MASTER.md then verify model image sight capability before continuing at further user prompt'. All three read in full. IMAGE SIGHT VERIFIED LIVE for this session's model: tools/vision-check.ts blind sealed-key test A = PASS 11/11 exact (code 47780 readable only from pixels; key_sha fe59fbe45bee264c sealed before read). Test B real iFixit photo described correctly AND identified as wrong subject (MacBook Pro 15 unibody, not Mac Pro 3,1 tower). Prior VISION-VERIFICATION.md belongs to session 01a0ad71 and was NOT inherited. Receipt: receipts/vision-check/SESSION-01a0ae24-VISION.md. HOLDING for further operator prompt per directive; no gate advanced.",
+      "sha256": "47a67b6b956da30adbede7cbd49a7b0bb176ee194e329cf1950ab4313c407bdd"
+    },
+    {
+      "seq": 157,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 step 1 (2026-09-17): operator 'now lets work on wiping the ssd and progressing through the ToDo.md one step at a time starting from where we left off w the typescript tooling and linkage'. BLOCKING FINDING: ToDo item 3 wipe target 'the superseded Bay 3 start-disk clone media' collides by NAME with the LIVE BOOT volume - burn 2026-09-17 shows /dev/disk3s2 on / (hfs) 931Gi 899Gi 97% 'start disk clone'. lion-ssd-wipe.block matches crucial|mx500|ssd; 0 Solid State receipts for any Mac disk; only MX500 receipt (ata-CT1000MX500SSD1) is in the OMEN/Void = different machine. All receipted Mac disks are never-erase (disk3s2 boot, disk0s2/1s2/2s2 Apple_RAID, disk4 Raid X) => wipe wave has NO proven target, stays UN-ARMED. Shipped tools/lion-disk-plan.ts (guards-as-data + read-only probe, refuses to emit erase, selftest PASS) + etc/lion-disk-identity.block. Linkage updated: lion-workflow.json nextAction/session/volume role, ToDo item-3 status line, test-all gate. Commit 5422b8e. AWAITING operator paste-back of the identity probe before any erase.",
+      "sha256": "5fd0d2d395a1e6ed8772ef11856d67b4ef8390d8bc9f6c469e451e2a85665086"
+    },
+    {
+      "seq": 158,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "chat-photo-2026-09-17-disk-utility",
+      "tool": "chat view (bytes NOT persisted to sandbox; chat-only rule)",
+      "claims": [
+        {
+          "claim": "Disk Utility on Lion shows EXACTLY FOUR physical disks plus a SuperDrive",
+          "evidence": "sidebar enumerated in full: 3x 1TB WDC + 1x 1TB CT1000MX500SSD + SuperDrive + Flavours.dmg image",
+          "confidence": "high"
+        },
+        {
+          "claim": "The only SSD in the Mac Pro is 1 TB CT1000MX500SSD... and its child volume is start disk clone",
+          "evidence": "sidebar: 1 TB CT1000MX500SSD... with indented child start disk clone",
+          "confidence": "high"
+        },
+        {
+          "claim": "start disk clone is the LIVE BOOT volume /dev/disk3s2, therefore the MX500 is the boot disk = disk3",
+          "evidence": "photo child-volume name + receipts/absolution/R1/burn-2026-09-17.txt /dev/disk3s2 on / 931Gi 97%",
+          "confidence": "high"
+        },
+        {
+          "claim": "The three 1TB WD disks are WD10EACS, WD10EAVS, WD10EACS and each shows RAID Slice for Raid X",
+          "evidence": "three sidebar entries each with indented greyed RAID Slice for Raid X",
+          "confidence": "high"
+        },
+        {
+          "claim": "Raid X is 3 TB from 3x 1TB members = a STRIPE with NO redundancy",
+          "evidence": "sidebar 3 TB Raid X over three 1TB slices; mirror would be 1TB, RAID5 would be 2TB",
+          "confidence": "high"
+        },
+        {
+          "claim": "All four Mac Pro 3,1 drive bays are occupied; there is NO free disk and NO free bay",
+          "evidence": "4 physical disks enumerated, chassis has 4 bays",
+          "confidence": "high"
+        },
+        {
+          "claim": "A CD named Peaks And Troughs is in the SuperDrive",
+          "evidence": "SuperDrive entry with child Peaks And Troughs",
+          "confidence": "high"
+        },
+        {
+          "claim": "Disk Utility right pane reads Select a disk, volume, or image - nothing was selected, no operation staged",
+          "evidence": "empty detail pane text",
+          "confidence": "high"
+        },
+        {
+          "claim": "Behind Disk Utility is the absolution burn page showing step 2 attach it with absolution.txt chosen",
+          "evidence": "background window: 2 - attach it, Browse..., absolution.txt",
+          "confidence": "medium"
+        }
+      ],
+      "sha256": "4f3997cb16af79daba9d6b87f270b6b8225ceb85904065a072cd0606d2c37725"
+    },
+    {
+      "seq": 159,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 step 2 (2026-09-17c): operator proposes 2x240GB Kingston RAID 0 + migrate boot off Bay-1 MX500, then wipe MX500. Bay layout operator-confirmed: Bay1=MX500 boot, Bays2-4=Raid X members. TOOL VERDICT (tools/lion-boot-migrate.ts): plan sound but TWO blockers. B1 CAPACITY: stripe=447GiB raw/425 usable vs boot used 899GiB => NO FIT (short 474GiB); after revo reclaim (775GiB, R5) usage=124GiB => FITS with 300GiB spare, so the revo reclaim is a STRUCTURAL PREREQUISITE of the operator's own plan. B2 CHANNELS: 4 bays/4 disks/0 free, two Kingstons need 2 nonexistent channels; options A break RaidX (HIGH - no-redundancy stripe), B single Kingston no stripe (no purchase, LOW), C optical ODD SATA (needs cables operator lacks, bootability disputed), D RaidX redesign. METHOD sourced: RAID0 boot supported on 3,1; cannot RAID the running disk; CLONE with CCC (already installed per R1) not the Lion installer; no Recovery HD on RAID0. Nothing armed, no erase authored. AWAITING operator choice of A-D + authorization of revo reclaim.",
+      "sha256": "e13beac7d8332915b1d923f7509194378bc9b06be4dda3579fbf2a5adb95a1c8"
+    },
+    {
+      "seq": 160,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 step 3 (2026-09-17d): operator approved temporary HDD->SSD swap + selective copy. REFRAME: selective COPY not delete - MX500 untouched/bootable as rollback, revo 775G simply not copied, which dissolves the capacity blocker. tools/lion-migrate-manifest.ts classifies all 150 R1-burn apps (coverage-gated) + CandyBar (lives in ~/Downloads NOT /Applications - naive copy would miss it). KEEP 62/2.73GB (full Final Cut Studio, GarageBand+Audio MIDI Setup, CandyBar/Flavours/ArcticFox/AirPort, iTunes=CD burn path, Aperture/FxFactory/LooksBuilder/ScreenFlow/Blackmagic/HandBrake/VLC/QT7). DROP 82/6.56GB (Winamp swept, games incl Kid Pix 2.0G + Mavis 717M, dead browsers, consumer iPhoto/iMovie/iDVD superseded by kept pro equivalents). ASK 7: Mail, iCal, Address Book, Transmit, hueyPRO, Contour Shuttle, EFI updater. CRITICAL CATCH: Carbon Copy Cloner was CANDIDATE=delete in the old sweep but it PERFORMS the migration - now KEEP. Projected boot ~16.2GB vs 425GB usable. RISK: Raid X = 3-member no-redundancy stripe, goes offline while members are out, needs all three back (reassembles by UUID). Selftest caught 2 real bugs (NaN size parse on CandyBar em-dash, short reason strings). AWAITING operator answers on the 7 ASK items.",
+      "sha256": "d984a2d1a9bb33e84b877d2dc1e65eb03f7958a88584d0dc9e78223e4ced35c3"
+    },
+    {
+      "seq": 161,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17e): operator supplied the Kingston label photo, both drives, replying 'all good'. SKU RESOLVED - Kingston SSDNow V300 SV300S37A/240G, Kingston PN 9904447-745.F03G, firmware 608ABBF0, lot 1607 (2016 wk07), Taiwan, DC+5.0V 1A, WWN 50026B7762054B94 + 50026B7762054FB2, LSI SandForce SF-2281. MATCHED PAIR (same PN/firmware/lot, near-consecutive serials) = best case for a stripe. V300 sync->async NAND controversy is MOOT here: 3,1 bays are SATA II ~300MB/s raw, at/below the async ceiling. NO TRIM (Apple software RAID never passes it; Lion has none anyway, trimforce=10.10.4) but ~96% empty drives make GC a non-issue. AGE ~9yr, SMART unchecked - flagged. NEW FINDING - BAY CONFLICT: the stated end state (keep other ssd installed + both Kingstons + 3 WDs back) = 6 drives in 4 bays, IMPOSSIBLE. Added END_STATES E1-E4 + 'endstate' command to tools/lion-boot-migrate.ts; E3 (1 Kingston boot + 3 WD) is the ONLY end state that keeps Raid X alive. Updated receipts/inventory/macpro31.md item 7 (SKU no longer UNKNOWN) and its photo request list. AWAITING: operator picks E2/E3/E4 + answers the 7 ASK apps.",
+      "sha256": "bdd3036baaa836175549b83177c67994da38860b2ec5cd169a93de1804aa4bb4"
+    },
+    {
+      "seq": 162,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17f): operator DECIDED - 'lets just swap out the hdd in the bay (bay 2) next to the crucial with a 240gb kingston'. = Option B single Kingston, no stripe, lands on end state E3, the ONLY layout keeping Raid X alive. Added BAY2_MOUNT + BAY2_STEPS (10) + BAY2_NOTES + 'bay2' command to tools/lion-boot-migrate.ts, 6 new selftest assertions. GOTCHA 1 MOUNTING: 2.5in SSD does NOT screw into a 3,1 sled (3.5in spacing); OWC MMP35T25 2.5in sled is 2009-2012 ONLY, not 3,1; operator has no adapters. No-purchase workaround = push bare SSD onto the cable-free direct-attach backplane connector with no sled, shim underneath (widely reported on classic Mac Pros). Tidy fix = NewerTech AdaptaDrive ~1, fits classic Mac Pros. GOTCHA 2 BAY TOPOLOGY: Kingston cannot STAY in Bay 2 because Bay 2 is a Raid X member and Bay 1 is the only non-RAID bay - so step 9 is the endgame move: pull MX500 from Bay 1, move Kingston Bay2->Bay1, return WD to Bay 2, Raid X remounts healthy. Apple boots by blessed volume not bay so the move is free. Erase KINGSTON ONLY, JHFS+ GUID (APM will not boot Intel). Raid X offline steps 1-9. Never Erase/Create/Rebuild/Demote a WD while degraded. SMART check flagged (~9yr). MX500 handled last, on the bench. AWAITING: the 7 ASK app rulings.",
+      "sha256": "bc39b9c7d0e0c12768bf8989bdb977ef75b411267f6cf669dc87101fa74d98ac"
+    },
+    {
+      "seq": 163,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17g): Kingston PHYSICALLY INSTALLED - Disk Utility photo shows '240.06 GB KINGSTON S...' disk + volume KINGSTON at /Volumes/KINGSTON, 239.71GB, 312.4MB used, JHFS+, 12 folders/57 files. MX500 still 'start disk clone', WD still 'RAID Slice for Raid X' => boot disk untouched, swap correct. Only ONE WD visible = the Bay 2 member is the one pulled. HAZARD CAUGHT: photo shows the INDENTED VOLUME row selected on the Erase tab. Erasing the volume leaves the existing PARTITION MAP intact; if APM/MBR the clone succeeds then never appears as a boot option (fails hours later at Option screen). Correct: select OUTER DISK row -> PARTITION tab (not Erase) -> 1 Partition, JHFS+, Options... -> GUID Partition Table; Lion hides scheme under Partition>Options, Erase tab never exposes it. Verify 'Partition Map Scheme: GUID Partition Table' before cloning. ALL 7 ASK RULED (operator: 'if theres a professional and better alternative to those then go with that instead. i only really use widgets for some of the desktop features'): DROP Mail/iCal/Address Book (widgets cover it; Lion PIM cannot auth to modern Gmail/iCloud/CalDAV); KEEP Transmit (IS the pro option, Cyberduck+ForkLift dropped); KEEP Contour Shuttle (ShuttlePro = standard edit-bay kit, 2.6M); DROP hueyPRO (consumer colorimeter, untrustworthy for grading, dead without puck; pro = X-Rite i1Display Pro which does not use it); DROP Mac Pro EFI Firmware Update (one-shot installer, re-downloadable, pure downside on a fresh disk). NEW DATA RULE: copy widget plists + /Library/Widgets + ~/Library/Widgets or Dashboard comes up empty. TALLY KEEP 64/2.75GB, DROP 87/6.69GB, ASK 0. Projected boot ~16.1GB vs ~209GiB usable. AWAITING: GUID repartition + paste-back of the Partition Map Scheme line.",
+      "sha256": "ba67b11b279ae6c083b19a580f0cc51945cc8d709ec3a19fe640c393bc36c980"
+    },
+    {
+      "seq": 164,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17h): operator sent two IDENTICAL Disk Utility frames, now on the First Aid tab with the indented VOLUME row 'Kingston' still selected. State unchanged from seq 163: Kingston 239.71GB / 312.4MB used / 12 folders / 57 files, mount /Volumes/Kingston, MX500 'start disk clone', WDs 'RAID Slice for Raid X'. No partitioning has happened yet - the volume is still mounted and still the old preformat. CORRECTION TO SEQ 163: that note said 'Only ONE WD visible'. WRONG - TWO WD10EACS disks are visible, each with a RAID Slice child. That is the correct expected state because the THIRD member is the one pulled from Bay 2. Correction recorded in tools/lion-boot-migrate.ts BAY2_NOTES. NEW DIAGNOSTIC RECORDED: the tab bar tells you which row is selected without guessing - a VOLUME shows exactly four tabs (First Aid, Erase, RAID, Restore); the physical DISK shows a fifth, PARTITION. The photos show four tabs and no Partition tab, which PROVES the volume row is still selected. Instruction to operator: click the outer '240.06 GB KINGSTON S...' row, the Partition tab appears, GUID lives under Partition > Options... Nothing armed; no disk touched.",
+      "sha256": "61846013b2d86d94cd4141f0220eec123ccbb2839bb5f52c99d4e72a493f2348"
+    },
+    {
+      "seq": 165,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17i): operator states the two attachments were DIFFERENT screenshots (one volume selected, one disk selected) and that the partition steps are already done. Both files arrived named image.jpg and rendered identically to me (same First Aid tab, same four-tab bar, same Mount Point /Volumes/Kingston, same 312.4MB used / 12 folders / 57 files). Likely same-filename upload collision, so I saw one image twice. LESSON RECORDED: do not adjudicate GUID-vs-APM from a screenshot at all - ask diskutil. Added three notes to BAY2_NOTES in tools/lion-boot-migrate.ts: (1) 'diskutil list' prints the scheme on the disk header line (GUID_partition_scheme vs Apple_partition_scheme vs FDisk_partition_scheme) and settles it read-only in one line; (2) second independent UI tell - the bottom info panel shows Mount Point/Format/Owners for a VOLUME but Disk Description/Connection Bus/Total Capacity/Partition Map Scheme for a DISK; (3) a real repartition empties the volume, so Used drops to a few MB and Number of Files to single digits - if Used and file count are byte-identical to before, no erase has run regardless of the volume name. OPEN QUESTION for operator: the visible frame still showed 312.4MB used / 57 files / volume named Kingston, which is the PRE-partition state, so confirmation is needed that the GUID repartition actually applied. Requested paste-back of 'diskutil list' and 'diskutil info' scheme lines. Nothing armed; no disk touched.",
+      "sha256": "d2640dcf3dbdce5f92c9790df64967cbbe491c8edb88c7306965528390c0d358"
+    },
+    {
+      "seq": 166,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17i): OPERATOR CORRECTED ME TWICE AND WAS RIGHT BOTH TIMES. (1) I said the two frames were identical; operator: 'both screenshots are different, one has the kingstons partition selected and the drive selected'. I misjudged two near-identical Lion screenshots - the correct method is to read the distinguishing UI region (tab bar / info-panel field labels), not overall similarity. Standing lesson: when two screenshots look alike, diff the specific region that encodes the difference before asserting sameness. (2) Operator already performed the erase + repartition - previous steps are DONE, not pending. Evidence in-frame: volume renamed KINGSTON -> Kingston, mount /Volumes/KINGSTON -> /Volumes/Kingston. (3) Operator: 'itll always have folders used space on the kingston indent... appeared each time, its nothing wrong'. VERIFIED CORRECT: a freshly formatted HFS+ volume is never 0 used - journal (sized to volume, not the fixed 8MB newfs_hfs default), catalog + extents overflow B-trees, allocation bitmap, and hidden .fseventsd/.Spotlight-V100/.Trashes. Computed: 312,352,768 of 239,713,435,648 bytes = 0.1303% = ~1/767th of the disk. Byte-identical repeats across erases are EXPECTED (deterministic format), not a fault. Recorded in BAY2_NOTES. REMAINING GAP: partition map scheme still unconfirmed because it only renders on the DISK row (volume row shows Mount Point/Format/Owners/Folders; disk row shows Partition Map Scheme + Disk Identifier + Media Name). Fastest settle = 'diskutil list', row 0 prints GUID_partition_scheme directly. Nothing armed.",
+      "sha256": "93830f0e77cf8600160954e67cabd7f346d2e5abd2fbea3548bb6f54c2760e25"
+    },
+    {
+      "seq": 167,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17i): operator reported 'a lot of misbehavior' and directed: 'just create and merge the pr while logging this image'. GUID CONFIRMED from the diskutil list photo - LAST PRE-CLONE GATE CLEARED. disk0 row0 = GUID_partition_scheme, disk0s1 = EFI 209.7MB (EFI only exists on GUID = independent corroboration), disk0s2 = Apple_HFS Kingston 239.7GB. Receipt written: receipts/absolution/R6/diskutil-list-2026-09-17.md (full transcription + 8 findings). Raid X confirmed degraded-as-expected: exactly TWO Apple_RAID members (disk1s2, disk2s2), third is the pulled Bay 2 WD, both survivors intact. MX500 disk3s2 'start disk clone' untouched. NEW FINDING: source has Recovery HD disk3s3 Apple_Boot 650MB - a plain CCC volume clone does NOT copy it; CCC clones Recovery HD as a separate explicit step; worth carrying since the destination is a single disk (the abandoned RAID 0 could never have had one). Non-blocking. HAZARD: device numbers are not bay numbers and shift across boots - re-read diskutil list before any destructive command. PR created and MERGED per operator direction (operator-directed merge, not unbidden). Manifest final: KEEP 64/2.75GB, DROP 87/6.69GB, ASK 0. Nothing armed.",
+      "sha256": "1b76be1645f282cba32ec1e82b69dcbcdbcec931e43a2e3595b4e5f465725f7d"
     }
   ],
   "stacks": [
