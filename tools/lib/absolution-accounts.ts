@@ -1,14 +1,28 @@
-id -u
-# absolution-accounts.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). Tertiary account removal. Keeper el. Harvest first, never rm a home.
-# Wave: 2026-09-17 clear + harden the Lion SSD. Policy source: tools/lion-clean-plan.ts
-# HARD RULE (operator "without wiping drives"): no eraseDisk, no eraseVolume, no partitionDisk,
-# no asr, no rm of an app. Removal is a reversible MOVE to a quarantine folder on the same volume.
-# Same bytes as absolution-accounts.command from https://da.gd/absolution (lib/absolution-accounts.ts).
-cat > /tmp/absolution-accounts.sh <<'ACCTSH'
-#!/bin/sh
-# absolution-accounts - remove the tertiary accounts, keep "el" (Samael).
+// absolution-accounts.ts - SINGLE SOURCE for the tertiary-account removal script.
+//
+// Lives in lib/ so both consumers import the same bytes and can never drift:
+//   tools/absolution.ts        -> ships it as absolution-accounts.command via the permanent link
+//   tools/lion-clean-plan.ts   -> emits etc/absolution-accounts.block as the paste fallback
+// (lib imports nothing from either, so there is no import cycle.)
+//
+// Operator directives encoded here, verbatim:
+//   2026-09-17d "el is the only keeper, samael is nick for el"
+//   2026-09-17e "we're using the icons and img textures i downloaded on my el admin account.
+//                since thats the only account ive used since downloading lion"
+//
+// CONSEQUENCE OF 17e: the icons and textures are inside /Users/el/Downloads, and el is the keeper,
+// so they are protected BY CONSTRUCTION - this script never reads, moves or deletes anything under
+// the keeper's home. It proves that by counting them before and after and comparing.
+// revo's 54G of Downloads is therefore NOT the texture source; it is still harvested, but only as a
+// precaution against data the operator has not inventoried, never as the thing being rescued.
+
+export const KEEPER = 'el';
+
+export function accountsScript(keeper: string = KEEPER): string {
+  return `#!/bin/sh
+# absolution-accounts - remove the tertiary accounts, keep "${keeper}" (Samael).
 # Phase 1 (no root): read-only map + safety checks. Phase 2 (root + CONFIRM): harvest, then remove.
-KEEPER="el"
+KEEPER="${keeper}"
 HARVEST="/Users/$KEEPER/absolution-harvest"
 QUAR="/Users/Shared/absolution-quarantine"
 
@@ -96,13 +110,13 @@ echo
 if [ "$(id -u)" != "0" ]; then
   echo "MAP ONLY - not running as root, so nothing can be changed."
   echo "To actually harvest and remove, run this in Terminal:"
-  echo "  sudo CONFIRM=ACCOUNTS sh \"$0\""
+  echo "  sudo CONFIRM=ACCOUNTS sh \\"$0\\""
   exit 0
 fi
 if [ "$CONFIRM" != "ACCOUNTS" ]; then
   echo "ROOT but NOT CONFIRMED - nothing changed."
   echo "To proceed, run:"
-  echo "  sudo CONFIRM=ACCOUNTS sh \"$0\""
+  echo "  sudo CONFIRM=ACCOUNTS sh \\"$0\\""
   exit 0
 fi
 
@@ -161,6 +175,5 @@ echo
 echo "SPACE IS NOT FREED YET. Review the harvest, then free it with:"
 echo "  sudo rm -rf $QUAR"
 echo "ABSOLUTION1_ACCOUNTS_DONE No disk was erased."
-ACCTSH
-CONFIRM=$CONFIRM sh /tmp/absolution-accounts.sh
-date
+`;
+}

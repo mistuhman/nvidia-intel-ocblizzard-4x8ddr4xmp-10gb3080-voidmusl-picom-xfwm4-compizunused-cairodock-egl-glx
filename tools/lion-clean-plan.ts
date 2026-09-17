@@ -10,6 +10,7 @@
 // The binding clause is "without wiping drives": NO eraseDisk / eraseVolume / partitionDisk / asr
 // may appear in any emitted byte. Removal is a reversible MOVE to a quarantine folder, never rm.
 import { writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { accountsScript } from './lib/absolution-accounts.ts';
 import { spawnSync } from 'node:child_process';
 
 export type Keep = { app: string; prefix: string; wild: boolean; why: string };
@@ -249,122 +250,17 @@ function repairBlock(): string {
 
 
 function accountsBlock(): string {
+  // Paste-fallback wrapper. The script body is imported from lib/absolution-accounts.ts, the same
+  // bytes tools/absolution.ts ships as absolution-accounts.command, so the block and the download
+  // can never disagree. Operator 2026-09-17e: the icons and textures live on el (the keeper), so the
+  // script never touches the keeper's home and proves it with a before/after texture count.
   return (
-    HEAD('absolution-accounts.block', 'Tertiary account removal. Harvests files BEFORE deleting. Double-gated.') +
-    `# Operator directive 2026-09-17d, verbatim: "el is the only keeper, samael is nick for el".\n` +
-    `# So the keeper is DECLARED, not guessed: KEEPER=el. The earlier samael/RealName heuristic is kept\n` +
-    `# only as a printed cross-check, because it would ABORT if el's RealName is not literally Samael.\n` +
-    `# Doomed = every /Users entry except the keeper, Shared and Guest.\n` +
-    `# HARVEST FIRST: each doomed account's Downloads + icons/textures/Winamp skins are MOVED to\n` +
-    `# /Users/Shared/absolution-harvest/<user>/ before the record is touched. Same volume = rename:\n` +
-    `# instant, needs no free space (the boot volume is 97% full), destroys nothing the operator named.\n` +
-    `# Rollback: the home folder is MOVED to /Users/Shared/absolution-quarantine/<user>, never rm-ed.\n` +
-    `# Space is reclaimed only by the separate purge line printed at the end.\n` +
+    HEAD('absolution-accounts.block', 'Tertiary account removal. Keeper el. Harvest first, never rm a home.') +
+    `# Same bytes as ${'absolution-accounts.command'} from https://da.gd/absolution (lib/absolution-accounts.ts).\n` +
     `cat > /tmp/absolution-accounts.sh <<'ACCTSH'\n` +
-    `#!/bin/sh\n` +
-    `KEEPER="el"\n` +
-    `HARVEST="/Users/Shared/absolution-harvest"\n` +
-    `QUAR="/Users/Shared/absolution-quarantine"\n` +
-    `echo "== KEEPER (operator-declared): $KEEPER"\n` +
-    `if [ ! -d "/Users/$KEEPER" ]; then\n` +
-    `  echo "ABORT: /Users/$KEEPER does not exist. Nothing changed."\n` +
-    `  exit 1\n` +
-    `fi\n` +
-    `ADMINS=$(dscl . -read /Groups/admin GroupMembership 2>/dev/null | cut -d: -f2-)\n` +
-    `echo "admin group:$ADMINS"\n` +
-    `KEEPADMIN=no\n` +
-    `for a in $ADMINS; do\n` +
-    `  [ "$a" = "$KEEPER" ] && KEEPADMIN=yes\n` +
-    `done\n` +
-    `if [ "$KEEPADMIN" != yes ]; then\n` +
-    `  echo "ABORT: keeper $KEEPER is NOT in the admin group."\n` +
-    `  echo "Deleting the other accounts could leave this Mac with no administrator. Nothing changed."\n` +
-    `  exit 1\n` +
-    `fi\n` +
-    `echo "cross-check RealName: $(dscl . -read /Users/$KEEPER RealName 2>/dev/null | tail -1 | sed -e 's/^ *//')"\n` +
-    `echo\n` +
-    `echo "== ACCOUNT MAP"\n` +
-    `DOOMED=""\n` +
-    `for u in $(ls /Users 2>/dev/null | grep -v Shared | grep -v '^Guest$'); do\n` +
-    `  RN=$(dscl . -read "/Users/$u" RealName 2>/dev/null | tail -1 | sed -e 's/^ *//')\n` +
-    `  UIDN=$(dscl . -read "/Users/$u" UniqueID 2>/dev/null | awk '{print $2}')\n` +
-    `  SZ=$(du -hs "/Users/$u" 2>/dev/null | awk '{print $1}')\n` +
-    `  if [ "$u" = "$KEEPER" ]; then\n` +
-    `    echo "KEEP   $u | uid=$UIDN | size=$SZ | real=$RN"\n` +
-    `  else\n` +
-    `    echo "REMOVE $u | uid=$UIDN | size=$SZ | real=$RN"\n` +
-    `    DOOMED="$DOOMED $u"\n` +
-    `  fi\n` +
-    `done\n` +
-    `if [ -z "$DOOMED" ]; then\n` +
-    `  echo "NOTHING TO DO - only the keeper exists"\n` +
-    `  exit 0\n` +
-    `fi\n` +
-    `echo "TERTIARY:$DOOMED"\n` +
-    `echo\n` +
-    `echo "== LOGIN SAFETY"\n` +
-    `who\n` +
-    `LOGGEDIN=$(who 2>/dev/null | awk '{print $1}' | sort -u)\n` +
-    `for u in $DOOMED; do\n` +
-    `  for l in $LOGGEDIN; do\n` +
-    `    if [ "$l" = "$u" ]; then\n` +
-    `      echo "ABORT: $u is currently logged in. Log it out first. Nothing changed."\n` +
-    `      exit 1\n` +
-    `    fi\n` +
-    `  done\n` +
-    `done\n` +
-    `echo "no doomed account is logged in"\n` +
-    `echo\n` +
-    `echo "== WHAT WOULD BE HARVESTED (Downloads, icons, textures, Winamp skins)"\n` +
-    `for u in $DOOMED; do\n` +
-    `  echo "-- $u"\n` +
-    `  du -hs "/Users/$u/Downloads" 2>/dev/null || echo "   no Downloads"\n` +
-    `  find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | wc -l | sed 's/^/   theme files: /'\n` +
-    `done\n` +
-    `if [ "$CONFIRM" != "ACCOUNTS" ]; then\n` +
-    `  echo\n` +
-    `  echo "NOTHING CHANGED. To harvest then remove the tertiary accounts, paste exactly:"\n` +
-    `  echo "CONFIRM=ACCOUNTS sh /tmp/absolution-accounts.sh"\n` +
-    `  exit 0\n` +
-    `fi\n` +
-    `echo\n` +
-    `echo "== HARVEST (same-volume move: instant, frees nothing, loses nothing)"\n` +
-    `mkdir -p "$HARVEST"\n` +
-    `mkdir -p "$QUAR"\n` +
-    `for u in $DOOMED; do\n` +
-    `  mkdir -p "$HARVEST/$u"\n` +
-    `  if [ -d "/Users/$u/Downloads" ]; then\n` +
-    `    mv "/Users/$u/Downloads" "$HARVEST/$u/Downloads"\n` +
-    `    echo "harvested Downloads: $u"\n` +
-    `  fi\n` +
-    `  mkdir -p "$HARVEST/$u/themes"\n` +
-    `  find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | while read -r f; do\n` +
-    `    mv "$f" "$HARVEST/$u/themes/" 2>/dev/null\n` +
-    `  done\n` +
-    `  echo "harvested theme files: $u"\n` +
-    `done\n` +
-    `echo\n` +
-    `echo "== REMOVE RECORDS (home folders are MOVED, never deleted)"\n` +
-    `for u in $DOOMED; do\n` +
-    `  dscl . -delete "/Users/$u" 2>/dev/null && echo "record removed: $u" || echo "record already absent: $u"\n` +
-    `  if [ -d "/Users/$u" ]; then\n` +
-    `    mv "/Users/$u" "$QUAR/$u"\n` +
-    `    echo "home quarantined: $QUAR/$u"\n` +
-    `  fi\n` +
-    `done\n` +
-    `echo\n` +
-    `echo "== RESULT"\n` +
-    `ls /Users\n` +
-    `echo "-- harvested (KEPT for you) --"\n` +
-    `du -hs "$HARVEST"/* 2>/dev/null\n` +
-    `echo "-- quarantined homes (still occupying disk) --"\n` +
-    `du -hs "$QUAR"/* 2>/dev/null\n` +
-    `df -h /\n` +
-    `echo\n` +
-    `echo "SPACE IS NOT FREED YET. Review the harvest, then free it with:"\n` +
-    `echo "  rm -rf $QUAR"\n` +
+    accountsScript() +
     `ACCTSH\n` +
-    `sh /tmp/absolution-accounts.sh\n` +
+    `CONFIRM=$CONFIRM sh /tmp/absolution-accounts.sh\n` +
     `date\n`
   );
 }
@@ -488,14 +384,15 @@ function selftest(): void {
     acct.indexOf('HARVEST') < acct.indexOf('dscl . -delete'));
   check('accounts: never rm a home folder', !/rm -rf "\/Users\/\$u"/.test(codeOf(acct)));
   check('accounts: home is moved to quarantine', acct.includes('mv "/Users/$u" "$QUAR/$u"'));
-  check('accounts: CONFIRM-gated', acct.includes('CONFIRM=ACCOUNTS') && acct.includes('NOTHING CHANGED'));
+  check('accounts: CONFIRM-gated', acct.includes('CONFIRM=ACCOUNTS') && acct.includes('NOT CONFIRMED'));
   // Keeper is now DECLARED (operator 2026-09-17d: "el is the only keeper, samael is nick for el").
   // The risk shifts from "picked the wrong account" to "deleted everyone including the admin", so the
   // block must refuse if the keeper is missing or is not an admin, and must never delete a live session.
   check('accounts: keeper is el', acct.includes('KEEPER="el"'));
   check('accounts: aborts if keeper home is missing', acct.includes('ABORT: /Users/$KEEPER does not exist'));
-  check('accounts: aborts if keeper is not admin', acct.includes('is NOT in the admin group'));
-  check('accounts: aborts if a doomed account is logged in', acct.includes('is currently logged in'));
+  check('accounts: aborts if keeper is not admin', acct.includes('is NOT an admin'));
+  check('accounts: aborts if a doomed account is logged in', acct.includes('is logged in right now'));
+  check('accounts: block body equals the shared lib source', acct.includes(accountsScript()));
   check('accounts: doomed set is everyone but keeper/Shared/Guest',
     acct.includes('DOOMED="$DOOMED $u"') && acct.includes('[ "$u" = "$KEEPER" ]'));
   check('accounts: Guest excluded from deletion loop', acct.includes("grep -v '^Guest$'"));

@@ -1,10 +1,3 @@
-id -u
-# absolution-accounts.block - ROOT shell on the Mac Pro 3,1 (sudo -s, then paste). Tertiary account removal. Keeper el. Harvest first, never rm a home.
-# Wave: 2026-09-17 clear + harden the Lion SSD. Policy source: tools/lion-clean-plan.ts
-# HARD RULE (operator "without wiping drives"): no eraseDisk, no eraseVolume, no partitionDisk,
-# no asr, no rm of an app. Removal is a reversible MOVE to a quarantine folder on the same volume.
-# Same bytes as absolution-accounts.command from https://da.gd/absolution (lib/absolution-accounts.ts).
-cat > /tmp/absolution-accounts.sh <<'ACCTSH'
 #!/bin/sh
 # absolution-accounts - remove the tertiary accounts, keep "el" (Samael).
 # Phase 1 (no root): read-only map + safety checks. Phase 2 (root + CONFIRM): harvest, then remove.
@@ -161,6 +154,3 @@ echo
 echo "SPACE IS NOT FREED YET. Review the harvest, then free it with:"
 echo "  sudo rm -rf $QUAR"
 echo "ABSOLUTION1_ACCOUNTS_DONE No disk was erased."
-ACCTSH
-CONFIRM=$CONFIRM sh /tmp/absolution-accounts.sh
-date

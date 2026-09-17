@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 152,
+  "lastSeq": 154,
   "entries": [
     {
       "seq": 1,
@@ -2429,6 +2429,28 @@
       "value": "2026-09-17d operator verbatim: 'el is the only keeper, samael is nick for el'. KEEPER=el (Samael is the nickname, not the short name or necessarily the RealName). Tertiary accounts to remove: jazzyempire, revo. Guest and Shared excluded. revo holds 54G Downloads which is HARVESTED to /Users/Shared/absolution-harvest/revo/Downloads before any record deletion.",
       "source": "operator chat 2026-09-17d + receipts/absolution/R1/burn-2026-09-17.txt",
       "sha256": "2f0a76dda746003f9a46c90cdf4df9383121ca423a6ae32ed2588e3332305dc7"
+    },
+    {
+      "seq": 153,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "make sure you just build the command with the typescript shortened link tool. and that we're using the icons and img textures i downloaded on my el admin account. since thats the only account ive used since downloading lion",
+      "demands": [
+        "build the command WITH the typescript shortened-link tool (not a separate paste-only path)",
+        "use the icons and img textures from the el admin account",
+        "el is the only account used since installing Lion"
+      ],
+      "sha256": "2c01b7840a363681a4f7a8d98a73df4b6903c52e84fef15d25ea86bbbd2df38c"
+    },
+    {
+      "seq": 154,
+      "date": "2026-09-17",
+      "kind": "value",
+      "key": "lionTextureSource",
+      "value": "2026-09-17e operator: the icons and img textures were downloaded on the el admin account, the only account used since Lion was installed. Therefore textures are on the KEEPER and are protected by construction - absolution-accounts never touches /Users/el. revo's 54G Downloads is NOT the texture source; it is harvested only as an uninventoried-data precaution. Harvest target moved from /Users/Shared to /Users/el/absolution-harvest and chowned to el.",
+      "source": "tools/lib/absolution-accounts.ts",
+      "sha256": "88a9b88195d8c967858d023cb1c69fdcca5b0206cc4e1c2b69556e61393b468f"
     }
   ],
   "stacks": [

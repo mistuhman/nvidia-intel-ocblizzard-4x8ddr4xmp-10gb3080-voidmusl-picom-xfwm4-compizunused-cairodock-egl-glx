@@ -32,6 +32,7 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 import { KEEP, APPLE_PREFIX } from './lion-clean-plan.ts';
+import { accountsScript, KEEPER } from './lib/absolution-accounts.ts';
 
 // ---------------------------------------------------------------- the one name
 export const NAME = 'absolution';
@@ -40,12 +41,13 @@ export const DONE = `${TAG}_DONE No disk was erased.`;
 const COMMAND = `${NAME}.command`;
 const PAGE = `${NAME}.html`;
 const ZIP = `${NAME}.zip`;
+const ACCOUNTS = `${NAME}-accounts.command`;
 const SHORT = `https://da.gd/${NAME}`;
 
 // ---------------------------------------------------------------- rollout identity
 // Printed in the chat, stamped into the page, and echoed into the log, so a receipt can always be
 // traced back to the exact bytes that produced it.
-export const ROLLOUT = 'R2';
+export const ROLLOUT = 'R3';
 const BRANCH = 'arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr';
 const PR = 91;
 const SESSION = '01a0ad71';
@@ -196,6 +198,9 @@ ${COMMAND}. The report travels as <b>text</b>, the only form the agent can read 
 <b>~/Desktop/${NAME}.txt</b> and opens it.</p>
 <p><a class="link" id="dl-cmd" href="${RAW(COMMAND)}">${COMMAND}</a>
 &nbsp;&middot;&nbsp; <a class="link" id="dl-zip" href="${RAW(ZIP)}">${ZIP}</a></p>
+<p class="note">Account wave (keeper <b>${KEEPER}</b>, Samael): download
+<a class="link" id="dl-acct" href="${RAW(ACCOUNTS)}">${ACCOUNTS}</a> and double-click it to MAP.
+It changes nothing until you re-run it with sudo and CONFIRM, which it prints.</p>
 </fieldset>
 
 <fieldset><legend>2 &mdash; attach it</legend>
@@ -232,6 +237,7 @@ function applyPointer(p){
   if (!p || !p.rollout) { return false; }
   if (p.command) { $("dl-cmd").href = p.command; }
   if (p.zip) { $("dl-zip").href = p.zip; }
+  if (p.accounts) { $("dl-acct").href = p.accounts; }
   if (p.rollout) { $("s-rollout").innerHTML = p.rollout; ROLLOUT = p.rollout; }
   if (p.branch) { $("s-branch").innerHTML = p.branch; }
   if (p.prUrl) { $("s-pr").href = p.prUrl; $("s-pr").innerHTML = "PR #" + p.pr; }
@@ -494,7 +500,8 @@ export function pointerJson(): string {
   return JSON.stringify({
     name: NAME, rollout: ROLLOUT, branch: BRANCH, pr: PR, session: SESSION, date: WAVE_DATE,
     tag: TAG, done: DONE, shortLink: SHORT,
-    command: RAW(COMMAND), zip: RAW(ZIP), page: PAGE_URL, prUrl: PR_URL, inbox: INBOX_POST,
+    command: RAW(COMMAND), zip: RAW(ZIP), accounts: RAW(ACCOUNTS), keeper: KEEPER,
+    page: PAGE_URL, prUrl: PR_URL, inbox: INBOX_POST,
     note: 'Current ABSOLUTION rollout. The page reads this at runtime; update it to retarget the permanent short link without minting a new slug.',
   }, null, 2) + '\n';
 }
@@ -503,11 +510,14 @@ function emit(): void {
   writeFileSync(POINTER, pointerJson());
   writeFileSync(COMMAND, commandScript());
   spawnSync('chmod', ['+x', COMMAND]);
+  writeFileSync(ACCOUNTS, accountsScript());
+  spawnSync('chmod', ['+x', ACCOUNTS]);
   writeFileSync(PAGE, pageHtml());
-  const zip = deterministicZip([[COMMAND, commandScript()], [PAGE, pageHtml()]]);
+  const zip = deterministicZip([[COMMAND, commandScript()], [ACCOUNTS, accountsScript()], [PAGE, pageHtml()]]);
   writeFileSync(ZIP, zip);
   console.log(`WROTE ${POINTER}  rollout=${ROLLOUT} branch=${BRANCH} pr=${PR}`);
   console.log(`WROTE ${COMMAND}  sha256=${sha(commandScript()).slice(0, 16)}`);
+  console.log(`WROTE ${ACCOUNTS} sha256=${sha(accountsScript()).slice(0, 16)} keeper=${KEEPER}`);
   console.log(`WROTE ${PAGE}     sha256=${sha(pageHtml()).slice(0, 16)}`);
   console.log(`WROTE ${ZIP}      sha256=${createHash('sha256').update(zip).digest('hex').slice(0, 16)} (deterministic)`);
 }
@@ -615,6 +625,38 @@ function selftest(): void {
   check('plan: refuses rollout mismatch',
     renderPlan(parseBurn(sample.replace(`rollout=${ROLLOUT}`, 'rollout=R0'))).includes('rollout MISMATCH'));
 
+  // ACCOUNTS COMMAND. Operator 2026-09-17e: the icons and img textures were downloaded on el, the
+  // keeper and only account used since Lion install. So the protection is structural - the script
+  // must never read, move or delete anything under the keeper's home - and it must PROVE it with a
+  // before/after count rather than asserting it.
+  const acctScript = accountsScript();
+  const acctCode = acctScript.split('\n').filter((l) => !l.trim().startsWith('#')).join('\n');
+  check('accounts: keeper is el', KEEPER === 'el' && acctScript.includes('KEEPER="el"'));
+  const tmpA = '/tmp/absolution-accounts-selftest.sh';
+  writeFileSync(tmpA, acctScript);
+  const synA = spawnSync('sh', ['-n', tmpA], { encoding: 'utf8' });
+  check(`accounts passes sh -n${synA.status === 0 ? '' : ': ' + (synA.stderr || '').trim()}`, synA.status === 0);
+  // no mv/rm may ever name the keeper path
+  check('accounts: never moves anything out of the keeper home',
+    !/mv\s+"\/Users\/\$KEEPER/.test(acctCode) && !/rm\s+-rf\s+"?\/Users\/\$KEEPER/.test(acctCode));
+  check('accounts: never rm a home folder', !/rm -rf "?\/Users\/\$u/.test(acctCode));
+  check('accounts: counts keeper textures before AND after',
+    (acctScript.match(/keeper_textures/g) || []).length >= 3);
+  check('accounts: compares the counts', acctScript.includes('TEXTURES INTACT'));
+  check('accounts: harvest precedes record deletion',
+    acctScript.indexOf('== HARVEST') < acctScript.indexOf('dscl . -delete'));
+  check('accounts: harvest lands under the keeper, not Shared',
+    acctScript.includes('HARVEST="/Users/$KEEPER/absolution-harvest"'));
+  check('accounts: refuses if keeper lands in the doomed list', acctScript.includes('REFUSE: keeper appeared'));
+  check('accounts: aborts when keeper is not admin', acctScript.includes('is NOT an admin'));
+  check('accounts: aborts when a doomed account is logged in', acctScript.includes('is logged in right now'));
+  check('accounts: map-only without root', acctScript.includes('MAP ONLY - not running as root'));
+  check('accounts: CONFIRM gated', acctScript.includes('CONFIRM=ACCOUNTS'));
+  check('accounts: frees no space itself', acctScript.includes('SPACE IS NOT FREED YET'));
+  check('accounts: ships on the permanent link', pointerJson().includes('absolution-accounts.command'));
+  check('page offers the accounts download', page.includes('dl-acct') && page.includes(ACCOUNTS));
+  if (existsSync(ACCOUNTS)) check(`${ACCOUNTS} on disk matches generator`, readFileSync(ACCOUNTS, 'utf8') === acctScript);
+
   check('keep-list shared with lion-clean-plan', KEEP.length > 0 && KEEP_CASE.includes('"CandyBar"*'));
   check('command embeds shared keep patterns', cmd.includes(KEEP_CASE));
 
@@ -635,7 +677,7 @@ function selftest(): void {
     const el = (id: string) => (els[id] = els[id] || { innerHTML: '', href: '' });
     // every id the page script touches, including the picker/burn handlers it installs at load
     for (const id of ['dl-cmd', 'dl-zip', 's-rollout', 's-branch', 's-pr', 's-session', 's-date',
-      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st']) el(id);
+      's-tag', 's-live', 'pick', 'burn', 'pv', 'prev', 'st', 'dl-acct']) el(id);
     const body = (page.split('<script type="text/javascript">')[1] || '').split('</script>')[0];
     const harness = `
       var document = { getElementById: function(id){ return ELS[id]; } };
@@ -671,10 +713,13 @@ function selftest(): void {
   // the bundle must be byte-identical across runs, or "same link, reproducible" is a false claim.
   // The system `zip` binary fails this (it stamps live mtimes) - measured, which is why the
   // container is hand-built with a fixed timestamp.
-  const z1 = deterministicZip([[COMMAND, commandScript()], [PAGE, pageHtml()]]);
-  const z2 = deterministicZip([[COMMAND, commandScript()], [PAGE, pageHtml()]]);
+  // must mirror emit() exactly: three entries, same order
+  const entries: Array<[string, string]> = [[COMMAND, commandScript()], [ACCOUNTS, accountsScript()], [PAGE, pageHtml()]];
+  const z1 = deterministicZip(entries);
+  const z2 = deterministicZip(entries);
   check('zip is byte-reproducible', z1.equals(z2));
-  check('zip has both entries', z1.includes(Buffer.from(COMMAND)) && z1.includes(Buffer.from(PAGE)));
+  check('zip has all three entries',
+    z1.includes(Buffer.from(COMMAND)) && z1.includes(Buffer.from(ACCOUNTS)) && z1.includes(Buffer.from(PAGE)));
   if (existsSync(ZIP)) check(`${ZIP} on disk matches generator`, readFileSync(ZIP).equals(z1));
   const unzipCheck = spawnSync('unzip', ['-t', ZIP], { encoding: 'utf8' });
   if (unzipCheck.status !== null) {

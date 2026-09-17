@@ -1,6 +1,6 @@
 {
   "name": "absolution",
-  "rollout": "R2",
+  "rollout": "R3",
   "branch": "arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr",
   "pr": 91,
   "session": "01a0ad71",
@@ -10,6 +10,8 @@
   "shortLink": "https://da.gd/absolution",
   "command": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.command",
   "zip": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.zip",
+  "accounts": "https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution-accounts.command",
+  "keeper": "el",
   "page": "https://htmlpreview.github.io/?https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/blob/arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr/absolution.html",
   "prUrl": "https://github.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/pull/91",
   "inbox": "https://webhook.site/a078e138-e87d-4369-9868-0c0c1f3500d6",
