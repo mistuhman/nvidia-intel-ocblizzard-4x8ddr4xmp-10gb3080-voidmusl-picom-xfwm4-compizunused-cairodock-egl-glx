@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-16",
-  "lastSeq": 132,
+  "lastSeq": 133,
   "entries": [
     {
       "seq": 1,
@@ -2173,6 +2173,13 @@
       "value": "HOLD before app compile. v3 fixes AST value and blocks unsupported BigInt/deferred-regex at transpile and receipt. Semantic implementation still owed. Actions now active with zero runs but old installed template; source corrected on fixed 01a0aade branch. Operator must update workflow and merge PR89 only on their decision; agent never merges. No app build/dispatch or target modification this wave.",
       "source": "gh API WORKFLOW.json + selftest --compiler + three full POST receipt bodies; MASTER/ToDo/channel state corrected",
       "sha256": "6d1af3659c43970d4f5496611c1a4437798860b2afd459f6c51182e2eaf0a993"
+    },
+    {
+      "seq": 133,
+      "date": "2026-09-16",
+      "kind": "note",
+      "text": "2026-09-16i (01a0ab3d): the two HOLD blockers are implemented and verified OFF-target. tools/lib/es5-compat-runtime.js (__bi BigInt + __rx regex, ES5, 33,695 B, sha 8f3bbc53d268) ships as compat.js in every bundle between polyfill.js and es5-*; tools/lib/es5-compat.ts holds the FF52 table, parser, rewritePattern, bigIntPlugin, regexPlugin, acorn auditEs5 and 4 verifiers. Evidence: bigint 3166/3166 default, 14946/14946 at CI preflight --cases=12000 (2m26s), 119568/119568 over 8 seeds x 12000; regex 78/78 fixtures (10 assert refusal) + 39556/39556 property fuzz over 7 seeds (12423 byte-compared against native RegExp, 24459 refused, 15 refusal kinds). Fuzz found the real bugs: (-1n)**(2^53+1) parity through a double, per-branch dotAll loss in branch-mode rewrites, split not routing through overridden exec, \\k<n>1 splice, matchAll species clone. TEST_ALL=PASS, ONE_TEST=PASS, corpus 2026-09-16i-v4 sha 271318b1ef24, zip f0ffceb2536a, MASTER + CI ref repinned to arena/01a0ab3d (lion-one-test now reads the page pin from MASTER instead of a literal). NOT done: no dispatch, no publish, no target receipt; 209/184 Vencord counts unrecomputable in sandbox (raw.githubusercontent HTTP 000, gh api 401) - they need the CI COMPATIBILITY.json. COMPILE_GATE=HOLD stands.",
+      "sha256": "03e8a5d5e7b1aebc3cd7b16434e5341ce26c6ff30552ace83d9c89c8f8d48eea"
     }
   ],
   "stacks": [

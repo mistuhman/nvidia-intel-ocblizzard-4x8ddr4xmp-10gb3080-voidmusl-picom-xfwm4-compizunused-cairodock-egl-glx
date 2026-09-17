@@ -1,0 +1,164 @@
+{
+  "schema": "lion-es5-compat-verification.v1",
+  "date": "2026-09-16",
+  "session": "2026-09-16i",
+  "branch": "arena/01a0ab3d-nvidia-intel-ocblizzard-4x8ddr",
+  "verdict": {
+    "bigint_layer": "VERIFIED_OFF_TARGET",
+    "regex_layer": "VERIFIED_OFF_TARGET",
+    "publication_gate": "HOLD",
+    "app_compilation": "HOLD_NOT_ATTEMPTED",
+    "target_receipt": "NONE"
+  },
+  "sandbox": {
+    "node": "v22.22.3",
+    "deps_pinned": true,
+    "deps": [
+      "@babel/core@7.29.7",
+      "@babel/preset-env@7.29.7",
+      "core-js-bundle@3.50.0",
+      "acorn@8.18.0"
+    ]
+  },
+  "impl": {
+    "runtime": {
+      "path": "tools/lib/es5-compat-runtime.js",
+      "bytes": 33695,
+      "sha256": "8f3bbc53d268304ff5b363a4ee30ffd20b5700b59be3b5b13d1da21f070a4bab",
+      "exports": [
+        "__bi",
+        "__rx"
+      ],
+      "syntax": "ES5",
+      "deps": "none",
+      "copied_into_bundles_as": "compat.js"
+    },
+    "tool": {
+      "path": "tools/lib/es5-compat.ts",
+      "sha256": "9bc50d60e756348a98840602ed887779d555276aca5ff1430dfd316c5b2105d4"
+    },
+    "compiler": {
+      "path": "tools/mac-es5-passthrough.ts",
+      "sha256": "f113156d120f0b0927bb2cfcab5d681e918889c2af9b81b25b174209a6d13f93"
+    },
+    "loader_order": [
+      "polyfill.js",
+      "compat.js",
+      "es5-*.js"
+    ]
+  },
+  "verification": {
+    "selftest": {
+      "command": "node tools/mac-es5-passthrough.ts selftest --compiler",
+      "result": "PASSTHROUGH_SELFTEST=PASS"
+    },
+    "bigint": {
+      "default": "3166/3166 (no beyond-width cases at this size)",
+      "wide_sweep": "119568/119568",
+      "seeds": 8,
+      "per_seed": 12000,
+      "method": "expression corpus transpiled with bigIntPlugin, run twice in node:vm - once with native BigInt, once with the compat runtime and BigInt deleted from the context - serialized result or error name compared",
+      "beyond_declared_width_skips": "13-15, varies with the harness 30s print timeout",
+      "declared_bound_bits": 65536,
+      "bound_error": "RangeError: Maximum BigInt size exceeded",
+      "ci_preflight": {
+        "command": "node tools/mac-es5-passthrough.ts selftest --compiler --cases=12000",
+        "result": "PASS",
+        "bigint": "14946/14946",
+        "seconds": 146
+      }
+    },
+    "regex_fixtures": {
+      "result": "78/78",
+      "patterns": 40,
+      "refusal_fixtures": 10,
+      "method": "rewritten literal compared against the native literal on the same inputs (exec twice, matchAll loop, match, replace string/function/$<name>, split, search, test, src/flags/toString/dotAll/indices)"
+    },
+    "regex_property": {
+      "default": "629/629",
+      "wide_sweep": "39556/39556",
+      "seeds": 7,
+      "per_seed": 6000,
+      "compared_against_native": 12423,
+      "refused": 24459,
+      "skipped_native_rejects": 2444,
+      "ci_property_cases": "33932/33932 (compared 10691, refused 20965, native-reject 2068)"
+    },
+    "es5_floor": {
+      "runtime_acorn_es5": "PASS",
+      "emitted_acorn_es2017": "PASS",
+      "loader_acorn_es5": "PASS"
+    },
+    "end_to_end": {
+      "fixture": "compat-layer-end-to-end",
+      "result": "PASS",
+      "meaning": "same source compiled twice (native vs compat with BigInt deleted) yields an identical 13-field output string"
+    },
+    "corejs_gap_reasserted": "PASS",
+    "suites": {
+      "test_all": "TEST_ALL=PASS",
+      "lion_one": "ONE_TEST=PASS"
+    }
+  },
+  "refusal_kinds": [
+    "regex-unparseable",
+    "regex-unicode-property",
+    "regex-hasIndices",
+    "regex-named-backref",
+    "regex-lookbehind-multiline",
+    "regex-lookbehind-position",
+    "regex-lookbehind-width",
+    "regex-lookbehind-body",
+    "regex-lookbehind-anchor",
+    "regex-lookbehind-capture",
+    "regex-lookbehind-branch-capture",
+    "regex-lookbehind-quantified",
+    "regex-named-backref-ambiguity",
+    "regex-clone-unsafe",
+    "regex-rewrite-incomplete"
+  ],
+  "bugs_found_by_fuzzing": [
+    "(-1n) ** 9007199254740993n returned +1: base +-1 fast path read the exponent through a Number, losing parity; fixed with getBitD",
+    "branch-mode rewrite dropped dotAll expansion inside alternatives while removing the s flag: /(?<=a|b)..|0/s matched less; fixed with editsWithin",
+    "String.prototype.split does not route through the overridden exec: wrapper must own Symbol.split, including the zero-width boundary of /(?:)/",
+    "\\k<m>1 rewritten to \\11 changes which backreference is meant; now refused as regex-named-backref-ambiguity",
+    "matchAll clones via SpeciesConstructor and would drop __rx constraints; refused as regex-clone-unsafe",
+    "shift carry (v >>> B_BITS), fmtD chunk padding, negative/oversized shift counts, pow fast paths for 0n/1n/-1n, ToPrimitive-before-TypeError ordering in add, match.groups prototype, exec lastIndex on empty matches"
+  ],
+  "not_claimed": [
+    "no GitHub Actions workflow dispatch",
+    "no bundle published, no release created",
+    "no on-target (Arctic Fox) receipt for the compat layer",
+    "the 209 BigInt / 184 regex per-app counts were NOT recomputed in this sandbox",
+    "no merge, PR opened or closed by the agent"
+  ],
+  "limits_blocking_recount": {
+    "raw_githubusercontent": "TLS blocked from sandbox (HTTP 000)",
+    "gh_api_third_party": "401 Bad credentials",
+    "git_ls_remote_vencord_builds": "auth prompt / fails",
+    "consequence": "per-app COMPATIBILITY.json must be produced by the CI run, which is on hold"
+  },
+  "corpus": {
+    "version": "2026-09-16i-v4",
+    "instructions_sha256": "271318b1ef24e8d02d7dcdf835ea130b9c31a9ac57c92f2b1d5af561434dafd2",
+    "entries": {
+      "common": 17,
+      "discord_web": 4,
+      "vencord_web": 4
+    },
+    "burned_on_target_still": {
+      "version": "2026-09-16g-v2",
+      "sha256": "8583a1cbf2ca700725b50f973843e03ffd46a6dab1a70ab4a825d58de0899372"
+    }
+  },
+  "artifacts": {
+    "lion-one.zip": "f0ffceb2536a5646df48480567f10f1f0c0b6327def8e559bd30d4bf92ce90dd",
+    "lion-compiler-context.command": "8409df6471ef8464266fb7fe6f31d0a000ac91b74cf790648169914dc851f594",
+    "etc/lion-command.txt": "e56252a2cd00d525a61cbff4da6819f9f0ba7ad76c7d8f25a90f016a064018d7"
+  },
+  "decisions_by_agent": [
+    "synced burn artifact to v4 rather than leave test-all red (shell-escaping apostrophes with '\\'' so the decoded corpus still hashes)",
+    "evidence bar = differential + property fuzz + enumerated refusal; a weakened pattern is treated as a publication blocker, never a partial win",
+    "BigInt implemented in-repo as ES5 rather than pulling JSBI in: the bundle must not gain a runtime dependency the target cannot load"
+  ]
+}

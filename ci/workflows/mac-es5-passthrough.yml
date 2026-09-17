@@ -11,6 +11,11 @@ name: mac-es5-passthrough
 # emitted file with node --check + sha256 (RECEIPT.json per app, RECEIPT-INDEX.json at root),
 # and publishes an EXPERIMENTAL zip only if known runtime blockers are absent.
 # v3: BigInt / deferred regex hazards are BLOCKED; Node syntax PASS is not Lion runtime PASS.
+# v4 (2026-09-16i): the blockers have implementations. compat.js (tools/lib/es5-compat-runtime.js) ships a
+# verified __bi BigInt runtime and __rx regex enforcement; every bundle carries it between polyfill.js and the
+# chunks, and COMPATIBILITY.json still refuses publication for anything unexpressible on FF52. Off-target
+# differential only (119,555/119,568 bigint expressions, 39,556/39,556 regex property cases): the gate stays
+# HOLD until a v4 bundle is burned on the Mac. Receipt: receipts/mac-es5/2026-09-16i-compat-verification/.
 # On-Mac receipt loop: burn the result through da.gd/lionone. Guide: docs/mac-modern-web.md.
 
 on:
@@ -39,14 +44,16 @@ jobs:
         with:
           # standing: always build from the agent branch (freshest tool + app registry);
           # runs work pre- or post-merge of PR #89, no branch selector needed on the phone
-          ref: arena/01a0aade-nvidia-intel-ocblizzard-4x8ddr
+          ref: arena/01a0ab3d-nvidia-intel-ocblizzard-4x8ddr
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: deps (CI-only, justified per MASTER toolStyle)
         run: npm i --no-save --no-package-lock @babel/core@7.29.7 @babel/preset-env@7.29.7 core-js-bundle@3.50.0 acorn@8.18.0
       - name: compiler preflight (real pinned dependencies; fail before app fetch)
-        run: node tools/mac-es5-passthrough.ts selftest --compiler
+        # --cases=12000 widens the BigInt differential to the volume that found the pow/mul/shift bugs;
+        # the default 4,000-case run stays the quick selftest. Property regex fuzz: 6,000 patterns, 7 seeds.
+        run: node tools/mac-es5-passthrough.ts selftest --compiler --cases=12000
       - name: fetch target assets (per-app dirs)
         run: node tools/mac-es5-passthrough.ts fetch --app="$APP" --out=work/src
       - name: transpile to ES5 (firefox 52 target)

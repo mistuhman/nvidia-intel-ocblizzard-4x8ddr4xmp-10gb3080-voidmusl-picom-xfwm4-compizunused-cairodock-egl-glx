@@ -70,6 +70,15 @@ function agentSyntax(): void {
   }
 }
 
+function masterBranch(): string {
+  const m = JSON.parse(readFileSync('MASTER.md', 'utf8')) as { repo?: { branchFixed?: string } };
+  if (!m.repo?.branchFixed) {
+    fail('P-branch-source', 'MASTER.md repo.branchFixed missing - the page pin cannot be verified');
+    return 'BRANCH-UNDECLARED';
+  }
+  return m.repo.branchFixed;
+}
+
 function agentPage(): void {
   const text = readFileSync(PAGE, 'utf8');
   const required: Array<[string, RegExp]> = [
@@ -82,7 +91,7 @@ function agentPage(): void {
     ['no-merge', /no merge, no pull request/i],
     ['inbox', /webhook\.site\/a078e138-e87d-4369-9868-0c0c1f3500d6/],
     ['cmd-pull', /etc\/lion-command\.txt/],
-    ['branch', /arena\/01a0aade-nvidia-intel-ocblizzard-4x8ddr/],
+    ['branch', new RegExp(masterBranch().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))],
     ['compiler-link', /lion-compiler-context\.command/],
     ['compiler-hold', /COMPILE_GATE=HOLD/],
     ['storage-hold', /Old lion-wipe-harden\.txt directions are SUSPENDED/],

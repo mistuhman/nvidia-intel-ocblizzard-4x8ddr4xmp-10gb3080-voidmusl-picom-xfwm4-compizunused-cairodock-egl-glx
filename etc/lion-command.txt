@@ -7,14 +7,14 @@ RECEIPTS READ: three text burns received 2026-09-16 16:24:20-39 (server time).
 
 COMPILE_GATE=HOLD. No repeat burn is needed for these three files.
 The v2 converter read the wrong Babel field and emitted BigInt("undefined").
-Corrected in v3; core-js still DOES NOT supply BigInt on an engine without it.
+Corrected in v3; core-js still DOES NOT supply BigInt on an engine without it - v4 ships its own verified BigInt + regex compat layer (compat.js).
 Unverified BigInt / deferred-regex rewrites now block transpile and receipt.
 Instruction export is context delivery, NOT an app build or runtime PASS.
 The installed GitHub workflow is ACTIVE with zero runs, but is the OLD copy.
 Do not Run workflow yet. Corrected source is ci/workflows/mac-es5-passthrough.yml;
 operator installation of that source alone will NOT solve the runtime blockers.
 Next single task: verify an actual BigInt/regex compatibility implementation.
-New context downloads carry v3 17c6a29a052e and explicitly report this HOLD.
+New context downloads carry v4 271318b1ef24 and explicitly report this HOLD.
 
 STORAGE HOLD: root is start disk clone (/dev/disk3s2 at receipt time).
 Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.

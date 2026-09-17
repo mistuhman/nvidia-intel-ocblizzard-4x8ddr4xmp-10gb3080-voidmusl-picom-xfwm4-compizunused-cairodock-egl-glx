@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-16",
+  "session": "2026-09-16i",
+  "branch": "arena/01a0ab3d-nvidia-intel-ocblizzard-4x8ddr",
+  "compiler_regressions": "PASS",
+  "test_all": "PASS",
+  "lion_one": "PASS",
+  "compat_runtime_es5_floor": "PASS",
+  "bigint_differential": "PASS 3166/3166 (default), 14946/14946 (CI preflight --cases=12000), 119568/119568 (wide, 8 seeds x 12000)",
+  "regex_differential": "PASS 78/78 fixtures + 629/629 property (default), 33932/33932 at --cases=12000, 39556/39556 wide over 7 seeds (12423 compared against native, 24459 refused, 2444 native-reject skips)",
+  "publication_gate": "ENFORCED - transpile/receipt exit 4 while hazards remain; receipt refuses a bundle without compat.js",
+  "compile_gate": "HOLD",
+  "target_runtime": "HOLD; not tested",
+  "workflow_dispatch": "NOT_RUN (operator directive)",
+  "release_publish": "NOT_RUN (operator directive)",
+  "merge": "NOT_RUN; operator-only",
+  "pr_budget": {
+    "base": "main",
+    "limit": 405,
+    "changed_lines": "see REPORT.md next-steps; over budget by two orders of magnitude",
+    "verdict": "FAIL",
+    "operator_override": "REQUIRED, not granted"
+  },
+  "storage": "HOLD - root is start disk clone (/dev/disk3s2); old wipe wave SUSPENDED; no erase/reset/account deletion",
+  "artifacts_sha256": {
+    "lion-one.zip": "f0ffceb2536a5646df48480567f10f1f0c0b6327def8e559bd30d4bf92ce90dd",
+    "lion-compiler-context.command": "8409df6471ef8464266fb7fe6f31d0a000ac91b74cf790648169914dc851f594"
+  },
+  "ci_preflight_command": "node tools/mac-es5-passthrough.ts selftest --compiler --cases=12000",
+  "ci_preflight_seconds": 146
+}
