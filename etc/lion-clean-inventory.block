@@ -15,7 +15,7 @@ echo "== DISK MAP (read-only; proves nothing is being erased)"
 diskutil list
 echo
 echo "== KEEP TARGETS - each must read PRESENT or ABSENT, never be touched"
-for n in "CandyBar" "Flavours" "AirPort Utility" "ArcticFox" "iTunes" "Audacity" "AU Lab" "GarageBand" "Logic" "Utilities"; do
+for n in "CandyBar" "Flavours" "AirPort Utility" "ArcticFox" "iTunes" "Audacity" "AU Lab" "GarageBand" "Logic" "VLC" "HandBrake" "ffmpegX" "MPlayer OSX Extended" "ScreenFlow" "FxFactory" "LooksBuilder" "Blackmagic" "DVDRemaster" "Fairmount" "Cinema Tools" "hueyPRO" "Contour Shuttle" "Audio Hijack" "Soundflower" "SuperSync" "Dupin" "iPhoto Library Manager" "Carbon Copy Cloner" "DiskWarrior" "TechTool" "DaisyDisk" "GrandPerspective" "WhatSize" "X11" "Utilities"; do
   F=""
   [ -e "/Applications/$n.app" ] && F="/Applications/$n.app"
   [ -e "/Applications/Utilities/$n.app" ] && F="/Applications/Utilities/$n.app"
@@ -34,7 +34,7 @@ for a in /Applications/*.app /Applications/Utilities/*.app; do
   SZ=$(du -hs "$a" 2>/dev/null | awk '{print $1}')
   CLASS="CANDIDATE"
   case "$B" in com.apple.*) CLASS="APPLE";; esac
-  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"CandyBar"*|"Flavours"*|"GarageBand"*|"Logic"*|"Utilities"|"iTunes"*) CLASS="KEEP";; esac
+  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"Audio Hijack"*|"Blackmagic"*|"CandyBar"*|"Carbon Copy"*|"Cinema Tools"*|"Contour"*|"DVDRemaster"*|"DaisyDisk"*|"DiskWarrior"*|"Dupin"*|"Fairmount"*|"Flavours"*|"FxFactory"*|"GarageBand"*|"GrandPerspective"*|"HandBrake"*|"Logic"*|"LooksBuilder"*|"MPlayer"*|"ScreenFlow"*|"Soundflower"*|"SuperSync"*|"TechTool"*|"Utilities"|"VLC"*|"WhatSize"*|"X11"*|"ffmpegX"*|"huey"*|"iPhoto Library"*|"iTunes"*) CLASS="KEEP";; esac
   echo "$CLASS | $SZ | $B | $a"
 done
 echo
@@ -44,7 +44,7 @@ for a in /Applications/*.app /Applications/Utilities/*.app; do
   B=$(defaults read "$a/Contents/Info" CFBundleIdentifier 2>/dev/null)
   N=$(basename "$a" .app)
   case "$B" in com.apple.*) continue;; esac
-  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"CandyBar"*|"Flavours"*|"GarageBand"*|"Logic"*|"Utilities"|"iTunes"*) continue;; esac
+  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"Audio Hijack"*|"Blackmagic"*|"CandyBar"*|"Carbon Copy"*|"Cinema Tools"*|"Contour"*|"DVDRemaster"*|"DaisyDisk"*|"DiskWarrior"*|"Dupin"*|"Fairmount"*|"Flavours"*|"FxFactory"*|"GarageBand"*|"GrandPerspective"*|"HandBrake"*|"Logic"*|"LooksBuilder"*|"MPlayer"*|"ScreenFlow"*|"Soundflower"*|"SuperSync"*|"TechTool"*|"Utilities"|"VLC"*|"WhatSize"*|"X11"*|"ffmpegX"*|"huey"*|"iPhoto Library"*|"iTunes"*) continue;; esac
   du -hs "$a" 2>/dev/null
 done
 echo

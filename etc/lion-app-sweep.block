@@ -19,7 +19,7 @@ for a in /Applications/*.app /Applications/Utilities/*.app; do
   B=$(defaults read "$a/Contents/Info" CFBundleIdentifier 2>/dev/null)
   N=$(basename "$a" .app)
   case "$B" in com.apple.*) echo "protect APPLE $a"; continue;; esac
-  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"CandyBar"*|"Flavours"*|"GarageBand"*|"Logic"*|"Utilities"|"iTunes"*) echo "protect KEEP  $a"; continue;; esac
+  case "$N" in "AU Lab"*|"AirPort"*|"Arctic"*|"Audacity"*|"Audio Hijack"*|"Blackmagic"*|"CandyBar"*|"Carbon Copy"*|"Cinema Tools"*|"Contour"*|"DVDRemaster"*|"DaisyDisk"*|"DiskWarrior"*|"Dupin"*|"Fairmount"*|"Flavours"*|"FxFactory"*|"GarageBand"*|"GrandPerspective"*|"HandBrake"*|"Logic"*|"LooksBuilder"*|"MPlayer"*|"ScreenFlow"*|"Soundflower"*|"SuperSync"*|"TechTool"*|"Utilities"|"VLC"*|"WhatSize"*|"X11"*|"ffmpegX"*|"huey"*|"iPhoto Library"*|"iTunes"*) echo "protect KEEP  $a"; continue;; esac
   echo "candidate     $a"
   LIST="$LIST
 $a"

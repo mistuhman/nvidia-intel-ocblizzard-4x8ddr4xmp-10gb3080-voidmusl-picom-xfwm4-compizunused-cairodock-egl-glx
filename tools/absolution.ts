@@ -45,7 +45,7 @@ const SHORT = `https://da.gd/${NAME}`;
 // ---------------------------------------------------------------- rollout identity
 // Printed in the chat, stamped into the page, and echoed into the log, so a receipt can always be
 // traced back to the exact bytes that produced it.
-export const ROLLOUT = 'R1';
+export const ROLLOUT = 'R2';
 const BRANCH = 'arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr';
 const PR = 91;
 const SESSION = '01a0ad71';
@@ -100,6 +100,37 @@ for a in /Applications/*.app /Applications/Utilities/*.app; do
   case "$B" in ${APPLE_PREFIX}*) C="APPLE";; esac
   case "$N" in ${KEEP_CASE}) C="KEEP";; esac
   echo "APP $C | $SZ | $B | $N"
+done
+echo "--- accounts ---"
+# IDENTITY RESOLUTION. R1 listed four home dirs and none is named samael, while the operator says
+# their account is "Samael/admin". Account deletion is irreversible, so short name, REAL name, UID,
+# admin membership and last login are all read before anything is proposed. Read-only: dscl -read
+# and -list only, never -delete.
+dscl . -list /Users RealName 2>/dev/null | grep -v "^_" || echo "dscl realname UNKNOWN"
+echo "-- admin group members --"
+dscl . -read /Groups/admin GroupMembership 2>/dev/null || echo "admin group UNKNOWN"
+echo "-- per user --"
+for u in $(ls /Users 2>/dev/null | grep -v Shared); do
+  UID_=$(id -u "$u" 2>/dev/null || echo "?")
+  RN=$(dscl . -read "/Users/$u" RealName 2>/dev/null | tail -1 | sed -e "s/^ *//")
+  echo "ACCT $u | uid=$UID_ | real=$RN"
+  du -hs "/Users/$u" 2>/dev/null || echo "  size UNKNOWN"
+  last -1 "$u" 2>/dev/null | head -1 || echo "  lastlogin UNKNOWN"
+done
+echo "--- downloads content (icons and textures live here) ---"
+for u in $(ls /Users 2>/dev/null | grep -v Shared); do
+  echo "DL $u"
+  ls "/Users/$u/Downloads" 2>/dev/null | head -25 || echo "  none"
+  echo "  counts:"
+  find "/Users/$u/Downloads" -iname "*.icns" 2>/dev/null | wc -l | sed "s/^/    icns /"
+  find "/Users/$u/Downloads" -iname "*.icontainer" -o -iname "*.iconset" 2>/dev/null | wc -l | sed "s/^/    iconsets /"
+  find "/Users/$u/Downloads" -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | wc -l | sed "s/^/    winampskins /"
+  find "/Users/$u/Downloads" -iname "*.png" -o -iname "*.jpg" -o -iname "*.tga" -o -iname "*.dds" 2>/dev/null | wc -l | sed "s/^/    images /"
+done
+echo "--- theme payloads deep (icns/iconset/icontainer/flavour anywhere in home) ---"
+for u in $(ls /Users 2>/dev/null | grep -v Shared); do
+  echo "THEME $u"
+  find "/Users/$u" -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" 2>/dev/null | head -15
 done
 echo "--- keep dirs ---"
 for u in $(ls /Users 2>/dev/null | grep -v Shared); do

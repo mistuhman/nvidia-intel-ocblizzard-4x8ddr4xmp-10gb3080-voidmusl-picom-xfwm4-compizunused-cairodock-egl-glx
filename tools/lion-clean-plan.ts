@@ -29,6 +29,36 @@ export const KEEP: Keep[] = [
   { app: 'AU Lab', prefix: 'AU Lab', wild: true, why: 'T2 audio host ladder, first rung' },
   { app: 'GarageBand', prefix: 'GarageBand', wild: true, why: 'T2 audio host ladder' },
   { app: 'Logic', prefix: 'Logic', wild: true, why: 'T2 audio host ladder' },
+  // Operator directive 2026-09-17b: "all software thats not professional software and absolutely
+  // necessary for video editing and audio interfacing" is KEPT. This machine is a video workstation
+  // (Final Cut, Motion, Compressor, DVD Studio Pro all present in the R1 burn), so the pro A/V chain
+  // is protected by name. Winamp is EXCLUDED on purpose - operator is replacing it with a classic
+  // source port for CD + skins, so the installed 9.5M copy is swept.
+  { app: 'VLC', prefix: 'VLC', wild: true, why: 'video playback + Fairmount pair; pro A/V chain (operator 2026-09-17b)' },
+  { app: 'HandBrake', prefix: 'HandBrake', wild: true, why: 'video transcode; pro A/V chain' },
+  { app: 'ffmpegX', prefix: 'ffmpegX', wild: true, why: 'video transcode; pro A/V chain' },
+  { app: 'MPlayer OSX Extended', prefix: 'MPlayer', wild: true, why: 'video playback; pro A/V chain' },
+  { app: 'ScreenFlow', prefix: 'ScreenFlow', wild: true, why: 'screen capture + editing; pro A/V' },
+  { app: 'FxFactory', prefix: 'FxFactory', wild: true, why: 'Final Cut/Motion plugin host; pro A/V' },
+  { app: 'LooksBuilder', prefix: 'LooksBuilder', wild: true, why: 'Red Giant Looks, grading plugin; pro A/V' },
+  { app: 'Blackmagic', prefix: 'Blackmagic', wild: true, why: 'capture/IO hardware tools; video interfacing' },
+  { app: 'DVDRemaster', prefix: 'DVDRemaster', wild: true, why: 'DVD authoring chain; pro A/V' },
+  { app: 'Fairmount', prefix: 'Fairmount', wild: true, why: 'DVD mount for VLC; pro A/V chain' },
+  { app: 'Cinema Tools', prefix: 'Cinema Tools', wild: true, why: 'Final Cut companion (Apple, already protected by class)' },
+  { app: 'hueyPRO', prefix: 'huey', wild: true, why: 'Pantone display calibration; colour-critical video work' },
+  { app: 'Contour Shuttle', prefix: 'Contour', wild: true, why: 'jog/shuttle edit controller driver; video interfacing' },
+  { app: 'Audio Hijack', prefix: 'Audio Hijack', wild: true, why: 'audio capture; audio interfacing' },
+  { app: 'Soundflower', prefix: 'Soundflower', wild: true, why: 'audio routing; audio interfacing' },
+  { app: 'SuperSync', prefix: 'SuperSync', wild: true, why: 'iTunes library sync; audio library chain' },
+  { app: 'Dupin', prefix: 'Dupin', wild: true, why: 'iTunes playlist dedupe; audio library chain' },
+  { app: 'iPhoto Library Manager', prefix: 'iPhoto Library', wild: true, why: 'media library management' },
+  { app: 'Carbon Copy Cloner', prefix: 'Carbon Copy', wild: true, why: 'clone/backup - the start-disk clone lineage depends on it' },
+  { app: 'DiskWarrior', prefix: 'DiskWarrior', wild: true, why: 'directory repair; disk-necessary given the 97% full boot volume' },
+  { app: 'TechTool', prefix: 'TechTool', wild: true, why: 'hardware/disk diagnostics' },
+  { app: 'DaisyDisk', prefix: 'DaisyDisk', wild: true, why: 'space analysis - directly needed at 97% full' },
+  { app: 'GrandPerspective', prefix: 'GrandPerspective', wild: true, why: 'space analysis - directly needed at 97% full' },
+  { app: 'WhatSize', prefix: 'WhatSize', wild: true, why: 'space analysis - directly needed at 97% full' },
+  { app: 'X11', prefix: 'X11', wild: true, why: 'system dependency for ffmpegX/MPlayer class tools' },
   { app: 'Utilities', prefix: 'Utilities', wild: false, why: 'Disk Utility / Terminal / Keychain Access / Console / Audio MIDI Setup live here' },
 ];
 

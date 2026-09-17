@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 150,
+  "lastSeq": 151,
   "entries": [
     {
       "seq": 1,
@@ -2403,6 +2403,23 @@
       "status": "UNRESOLVED",
       "owner": "operator",
       "sha256": "9e1d965a152095ca479c2eb14dc55ece0b7bf0c1b12aba843aa2e7b753f72ed8"
+    },
+    {
+      "seq": 151,
+      "date": "2026-09-17",
+      "kind": "prompt",
+      "from": "operator",
+      "verbatim": "sweep winamp, i want to use a classic source port of it w cd features and the winamp skins so i can use them from archive. the other accounts, delete them, games currently, delete, all software thats not professional software and absolutely necessary for video editing and audio interfacing then delete it. ... (candybar,arctic,softwares,themes,flavours,some account stuff,airport) + delete the tertiary accounts, not mine, which is Samael/admin",
+      "demands": [
+        "sweep Winamp (replacing with classic source port for CD+skins)",
+        "delete the other/tertiary accounts BUT NOT the operator account",
+        "operator account is Samael/admin",
+        "delete games",
+        "delete all software not professional/necessary for video editing and audio interfacing",
+        "KEEP candybar arctic flavours airport themes softwares",
+        "textures and icons live in account Downloads - do not delete those"
+      ],
+      "sha256": "02892fe78238f29dbe5367f7bab273ad1262f5bdc0a3aeb7b75a7b067f758550"
     }
   ],
   "stacks": [
