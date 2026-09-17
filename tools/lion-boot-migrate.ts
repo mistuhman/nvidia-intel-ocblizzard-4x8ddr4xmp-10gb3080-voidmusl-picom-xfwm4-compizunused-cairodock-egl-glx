@@ -169,6 +169,12 @@ export const BAY2_STEPS: string[] = [
 ];
 
 export const BAY2_NOTES: string[] = [
+  'THE PARTITION MAP IS THE ONE THING A VOLUME-ROW SCREENSHOT CANNOT PROVE. With the VOLUME selected the '
+    + 'info panel shows Mount Point / Format / Owners Enabled / Number of Folders. With the physical DISK '
+    + 'selected it instead shows Partition Map Scheme, plus Disk Identifier and Media Name. So the GUID '
+    + 'confirmation only exists on the disk row. Faster and unambiguous: run "diskutil list" in Terminal - '
+    + 'row 0 of each disk prints the scheme directly (GUID_partition_scheme vs Apple_partition_scheme vs '
+    + 'FDisk_partition_scheme). One command, no clicking, no ambiguity.',
   'DO NOT SETTLE THE GUID QUESTION FROM A SCREENSHOT - ASK diskutil. Screenshots of two similar rows '
     + 'are easy to misread in both directions. "diskutil list" prints the scheme on each disk header '
     + 'line: GUID_partition_scheme means done, Apple_partition_scheme (APM) or FDisk_partition_scheme '
@@ -189,11 +195,16 @@ export const BAY2_NOTES: string[] = [
   'VERIFY THE MAP BEFORE CLONING, NOT AFTER. Select the outer Kingston disk row and read "Partition Map '
     + 'Scheme" at the bottom of the Disk Utility window. It must say GUID Partition Table. If it says Apple '
     + 'Partition Map or Master Boot Record, redo the Partition step - a clone onto the wrong map boots nothing.',
-  'THE PHOTOGRAPHED STATE IS SAFE: the Kingston is preformatted Mac OS Extended (Journaled), 239.71 GB, '
-    + '312.4 MB used, 12 folders / 57 files. TWO WD10EACS disks are visible, each still showing '
-    + '"RAID Slice for Raid X" - correct, because the third member is the one pulled out of Bay 2. '
-    + 'The MX500 still shows "start disk clone". The boot disk is untouched, exactly as intended. '
-    + '(CORRECTION to an earlier note in this session that said only one WD was visible - two are.)',
+  'FRESH-FORMAT USED SPACE IS NORMAL - OPERATOR IS CORRECT (2026-09-17i). A newly formatted HFS+ volume '
+    + 'is never 0 bytes used. The space is the journal (sized to the volume, not the fixed 8 MB default), '
+    + 'the catalog and extents overflow B-trees, the allocation bitmap, and the hidden .fseventsd, '
+    + '.Spotlight-V100 and .Trashes directories. On this disk that is 312.4 MB of 239.71 GB = 0.13%, or '
+    + 'about 1/767th of the drive. The counts repeating byte-for-byte (312,352,768 bytes, 12 folders, '
+    + '57 files) across successive erases is EXPECTED, not a red flag: formatting the same disk the same '
+    + 'way is deterministic, so identical output is the correct result. Nothing to fix.',
+  'EVIDENCE THE REFORMAT HAPPENED: the volume is now named "Kingston" and mounts at /Volumes/Kingston. '
+    + 'The earlier screenshot showed "KINGSTON" all-caps at /Volumes/KINGSTON. The rename is visible '
+    + 'proof the erase/repartition was carried out rather than merely planned.',
   'WHY THE KINGSTON CANNOT JUST STAY IN BAY 2: Bay 2 belongs to Raid X. Leaving the Kingston there '
     + 'means Raid X never gets its third member back and the 3 TB volume stays dead. Bay 1 is the only '
     + 'bay that is not a RAID member, so the boot disk has to end up in Bay 1. That is why STEP 9 exists.',

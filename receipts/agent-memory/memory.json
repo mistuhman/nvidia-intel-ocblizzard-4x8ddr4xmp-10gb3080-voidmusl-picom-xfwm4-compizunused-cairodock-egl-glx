@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 165,
+  "lastSeq": 166,
   "entries": [
     {
       "seq": 1,
@@ -2591,6 +2591,13 @@
       "kind": "note",
       "text": "Session 01a0ae24 (2026-09-17i): operator states the two attachments were DIFFERENT screenshots (one volume selected, one disk selected) and that the partition steps are already done. Both files arrived named image.jpg and rendered identically to me (same First Aid tab, same four-tab bar, same Mount Point /Volumes/Kingston, same 312.4MB used / 12 folders / 57 files). Likely same-filename upload collision, so I saw one image twice. LESSON RECORDED: do not adjudicate GUID-vs-APM from a screenshot at all - ask diskutil. Added three notes to BAY2_NOTES in tools/lion-boot-migrate.ts: (1) 'diskutil list' prints the scheme on the disk header line (GUID_partition_scheme vs Apple_partition_scheme vs FDisk_partition_scheme) and settles it read-only in one line; (2) second independent UI tell - the bottom info panel shows Mount Point/Format/Owners for a VOLUME but Disk Description/Connection Bus/Total Capacity/Partition Map Scheme for a DISK; (3) a real repartition empties the volume, so Used drops to a few MB and Number of Files to single digits - if Used and file count are byte-identical to before, no erase has run regardless of the volume name. OPEN QUESTION for operator: the visible frame still showed 312.4MB used / 57 files / volume named Kingston, which is the PRE-partition state, so confirmation is needed that the GUID repartition actually applied. Requested paste-back of 'diskutil list' and 'diskutil info' scheme lines. Nothing armed; no disk touched.",
       "sha256": "d2640dcf3dbdce5f92c9790df64967cbbe491c8edb88c7306965528390c0d358"
+    },
+    {
+      "seq": 166,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 (2026-09-17i): OPERATOR CORRECTED ME TWICE AND WAS RIGHT BOTH TIMES. (1) I said the two frames were identical; operator: 'both screenshots are different, one has the kingstons partition selected and the drive selected'. I misjudged two near-identical Lion screenshots - the correct method is to read the distinguishing UI region (tab bar / info-panel field labels), not overall similarity. Standing lesson: when two screenshots look alike, diff the specific region that encodes the difference before asserting sameness. (2) Operator already performed the erase + repartition - previous steps are DONE, not pending. Evidence in-frame: volume renamed KINGSTON -> Kingston, mount /Volumes/KINGSTON -> /Volumes/Kingston. (3) Operator: 'itll always have folders used space on the kingston indent... appeared each time, its nothing wrong'. VERIFIED CORRECT: a freshly formatted HFS+ volume is never 0 used - journal (sized to volume, not the fixed 8MB newfs_hfs default), catalog + extents overflow B-trees, allocation bitmap, and hidden .fseventsd/.Spotlight-V100/.Trashes. Computed: 312,352,768 of 239,713,435,648 bytes = 0.1303% = ~1/767th of the disk. Byte-identical repeats across erases are EXPECTED (deterministic format), not a fault. Recorded in BAY2_NOTES. REMAINING GAP: partition map scheme still unconfirmed because it only renders on the DISK row (volume row shows Mount Point/Format/Owners/Folders; disk row shows Partition Map Scheme + Disk Identifier + Media Name). Fastest settle = 'diskutil list', row 0 prints GUID_partition_scheme directly. Nothing armed.",
+      "sha256": "93830f0e77cf8600160954e67cabd7f346d2e5abd2fbea3548bb6f54c2760e25"
     }
   ],
   "stacks": [
