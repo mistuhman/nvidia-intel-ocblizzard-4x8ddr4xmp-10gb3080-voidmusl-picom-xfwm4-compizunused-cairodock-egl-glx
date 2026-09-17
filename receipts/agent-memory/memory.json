@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 158,
+  "lastSeq": 159,
   "entries": [
     {
       "seq": 1,
@@ -2542,6 +2542,13 @@
         }
       ],
       "sha256": "4f3997cb16af79daba9d6b87f270b6b8225ceb85904065a072cd0606d2c37725"
+    },
+    {
+      "seq": 159,
+      "date": "2026-09-17",
+      "kind": "note",
+      "text": "Session 01a0ae24 step 2 (2026-09-17c): operator proposes 2x240GB Kingston RAID 0 + migrate boot off Bay-1 MX500, then wipe MX500. Bay layout operator-confirmed: Bay1=MX500 boot, Bays2-4=Raid X members. TOOL VERDICT (tools/lion-boot-migrate.ts): plan sound but TWO blockers. B1 CAPACITY: stripe=447GiB raw/425 usable vs boot used 899GiB => NO FIT (short 474GiB); after revo reclaim (775GiB, R5) usage=124GiB => FITS with 300GiB spare, so the revo reclaim is a STRUCTURAL PREREQUISITE of the operator's own plan. B2 CHANNELS: 4 bays/4 disks/0 free, two Kingstons need 2 nonexistent channels; options A break RaidX (HIGH - no-redundancy stripe), B single Kingston no stripe (no purchase, LOW), C optical ODD SATA (needs cables operator lacks, bootability disputed), D RaidX redesign. METHOD sourced: RAID0 boot supported on 3,1; cannot RAID the running disk; CLONE with CCC (already installed per R1) not the Lion installer; no Recovery HD on RAID0. Nothing armed, no erase authored. AWAITING operator choice of A-D + authorization of revo reclaim.",
+      "sha256": "e13beac7d8332915b1d923f7509194378bc9b06be4dda3579fbf2a5adb95a1c8"
     }
   ],
   "stacks": [

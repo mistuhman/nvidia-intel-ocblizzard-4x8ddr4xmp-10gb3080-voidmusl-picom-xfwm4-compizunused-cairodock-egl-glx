@@ -151,6 +151,31 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] 1. **AirPort Base Station / Time Capsule Factory Reset**: Perform pinhole hard factory reset on the Time Capsules and AirPort Express so AirPort Utility can configure them cleanly without password prompts. (6.3.1 installed on Lion per operator 2026-09-15; resets still open.)
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
+  - 2026-09-17c (session 01a0ae24) **OPERATOR PLAN: 2× 240 GB Kingston RAID 0 → migrate boot →
+    then wipe the MX500.** Bay layout confirmed by operator: Bay 1 = MX500 boot, Bays 2-4 = the
+    three Raid X members. Verdict from `node tools/lion-boot-migrate.ts check`: **the plan is sound
+    and it is the right shape — but the ORDER has one blocking prerequisite, and there is a
+    channel problem.**
+    - **BLOCKER 1 — capacity (arithmetic).** A 2×240 GB stripe is **447 GiB raw / ~425 GiB usable**.
+      The boot volume currently holds **899 GiB**. It does **not** fit — short by ~474 GiB. After the
+      ABSOLUTION R5 `revo` reclaim (775 GiB) the system is **~124 GiB**, which fits with ~300 GiB to
+      spare. **So the revo reclaim is not housekeeping — it is a structural prerequisite of the
+      operator's own migration plan**, and it may by itself satisfy "clean the SSD".
+    - **BLOCKER 2 — SATA channels.** 4 bays, 4 disks, **0 free**. Two Kingstons need two channels
+      that do not exist in the bay backplane. Options (operator decision): **A** break Raid X (HIGH
+      risk — it is a no-redundancy stripe, pulling a member destroys all 3 TB); **B** single Kingston
+      240 as boot, no stripe, in the bay the MX500 vacates (**no purchase, LOW risk** — 124 GiB fits
+      one 240 easily); **C** optical-bay hidden ODD SATA ports (needs SATA data + Molex→SATA power +
+      2.5" bracket, which the operator does not own, and ODD-port bootability is DISPUTED);
+      **D** redesign Raid X into a redundant set (fits the "new drives for raid" end-goal).
+    - **Method constraints, sourced:** RAID 0 boot IS supported on a Mac Pro 3,1; you **cannot**
+      create a RAID set on the running startup disk; **clone with Carbon Copy Cloner (already
+      installed, R1 receipt) — do NOT use the Lion installer**, which refuses RAID targets over the
+      Recovery HD; a RAID 0 boot set has no Recovery HD; and the Mac would then have **two** striped
+      sets with zero parity anywhere.
+    - Ordered plan (`node tools/lion-boot-migrate.ts plan`): reclaim revo → verify usage + Kingston
+      SKUs → decide bays → build stripe → CCC clone → Startup Disk + prove clean boots → **only then**
+      the MX500 is a non-boot disk and wiping it becomes a normal erase.
   - 2026-09-17 (session 01a0ae24, later) **IDENTITY RESOLVED BY OPERATOR PHOTO — THE COLLISION IS
     CLOSED AND THE ANSWER IS: THERE IS NO SPARE SSD.** Operator Disk Utility screenshot (chat-only
     bytes, perception receipt agent-memory seq 158) enumerates the ENTIRE sidebar: `1 TB WDC

@@ -51,6 +51,7 @@ run('node', ['tools/mac-es5-passthrough.ts', 'selftest']);
 run('node', ['tools/vision-check.ts', 'selftest']);
 // Lion disk identity gate: guards the never-erase set and refuses to emit any erase
 run('node', ['tools/lion-disk-plan.ts', 'selftest']);
+run('node', ['tools/lion-boot-migrate.ts', 'selftest']);
 run('node', ['tools/block-lint.ts', '--root', 'etc/lion-disk-identity.block']);
 run('python3', ['-m', 'json.tool', 'docs/lion-workflow.json']);
 // Mac art pass-compiler: fact ledger, scene IR and the imaging pass loop

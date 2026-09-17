@@ -1,0 +1,187 @@
+#!/usr/bin/env node
+// lion-boot-migrate.ts - feasibility math + ordered plan for moving the Lion boot volume
+// OFF the 1 TB Crucial MX500 (Bay 1) ONTO a 2x240 GB Kingston RAID 0 stripe, so the MX500
+// can finally be wiped. Operator proposal 2026-09-17.
+//
+// The point of this tool is that the proposal has TWO hard blockers that are arithmetic and
+// hardware facts, not opinions, and both must be surfaced before anyone touches a disk:
+//
+//   BLOCKER 1 - CAPACITY. The boot volume currently holds 899 GiB. A 2x240 GB stripe is
+//   ~447 GiB raw. 899 does NOT fit in 447. The migration is IMPOSSIBLE until the revo home
+//   (775 GiB, ABSOLUTION R5) is reclaimed first. After that reclaim the used set is ~124 GiB,
+//   which fits with ~300 GiB to spare. So the R5 reclaim is not optional housekeeping - it is
+//   a STRUCTURAL PREREQUISITE of the operator's own migration plan.
+//
+//   BLOCKER 2 - SATA CHANNELS. The Mac Pro 3,1 has exactly 4 bootable drive bays. Current
+//   occupancy is Bay1 = MX500 boot, Bays 2-4 = the three Raid X members. That is 4/4. Two
+//   Kingstons need two more channels that do not exist in the bay backplane. The board does
+//   carry two extra "ODD SATA" ports behind the front fan assembly, but reaching them needs
+//   cables the operator has confirmed he does not own, and their bootability is DISPUTED in
+//   the sources. Every resolution to this is an operator decision, not an agent action.
+//
+// Usage: node tools/lion-boot-migrate.ts <check|plan|selftest>
+
+// ---------------------------------------------------------------- measured inputs (receipts)
+const GiB = 1024 ** 3, GB = 1000 ** 3;
+export const FACTS = {
+  bootUsedGiB: 899,        // receipts/absolution/R1/burn-2026-09-17.txt : /dev/disk3s2 931Gi 899Gi 97%
+  bootSizeGiB: 931,
+  revoHomeGiB: 775,        // receipts/absolution/R5/identity-and-space.md : revo home = 775G
+  kingstonCount: 2,        // operator 2026-09-17 + receipts/inventory/macpro31.md seq 82 item 7
+  kingstonGB: 240,
+  bays: 4,                 // iFixit 25114: Mac Pro Early 2008 = four internal bays
+  baysUsed: 4,             // Bay1 MX500 boot + Bays 2-4 = three Raid X members (operator layout)
+  headroom: 0.95,          // HFS+ slack + SSD over-provisioning
+};
+
+export const stripeRawGiB = (): number => (FACTS.kingstonCount * FACTS.kingstonGB * GB) / GiB;
+export const stripeUsableGiB = (): number => stripeRawGiB() * FACTS.headroom;
+export const usedAfterReclaimGiB = (): number => FACTS.bootUsedGiB - FACTS.revoHomeGiB;
+export const fitsNow = (): boolean => FACTS.bootUsedGiB <= stripeUsableGiB();
+export const fitsAfterReclaim = (): boolean => usedAfterReclaimGiB() <= stripeUsableGiB();
+export const freeBays = (): number => FACTS.bays - FACTS.baysUsed;
+
+// ---------------------------------------------------------------- external constraints
+export type Constraint = { id: string; verdict: string; detail: string; source: string };
+export const CONSTRAINTS: Constraint[] = [
+  {
+    id: 'C1-raid0-boot-supported',
+    verdict: 'SUPPORTED',
+    detail: 'Apple software RAID 0 is a valid Mac Pro boot volume; a 3,1 owner documents the exact bay-2/3 stripe + clone + Startup Disk route.',
+    source: 'forums.macrumors.com/threads/676960 (Mac Pro early 2008, step-by-step)',
+  },
+  {
+    id: 'C2-cannot-raid-the-running-disk',
+    verdict: 'HARD RULE',
+    detail: 'You cannot create a RAID set on the startup disk; creation unmounts and destroys members. The stripe must be built from OTHER disks while booted from the MX500.',
+    source: 'support.apple.com/guide/disk-utility/dskua23150fd',
+  },
+  {
+    id: 'C3-installer-vs-clone',
+    verdict: 'CLONE, DO NOT REINSTALL',
+    detail: 'The Lion installer often refuses a RAID target because it cannot build a Recovery HD. The reliable path is: keep booting the MX500, then CLONE onto the stripe (Carbon Copy Cloner / SuperDuper / Disk Utility Restore). CCC is ALREADY INSTALLED on this Mac.',
+    source: 'forums.macrumors.com/threads/1256512 + receipts/absolution/R1 (com.bombich.ccc, 13M)',
+  },
+  {
+    id: 'C4-no-recovery-hd-on-raid',
+    verdict: 'ACCEPTED LOSS',
+    detail: 'A RAID 0 boot set generally carries no Recovery HD. On 10.7.5 this machine already boots from a clone and uses Option-boot, so the practical loss is small - but it must be a conscious trade.',
+    source: 'forums.macrumors.com/threads/1256512',
+  },
+  {
+    id: 'C5-stripe-doubles-failure-risk',
+    verdict: 'RISK',
+    detail: 'RAID 0 across two SSDs means either drive failing loses the whole boot volume. Note the existing Raid X (3x1TB -> 3TB) is ALSO a no-redundancy stripe, so this Mac would then have two striped sets and zero parity anywhere.',
+    source: 'forums.macrumors.com/threads/676960 + operator Disk Utility photo 2026-09-17',
+  },
+  {
+    id: 'C6-odd-sata-ports-exist-but-disputed',
+    verdict: 'DISPUTED',
+    detail: 'The logic board has two extra hidden ODD SATA ports behind the front fan assembly. Some owners boot from them; the long-standing write-up says they are NOT bootable. Either way they need a SATA data cable + Molex-to-SATA power + a 2.5in bracket, which the operator has stated he does not own.',
+    source: 'n0tablog RAID10/Bootcamp ODD-SATA write-up + macrumors 971435 + receipts/inventory/macpro31.md item 6',
+  },
+];
+
+// ---------------------------------------------------------------- bay resolution options
+export type Option = { id: string; title: string; cost: string; risk: string; note: string };
+export const BAY_OPTIONS: Option[] = [
+  {
+    id: 'A', title: 'Temporarily break Raid X: pull one WD, stripe both Kingstons in the freed bay + one more',
+    cost: 'no purchase', risk: 'HIGH',
+    note: 'Raid X is a NO-REDUNDANCY stripe: pulling any member destroys the 3 TB set. Only viable if Raid X contents are backed up or disposable. Needs 2 free bays, so TWO WDs come out.',
+  },
+  {
+    id: 'B', title: 'Single Kingston 240 as the new boot (no stripe), in the bay the MX500 vacates',
+    cost: 'no purchase', risk: 'LOW',
+    note: 'After the revo reclaim the system is ~124 GiB, which fits one 240 comfortably. Loses the stripe speed but needs ZERO extra channels and zero cables. Simplest path that still frees the MX500.',
+  },
+  {
+    id: 'C', title: 'Mount both Kingstons in the optical bay on the hidden ODD SATA ports',
+    cost: 'SATA data cable + Molex-to-SATA power + 2.5in bracket', risk: 'MEDIUM',
+    note: 'Keeps all 4 bays for HDDs - the original 4x1TB plan. Blocked today by missing cables, and ODD-port bootability is disputed (C6). Verify with one drive before buying two of everything.',
+  },
+  {
+    id: 'D', title: 'Retire the Raid X stripe into a smaller/redundant set, freeing bays permanently',
+    cost: 'depends on target layout', risk: 'OPERATOR DECISION',
+    note: 'Fits the stated end-goal ("new drives for raid") and fixes the zero-parity problem, but it is a storage redesign, not a boot migration. Separate wave.',
+  },
+];
+
+// ---------------------------------------------------------------- ordered plan
+export function planSteps(): string[] {
+  return [
+    'STEP 0 (BLOCKING, no hardware): reclaim the revo home - 775 GiB of the 899 GiB in use. Until this ' +
+      'runs, 899 GiB cannot fit a ~447 GiB stripe and the migration is arithmetically impossible. ' +
+      'ABSOLUTION already harvests revo Downloads + themes to /Users/el/absolution-harvest/ and MOVES the ' +
+      'home to quarantine (reversible until purged). This step alone may satisfy "clean the SSD".',
+    'STEP 1 (read-only): confirm post-reclaim usage with df -h / and confirm the Kingston SKUs from their ' +
+      'labels. Exact model matters for TRIM/firmware; receipts/inventory/macpro31.md still lists them UNKNOWN.',
+    'STEP 2 (operator decision): resolve the bay/channel problem - options A-D above. 4 bays, 4 disks, ' +
+      'zero free today. Nothing proceeds until this is chosen.',
+    'STEP 3 (destructive to the Kingstons ONLY): build the stripe in Disk Utility from the two Kingstons. ' +
+      'Never select the running disk (C2) and never select a Raid X member.',
+    'STEP 4 (copy, non-destructive to source): clone the live system onto the stripe with Carbon Copy ' +
+      'Cloner (already installed) - NOT the Lion installer (C3). The MX500 stays untouched and bootable.',
+    'STEP 5 (reversible): System Preferences > Startup Disk > the stripe, then reboot. Inverse = Option-boot ' +
+      'and pick the MX500 again. Prove several clean boots from the stripe before trusting it.',
+    'STEP 6 (finally the original request): only once the stripe has booted cleanly and repeatedly does the ' +
+      'MX500 stop being the boot disk - at which point wiping it is a normal erase of a non-boot, non-RAID ' +
+      'disk, and tools/lion-disk-plan.ts guards will show a genuinely free target for the first time.',
+  ];
+}
+
+// ---------------------------------------------------------------- output
+function check(): void {
+  console.log('CAPACITY CHECK - operator proposal: 2x240GB Kingston RAID 0 as the new boot');
+  console.log(`  stripe raw            ${stripeRawGiB().toFixed(1)} GiB (${FACTS.kingstonCount} x ${FACTS.kingstonGB} GB)`);
+  console.log(`  stripe usable (~95%)  ${stripeUsableGiB().toFixed(1)} GiB`);
+  console.log(`  boot used NOW         ${FACTS.bootUsedGiB} GiB  => FITS: ${fitsNow() ? 'YES' : 'NO'}` +
+    (fitsNow() ? '' : `  SHORT BY ${(FACTS.bootUsedGiB - stripeUsableGiB()).toFixed(1)} GiB`));
+  console.log(`  boot used AFTER revo  ${usedAfterReclaimGiB()} GiB  => FITS: ${fitsAfterReclaim() ? 'YES' : 'NO'}` +
+    (fitsAfterReclaim() ? `  headroom ${(stripeUsableGiB() - usedAfterReclaimGiB()).toFixed(1)} GiB` : ''));
+  console.log(`\nBAY CHECK  bays=${FACTS.bays} used=${FACTS.baysUsed} free=${freeBays()}` +
+    `  => need ${FACTS.kingstonCount} more channels, have ${freeBays()}`);
+  console.log('\nCONSTRAINTS:');
+  for (const c of CONSTRAINTS) console.log(`  [${c.verdict}] ${c.id}\n     ${c.detail}\n     src: ${c.source}`);
+  console.log('\nBAY/CHANNEL OPTIONS:');
+  for (const o of BAY_OPTIONS) console.log(`  ${o.id}. ${o.title}\n     cost: ${o.cost} | risk: ${o.risk}\n     ${o.note}`);
+  const verdict = !fitsNow() && fitsAfterReclaim()
+    ? 'PLAN IS SOUND, BUT ORDER MATTERS: reclaim revo FIRST (step 0), then the stripe fits. Bay/channel question is still an operator decision.'
+    : 'RE-CHECK: capacity assumptions changed.';
+  console.log(`\nVERDICT: ${verdict}`);
+}
+
+function plan(): void {
+  console.log('BOOT MIGRATION PLAN - MX500 (Bay 1) -> 2x240GB Kingston stripe');
+  for (const s of planSteps()) console.log(`\n${s}`);
+  console.log('\nNOTHING HERE IS ARMED. No erase, clone or Startup Disk change is authored by this tool.');
+}
+
+function selftest(): void {
+  let fail = 0;
+  const ok = (n: string, c: boolean): void => { console.log(`${c ? 'PASS' : 'FAIL'} ${n}`); if (!c) fail++; };
+  // the two findings this tool exists to prove
+  ok('899 GiB does NOT fit a 2x240 stripe', !fitsNow());
+  ok('post-reclaim 124 GiB DOES fit', fitsAfterReclaim());
+  ok('reclaim delta is the revo home', usedAfterReclaimGiB() === FACTS.bootUsedGiB - FACTS.revoHomeGiB);
+  ok('stripe raw is ~447 GiB', Math.round(stripeRawGiB()) === 447);
+  ok('zero free bays today', freeBays() === 0);
+  ok('two Kingstons need more channels than exist', FACTS.kingstonCount > freeBays());
+  // guardrails
+  ok('every constraint cites a source', CONSTRAINTS.every((c) => c.source.length > 0));
+  ok('the no-RAID-on-boot-disk rule is recorded', CONSTRAINTS.some((c) => c.id === 'C2-cannot-raid-the-running-disk'));
+  ok('clone-not-installer is recorded', CONSTRAINTS.some((c) => /CLONE/.test(c.verdict)));
+  ok('a zero-purchase option exists', BAY_OPTIONS.some((o) => o.cost === 'no purchase' && o.risk === 'LOW'));
+  ok('plan puts the reclaim first', /STEP 0/.test(planSteps()[0]) && /revo/.test(planSteps()[0]));
+  ok('plan wipes the MX500 only at the end', /STEP 6/.test(planSteps()[6]) && /wiping it/.test(planSteps()[6]));
+  const body = planSteps().join('\n');
+  ok('plan never tells the operator to erase the running disk', !/erase the (running|boot)/i.test(body));
+  console.log(fail === 0 ? 'LION_BOOT_MIGRATE_SELFTEST=PASS' : `LION_BOOT_MIGRATE_SELFTEST=FAIL failures=${fail}`);
+  if (fail > 0) process.exit(1);
+}
+
+const cmd = process.argv[2] ?? 'check';
+if (cmd === 'check') check();
+else if (cmd === 'plan') plan();
+else if (cmd === 'selftest') selftest();
+else { console.log('usage: node tools/lion-boot-migrate.ts <check|plan|selftest>'); process.exit(1); }
