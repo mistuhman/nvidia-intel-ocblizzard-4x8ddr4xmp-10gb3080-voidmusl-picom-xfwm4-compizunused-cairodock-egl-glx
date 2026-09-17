@@ -1,0 +1,41 @@
+id -u
+# lion-disk-identity.block - Mac Pro 3,1, ROOT shell (sudo -s, then paste). READ-ONLY.
+# Purpose: resolve WHICH PHYSICAL DISK IS WHICH before the word "wipe" is used again.
+# It runs diskutil/system_profiler reads only. No erase, no unmount, no bless, no move, no delete.
+#
+# Why a probe instead of the wipe block: ToDo item 3 names "the superseded Bay 3 start-disk clone
+# media" as the wipe target, but the 2026-09-17 burn proves "start disk clone" is the LIVE BOOT
+# volume (/dev/disk3s2, 931Gi, 97% full). Same name, different media, and the physical identity was
+# never measured. etc/lion-ssd-wipe.block stays UN-ARMED until this output names a real target.
+#
+# Protected by rule (never selectable by any future erase wave):
+#   /dev/disk3s2   start disk clone     CURRENT BOOT, mounted at /, Lion 10.7.5, 931Gi 97% full
+#   /dev/disk0s2   Apple_RAID member    ~999.9 GB RAID member
+#   /dev/disk1s2   Apple_RAID member    ~999.9 GB RAID member
+#   /dev/disk2s2   Apple_RAID member    ~999.9 GB RAID member
+#   /dev/disk4     Raid X               3.0 TB logical HFS volume with live data, mounted at /Volumes/Raid X
+#
+# Paste the FULL output back. Nothing here changes the machine.
+echo == WHOAMI AND BOOT
+date
+whoami
+mount | grep ' on / '
+df -h /
+echo == ALL PHYSICAL DISKS, WITH THE SSD FLAG THAT WAS NEVER MEASURED
+diskutil list
+echo == PER-DISK IDENTITY: media name, size, protocol, SSD flag, removable
+for d in 0 1 2 3 4 5 6 7
+do
+diskutil info disk$d 2>/dev/null | grep -Ei 'Device Identifier|Device / Media Name|Total Size|Disk Size|Protocol|Solid State|Medium Type|Removable Media|Virtual|Read-Only Media|Mount Point'
+echo ---
+done
+echo == RAID MEMBERSHIP, SO MEMBERS CAN BE EXCLUDED BY RECEIPT NOT BY MEMORY
+diskutil appleRAID list
+diskutil coreStorage list
+echo == PHYSICAL BAY MAPPING FROM THE HARDWARE TREE
+system_profiler SPSerialATADataType 2>/dev/null | grep -Ei 'Bay|SATA|Model|Capacity|Medium Type|Rotational|BSD Name|Unit Number'
+echo == MOUNTED VOLUMES
+ls -l /Volumes
+echo == FREE SPACE ON EVERY MOUNT
+df -h
+echo LIONDISK1_DONE No disk was erased.

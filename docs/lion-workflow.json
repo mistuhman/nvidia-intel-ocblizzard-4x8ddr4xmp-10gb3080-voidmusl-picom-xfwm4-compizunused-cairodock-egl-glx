@@ -1,9 +1,9 @@
 {
-  "updated": "2026-09-16h",
-  "session": "01a0aade",
+  "updated": "2026-09-17 (session 01a0ae24)",
+  "session": "01a0ae24",
   "machine": "2026-09-16 LIONONE1 receipt 1c474145: MacPro3,1; Lion 10.7.5 11G63, x86_64; 8 CPUs, 10 GiB RAM. Root /dev/disk3s2 = start disk clone, bay/media identity unverified. GTX 285 Slot-1 x16 1024 MB; DELL G3223Q + DELL S2725QS both online 1920x1080 at 60 Hz. Arctic Fox 47.3 present. Firewall disabled. /Users directory names do not establish active accounts; MicPort not shown in captured audio inventory. Historical boot/bay/account claims are not current state.",
   "goal": "ACHIEVED 2026-09-15: Mac OS X 10.7 Lion successfully installed and booted to working Andromeda Galaxy desktop with dual-monitor output on ATI Radeon HD 3870 Mac Edition (9800 GT removed from SLOT1). Speakers connected and functioning.",
-  "nextAction": "2026-09-17 ABSOLUTION R1 (PR #91): Lion clear+harden wave authored, no drive is wiped. Channel = https://da.gd/absolution (permanent, branch-pinned, coshorten-verified). Operator runs absolution.command and burns ~/Desktop/absolution.txt; agent reads the inbox with fetch_page then node tools/absolution.ts parse to decide the sweep. Sweep = reversible MOVE to /Users/Shared/lion-quarantine, CONFIRM-gated, Apple+KEEP classes protected. Old etc/lion-ssd-wipe.block stays un-armed (eraseDisk violates the no-wipe directive and the STORAGE HOLD).",
+  "nextAction": "2026-09-17 session 01a0ae24: OPERATOR ASKED TO WIPE THE SSD; THE WIPE IS BLOCKED ON A NAME COLLISION, not on policy. ToDo item 3 names the target 'the superseded Bay 3 start-disk clone media', but the ABSOLUTION burn (receipts/absolution/R1/burn-2026-09-17.txt) proves 'start disk clone' is the LIVE BOOT volume: /dev/disk3s2 on / (hfs), 931Gi, 899Gi used, 97%. Two media, one name, physical identity never measured. etc/lion-ssd-wipe.block selects on media name crucial|mx500|ssd; zero receipts in this repo print a Solid State flag for any Mac disk, and the only MX500 with a receipt is in the OMEN (Void) - a different machine. Every disk with a receipt here is never-erase (boot + disk0s2/disk1s2/disk2s2 Apple_RAID + disk4 Raid X), so the wipe wave has NO proven target. NEXT SINGLE STEP = operator runs etc/lion-disk-identity.block (root, READ-ONLY, emitted by node tools/lion-disk-plan.ts emit) and pastes the full output; it prints the Solid State flag, protocol, bay mapping and RAID membership per disk. An erase is authored only when node tools/lion-disk-plan.ts guards shows a free disk. lion-ssd-wipe stays UN-ARMED and its old CONFIRM line is never reused. Harden (etc/lion-harden.block, config-only) is independent of the disk question: the R5 burn shows firewall disabled, stealth disabled, guest UNSET.",
   "lastVerifiedBless": {
     "when": "2026-09-12 03:56:44 PDT",
     "log": "FORENSIC1 lion-forensic.txt 6661 bytes / 120 lines, text/plain uuid 6e8ebd6a + query a8f76d53",
@@ -17,7 +17,7 @@
   "volumes": [
     {
       "name": "start disk clone",
-      "role": "CURRENT BOOT: mounted at /, Lion 10.7.5; old wipe authorization suspended",
+      "role": "CURRENT BOOT: mounted at /, Lion 10.7.5; old wipe authorization suspended | 2026-09-17: SAME NAME as the ToDo item-3 wipe target; that collision is why the wipe is gated behind etc/lion-disk-identity.block.",
       "lastNode": "/dev/disk3s2",
       "location": "UNVERIFIED; do not infer Bay 3 or SSD from historical name",
       "erase": "NEVER (current boot)"

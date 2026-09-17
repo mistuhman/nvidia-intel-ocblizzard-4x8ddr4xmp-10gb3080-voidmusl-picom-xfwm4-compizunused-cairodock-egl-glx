@@ -151,6 +151,18 @@ Operator verbatim: "priority is wiping ssd, clearing out all keychains/logins/da
 - [ ] 1. **AirPort Base Station / Time Capsule Factory Reset**: Perform pinhole hard factory reset on the Time Capsules and AirPort Express so AirPort Utility can configure them cleanly without password prompts. (6.3.1 installed on Lion per operator 2026-09-15; resets still open.)
 - [x] 2. **Clear Keychains / User Data / Account** (DONE 2026-09-15, operator verbatim: "new admin account with no other accounts" - ddds deletion completed, fresh single admin stands up; the account-delete UI took the old keychains with it, residual config sweep ships in `?(lion-harden)`).
 - [~] 3. **Drive Swap + RAID** (RAID SET 2026-09-15 - operator did erase+RAID by hand in Disk Utility GUI, so ?(lion-erase-inventory-probe)/?(lion-erase-spares-wd1tb) were bypassed by operator action and stay un-armed history; member layout receipt rides in on the wipe-block output below. REMAINING: SSD wipe (the superseded Bay 3 start-disk clone media) + config harden = SHIPPED 2026-09-15 as burn wave `lion-wipe-harden.txt`: ?(lion-ssd-wipe) eafa8be7 (discovery-gated - maps first, erases only on the CONFIRM=diskN re-run it prints; boot+RAID members can never be selected) -> ?(lion-harden) aa9fccd0 (config-only, Arctic Fox keep-checked before/after).
+  - 2026-09-17 (session 01a0ae24) **SSD WIPE IS BLOCKED — NAME COLLISION, NOT A REFUSAL.** Item 3
+    names the wipe target "the superseded Bay 3 start-disk clone media", but the ABSOLUTION burn of
+    2026-09-17 proves `start disk clone` is the LIVE BOOT VOLUME: `/dev/disk3s2 on / (hfs)`, 931Gi,
+    899Gi used, 97%, `Finished file system verification on disk3s2 start disk clone`. Two different
+    media share one name and the physical identity was never measured. `?(lion-ssd-wipe)` selects by
+    media name matching `crucial|mx500|ssd`; no receipt in this repo has ever printed a Solid State
+    flag for a Mac disk (0 hits under `receipts/`), and the only MX500 with a receipt
+    (`ata-CT1000MX500SSD1_…`) is in the OMEN running Void — a DIFFERENT MACHINE. Every disk with a
+    receipt here is never-erase (boot + 3 Apple_RAID members + Raid X), so the wave currently has NO
+    proven target. `?(lion-ssd-wipe)` stays UN-ARMED. Gate = `etc/lion-disk-identity.block`
+    (read-only, emitted by `node tools/lion-disk-plan.ts emit`; guards in `… guards`); the erase is
+    authored only after that output names a real free disk.
 - [ ] 4. **Build APEX OMEN PC** (deferred).
 
 ## 2026-09-16f operator tracks — ONE TASK AT A TIME, agentically (operator directive)
