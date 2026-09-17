@@ -1,0 +1,200 @@
+ABSOLUTION1 rollout=R1 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91 session=01a0ad71 date=2026-09-17
+date=Wed Sep 16 22:02:25 PDT 2026
+host=RevolYOUtionarys-Mac-Pro.local
+user=el
+--- boot volume ---
+/dev/disk3s2 on / (hfs, local, journaled)
+Filesystem     Size   Used  Avail Capacity  Mounted on
+/dev/disk3s2  931Gi  899Gi   32Gi    97%    /
+--- apps: CLASS | size | bundle | name ---
+APP APPLE | 20M | com.apple.AddressBook | Address Book
+APP CANDIDATE | 62M | com.adiumX.adiumX | Adium
+APP CANDIDATE | 3.0M | com.adobe.amp.4875E02D9FB21EE389F73B8D1702B320485DF8CE.1 | Adobe Media Player
+APP APPLE | 301M | com.apple.Aperture | Aperture
+APP APPLE | 9.6M | com.apple.appstore | App Store
+APP APPLE | 19M | com.apple.Qadministrator | Apple Qadministrator
+APP APPLE | 25M | com.apple.AppleQmaster | Apple Qmaster
+APP KEEP | 102M | org.mozilla.arctic fox | ArcticFox
+APP APPLE | 10.0M | com.apple.Automator | Automator
+APP CANDIDATE | 5.5M | com.embraceware.awaken | Awaken
+APP CANDIDATE | 164K | com.blackmagic-design.BlackmagicDiskSpeedTest | Blackmagic Disk Speed Test
+APP CANDIDATE | 1.2M | com.blackmagic-design.MediaExpress | Blackmagic Media Express
+APP CANDIDATE | 8.2M | com.blackmagic-design.OnAir | Blackmagic On-Air
+APP CANDIDATE | 250M | com.hotheadgames.braid | Braid
+APP CANDIDATE | 7.2M | com.macrabbit.CSSEdit | CSSEdit
+APP APPLE | 5.0M | com.apple.calculator | Calculator
+APP CANDIDATE | 13M | com.bombich.ccc | Carbon Copy Cloner
+APP APPLE | 6.5M | com.apple.Chess | Chess
+APP APPLE | 45M | com.apple.CinemaTools | Cinema Tools
+APP CANDIDATE | 9.1M | com.maintain.cocktail.leopard | Cocktail
+APP APPLE | 92M | com.apple.compressor.Compressor | Compressor
+APP CANDIDATE | 2.6M | com.contourdesign.shuttle | Contour Shuttle
+APP CANDIDATE | 8.4M | com.crushftp | CrushFTP4
+APP CANDIDATE | 23M | ch.sudo.cyberduck | Cyberduck
+APP APPLE | 8.2M | com.apple.DVDPlayer | DVD Player
+APP APPLE | 120M | com.apple.dvdstudiopro | DVD Studio Pro
+APP CANDIDATE | 18M | com.metakine.dvdremaster | DVDRemaster
+APP CANDIDATE | 7.4M | com.daisydiskapp.DaisyDisk | DaisyDisk
+APP APPLE | 876K | com.apple.dashboardlauncher | Dashboard
+APP APPLE | 4.6M | com.apple.Dictionary | Dictionary
+APP CANDIDATE | 9.2M | DivX Converter | DivX Converter
+APP CANDIDATE | 15M | com.divxinc.divxplayer | DivX Player
+APP CANDIDATE | 2.9M | com.dougscripts.Dupin | Dupin
+APP CANDIDATE | 0B | (none) | Evernote
+APP CANDIDATE | 12M | fi.eye.Manager | Eye-Fi Manager
+APP APPLE | 10.0M | com.apple.FaceTime | FaceTime
+APP CANDIDATE | 812K | com.metakine.fairmount | Fairmount (for VLC 32 bits)
+APP CANDIDATE | 680K | com.metakine.fairmount | Fairmount (for VLC 64 bits)
+APP APPLE | 413M | com.apple.FinalCutPro | Final Cut Pro
+APP CANDIDATE | 68M | org.mozilla.firefox | Firefox
+APP KEEP | 68M | net.interacto.Flavours | Flavours
+APP CANDIDATE | 61M | com.flock.Flock | Flock
+APP APPLE | 10.0M | com.apple.FontBook | Font Book
+APP CANDIDATE | 14M | com.binarynights.ForkLift | ForkLift
+APP CANDIDATE | 29M | com.noiseindustries.FxFactory | FxFactory
+APP KEEP | 319M | com.apple.garageband | GarageBand
+APP CANDIDATE | 28M | com.garmin.WebUpdater | Garmin WebUpdater
+APP CANDIDATE | 7.5M | ca.primatelabs.Geekbench2.MINORVERSION | Geekbench
+APP CANDIDATE | 55M | com.google.Chrome | Google Chrome 2
+APP CANDIDATE | 228M | com.google.Chrome | Google Chrome
+APP CANDIDATE | 109M | com.Google.GoogleEarthPlus | Google Earth
+APP CANDIDATE | 1.2M | com.mt.goggles.23A0E9CF6CF33D71022891FB023724F9D66B4F2C.1 | Google Goggles
+APP CANDIDATE | 1.2M | net.sourceforge.grandperspectiv | GrandPerspective
+APP CANDIDATE | 15M | org.m0k.handbrake | HandBrake
+APP APPLE | 3.3M | com.apple.Image_Capture | Image Capture
+APP CANDIDATE | 2.0G | com.mackiev.kidpix3d | Kid Pix Deluxe 3D
+APP APPLE | 1.1M | com.apple.launchpad.launcher | Launchpad
+APP CANDIDATE | 216M | com.leapfrog.connect.shell | LeapFrogConnect
+APP CANDIDATE | 29M | com.northernsw.nswCacheCleaner | Leopard Cache Cleaner
+APP APPLE | 47M | com.apple.LiveType | LiveType
+APP CANDIDATE | 9.8M | com.RedGiantSoftware.LooksBuilder | LooksBuilder
+APP CANDIDATE | 35M | hu.mplayerhq.mplayerosx.extended | MPlayer OSX Extended
+APP CANDIDATE | 2.0M | com.SmugMug.MacDaddy | MacDaddy
+APP CANDIDATE | 60M | com.advenio.MacGourmet | MacGourmet Deluxe
+APP CANDIDATE | 17M | com.advenio.MacGourmet | MacGourmet
+APP CANDIDATE | 4.3M | com.macupdate.macupdate | MacUpdate Desktop
+APP CANDIDATE | 345M | com.amanitadesign.machinarium | Machinarium
+APP APPLE | 49M | com.apple.mail | Mail
+APP CANDIDATE | 9.2M | com.markspace.notebook | Mark:Space Notebook
+APP CANDIDATE | 5.3M | com.bluelightninglabs.mac.mathemagics | Mathemagics
+APP CANDIDATE | 717M | com.mackiev.mavis | Mavis Beacon Teaches Typing
+APP APPLE | 1.5M | com.apple.exposelauncher | Mission Control
+APP APPLE | 388M | com.apple.motion | Motion
+APP CANDIDATE | 15M | com.neatreceipts.nrm | NeatWorks
+APP CANDIDATE | 56M | com.novamind.NovaMindPlatinum | NovaMind Platinum
+APP CANDIDATE | 50M | com.novamind.NovaMindPro | NovaMind Pro
+APP CANDIDATE | 43M | com.operasoftware.Opera | Opera
+APP APPLE | 21M | com.apple.PhotoBooth | Photo Booth
+APP APPLE | 41M | com.apple.Preview | Preview
+APP APPLE | 28M | com.apple.QuickTimePlayerX | QuickTime Player
+APP CANDIDATE | 43M | com.realmacsoftware.rapidweaverpro | RapidWeaver
+APP CANDIDATE | 1.1M | net.kelleycomputing.Rember | Rember
+APP APPLE | 14M | com.apple.RemoteDesktop | Remote Desktop
+APP APPLE | 36M | com.apple.Safari | Safari
+APP CANDIDATE | 16M | com.vara.screenflow | ScreenFlow
+APP CANDIDATE | 36M | com.skype.skype | Skype
+APP CANDIDATE | 19M | com.acaciatreesoftware.SousChef | SousChef
+APP CANDIDATE | 3.3M | com.sponge-mac.Sponge | Sponge
+APP APPLE | 3.6M | com.apple.Stickies | Stickies
+APP CANDIDATE | 9.2M | com.supersync/1240868749531/SuperSync | SuperSync
+APP CANDIDATE | 4.8M | com.sonzea.Syncopation | Syncopation
+APP APPLE | 3.7M | com.apple.systempreferences | System Preferences
+APP CANDIDATE | 12M | com.micromat.techtooldeluxe | TechTool Deluxe
+APP APPLE | 9.1M | com.apple.TextEdit | TextEdit
+APP APPLE | 1.7M | com.apple.backup.launcher | Time Machine
+APP CANDIDATE | 102M | com.tomtom.tomtomhome | TomTom HOME
+APP CANDIDATE | 11M | org.m0k.transmission | Transmission
+APP CANDIDATE | 20M | com.panic.Transmit3 | Transmit
+APP CANDIDATE | 3.4M | TweetDeckFast.F9107117265DB7542C1A806C8DB837742CE14C21.1 | TweetDeck
+APP CANDIDATE | 104M | org.videolan.vlc | VLC
+APP CANDIDATE | 222M | com.vmware.fusion | VMware Fusion
+APP CANDIDATE | 4.1M | com.TechTracker.ProDesktop | VersionTracker Pro
+APP CANDIDATE | 5.5M | com.id-design.whatsize | WhatSize
+APP CANDIDATE | 9.5M | com.nullsoft.Winamp | Winamp
+APP CANDIDATE | 69M | com.yahoo.messenger3 | Yahoo! Messenger
+APP CANDIDATE | 9.3M | com.HungrySeacow.YummySoup! | YummySoup!
+APP CANDIDATE | 50M | com.mac.homepage.major4.ffmpegX | ffmpegX
+APP CANDIDATE | 30M | com.pantone.huey | hueyPRO
+APP APPLE | 33M | com.apple.iCal | iCal
+APP APPLE | 30M | com.apple.iChat | iChat
+APP APPLE | 122M | com.apple.iDVD | iDVD
+APP APPLE | 244M | com.apple.iMovie8 | iMovie
+APP CANDIDATE | 5.0M | com.mac.bwebster.iPhotoLibraryManager | iPhoto Library Manager
+APP APPLE | 410M | com.apple.iPhoto | iPhoto
+APP CANDIDATE | 2.4M | net.istumbler.release-98 | iStumbler
+APP KEEP | 213M | com.apple.iTunes | iTunes
+APP APPLE | 524M | com.apple.iWeb | iWeb
+APP APPLE | 1.6M | com.apple.updaters.graphics.atiradeonhd2600xt | ATI Radeon HD 2600 XT Firmware Update
+APP APPLE | 7.1M | com.apple.ActivityMonitor | Activity Monitor
+APP CANDIDATE | 888K | com.adobe.air.ApplicationInstaller | Adobe AIR Application Installer
+APP CANDIDATE | 57M | com.adobe.air.Installer | Adobe AIR Uninstaller
+APP KEEP | 47M | com.apple.airport.airportutility | AirPort Utility
+APP APPLE | 7.5M | com.apple.ScriptEditor2 | AppleScript Editor
+APP APPLE | 6.5M | com.apple.audio.AudioMIDISetup | Audio MIDI Setup
+APP APPLE | 5.4M | com.apple.BatchMonitor | Batch Monitor
+APP APPLE | 1.6M | com.apple.BluetoothFileExchange | Bluetooth File Exchange
+APP APPLE | 9.9M | com.apple.bootcampassistant | Boot Camp Assistant
+APP APPLE | 11M | com.apple.ColorSyncUtility | ColorSync Utility
+APP APPLE | 7.7M | com.apple.Console | Console
+APP APPLE | 1.9M | com.apple.DigitalColorMeter | DigitalColor Meter
+APP APPLE | 16M | com.apple.DiskUtility | Disk Utility
+APP CANDIDATE | 8.1M | com.alsoft.diskwarrior | DiskWarrior
+APP APPLE | 2.5M | com.apple.Grab | Grab
+APP APPLE | 21M | com.apple.grapher | Grapher
+APP APPLE | 12M | com.apple.keychainaccess | Keychain Access
+APP CANDIDATE | 792K | com.Logitech.Control Center.LCC Connection Utility | LCC Connection Utility
+APP CANDIDATE | 680K | com.Logitech.Control Center.LCC Uninstaller | LCC Uninstaller
+APP CANDIDATE | 1.1M | com.Logitech.Control Center.Update | LCC Update
+APP APPLE | 3.1M | com.apple.updaters.macpro.efifirmwareupdater13 | Mac Pro EFI Firmware Update
+APP APPLE | 6.4M | com.apple.MigrateAssistant | Migration Assistant
+APP APPLE | 1.5M | com.apple.NetworkUtility | Network Utility
+APP APPLE | 9.0M | com.apple.PodcastCapture | Podcast Capture
+APP APPLE | 13M | com.apple.PodcastPublisher | Podcast Publisher
+APP APPLE | 28M | com.apple.quicktimeplayer | QuickTime Player 7
+APP APPLE | 6.7M | com.apple.RAIDUtility | RAID Utility
+APP APPLE | 5.3M | com.apple.SystemProfiler | System Information
+APP APPLE | 10M | com.apple.Terminal | Terminal
+APP CANDIDATE | 200K | (none) | Uninstall Contour Shuttle
+APP APPLE | 15M | com.apple.VoiceOverUtility | VoiceOver Utility
+APP CANDIDATE | 2.5M | org.x.X11 | X11
+--- keep dirs ---
+USER Guest
+  no Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+USER el
+350M	/Users/el/Downloads
+ 39M	/Users/el/Library/Application Support/CandyBar
+2.9M	/Users/el/Library/Application Support/Flavours
+/Users/el/Library/Preferences/com.panic.CandyBar3.plist
+USER jazzyempire
+  no Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+USER revo
+ 54G	/Users/revo/Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+--- theme payloads (first 20) ---
+--- reclaimable ---
+620K	/Library/Caches
+8.1M	/private/var/log
+no /private/var/log
+122M	/Users/el/Library/Caches
+ 19M	/Users/el/.Trash
+1.4G	/Users/revo/Library/Caches
+--- harden state ---
+Firewall is disabled. (State = 0)
+Stealth mode disabled 
+guest UNSET
+--- filesystem ---
+Checking catalog hierarchy
+Checking extended attributes file
+Checking volume bitmap
+Checking volume information
+The volume start disk clone appears to be OK
+Finished file system verification on disk3s2 start disk clone
+ABSOLUTION1_DONE No disk was erased.

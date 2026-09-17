@@ -2,7 +2,7 @@
   "schema": "agent-memory.v1",
   "created": "2026-09-12",
   "updated": "2026-09-17",
-  "lastSeq": 148,
+  "lastSeq": 150,
   "entries": [
     {
       "seq": 1,
@@ -2370,6 +2370,39 @@
       "kind": "note",
       "text": "2026-09-17 ABSOLUTION persistence CORRECTED after operator repeated the directive verbatim (signal that the prior delivery missed it). Defect: da.gd/absolution was pinned to session branch arena/01a0ad71, so the write-once slug would serve R1 forever - the documented da.gd/lmz failure. Fix: absolution.html is now a LAUNCHER reading ABSOLUTION.json at runtime (main first, then branch, cache-busted) and retargeting downloads/stamp/PR/tag/inbox. Verified live: page renders 'live rollout R1' (only printed when the pointer chain resolves) and ABSOLUTION.json is reachable on raw. Selftest runs the real page script in a VM against a FUTURE R7 pointer and asserts retarget. Rejected minting a second main-pinned slug: violates one-name and 404s until PR #91 merges.",
       "sha256": "9136b759fac82989a442476c815ed9c08c1799c83c1a4ad935ff2c02f6d61907"
+    },
+    {
+      "seq": 149,
+      "date": "2026-09-17",
+      "kind": "perception",
+      "target": "receipts/absolution/R1/burn-2026-09-17.txt",
+      "tool": "read_file vision",
+      "claims": [
+        {
+          "claim": "ABSOLUTION1 R1 burn complete: 150 apps, 67 protected, 83 candidates totalling 5.47GB; boot /dev/disk3s2 start disk clone 931Gi 97% FULL (32Gi free); users Guest/el/jazzyempire/revo; el has CandyBar 39M + Flavours 2.9M + Downloads 350M; revo Downloads 54G; volume verify OK; firewall+stealth disabled, guest UNSET",
+          "source": "webhook POST uuid 983feb04 read via fetch_page"
+        }
+      ],
+      "sha256": "917b3388f55ef80e8a42e6910d5d5f633f710a5661dbe6a7aa2e9eb95a6e00d1"
+    },
+    {
+      "seq": 150,
+      "date": "2026-09-17",
+      "kind": "discrepancy",
+      "topic": "lion accounts and app state vs recorded claims",
+      "sides": [
+        {
+          "claim": "ToDo 2026-09-15 says new admin account with no other accounts",
+          "source": "ToDo.md Mac Pro buildup item 2"
+        },
+        {
+          "claim": "ABSOLUTION1 R1 burn shows FOUR home dirs Guest el jazzyempire revo, and the running user is el not samael",
+          "source": "receipts/absolution/R1/burn-2026-09-17.txt"
+        }
+      ],
+      "status": "UNRESOLVED",
+      "owner": "operator",
+      "sha256": "9e1d965a152095ca479c2eb14dc55ece0b7bf0c1b12aba843aa2e7b753f72ed8"
     }
   ],
   "stacks": [

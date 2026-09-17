@@ -1,0 +1,199 @@
+ABSOLUTION1 rollout=R1 branch=arena/01a0ad71-nvidia-intel-ocblizzard-4x8ddr pr=91
+complete=YES  host=RevolYOUtionarys-Mac-Pro.local
+boot=/dev/disk3s2 on / (hfs, local, journaled)
+apps=150 protected=67 candidates=83
+
+PROTECTED (never swept):
+  APPLE        20M  Address Book
+  APPLE       301M  Aperture
+  APPLE       9.6M  App Store
+  APPLE        19M  Apple Qadministrator
+  APPLE        25M  Apple Qmaster
+  KEEP        102M  ArcticFox
+  APPLE      10.0M  Automator
+  APPLE       5.0M  Calculator
+  APPLE       6.5M  Chess
+  APPLE        45M  Cinema Tools
+  APPLE        92M  Compressor
+  APPLE       8.2M  DVD Player
+  APPLE       120M  DVD Studio Pro
+  APPLE       876K  Dashboard
+  APPLE       4.6M  Dictionary
+  APPLE      10.0M  FaceTime
+  APPLE       413M  Final Cut Pro
+  KEEP         68M  Flavours
+  APPLE      10.0M  Font Book
+  KEEP        319M  GarageBand
+  APPLE       3.3M  Image Capture
+  APPLE       1.1M  Launchpad
+  APPLE        47M  LiveType
+  APPLE        49M  Mail
+  APPLE       1.5M  Mission Control
+  APPLE       388M  Motion
+  APPLE        21M  Photo Booth
+  APPLE        41M  Preview
+  APPLE        28M  QuickTime Player
+  APPLE        14M  Remote Desktop
+  APPLE        36M  Safari
+  APPLE       3.6M  Stickies
+  APPLE       3.7M  System Preferences
+  APPLE       9.1M  TextEdit
+  APPLE       1.7M  Time Machine
+  APPLE        33M  iCal
+  APPLE        30M  iChat
+  APPLE       122M  iDVD
+  APPLE       244M  iMovie
+  APPLE       410M  iPhoto
+  KEEP        213M  iTunes
+  APPLE       524M  iWeb
+  APPLE       1.6M  ATI Radeon HD 2600 XT Firmware Update
+  APPLE       7.1M  Activity Monitor
+  KEEP         47M  AirPort Utility
+  APPLE       7.5M  AppleScript Editor
+  APPLE       6.5M  Audio MIDI Setup
+  APPLE       5.4M  Batch Monitor
+  APPLE       1.6M  Bluetooth File Exchange
+  APPLE       9.9M  Boot Camp Assistant
+  APPLE        11M  ColorSync Utility
+  APPLE       7.7M  Console
+  APPLE       1.9M  DigitalColor Meter
+  APPLE        16M  Disk Utility
+  APPLE       2.5M  Grab
+  APPLE        21M  Grapher
+  APPLE        12M  Keychain Access
+  APPLE       3.1M  Mac Pro EFI Firmware Update
+  APPLE       6.4M  Migration Assistant
+  APPLE       1.5M  Network Utility
+  APPLE       9.0M  Podcast Capture
+  APPLE        13M  Podcast Publisher
+  APPLE        28M  QuickTime Player 7
+  APPLE       6.7M  RAID Utility
+  APPLE       5.3M  System Information
+  APPLE        10M  Terminal
+  APPLE        15M  VoiceOver Utility
+
+SWEEP CANDIDATES (reversible quarantine):
+     62M  Adium  [com.adiumX.adiumX]
+    3.0M  Adobe Media Player  [com.adobe.amp.4875E02D9FB21EE389F73B8D1702B320485DF8CE.1]
+    5.5M  Awaken  [com.embraceware.awaken]
+    164K  Blackmagic Disk Speed Test  [com.blackmagic-design.BlackmagicDiskSpeedTest]
+    1.2M  Blackmagic Media Express  [com.blackmagic-design.MediaExpress]
+    8.2M  Blackmagic On-Air  [com.blackmagic-design.OnAir]
+    250M  Braid  [com.hotheadgames.braid]
+    7.2M  CSSEdit  [com.macrabbit.CSSEdit]
+     13M  Carbon Copy Cloner  [com.bombich.ccc]
+    9.1M  Cocktail  [com.maintain.cocktail.leopard]
+    2.6M  Contour Shuttle  [com.contourdesign.shuttle]
+    8.4M  CrushFTP4  [com.crushftp]
+     23M  Cyberduck  [ch.sudo.cyberduck]
+     18M  DVDRemaster  [com.metakine.dvdremaster]
+    7.4M  DaisyDisk  [com.daisydiskapp.DaisyDisk]
+    9.2M  DivX Converter  [DivX Converter]
+     15M  DivX Player  [com.divxinc.divxplayer]
+    2.9M  Dupin  [com.dougscripts.Dupin]
+      0B  Evernote  [(none)]
+     12M  Eye-Fi Manager  [fi.eye.Manager]
+    812K  Fairmount (for VLC 32 bits)  [com.metakine.fairmount]
+    680K  Fairmount (for VLC 64 bits)  [com.metakine.fairmount]
+     68M  Firefox  [org.mozilla.firefox]
+     61M  Flock  [com.flock.Flock]
+     14M  ForkLift  [com.binarynights.ForkLift]
+     29M  FxFactory  [com.noiseindustries.FxFactory]
+     28M  Garmin WebUpdater  [com.garmin.WebUpdater]
+    7.5M  Geekbench  [ca.primatelabs.Geekbench2.MINORVERSION]
+     55M  Google Chrome 2  [com.google.Chrome]
+    228M  Google Chrome  [com.google.Chrome]
+    109M  Google Earth  [com.Google.GoogleEarthPlus]
+    1.2M  Google Goggles  [com.mt.goggles.23A0E9CF6CF33D71022891FB023724F9D66B4F2C.1]
+    1.2M  GrandPerspective  [net.sourceforge.grandperspectiv]
+     15M  HandBrake  [org.m0k.handbrake]
+    2.0G  Kid Pix Deluxe 3D  [com.mackiev.kidpix3d]
+    216M  LeapFrogConnect  [com.leapfrog.connect.shell]
+     29M  Leopard Cache Cleaner  [com.northernsw.nswCacheCleaner]
+    9.8M  LooksBuilder  [com.RedGiantSoftware.LooksBuilder]
+     35M  MPlayer OSX Extended  [hu.mplayerhq.mplayerosx.extended]
+    2.0M  MacDaddy  [com.SmugMug.MacDaddy]
+     60M  MacGourmet Deluxe  [com.advenio.MacGourmet]
+     17M  MacGourmet  [com.advenio.MacGourmet]
+    4.3M  MacUpdate Desktop  [com.macupdate.macupdate]
+    345M  Machinarium  [com.amanitadesign.machinarium]
+    9.2M  Mark:Space Notebook  [com.markspace.notebook]
+    5.3M  Mathemagics  [com.bluelightninglabs.mac.mathemagics]
+    717M  Mavis Beacon Teaches Typing  [com.mackiev.mavis]
+     15M  NeatWorks  [com.neatreceipts.nrm]
+     56M  NovaMind Platinum  [com.novamind.NovaMindPlatinum]
+     50M  NovaMind Pro  [com.novamind.NovaMindPro]
+     43M  Opera  [com.operasoftware.Opera]
+     43M  RapidWeaver  [com.realmacsoftware.rapidweaverpro]
+    1.1M  Rember  [net.kelleycomputing.Rember]
+     16M  ScreenFlow  [com.vara.screenflow]
+     36M  Skype  [com.skype.skype]
+     19M  SousChef  [com.acaciatreesoftware.SousChef]
+    3.3M  Sponge  [com.sponge-mac.Sponge]
+    9.2M  SuperSync  [com.supersync/1240868749531/SuperSync]
+    4.8M  Syncopation  [com.sonzea.Syncopation]
+     12M  TechTool Deluxe  [com.micromat.techtooldeluxe]
+    102M  TomTom HOME  [com.tomtom.tomtomhome]
+     11M  Transmission  [org.m0k.transmission]
+     20M  Transmit  [com.panic.Transmit3]
+    3.4M  TweetDeck  [TweetDeckFast.F9107117265DB7542C1A806C8DB837742CE14C21.1]
+    104M  VLC  [org.videolan.vlc]
+    222M  VMware Fusion  [com.vmware.fusion]
+    4.1M  VersionTracker Pro  [com.TechTracker.ProDesktop]
+    5.5M  WhatSize  [com.id-design.whatsize]
+    9.5M  Winamp  [com.nullsoft.Winamp]
+     69M  Yahoo! Messenger  [com.yahoo.messenger3]
+    9.3M  YummySoup!  [com.HungrySeacow.YummySoup!]
+     50M  ffmpegX  [com.mac.homepage.major4.ffmpegX]
+     30M  hueyPRO  [com.pantone.huey]
+    5.0M  iPhoto Library Manager  [com.mac.bwebster.iPhotoLibraryManager]
+    2.4M  iStumbler  [net.istumbler.release-98]
+    888K  Adobe AIR Application Installer  [com.adobe.air.ApplicationInstaller]
+     57M  Adobe AIR Uninstaller  [com.adobe.air.Installer]
+    8.1M  DiskWarrior  [com.alsoft.diskwarrior]
+    792K  LCC Connection Utility  [com.Logitech.Control Center.LCC Connection Utility]
+    680K  LCC Uninstaller  [com.Logitech.Control Center.LCC Uninstaller]
+    1.1M  LCC Update  [com.Logitech.Control Center.Update]
+    200K  Uninstall Contour Shuttle  [(none)]
+    2.5M  X11  [org.x.X11]
+
+KEEP DIRS:
+  USER Guest
+  no Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+  USER el
+  350M	/Users/el/Downloads
+  39M	/Users/el/Library/Application Support/CandyBar
+  2.9M	/Users/el/Library/Application Support/Flavours
+  /Users/el/Library/Preferences/com.panic.CandyBar3.plist
+  USER jazzyempire
+  no Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+  USER revo
+  54G	/Users/revo/Downloads
+  no CandyBar support
+  no Flavours support
+  no CandyBar plist
+
+RECLAIMABLE:
+  620K	/Library/Caches
+  8.1M	/private/var/log
+  no /private/var/log
+  122M	/Users/el/Library/Caches
+  19M	/Users/el/.Trash
+  1.4G	/Users/revo/Library/Caches
+
+FIREWALL: Firewall is disabled. (State = 0)
+  Checking catalog hierarchy
+  Checking extended attributes file
+  Checking volume bitmap
+  Checking volume information
+  The volume start disk clone appears to be OK
+  Finished file system verification on disk3s2 start disk clone
+  ABSOLUTION1_DONE No disk was erased.
+
+GATE: plan is decidable from this burn.
