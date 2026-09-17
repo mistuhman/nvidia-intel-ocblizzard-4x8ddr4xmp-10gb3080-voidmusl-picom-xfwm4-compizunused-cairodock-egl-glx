@@ -1,28 +1,31 @@
 LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo
 
-LION BAY-2 CCC | 2026-09-17m (session 01a0af84, desk mode)
+LION PRO AUDIO/VIDEO & CLEANUP | 2026-09-17m (session 01a0af84)
 
-CCC CLONE COMPLETE (~120 GB copied):
-- Kingston 240 GB (disk0s2) holds clean Lion 10.7.5 boot system + /Users/el
-- 775 GB revo excluded; ~120 GB free space on Kingston
-- MX500 live boot (disk3s2, start disk clone) completely untouched as safe rollback
+STATUS:
+- Booted to Kingston 240 GB (disk0s2) — Lion 10.7.5 verified running on desktop!
+- MX500 live boot in Bay 1 remains 100% untouched as rollback.
 
-NEXT NOW (in Mac GUI, no Terminal paste needed):
-1) Apple menu  -> System Preferences -> Startup Disk
-2) If locked, click the lock in bottom-left and enter password for el
-3) Select "Kingston" (Mac OS X, 10.7.5 on Kingston)
-4) Click Restart... and confirm
-5) First boot verification:
-   - Verify el logs in smoothly
-   - Check Flavours theme, CandyBar icons, Final Cut Studio, GarageBand, Arctic Fox
-   - If anything hesitates: hold Option key at boot chime to pick "start disk clone" (MX500)
-6) After booting into Kingston: reload this Command mirror at da.gd/sQ7bEo for next steps!
+1. PRO VIDEO (FINAL CUT & SONY VEGAS):
+   - Final Cut Studio (FCP 7, Motion, Compressor, DVD Studio Pro, Cinema Tools) is active on Kingston.
+   - SONY VEGAS NOTE: Sony Vegas Pro is 100% Windows-only (never released for Mac OS X).
+     The path for Vegas on this Mac Pro is the Windows Boot Camp / dual-boot partition.
+     On Lion, Final Cut Studio is the native pro NLE.
 
-PHONE WORKFLOW:
-- This etc/lion-command.txt mirrors next steps at da.gd/sQ7bEo.
-- Optional receipt: double-click lion-one.command -> burn ~/Desktop/lion-one.txt on da.gd/sQ7bEo.
+2. CUTDOWN / BLOAT & UNINSTALLER SWEEP (Finder -> Applications -> Trash):
+   - Dead Uninstallers: Adobe AIR Uninstaller, Uninstall Contour Shuttle, LCC Uninstaller
+   - Firmware: Mac Pro EFI Firmware Update, ATI Radeon HD 2600 XT Firmware Update
+   - Consumer duplicates: Kid Pix (saves 2.0GB!), Mavis Beacon (717MB), iWeb (524MB), iPhoto (410MB), iMovie (244MB), iDVD (122MB)
+   - Dead browsers / games: Chrome, Firefox, Opera, Machinarium, Braid, Chess
+   - Empty Trash to reclaim ~6.7 GB! Keep CandyBar in ~/Downloads.
+
+3. SM7B + MICPORT PRO AUDIO CHAIN:
+   - Plug MicPort Pro into rear USB; connect SM7B via XLR (48V phantom OFF).
+   - Set hardware gain on MicPort so speech stays in green, peaking just below red.
+   - System Preferences -> Sound -> Input -> select MicPort Pro (CoreAudio 24-bit native).
+   - Host/Chain: GarageBand / Audacity / AU Lab with Apple Audio Units (High-pass 80Hz, EQ, Compressor/Gate).
 
 COMPILE_GATE=HOLD
 Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.
 
-— arena/01a0af84 94cf5c9
+— arena/01a0af84 db9c4d7
