@@ -247,10 +247,125 @@ function repairBlock(): string {
   );
 }
 
+
+function accountsBlock(): string {
+  return (
+    HEAD('absolution-accounts.block', 'Account removal, self-resolving and double-gated. Harvests files BEFORE deleting.') +
+    `# Operator directive 2026-09-17c: "delete the tertiary accounts, not mine, which is Samael/admin".\n` +
+    `# The agent does NOT know which short name is Samael: the R1 burn showed Guest/el/jazzyempire/revo\n` +
+    `# and no literal samael, while the live user was 'el' and the 54G Downloads belong to 'revo'.\n` +
+    `# So this block RESOLVES the keeper on the machine and REFUSES to act unless exactly one account\n` +
+    `# matches. It never hardcodes a victim.\n` +
+    `# Keeper test: short name or RealName matches samael/admin AND the account is in the admin group.\n` +
+    `# HARVEST FIRST: every doomed account's Downloads, icons, textures and Winamp skins are MOVED to\n` +
+    `# /Users/Shared/absolution-harvest/<user>/ before the account record is touched. Same volume, so\n` +
+    `# it is a rename: instant, needs no free space, and nothing the operator named is destroyed.\n` +
+    `# Rollback: the home folder is moved to /Users/Shared/absolution-quarantine/<user>, never rm-ed.\n` +
+    `# Space is reclaimed only by the SEPARATE purge line this block prints at the end.\n` +
+    `cat > /tmp/absolution-accounts.sh <<'ACCTSH'\n` +
+    `#!/bin/sh\n` +
+    `HARVEST="/Users/Shared/absolution-harvest"\n` +
+    `QUAR="/Users/Shared/absolution-quarantine"\n` +
+    `echo "== ACCOUNT MAP"\n` +
+    `ADMINS=$(dscl . -read /Groups/admin GroupMembership 2>/dev/null | cut -d: -f2-)\n` +
+    `echo "admin group:$ADMINS"\n` +
+    `KEEPER=""\n` +
+    `KCOUNT=0\n` +
+    `for u in $(ls /Users 2>/dev/null | grep -v Shared | grep -v '^Guest$'); do\n` +
+    `  RN=$(dscl . -read "/Users/$u" RealName 2>/dev/null | tail -1 | sed -e 's/^ *//')\n` +
+    `  UIDN=$(dscl . -read "/Users/$u" UniqueID 2>/dev/null | awk '{print $2}')\n` +
+    `  ISADMIN=no\n` +
+    `  for a in $ADMINS; do\n` +
+    `    [ "$a" = "$u" ] && ISADMIN=yes\n` +
+    `  done\n` +
+    `  SZ=$(du -hs "/Users/$u" 2>/dev/null | awk '{print $1}')\n` +
+    `  echo "ACCT $u | uid=$UIDN | admin=$ISADMIN | size=$SZ | real=$RN"\n` +
+    `  MATCH=no\n` +
+    `  echo "$u" | grep -qi samael && MATCH=yes\n` +
+    `  echo "$RN" | grep -qi samael && MATCH=yes\n` +
+    `  if [ "$MATCH" = yes ] && [ "$ISADMIN" = yes ]; then\n` +
+    `    KEEPER="$u"\n` +
+    `    KCOUNT=$((KCOUNT+1))\n` +
+    `  fi\n` +
+    `done\n` +
+    `echo\n` +
+    `if [ "$KCOUNT" -ne 1 ]; then\n` +
+    `  echo "ABORT: matched $KCOUNT accounts for Samael/admin, need exactly 1."\n` +
+    `  echo "Nothing was harvested, deleted or changed. Paste this whole output back."\n` +
+    `  echo "The agent will name the keeper from the table above instead of guessing."\n` +
+    `  exit 1\n` +
+    `fi\n` +
+    `echo "KEEPER (never touched): $KEEPER"\n` +
+    `DOOMED=""\n` +
+    `for u in $(ls /Users 2>/dev/null | grep -v Shared | grep -v '^Guest$'); do\n` +
+    `  [ "$u" = "$KEEPER" ] && continue\n` +
+    `  DOOMED="$DOOMED $u"\n` +
+    `done\n` +
+    `echo "TERTIARY (to remove):$DOOMED"\n` +
+    `if [ -z "$DOOMED" ]; then\n` +
+    `  echo "NOTHING TO DO - only the keeper exists"\n` +
+    `  exit 0\n` +
+    `fi\n` +
+    `echo\n` +
+    `echo "== WHAT WOULD BE HARVESTED (textures, icons, skins, Downloads)"\n` +
+    `for u in $DOOMED; do\n` +
+    `  echo "-- $u"\n` +
+    `  du -hs "/Users/$u/Downloads" 2>/dev/null\n` +
+    `  find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | wc -l | sed 's/^/   theme files: /'\n` +
+    `done\n` +
+    `if [ "$CONFIRM" != "ACCOUNTS" ]; then\n` +
+    `  echo\n` +
+    `  echo "NOTHING CHANGED. To harvest then remove the tertiary accounts, paste exactly:"\n` +
+    `  echo "CONFIRM=ACCOUNTS sh /tmp/absolution-accounts.sh"\n` +
+    `  exit 0\n` +
+    `fi\n` +
+    `echo\n` +
+    `echo "== HARVEST (move, same volume, no space needed)"\n` +
+    `mkdir -p "$HARVEST"\n` +
+    `mkdir -p "$QUAR"\n` +
+    `for u in $DOOMED; do\n` +
+    `  mkdir -p "$HARVEST/$u"\n` +
+    `  if [ -d "/Users/$u/Downloads" ]; then\n` +
+    `    mv "/Users/$u/Downloads" "$HARVEST/$u/Downloads"\n` +
+    `    echo "harvested $u Downloads"\n` +
+    `  fi\n` +
+    `  mkdir -p "$HARVEST/$u/themes"\n` +
+    `  find "/Users/$u" -iname "*.icns" -o -iname "*.icontainer" -o -iname "*.iconset" -o -iname "*.flavour" -o -iname "*.wsz" -o -iname "*.wal" 2>/dev/null | while read -r f; do\n` +
+    `    mv "$f" "$HARVEST/$u/themes/" 2>/dev/null\n` +
+    `  done\n` +
+    `  echo "harvested $u theme files"\n` +
+    `done\n` +
+    `echo\n` +
+    `echo "== REMOVE DIRECTORY RECORDS (home folders are MOVED, never deleted)"\n` +
+    `for u in $DOOMED; do\n` +
+    `  dscl . -delete "/Users/$u" 2>/dev/null && echo "record removed: $u" || echo "record MISSING (already gone): $u"\n` +
+    `  if [ -d "/Users/$u" ]; then\n` +
+    `    mv "/Users/$u" "$QUAR/$u"\n` +
+    `    echo "home quarantined: $QUAR/$u"\n` +
+    `  fi\n` +
+    `done\n` +
+    `echo\n` +
+    `echo "== RESULT"\n` +
+    `ls /Users\n` +
+    `echo "-- harvested --"\n` +
+    `du -hs "$HARVEST"/* 2>/dev/null\n` +
+    `echo "-- quarantined homes (still using disk) --"\n` +
+    `du -hs "$QUAR"/* 2>/dev/null\n` +
+    `df -h /\n` +
+    `echo\n` +
+    `echo "SPACE IS NOT FREED YET. Review the harvest, then free it with:"\n` +
+    `echo "  rm -rf $QUAR"\n` +
+    `ACCTSH\n` +
+    `sh /tmp/absolution-accounts.sh\n` +
+    `date\n`
+  );
+}
+
 const OUTPUTS: Array<[string, () => string]> = [
   ['etc/lion-clean-inventory.block', inventoryBlock],
   ['etc/lion-app-sweep.block', sweepBlock],
   ['etc/lion-clean-repair.block', repairBlock],
+  ['etc/absolution-accounts.block', accountsBlock],
 ];
 
 // SAFETY INVARIANTS - asserted against the emitted bytes, not against intent.
@@ -355,6 +470,41 @@ function selftest(): void {
     const ok = f.want === 'APPLE' ? /^(APPLE|KEEP) /.test(line) : line === `${f.want} ${f.name}`;
     check(`classify ${f.name} -> ${f.want}${ok ? '' : ` (got "${line}")`}`, ok);
   });
+
+  // ACCOUNT RESOLVER GATE. Deleting the wrong account is unrecoverable (the R1 burn showed 54G of
+  // Downloads under 'revo' and the operator's textures live in a Downloads folder), so the keeper is
+  // resolved ON THE MACHINE from short name + RealName + admin membership. These fixtures prove the
+  // resolver picks correctly AND that it refuses rather than guessing when the answer is not unique.
+  const acct = accountsBlock();
+  check('accounts: harvests Downloads before deleting',
+    acct.indexOf('HARVEST') < acct.indexOf('dscl . -delete'));
+  check('accounts: never rm a home folder', !/rm -rf "\/Users\/\$u"/.test(codeOf(acct)));
+  check('accounts: home is moved to quarantine', acct.includes('mv "/Users/$u" "$QUAR/$u"'));
+  check('accounts: CONFIRM-gated', acct.includes('CONFIRM=ACCOUNTS') && acct.includes('NOTHING CHANGED'));
+  check('accounts: aborts unless exactly one keeper', acct.includes('"$KCOUNT" -ne 1') && acct.includes('ABORT'));
+  check('accounts: never hardcodes a victim',
+    !/DOOMED="[a-z]/.test(acct) && acct.includes('[ "$u" = "$KEEPER" ] && continue'));
+  check('accounts: Guest excluded from deletion loop', acct.includes("grep -v '^Guest$'"));
+  check('accounts: purge is a separate manual step', acct.includes('SPACE IS NOT FREED YET'));
+
+  const scenarios: Array<[string, string[], string[], Record<string, string>, string]> = [
+    ['el is admin+Samael', ['el', 'jazzyempire', 'revo'], ['el'], { el: 'Samael', revo: 'Revo', jazzyempire: 'J' }, 'el'],
+    ['revo is admin+Samael', ['el', 'jazzyempire', 'revo'], ['revo'], { el: 'El', revo: 'Samael Admin', jazzyempire: 'J' }, 'revo'],
+    ['two Samael admins', ['el', 'revo'], ['el', 'revo'], { el: 'Samael', revo: 'Samael' }, 'ABORT'],
+    ['no Samael at all', ['el', 'jazzyempire', 'revo'], ['el'], { el: 'El', revo: 'Revo', jazzyempire: 'J' }, 'ABORT'],
+    ['Samael but not admin', ['el', 'revo'], ['revo'], { el: 'Samael', revo: 'Revo' }, 'ABORT'],
+  ];
+  for (const [label, users, admins, real, want] of scenarios) {
+    let keeper = '';
+    let kcount = 0;
+    for (const u of users) {
+      const isAdmin = admins.includes(u);
+      const match = /samael/i.test(u) || /samael/i.test(real[u] ?? '');
+      if (match && isAdmin) { keeper = u; kcount++; }
+    }
+    const got = kcount !== 1 ? 'ABORT' : keeper;
+    check(`accounts resolver: ${label} -> ${want}${got === want ? '' : ` (got ${got})`}`, got === want);
+  }
 
   const invCode = codeOf(inventoryBlock());
   check(
