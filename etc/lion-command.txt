@@ -1,35 +1,27 @@
 LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo
 
-LION CLONE TO CRUCIAL 1TB & RAID RESTORE | 2026-09-17n (session 01a0af84)
+LION APPS & LAUNCHPAD CLEANUP | 2026-09-18 (session 01a0af84)
 
-PLAN: Kingston (240GB) -> Crucial MX500 (1TB) -> WD back to Bay 2 (Raid X restored)
+STATUS:
+- Crucial 1 TB SSD booted cleanly in Bay 1!
+- 3rd WD HDD restored in Bay 2, Raid X reassembled!
 
-STEP 1 — ERASE CRUCIAL IN DISK UTILITY (Booted on Kingston):
-1) Open Disk Utility.
-2) In sidebar, select the Crucial volume (currently "start disk clone").
-   (Or select the outer "1 TB CT1000MX500SSD1" row -> Partition -> 1 Partition, GUID).
-3) Click Erase tab:
-   - Format: Mac OS Extended (Journaled)
-   - Name: e.g. "Macintosh HD" (or "Crucial SSD")
-   - Click Erase.
-   This cleanly wipes the old 900 GB bloat and frees all 1,000 GB!
+HOW TO GET RID OF KIDS APPS & LEFTOVER UNINSTALLERS:
 
-STEP 2 — CCC CLONE (Kingston -> Crucial):
-1) Open Carbon Copy Cloner.
-2) Source: "Kingston" (running system).
-3) Destination: "Macintosh HD" (the freshly erased 1TB Crucial).
-4) Preset: "Backup everything" (or Maintain a backup).
-5) Click Clone and allow it to complete. CCC will make it bootable.
+OPTION 1 (Double-Click Cleaner from this page):
+1) Click the "lion-clean-junk.command" download link above on this page.
+2) Double-click lion-clean-junk.command in your Downloads folder.
+3) When Terminal opens, enter your password for el to authorize.
+4) It automatically removes Kid Pix, Mavis Beacon, LeapFrog, Mathemagics,
+   and leftover uninstallers, then rebuilds Launchpad cleanly!
+5) All pro apps (Final Cut Studio, Motion, Compressor, DVD Studio Pro,
+   Aperture, GarageBand, Arctic Fox, Transmit, Flavours, CandyBar) stay intact.
 
-STEP 3 — TEST BOOT CRUCIAL:
-1) System Preferences -> Startup Disk -> select "Macintosh HD" -> Restart.
-2) Confirm clean boot into the 1 TB Crucial SSD.
-
-STEP 4 — RESTORE RAID X:
-1) Shut down Mac Pro fully.
-2) Remove Kingston SSD from Bay 2.
-3) Put the WD Green HDD back into Bay 2.
-4) Power on -> Mac boots from Crucial in Bay 1, Raid X reassembles with all 3 WDs!
+OPTION 2 (In Finder):
+1) In Finder -> Applications, drag the kids apps and uninstallers to Trash.
+2) Empty Trash.
+3) Refresh Launchpad icons by clearing Dock database:
+   rm -f ~/Library/Application\ Support/Dock/*.db && killall Dock
 
 COMPILE_GATE=HOLD
-— arena/01a0af84 554a634
+— arena/01a0af84 700ef8a
