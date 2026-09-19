@@ -2,6 +2,19 @@
 
 > official compare: Geekbench 6 + Unigine Superposition; meter every step; GWE for 3080; BIOS for 12700KF; ParkControl notes = Linux-only equivalent
 
+## TOP PRIORITY: MAIN PC (Operator Directive 2026-09-18)
+> "the mac working isnt top priority. since most of the capabilities it lacks is met by my main pc, so itd be best to work on my main pc from where its at before all else. create priority, then please create and merge a pull request so we can start off in a new chat"
+- **Priority #1 Active Target**: Gate 12 Bench Minimal POST wave (`docs/case-swap-3-2-beep.md` §3 / `docs/case-swap-macpro-plan.md` Phase 0 Step 0b)
+  - Hardware: BlizzardOC 8917 (Z690), i7-12700KF, RTX 3080 10GB, 4×8GB DDR4, 800W ATX Gold PSU, Void Linux on NVMe.
+  - Setup: Board on bench, floated rad on shoebox, 1 DIMM in A2, GPU seated + 2× PCIe 8-pin, 24-pin + both 4-pins CPU, pump on FAN1.
+  - Power on: Screwdriver short on 2-pin `PB` header -> F10 BIOS Setup.
+  - Action: Apply XMP Profile 1 (3733 @ 1.35V) to overwrite 4000 profile remnant; After Power Loss = Off.
+  - Verify: Clear 3.2 memory beeps; 3 clean cold boots; boot Void via Escape -> ZBM -> `nvme/ROOT/void`.
+  - Next in Void: GWE step 1 (+60/+250) re-bench, DDR4 validation ladder, CPU OC, chassis cooling layout.
+- **Mac Pro Status (Deferred / Secondary)**:
+  - Crucial 1 TB SSD booted in Bay 1; 3rd WD HDD restored in Bay 2 with Raid X reassembled.
+  - Cleanup helper `lion-clean-junk.command` available on mirror `da.gd/sQ7bEo` for kids apps/uninstaller purge.
+
 ## Done
 - [x] Probe + head
 - [x] p2-user autostart diet

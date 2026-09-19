@@ -104,6 +104,7 @@ iframe{width:0;height:0;border:0;position:absolute;left:-9999px;}
     <p>The one link: <b>da.gd/sQ7bEo</b> (this page). Compiler context: <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-compiler-context.command">lion-compiler-context.command</a> — ES5 passthrough sets + COMPILERCTX1 burn. No sudo, no network.</p>
     -->
     <!-- One-thing-one-job visible: Command mirror (Reload+textarea) + Report (Browse) + Burn only. Chat tells what to do. -->
+    <p><b>Cleaner:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/arena/01a0af84-nvidia-intel-ocblizzard-4x8ddr/lion-clean-junk.command">lion-clean-junk.command</a> — sweep kids apps &amp; uninstallers, rebuild Launchpad.</p>
     <p><b>Command:</b> <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/lion-command-mirror.command">lion-command-mirror.command</a> — one thing one job: double-click, get <b>lion-command-mirror.txt</b> on Desktop, <b>Burn</b> it. (KISS/DOOM3, also in <a class="link" href="https://raw.githubusercontent.com/mistuhman/nvidia-intel-ocblizzard-4x8ddr4xmp-10gb3080-voidmusl-picom-xfwm4-compizunused-cairodock-egl-glx/main/etc/lion-command.txt">etc/lion-command.txt</a>)</p>
     <noscript><p class="note">This page needs JavaScript (on by default in Arctic Fox).</p></noscript>
 
@@ -161,37 +162,31 @@ var LOADED = null;
 var EMBEDDED = [
   "LION-ONE | 2026-09-16h | current one link da.gd/sQ7bEo",
   "",
-  "LION BAY-2 CCC | 2026-09-17j (session 01a0af07, on phone, no paste)",
+  "LION APPS & LAUNCHPAD CLEANUP | 2026-09-18 (session 01a0af84)",
   "",
-  "WHERE WE LEFT OFF (PR #92 merged):",
-  "- disk0 KINGSTON 240.06 GB GUID confirmed (GUID_partition_scheme + EFI 209.7 MB) — last pre-clone gate cleared. Receipt R6/diskutil-list-2026-09-17.md",
-  "- Raid X offline as expected (2 RAID members alive, 3rd WD pulled from Bay 2)",
-  "- MX500 disk3s2 start disk clone is live boot, untouched, has Recovery HD 650 MB",
-  "- Manifest coverage-gated: KEEP 64 / DROP 87 / ASK 0, projected boot ~16.1 GB vs ~209 GiB usable",
+  "STATUS:",
+  "- Crucial 1 TB SSD booted cleanly in Bay 1!",
+  "- 3rd WD HDD restored in Bay 2, Raid X reassembled!",
   "",
-  "CCC WAVE AUTHORED: docs/lion-ccc-selective-wave.md on branch arena/01a0af07 (c7fc942). Selective COPY, not delete — MX500 stays rollback. No erase armed.",
+  "HOW TO GET RID OF KIDS APPS & LEFTOVER UNINSTALLERS:",
   "",
-  "GATE 12:37 UTC PASS — you are at desk, burns verified 05:36 PDT:",
-  "- disk0 KINGSTON GUID + EFI 209.7 MB, Kingston 239.7 GB, mounted at /Volumes/Kingston — format held",
-  "- disk1s2+disk2s2 Apple_RAID degraded (2 members, Bay2 WD pulled) — expected, do not Repair",
-  "- disk3s2 start disk clone 999.3 GB + Recovery HD 650 MB — live Lion 10.7.5 boot intact",
-  "- ArcticFox 47.3, GTX 285, Firewall disabled — all as expected",
+  "OPTION 1 (Double-Click Cleaner from this page):",
+  "1) Click the \"lion-clean-junk.command\" download link above on this page.",
+  "2) Double-click lion-clean-junk.command in your Downloads folder.",
+  "3) When Terminal opens, enter your password for el to authorize.",
+  "4) It automatically removes Kid Pix, Mavis Beacon, LeapFrog, Mathemagics,",
+  "   and leftover uninstallers, then rebuilds Launchpad cleanly!",
+  "5) All pro apps (Final Cut Studio, Motion, Compressor, DVD Studio Pro,",
+  "   Aperture, GarageBand, Arctic Fox, Transmit, Flavours, CandyBar) stay intact.",
   "",
-  "NEXT NOW (at desk, CCC GUI, no Terminal paste needed):",
-  "1) CCC: Source = start disk clone (/dev/disk3s2), Destination = Kingston (/dev/disk0s2), preset Backup everything — Run full, no sleep",
-  "2) After clone: on /Volumes/Kingston ONLY delete: /Users/revo, /Users/jazzyempire, and the 87-DROP apps (full list in docs/lion-ccc-selective-wave.md). Keep CandyBar at /Users/el/Downloads/CandyBar.app + widget plists + Flavours/fonts. Never touch /Volumes/start disk clone.",
-  "3) Then Reload this Command panel for the post-clone verification block (pasteable df/du/ls) — paste back before any Startup Disk bless. Bay endgame move deferred to soak.",
-  "",
-  "PHONE WORKFLOW THIS CHAT:",
-  "- Read the wave at docs/lion-ccc-selective-wave.md via the branch raw or the One page fallback (da.gd/sQ7bEo). This etc/lion-command.txt mirrors the nextAction for the Burn page.",
-  "- Burn logs the same way: choose ~/Desktop/lion-*.txt on the Burn page (da.gd/lionrelay or da.gd/sQ7bEo → Burn) — text/plain is what the model reads; file attach alone stays empty.",
-  "",
-  "Desk mode: you are at desk — this Command panel IS the paste source (Arctic Fox → Edit > Copy). No Arena copy needed. After CCC, Reload for verification block.",
+  "OPTION 2 (In Finder):",
+  "1) In Finder -> Applications, drag the kids apps and uninstallers to Trash.",
+  "2) Empty Trash.",
+  "3) Refresh Launchpad icons by clearing Dock database:",
+  "   rm -f ~/Library/Application\\ Support/Dock/*.db && killall Dock",
   "",
   "COMPILE_GATE=HOLD",
-  "Old lion-wipe-harden.txt directions are SUSPENDED; no erase is armed.",
-  "",
-  "— arena/01a0af07 c7fc942"
+  "— arena/01a0af84 700ef8a"
 ];
 
 function $(id) { return document.getElementById(id); }
