@@ -4,13 +4,12 @@
 
 ## TOP PRIORITY: MAIN PC (Operator Directive 2026-09-18)
 > "the mac working isnt top priority. since most of the capabilities it lacks is met by my main pc, so itd be best to work on my main pc from where its at before all else. create priority, then please create and merge a pull request so we can start off in a new chat"
-- **Priority #1 Active Target**: Gate 12 Bench Minimal POST wave (`docs/case-swap-3-2-beep.md` §3 / `docs/case-swap-macpro-plan.md` Phase 0 Step 0b)
+- **Priority #1 Active Target**: Gate 12 Bench Minimal POST & Chassis Re-integration (`docs/case-swap-3-2-beep.md` §3 / `docs/case-swap-macpro-plan.md` Phase 0 Step 0b)
   - Hardware: BlizzardOC 8917 (Z690), i7-12700KF, RTX 3080 10GB, 4×8GB DDR4, 800W ATX Gold PSU, Void Linux on NVMe.
-  - Setup: Board on bench, floated rad on shoebox, 1 DIMM in A2, GPU seated + 2× PCIe 8-pin, 24-pin + both 4-pins CPU, pump on FAN1.
-  - Power on: Screwdriver short on 2-pin `PB` header -> F10 BIOS Setup.
-  - Action: Apply XMP Profile 1 (3733 @ 1.35V) to overwrite 4000 profile remnant; After Power Loss = Off.
-  - Verify: Clear 3.2 memory beeps; 3 clean cold boots; boot Void via Escape -> ZBM -> `nvme/ROOT/void`.
-  - Next in Void: GWE step 1 (+60/+250) re-bench, DDR4 validation ladder, CPU OC, chassis cooling layout.
+  - Setup: Board on bench, floated rad, GPU seated + PCIe power, 24-pin + both 4-pins CPU, pump on FAN1.
+  - Status 2026-09-19: CMOS reset executed, HP 3.2 memory beeps cleared; hardware POSTed to CMOS reset screen with RTX 3080 lit and CPU/RAM verified working out of case.
+  - Chassis Layout Locked (2026-09-19): 240mm AIO radiator bottom-mounted flush on case floor; top tank hose barbs at ~275mm height align horizontally with CPU socket; pump block locked 180° upside-down to preserve rectangular paste footprint; 4x 3.5" HDDs arranged vertically side-by-side (130mm total width) in upper 5.25" bay cutout behind front bezel door.
+  - Next Action: Bolt hardware into APEX PC-389-C, fabricate scrap-metal vertical drive carrier with 3+ points of contact, connect cooling/headers, boot into Void via Escape -> ZBM -> `nvme/ROOT/void`.
 - **Mac Pro Status (Deferred / Secondary)**:
   - Crucial 1 TB SSD booted in Bay 1; 3rd WD HDD restored in Bay 2 with Raid X reassembled.
   - Cleanup helper `lion-clean-junk.command` available on mirror `da.gd/sQ7bEo` for kids apps/uninstaller purge.
