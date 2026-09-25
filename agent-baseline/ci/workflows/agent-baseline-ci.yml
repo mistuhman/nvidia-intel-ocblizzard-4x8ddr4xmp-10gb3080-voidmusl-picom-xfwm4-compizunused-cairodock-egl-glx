@@ -1,0 +1,43 @@
+name: agent-baseline-ci
+
+# Every push to the session branch re-proves the deterministic tool gate: node syntax,
+# MASTER JSON validity, every tool selftest, shell lint on the target script, determinism
+# (same args -> same bytes), and the PR line budget.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: node --check every tool
+        run: for f in tools/*.ts; do node --check "$f"; done
+      - name: MASTER.md is valid JSON
+        run: python3 -m json.tool MASTER.md > /dev/null
+      - name: repo test gate
+        run: node tools/test-all.ts
+      - name: shellcheck target scripts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y shellcheck
+          shellcheck -s sh scripts/sample-target
+      - name: determinism (same args -> same bytes)
+        run: |
+          node tools/orient.ts orient > /tmp/a.txt
+          node tools/orient.ts orient > /tmp/b.txt
+          cmp /tmp/a.txt /tmp/b.txt
+          node tools/agent-deploy.ts --objective=x > /tmp/c1.json
+          node tools/agent-deploy.ts --objective=x > /tmp/c2.json
+          cmp /tmp/c1.json /tmp/c2.json
+      - name: pr line budget (report only)
+        continue-on-error: true
+        run: node tools/pr-budget.ts main 405

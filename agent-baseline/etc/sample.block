@@ -1,0 +1,9 @@
+id -u
+# sample.block — convention reference for a pasteable root block.
+# Why: this is the shape of every command wave: one command per line, console-safe,
+#       gate + rollback recorded in comments, first non-empty line is id -u.
+# Gate: df -h / and ls -l both print; operator pastes FULL output back
+# Rollback: none (read-only)
+df -h /
+ls -l
+uname -a

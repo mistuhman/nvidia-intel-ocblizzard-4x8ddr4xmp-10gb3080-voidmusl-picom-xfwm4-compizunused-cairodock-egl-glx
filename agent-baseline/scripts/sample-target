@@ -1,0 +1,31 @@
+#!/bin/sh
+# sample-target — convention reference for a target-facing script.
+# One script = one job. Subcommands are cmd_* functions behind ONE case dispatcher;
+# tools/script-dispatch-check.ts fails the test gate if a function and a label drift.
+# Why: prove the target-script convention (dispatch + read-only probe + df/ls gates).
+# Gate: probe prints df -h / and ls -l; status prints the sample line
+# Rollback: none (read-only)
+set -eu
+
+action="${1:-help}"
+
+cmd_status() {
+  echo "status: sample"
+}
+
+cmd_probe() {
+  # read-only probe: collect, never mutate
+  df -h /
+  ls -l
+}
+
+cmd_help() {
+  echo "usage: sample-target [status|probe|help]"
+}
+
+case "$action" in
+status) cmd_status ;;
+probe) cmd_probe ;;
+help) cmd_help ;;
+*) cmd_help; exit 2 ;;
+esac
