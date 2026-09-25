@@ -1,6 +1,6 @@
 {
   "schema": "arena-master-context.v2",
-  "updated": "2026-09-25 (session 01a0d9cd: baseline extraction — workflow contract + zero-dependency tools, all project fields left as (fill me) placeholders)",
+  "updated": "2026-09-25 (baseline: workflow contract + zero-dependency tools, all project fields left as (fill me) placeholders)",
   "purpose": "Single compact context file for future agents. README.md bootstraps; this file is machine-readable project state, chat workflow, brute-problem-solving doctrine, the objective, and constraints. It is JSON context, not prose policy. Fill the (fill me) fields for a new project. This file is CURRENT STATE, not a log: edit it to the truth when reality changes, move history to docs/ and receipts/, never append contradictions.",
   "repo": {
     "branchFixed": "(fill me — the session branch; every agent session works only on it)",
